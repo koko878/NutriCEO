@@ -463,6 +463,16 @@ const i18n = {
       { id: "inde",     q: "Comment se passe le lancement de la gamme PK en Inde ?" },
       { id: "risques",  q: "Quels sont les 3 risques prioritaires cette semaine ?" }
     ],
+    routes: [
+      { id:"signatures", kw:["signer","signature","signatures","signé","document","documents","valider","approbation","approuver","parapheur"] },
+      { id:"ebitda",     kw:["ebitda","q3","trimestre","marge","résultat","résultats","projection","prévision","attendre","attends"] },
+      { id:"tsp_inde",   kw:["tsp","vente","ventes","volume","volumes","mois","mensuel","mensuelles"] },
+      { id:"opex",       kw:["opex","budget","dépense","dépenses","consommé","consommation","dépensé"] },
+      { id:"usine",      kw:["usine","jorf","roadmap","déploiement","lasfar","plant"] },
+      { id:"inde",       kw:["lancement","pk","premium","inde","lance","démarrage","démarre"] },
+      { id:"risques",    kw:["risque","risques","priorité","priorités","prioritaire"] },
+      { id:"brief",      kw:["brief","synthèse","résumé","semaine","top","jour","hebdo"] }
+    ],
     answers: {
       brief: {
         title: "Synthèse — semaine 19",
@@ -546,6 +556,70 @@ const i18n = {
           { d:"Reporting logistique avril",  w:"Rachid A. · Supply Chain" },
           { d:"Roadmap_Jorf_S19.pdf",        w:"Hassan E. · Dir. Projets" }
         ]
+      },
+      signatures: {
+        title: "Documents en attente de signature",
+        kpis: [
+          { v:"4",  l:"docs à signer" },
+          { v:"1",  l:"urgent (aujourd'hui)" },
+          { v:"3",  l:"échéance < 7 j" }
+        ],
+        intro: "Quatre documents sont dans votre parapheur, classés par échéance :",
+        list: [
+          { t:"bad",  txt:"<b>Avenant contrat distributeur Iffco</b> — Sales India · échéance <b>aujourd'hui</b>." },
+          { t:"warn", txt:"<b>Bon de commande Capex maintenance Q2</b> (12,4 M MAD) — Dir. Industriel · 14/05." },
+          { t:"warn", txt:"<b>Convention bancaire CMR — ligne export</b> — CFO · 15/05." },
+          { t:"ok",   txt:"<b>Lettre d'engagement RSE Cap 2030</b> — Dir. RSE · 20/05." }
+        ],
+        decision: "Ouvrez le parapheur pour signer en un geste (Adobe Sign connecté).",
+        sources: [
+          { d:"Avenant_Iffco_v3.pdf",       w:"Sarah M. · Sales India" },
+          { d:"BC_Capex_Maintenance.pdf",   w:"Yacine T. · Dir. Industriel" },
+          { d:"Convention_CMR_export.pdf",  w:"Karim B. · CFO" },
+          { d:"Lettre_RSE_Cap2030.pdf",     w:"Inès K. · Dir. RSE" }
+        ]
+      },
+      ebitda: {
+        title: "EBITDA — projection fin Q3 2026",
+        kpis: [
+          { v:"1 420", l:"M MAD prévus" },
+          { v:"+5,2%", l:"vs budget Q3" },
+          { v:"31,2%", l:"marge EBITDA" }
+        ],
+        intro: "Projection cumulée à fin Q3 : <b>1 420 M MAD</b> vs budget <b>1 350 M MAD</b> — <b>favorable de 70 M</b>.",
+        list: [
+          { t:"ok",   txt:"<b>+ Volumes Inde & Brésil</b> au-dessus du plan (+8% cumulé)." },
+          { t:"ok",   txt:"<b>+ Prix moyen</b> tenu vs Q1 budget (mix premium en hausse)." },
+          { t:"warn", txt:"<b>− Acide phosphorique</b> : tension spot, érosion ~1,2 pt marge Q2/Q3." },
+          { t:"warn", txt:"<b>− Maintenance industrielle</b> : surcoût Q1 (saisonnalité)." }
+        ],
+        decision: "Sensibilité : -50 USD/T sur prix DAP → impact EBITDA Q3 estimé -90 M MAD.",
+        sources: [
+          { d:"Forecast_Q3_v2.xlsx",     w:"Karim B. · CFO" },
+          { d:"Note marché phosphates",  w:"Othmane R. · Sourcing" },
+          { d:"Suivi commercial S19",    w:"Mehdi L. · Sales Global" }
+        ]
+      },
+      tsp_inde: {
+        title: "Ventes TSP — Inde · mai 2026",
+        kpis: [
+          { v:"18 kT", l:"volumes mai" },
+          { v:"95",    l:"M MAD de CA" },
+          { v:"+50%",  l:"vs mai 2025" }
+        ],
+        intro: "Mois solide sur le TSP en Inde : <b>18 kT</b> livrées, dont 70% via Iffco. Prix moyen <b>5 280 MAD/T</b> (cible 5 100, +3,5%).",
+        list: [
+          { t:"ok",   txt:"<b>Iffco</b> : 12,6 kT — pic saisonnier mousson Sud." },
+          { t:"ok",   txt:"<b>Coromandel</b> : 3,8 kT — premier mois sous nouveau contrat." },
+          { t:"ok",   txt:"<b>IPL</b> : 1,6 kT — ré-entrée portefeuille." },
+          { t:"warn", txt:"<b>Stock port Mundra</b> : 4 kT en attente de clearance (effet juin)." }
+        ],
+        decision: "Cumul 5 mois : 71 kT TSP Inde — <b>+34%</b> vs 2025, au-dessus du budget.",
+        sources: [
+          { d:"Ventes_Inde_mai.xlsx",    w:"Sarah M. · Sales India" },
+          { d:"Stock_ports_Inde.pdf",    w:"Rachid A. · Supply Chain" },
+          { d:"Contrat_Coromandel_2026", w:"Mehdi L. · Sales Global" }
+        ]
       }
     }
   },
@@ -564,6 +638,16 @@ const i18n = {
       { id: "usine",   q: "How is the plant deployment roadmap progressing?" },
       { id: "inde",    q: "How is the India PK launch going?" },
       { id: "risques", q: "What are the top 3 risks this week?" }
+    ],
+    routes: [
+      { id:"signatures", kw:["sign","signature","signatures","document","documents","approve","approval","pending","signing"] },
+      { id:"ebitda",     kw:["ebitda","q3","quarter","margin","forecast","projection","expect"] },
+      { id:"tsp_inde",   kw:["tsp","sales","volume","volumes","month","monthly"] },
+      { id:"opex",       kw:["opex","budget","spend","spent","spending","consumed","consumption"] },
+      { id:"usine",      kw:["plant","jorf","roadmap","deployment","lasfar","factory"] },
+      { id:"inde",       kw:["launch","pk","premium","india","launching"] },
+      { id:"risques",    kw:["risk","risks","priority","priorities","top"] },
+      { id:"brief",      kw:["brief","digest","summary","week","weekly"] }
     ],
     answers: {
       brief: {
@@ -647,6 +731,70 @@ const i18n = {
           { d:"Raw materials sourcing.xlsx", w:"Othmane R. · Sourcing" },
           { d:"April logistics reporting",   w:"Rachid A. · Supply Chain" },
           { d:"Roadmap_Jorf_W19.pdf",        w:"Hassan E. · Projects Dir." }
+        ]
+      },
+      signatures: {
+        title: "Documents pending your signature",
+        kpis: [
+          { v:"4",  l:"docs to sign" },
+          { v:"1",  l:"urgent (today)" },
+          { v:"3",  l:"due in < 7 d" }
+        ],
+        intro: "Four documents are in your signing queue, sorted by deadline:",
+        list: [
+          { t:"bad",  txt:"<b>Iffco distributor contract amendment</b> — Sales India · due <b>today</b>." },
+          { t:"warn", txt:"<b>Q2 maintenance Capex PO</b> (12.4 MAD M) — Industrial Dir. · May 14." },
+          { t:"warn", txt:"<b>CMR bank agreement — export line</b> — CFO · May 15." },
+          { t:"ok",   txt:"<b>ESG commitment letter Cap 2030</b> — ESG Dir. · May 20." }
+        ],
+        decision: "Open the signing queue to approve in one tap (Adobe Sign connected).",
+        sources: [
+          { d:"Iffco_amendment_v3.pdf",     w:"Sarah M. · Sales India" },
+          { d:"PO_Capex_Maintenance.pdf",   w:"Yacine T. · Industrial Dir." },
+          { d:"CMR_export_agreement.pdf",   w:"Karim B. · CFO" },
+          { d:"ESG_Cap2030_letter.pdf",    w:"Inès K. · ESG Dir." }
+        ]
+      },
+      ebitda: {
+        title: "EBITDA — end of Q3 2026 outlook",
+        kpis: [
+          { v:"1,420", l:"MAD M expected" },
+          { v:"+5.2%", l:"vs Q3 budget" },
+          { v:"31.2%", l:"EBITDA margin" }
+        ],
+        intro: "Cumulative outlook to end of Q3: <b>1,420 MAD M</b> vs <b>1,350 MAD M</b> budget — <b>+70 M favorable</b>.",
+        list: [
+          { t:"ok",   txt:"<b>+ India & Brazil volumes</b> above plan (+8% cumulative)." },
+          { t:"ok",   txt:"<b>+ Average price</b> holding vs Q1 budget (premium mix rising)." },
+          { t:"warn", txt:"<b>− Phosphoric acid</b>: spot tension, ~1.2 pt margin erosion in Q2/Q3." },
+          { t:"warn", txt:"<b>− Industrial maintenance</b>: Q1 overrun (seasonality)." }
+        ],
+        decision: "Sensitivity: -50 USD/T on DAP price → Q3 EBITDA impact ~-90 MAD M.",
+        sources: [
+          { d:"Q3_forecast_v2.xlsx",      w:"Karim B. · CFO" },
+          { d:"Phosphate market note",    w:"Othmane R. · Sourcing" },
+          { d:"Sales tracking W19",       w:"Mehdi L. · Sales Global" }
+        ]
+      },
+      tsp_inde: {
+        title: "TSP sales — India · May 2026",
+        kpis: [
+          { v:"18 kT", l:"May volumes" },
+          { v:"95",    l:"MAD M revenue" },
+          { v:"+50%",  l:"vs May 2025" }
+        ],
+        intro: "Strong month for TSP in India: <b>18 kT</b> shipped, 70% via Iffco. Avg price <b>5,280 MAD/T</b> (target 5,100, +3.5%).",
+        list: [
+          { t:"ok",   txt:"<b>Iffco</b>: 12.6 kT — Southern monsoon seasonal peak." },
+          { t:"ok",   txt:"<b>Coromandel</b>: 3.8 kT — first month under new contract." },
+          { t:"ok",   txt:"<b>IPL</b>: 1.6 kT — portfolio re-entry." },
+          { t:"warn", txt:"<b>Mundra port stock</b>: 4 kT awaiting clearance (June impact)." }
+        ],
+        decision: "5-month cumulative: 71 kT India TSP — <b>+34%</b> vs 2025, above budget.",
+        sources: [
+          { d:"India_sales_May.xlsx",       w:"Sarah M. · Sales India" },
+          { d:"India_ports_stock.pdf",      w:"Rachid A. · Supply Chain" },
+          { d:"Coromandel_contract_2026",   w:"Mehdi L. · Sales Global" }
         ]
       }
     }
@@ -763,12 +911,12 @@ document.querySelector('.brief').addEventListener('click', ()=>ask('brief', i18n
 document.getElementById('send').addEventListener('click', ()=>{
   const v=document.getElementById('qinput').value.trim();
   if(!v) return;
-  // pick best match
-  const list=i18n[lang].questions;
+  const t=v.toLowerCase();
   let id='brief', best=0;
-  list.forEach(q=>{
-    const overlap = q.q.toLowerCase().split(' ').filter(w=>v.toLowerCase().includes(w)).length;
-    if(overlap>best){best=overlap;id=q.id}
+  (i18n[lang].routes||[]).forEach(r=>{
+    let score=0;
+    r.kw.forEach(k=>{ if(t.includes(k)) score++; });
+    if(score>best){best=score;id=r.id;}
   });
   ask(id, v);
   document.getElementById('qinput').value='';
