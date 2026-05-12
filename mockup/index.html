@@ -3,6 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#1B5E20">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NutriCEO">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%231B5E20'/%3E%3Ctext x='90' y='118' text-anchor='middle' font-family='Georgia,serif' font-size='86' font-weight='700' fill='%23E6F4E6'%3ED%C2%B2%3C/text%3E%3C/svg%3E">
 <title>NutriCEO — D²nAI · OCP Nutricrops</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -303,6 +309,46 @@ body{
   max-width:420px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.5;
 }
 .hint b{color:var(--ink-2)}
+
+/* tap & feel */
+*{-webkit-tap-highlight-color:transparent}
+.sug,.brief,.icon-btn,.lang button,.reset,.src,.bubble-user{
+  touch-action:manipulation;
+  -webkit-user-select:none;user-select:none;
+}
+.composer input{-webkit-user-select:text;user-select:text;font-size:16px}
+
+/* mobile fullscreen — kill the phone frame, become the app */
+@media (max-width: 600px) {
+  body{
+    padding:0;background:var(--bg);
+    display:block;min-height:100dvh;
+    overscroll-behavior:none;
+  }
+  .stage{gap:0}
+  .legend,.hint{display:none}
+  .phone{
+    width:100%;height:100dvh;height:100vh;
+    border-radius:0;padding:0;background:var(--bg);
+    box-shadow:none;
+  }
+  .notch,.handle{display:none}
+  .screen{
+    border-radius:0;
+    padding-top:env(safe-area-inset-top);
+  }
+  .status{display:none}
+  .appbar{padding-top:12px}
+  .composer{
+    padding-bottom:calc(14px + env(safe-area-inset-bottom));
+  }
+  .scroll{padding-bottom:18px}
+}
+
+/* installed PWA (added to home screen) — hide browser-only hints */
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  .status{display:none}
+}
 </style>
 </head>
 <body>
@@ -402,7 +448,7 @@ body{
 <script>
 const i18n = {
   fr: {
-    greeting: "Bonjour, Karim",
+    greeting: "Bonjour, Faris",
     date: "Mardi 12 mai 2026",
     briefTitle: "Brief du jour",
     briefSub: "3 sujets demandent votre attention.",
@@ -504,7 +550,7 @@ const i18n = {
     }
   },
   en: {
-    greeting: "Good morning, Karim",
+    greeting: "Good morning, Faris",
     date: "Tuesday, May 12, 2026",
     briefTitle: "Today's brief",
     briefSub: "3 topics need your attention.",
