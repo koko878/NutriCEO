@@ -310,6 +310,29 @@ body{
 }
 .hint b{color:var(--ink-2)}
 
+/* Empty / info state */
+.answer.empty .head .badge{background:#B45309;font-family:'Inter',sans-serif;font-size:13px;font-weight:700}
+.answer.empty .head .by{color:#B45309}
+
+/* CTA action button */
+.cta{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.cta-btn{
+  width:100%;display:flex;align-items:center;gap:10px;
+  background:var(--green-800);color:#fff;border:0;border-radius:12px;
+  padding:11px 14px;font:600 12.5px 'Inter',sans-serif;cursor:pointer;
+  box-shadow:0 6px 14px -8px rgba(27,94,32,.45);
+  transition:.2s;text-align:left;
+}
+.cta-btn:hover{background:var(--green-900)}
+.cta-btn span{flex:1;line-height:1.3}
+.cta-btn .arrow{margin-left:auto;flex:none;opacity:.85}
+.cta-btn.sent{
+  background:var(--ok-bg);color:var(--ok);cursor:default;box-shadow:none;
+  animation:sentPulse .35s ease;
+}
+@keyframes sentPulse{0%{transform:scale(.98)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
+.cta-btn.sent svg{flex:none}
+
 /* tap & feel */
 *{-webkit-tap-highlight-color:transparent}
 .sug,.brief,.icon-btn,.lang button,.reset,.src,.bubble-user{
@@ -464,6 +487,7 @@ const i18n = {
       { id: "risques",  q: "Quels sont les 3 risques prioritaires cette semaine ?" }
     ],
     routes: [
+      { id:"contrats",   kw:["contrat","contrats","légal","legal","juridique"] },
       { id:"signatures", kw:["signer","signature","signatures","signé","document","documents","valider","approbation","approuver","parapheur"] },
       { id:"ebitda",     kw:["ebitda","q3","trimestre","marge","résultat","résultats","projection","prévision","attendre","attends"] },
       { id:"tsp_inde",   kw:["tsp","vente","ventes","volume","volumes","mois","mensuel","mensuelles"] },
@@ -620,6 +644,23 @@ const i18n = {
           { d:"Stock_ports_Inde.pdf",    w:"Rachid A. · Supply Chain" },
           { d:"Contrat_Coromandel_2026", w:"Mehdi L. · Sales Global" }
         ]
+      },
+      contrats: {
+        state: "empty",
+        title: "Derniers contrats signés",
+        intro: "Je n'ai trouvé <b>aucun document tagué « contrat signé »</b> dans l'espace partagé de la Direction Légale sur les 30 derniers jours.",
+        list: [
+          { t:"warn", txt:"Les contrats récents n'ont peut-être pas été déposés dans l'espace partagé." },
+          { t:"warn", txt:"Les documents existants ne sont peut-être pas tagués correctement." },
+          { t:"warn", txt:"Ou aucun contrat n'a été signé sur la période — peu probable vu l'activité." }
+        ],
+        cta: {
+          label: "Envoyer un rappel à Aïcha B. · Dir. Légal",
+          sent:  "Rappel envoyé — vous serez notifié dès qu'un contrat est déposé."
+        },
+        sources: [
+          { d:"Espace Légal · OneDrive partagé", w:"Aïcha B. · Dir. Légal" }
+        ]
       }
     }
   },
@@ -640,6 +681,7 @@ const i18n = {
       { id: "risques", q: "What are the top 3 risks this week?" }
     ],
     routes: [
+      { id:"contrats",   kw:["contract","contracts","legal","counsel"] },
       { id:"signatures", kw:["sign","signature","signatures","document","documents","approve","approval","pending","signing"] },
       { id:"ebitda",     kw:["ebitda","q3","quarter","margin","forecast","projection","expect"] },
       { id:"tsp_inde",   kw:["tsp","sales","volume","volumes","month","monthly"] },
@@ -796,6 +838,23 @@ const i18n = {
           { d:"India_ports_stock.pdf",      w:"Rachid A. · Supply Chain" },
           { d:"Coromandel_contract_2026",   w:"Mehdi L. · Sales Global" }
         ]
+      },
+      contrats: {
+        state: "empty",
+        title: "Latest signed contracts",
+        intro: "I found <b>no document tagged “signed contract”</b> in the Legal team's shared workspace over the last 30 days.",
+        list: [
+          { t:"warn", txt:"Recent contracts may not have been uploaded to the shared workspace." },
+          { t:"warn", txt:"Existing documents may not be tagged correctly." },
+          { t:"warn", txt:"Or no contract was signed in the period — unlikely given the activity." }
+        ],
+        cta: {
+          label: "Send a reminder to Aïcha B. · Legal Dir.",
+          sent:  "Reminder sent — you'll be notified as soon as a contract is uploaded."
+        },
+        sources: [
+          { d:"Legal workspace · shared OneDrive", w:"Aïcha B. · Legal Dir." }
+        ]
       }
     }
   }
@@ -857,7 +916,13 @@ function ask(id, label){
 function renderAnswer(id){
   const data=i18n[lang].answers[id]; if(!data) return document.createElement('div');
   const el=document.createElement('div'); el.className='answer fade-in';
+  const isEmpty = data.state==='empty';
+  if(isEmpty) el.classList.add('empty');
   const icMap = { ok:'✓', warn:'!', bad:'×' };
+  const headerLabel = isEmpty
+    ? (lang==='fr'?"Information non disponible":"Information unavailable")
+    : (lang==='fr'?"Synthèse D²nAI":"D²nAI synthesis");
+  const badgeContent = isEmpty ? "i" : "D²";
 
   let kpisHTML='';
   if(data.kpis){
@@ -865,6 +930,14 @@ function renderAnswer(id){
   }
   const listHTML = data.list ? `<ul>${data.list.map(it=>`<li><span class="ic ic-${it.t}">${icMap[it.t]||'•'}</span>${it.txt}</li>`).join('')}</ul>` : '';
   const decisionHTML = data.decision ? `<p style="margin-top:8px;padding:8px 10px;background:var(--green-50);border-left:3px solid var(--green-800);border-radius:6px;font-size:13px;color:var(--green-900)"><b>↳</b> ${data.decision}</p>` : '';
+  const ctaHTML = data.cta ? `
+    <div class="cta">
+      <button class="cta-btn" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <span>${data.cta.label}</span>
+        <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>` : '';
   const sourcesHTML = data.sources ? `
     <div class="sources">
       <div class="lab">${i18n[lang].sourcesLabel}</div>
@@ -873,16 +946,30 @@ function renderAnswer(id){
 
   el.innerHTML = `
     <div class="head">
-      <div class="badge">D²</div>
-      <div class="by">${i18n[lang].greeting.split(',')[0]==="Bonjour"?"Synthèse D²nAI":"D²nAI synthesis"}</div>
+      <div class="badge">${badgeContent}</div>
+      <div class="by">${headerLabel}</div>
     </div>
     <h4>${data.title}</h4>
     ${kpisHTML}
     ${data.intro?`<p>${data.intro}</p>`:''}
     ${listHTML}
     ${decisionHTML}
+    ${ctaHTML}
     ${sourcesHTML}
   `;
+
+  if(data.cta){
+    const btn=el.querySelector('.cta-btn');
+    btn.addEventListener('click', ()=>{
+      btn.classList.add('sent');
+      btn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M20 6 9 17l-5-5"/></svg>
+        <span>${data.cta.sent}</span>
+      `;
+      btn.disabled = true;
+    });
+  }
+
   return el;
 }
 
