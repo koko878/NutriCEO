@@ -1,0 +1,1041 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#1B5E20">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sentinel">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%231B5E20'/%3E%3Cpath d='M90 30 L140 55 L140 105 Q140 140 90 155 Q40 140 40 105 L40 55 Z' fill='%23E6F4E6'/%3E%3Cpath d='M75 92 L88 105 L112 78' stroke='%231B5E20' stroke-width='10' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+<title>Sentinel — D²nAI · OCP Group</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-900:#0F3D14;
+  --green-800:#1B5E20;
+  --green-700:#2E7D32;
+  --green-500:#4CAF50;
+  --green-100:#E8F0E8;
+  --green-50:#F2F7F2;
+  --ink:#13191A;
+  --ink-2:#3C4642;
+  --muted:#6B7268;
+  --line:#E6E9E5;
+  --bg:#FAFBFA;
+  --page:#EDEFEA;
+  --warn:#B45309;
+  --warn-bg:#FEF3C7;
+  --ok:#15803D;
+  --ok-bg:#DCFCE7;
+  --bad:#B91C1C;
+  --bad-bg:#FEE2E2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #E2E8DE 0%, transparent 60%),
+    var(--page);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  display:grid;
+  place-items:center;
+  min-height:100vh;
+  padding:24px 16px;
+}
+
+/* Frame around phone */
+.stage{
+  display:flex;flex-direction:column;align-items:center;gap:18px;
+}
+.legend{
+  text-align:center;color:var(--muted);font-size:12px;letter-spacing:.04em;text-transform:uppercase;
+}
+.legend .brand{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-style:italic;color:var(--green-800);
+  font-size:14px;text-transform:none;letter-spacing:.02em;
+}
+
+/* iPhone frame */
+.phone{
+  position:relative;
+  width:390px;height:844px;
+  background:#0a0a0a;
+  border-radius:54px;
+  padding:14px;
+  box-shadow:
+    0 30px 60px -20px rgba(0,0,0,.35),
+    0 0 0 1px rgba(255,255,255,.06) inset,
+    0 0 0 2px #1a1a1a;
+}
+.notch{
+  position:absolute;left:50%;top:18px;transform:translateX(-50%);
+  width:120px;height:32px;background:#000;border-radius:20px;z-index:5;
+}
+.screen{
+  position:relative;
+  width:100%;height:100%;
+  background:var(--bg);
+  border-radius:42px;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+}
+
+/* status bar */
+.status{
+  height:48px;display:flex;align-items:flex-end;justify-content:space-between;
+  padding:0 28px 6px;font-size:14px;font-weight:600;color:var(--ink);
+}
+.status .icons{display:flex;gap:5px;align-items:center}
+.dot{width:4px;height:4px;background:var(--ink);border-radius:50%}
+.battery{width:22px;height:11px;border:1.2px solid var(--ink);border-radius:3px;position:relative}
+.battery::after{content:"";position:absolute;right:-3px;top:2.5px;width:2px;height:4px;background:var(--ink);border-radius:0 1px 1px 0}
+.battery::before{content:"";position:absolute;left:1px;top:1px;bottom:1px;width:80%;background:var(--ink);border-radius:1px}
+
+/* header */
+.appbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 20px 14px;
+}
+.brandmark{
+  display:flex;align-items:center;gap:10px;
+}
+.logo{
+  width:34px;height:34px;border-radius:10px;
+  background:
+    linear-gradient(135deg, var(--green-800), var(--green-900));
+  display:grid;place-items:center;
+  position:relative;overflow:hidden;
+  box-shadow:0 4px 10px -4px rgba(27,94,32,.45);
+}
+.logo::before{
+  content:"";position:absolute;inset:0;opacity:.18;
+  background-image:
+    repeating-linear-gradient(180deg, rgba(180,255,180,.6) 0 1px, transparent 1px 3px);
+  mix-blend-mode:screen;
+}
+.logo span{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  color:#E6F4E6;font-weight:700;font-size:16px;line-height:1;
+  position:relative;letter-spacing:.5px;
+}
+.logo sup{font-size:9px;font-weight:600;margin-left:-1px;top:-4px;position:relative}
+.brandtext{display:flex;flex-direction:column;line-height:1.05}
+.brandtext .t1{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.brandtext .t2{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--green-800);font-weight:700}
+
+.lang{
+  display:flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px;
+}
+.lang button{
+  border:0;background:transparent;font:600 11px/1 'Inter',sans-serif;
+  padding:6px 10px;border-radius:999px;color:var(--muted);cursor:pointer;
+  transition:.2s;
+}
+.lang button.on{background:var(--green-800);color:#fff}
+
+/* greeting */
+.hello{
+  padding:4px 22px 8px;
+}
+.hello h1{
+  font-family:'Cormorant Garamond',serif;
+  font-weight:600;font-size:30px;color:var(--ink);letter-spacing:-.01em;
+}
+.hello .date{
+  color:var(--muted);font-size:13px;margin-top:2px;
+}
+
+/* daily brief card */
+.scroll{
+  flex:1;overflow-y:auto;padding:8px 16px 12px;
+}
+.scroll::-webkit-scrollbar{width:0}
+
+.brief{
+  margin:8px 6px 14px;background:#fff;border:1px solid var(--line);
+  border-radius:18px;padding:14px 16px;cursor:pointer;
+  display:flex;gap:12px;align-items:center;
+  transition:.2s;
+  box-shadow:0 1px 0 rgba(0,0,0,.02);
+}
+.brief:hover{transform:translateY(-1px);box-shadow:0 6px 18px -10px rgba(0,0,0,.18)}
+.brief .ico{
+  width:38px;height:38px;border-radius:12px;background:var(--green-100);
+  display:grid;place-items:center;color:var(--green-800);flex:none;
+}
+.brief .txt h3{font-size:14px;font-weight:600;color:var(--ink)}
+.brief .txt p{font-size:12.5px;color:var(--muted);margin-top:2px}
+.brief .pill{
+  margin-left:auto;font-size:11px;font-weight:600;color:#fff;background:var(--green-800);
+  padding:4px 8px;border-radius:999px;flex:none;
+}
+
+/* suggestions */
+.suglabel{
+  font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);padding:4px 8px 8px;
+}
+.sugs{display:flex;flex-direction:column;gap:8px;padding:0 6px}
+.sug{
+  background:#fff;border:1px solid var(--line);border-radius:14px;
+  padding:13px 14px;display:flex;align-items:center;gap:10px;
+  cursor:pointer;transition:.18s;
+}
+.sug:hover{border-color:var(--green-500);background:var(--green-50)}
+.sug .q{font-size:13.5px;color:var(--ink-2);font-weight:500;line-height:1.35}
+.sug .arrow{margin-left:auto;color:var(--muted);flex:none}
+
+/* conversation */
+.thread{display:flex;flex-direction:column;gap:14px;padding:8px 4px 6px}
+.bubble-user{
+  align-self:flex-end;max-width:84%;
+  background:var(--green-800);color:#fff;
+  border-radius:18px 18px 4px 18px;padding:10px 14px;
+  font-size:14px;line-height:1.4;
+  box-shadow:0 6px 14px -8px rgba(27,94,32,.45);
+}
+.answer{
+  background:#fff;border:1px solid var(--line);border-radius:18px;
+  padding:14px 16px;
+}
+.answer .head{
+  display:flex;align-items:center;gap:8px;margin-bottom:8px;
+}
+.answer .head .badge{
+  width:22px;height:22px;border-radius:6px;background:var(--green-800);
+  display:grid;place-items:center;color:#fff;font:700 10px 'Cormorant Garamond',serif;
+}
+.answer .head .by{font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.answer h4{font-size:14px;font-weight:600;color:var(--ink);margin:8px 0 4px}
+.answer p{font-size:13.5px;color:var(--ink-2);line-height:1.55;margin:6px 0}
+.answer ul{margin:6px 0 6px 4px;padding:0;list-style:none}
+.answer ul li{font-size:13px;color:var(--ink-2);padding:4px 0 4px 22px;position:relative;line-height:1.45}
+.answer ul li .ic{position:absolute;left:0;top:5px;width:16px;height:16px;border-radius:4px;display:grid;place-items:center;font-size:10px;font-weight:700}
+.ic-ok{background:var(--ok-bg);color:var(--ok)}
+.ic-warn{background:var(--warn-bg);color:var(--warn)}
+.ic-bad{background:var(--bad-bg);color:var(--bad)}
+.kpi{
+  display:flex;gap:8px;margin:8px 0 4px;flex-wrap:wrap;
+}
+.kpi .b{
+  background:var(--green-50);border:1px solid var(--green-100);
+  border-radius:10px;padding:8px 10px;flex:1;min-width:90px;
+}
+.kpi .b .v{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--green-800);line-height:1}
+.kpi .b .l{font-size:10.5px;color:var(--muted);margin-top:3px;letter-spacing:.02em}
+.sources{
+  margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);
+  display:flex;flex-wrap:wrap;gap:6px;
+}
+.sources .lab{font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;width:100%;margin-bottom:2px}
+.src{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--green-50);border:1px solid var(--green-100);
+  color:var(--green-800);font-size:11.5px;font-weight:500;
+  padding:5px 9px;border-radius:999px;cursor:pointer;
+}
+.src .who{color:var(--muted);font-weight:500}
+
+/* thinking */
+.thinking{
+  display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12.5px;
+  padding:10px 14px;background:#fff;border:1px solid var(--line);border-radius:14px;
+}
+.thinking .matrix{
+  width:18px;height:18px;border-radius:5px;background:var(--green-800);
+  position:relative;overflow:hidden;
+}
+.thinking .matrix::after{
+  content:"01·10·11·00·10·11";position:absolute;inset:0;
+  font:700 7px/1 'Inter',monospace;color:#9ae39a;letter-spacing:1px;white-space:nowrap;
+  animation:rain 1.4s linear infinite;text-align:center;padding-top:2px;
+}
+@keyframes rain{
+  0%{transform:translateY(-50%)}
+  100%{transform:translateY(50%)}
+}
+.dots{display:inline-flex;gap:3px}
+.dots i{width:5px;height:5px;background:var(--green-800);border-radius:50%;opacity:.4;animation:blink 1.1s ease-in-out infinite}
+.dots i:nth-child(2){animation-delay:.18s}
+.dots i:nth-child(3){animation-delay:.36s}
+@keyframes blink{0%,100%{opacity:.25;transform:scale(.85)}50%{opacity:1;transform:scale(1)}}
+
+/* input bar */
+.composer{
+  border-top:1px solid var(--line);background:#fff;
+  padding:10px 14px 18px;display:flex;align-items:center;gap:8px;
+}
+.composer .field{
+  flex:1;display:flex;align-items:center;gap:8px;
+  background:var(--green-50);border:1px solid var(--green-100);border-radius:999px;
+  padding:10px 14px;
+}
+.composer input{
+  flex:1;border:0;background:transparent;outline:none;
+  font:500 14px 'Inter',sans-serif;color:var(--ink);
+}
+.composer input::placeholder{color:var(--muted)}
+.icon-btn{
+  width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+  border:0;background:var(--green-800);color:#fff;cursor:pointer;flex:none;
+  transition:.2s;
+}
+.icon-btn:hover{background:var(--green-900)}
+.icon-btn.ghost{background:transparent;color:var(--green-800);border:1px solid var(--green-100);background:var(--green-50)}
+
+/* home indicator */
+.handle{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:130px;height:4px;background:#1a1a1a;border-radius:3px;z-index:4}
+
+/* tiny anim on bubbles */
+.fade-in{animation:fade .35s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* reset btn */
+.reset{
+  background:transparent;border:0;color:var(--muted);font:600 11px 'Inter',sans-serif;
+  cursor:pointer;padding:4px 8px;border-radius:6px;
+}
+.reset:hover{color:var(--green-800);background:var(--green-50)}
+
+/* helper hint outside phone */
+.hint{
+  max-width:420px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.5;
+}
+.hint b{color:var(--ink-2)}
+
+/* Empty / info state */
+.answer.empty .head .badge{background:#B45309;font-family:'Inter',sans-serif;font-size:13px;font-weight:700}
+.answer.empty .head .by{color:#B45309}
+
+/* CTA action button */
+.cta{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.cta-btn{
+  width:100%;display:flex;align-items:center;gap:10px;
+  background:var(--green-800);color:#fff;border:0;border-radius:12px;
+  padding:11px 14px;font:600 12.5px 'Inter',sans-serif;cursor:pointer;
+  box-shadow:0 6px 14px -8px rgba(27,94,32,.45);
+  transition:.2s;text-align:left;
+}
+.cta-btn:hover{background:var(--green-900)}
+.cta-btn span{flex:1;line-height:1.3}
+.cta-btn .arrow{margin-left:auto;flex:none;opacity:.85}
+.cta-btn.sent{
+  background:var(--ok-bg);color:var(--ok);cursor:default;box-shadow:none;
+  animation:sentPulse .35s ease;
+}
+@keyframes sentPulse{0%{transform:scale(.98)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
+.cta-btn.sent svg{flex:none}
+
+/* tap & feel */
+*{-webkit-tap-highlight-color:transparent}
+.sug,.brief,.icon-btn,.lang button,.reset,.src,.bubble-user{
+  touch-action:manipulation;
+  -webkit-user-select:none;user-select:none;
+}
+.composer input{-webkit-user-select:text;user-select:text;font-size:16px}
+
+/* mobile fullscreen — kill the phone frame, become the app */
+@media (max-width: 600px) {
+  body{
+    padding:0;background:var(--bg);
+    display:block;min-height:100dvh;
+    overscroll-behavior:none;
+  }
+  .stage{gap:0}
+  .legend,.hint{display:none}
+  .phone{
+    width:100%;height:100dvh;height:100vh;
+    border-radius:0;padding:0;background:var(--bg);
+    box-shadow:none;
+  }
+  .notch,.handle{display:none}
+  .screen{
+    border-radius:0;
+    padding-top:env(safe-area-inset-top);
+  }
+  .status{display:none}
+  .appbar{padding-top:12px}
+  .composer{
+    padding-bottom:calc(14px + env(safe-area-inset-bottom));
+  }
+  .scroll{padding-bottom:18px}
+}
+
+/* installed PWA (added to home screen) — hide browser-only hints */
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  .status{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <div class="legend">
+    <div>Sentinel — prototype de démonstration</div>
+    <div class="brand">Conçu par D²nAI · OCP Group</div>
+  </div>
+
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+
+      <!-- status bar -->
+      <div class="status">
+        <span id="clock">9:41</span>
+        <span class="icons">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span style="margin-left:6px" class="battery"></span>
+        </span>
+      </div>
+
+      <!-- appbar -->
+      <div class="appbar">
+        <div class="brandmark">
+          <div class="logo"><span>D<sup>2</sup>n</span></div>
+          <div class="brandtext">
+            <div class="t1">OCP Group · Performance & Risk</div>
+            <div class="t2">Sentinel</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button class="reset" id="reset" title="Recommencer">↻</button>
+          <div class="lang">
+            <button data-l="fr" class="on">FR</button>
+            <button data-l="en">EN</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- greeting -->
+      <div class="hello">
+        <h1 data-i18n="greeting">Bonjour</h1>
+        <div class="date" data-i18n="date">Mardi 12 mai 2026</div>
+      </div>
+
+      <!-- scrollable -->
+      <div class="scroll" id="scroll">
+
+        <!-- initial state -->
+        <div id="initial">
+          <div class="brief" data-q="brief">
+            <div class="ico">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>
+            </div>
+            <div class="txt">
+              <h3 data-i18n="briefTitle">Brief du jour</h3>
+              <p data-i18n="briefSub">3 sujets demandent votre attention.</p>
+            </div>
+            <span class="pill">3</span>
+          </div>
+
+          <div class="suglabel" data-i18n="sugLabel">Questions suggérées</div>
+          <div class="sugs" id="sugs"></div>
+        </div>
+
+        <!-- conversation -->
+        <div class="thread" id="thread"></div>
+      </div>
+
+      <!-- composer -->
+      <div class="composer">
+        <div class="field">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7268" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="qinput" data-i18n-ph="placeholder" placeholder="Posez votre question…" />
+        </div>
+        <button class="icon-btn ghost" title="Voix">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10a7 7 0 0 1-14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+        </button>
+        <button class="icon-btn" id="send" title="Envoyer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4 20-7z"/></svg>
+        </button>
+      </div>
+
+    </div>
+    <div class="handle"></div>
+  </div>
+
+  <div class="hint">
+    <b>Comment utiliser :</b> appuyez sur une question suggérée — ou sur le « Brief du jour » — pour voir l'app composer une réponse à partir des documents des 25 N-1. Toutes les données sont fictives.
+  </div>
+
+</div>
+
+<script>
+const i18n = {
+  fr: {
+    greeting: "Bonjour, Youssef",
+    date: "Mardi 12 mai 2026",
+    briefTitle: "Brief du jour",
+    briefSub: "3 sujets demandent votre attention.",
+    sugLabel: "Questions suggérées",
+    placeholder: "Posez votre question…",
+    thinking: "Consolidation des données performance, risque et contrôle…",
+    sourcesLabel: "Sources",
+    hint: "<b>Comment utiliser :</b> appuyez sur une question suggérée — ou sur le « Brief du jour » — pour voir Sentinel composer une réponse à partir des données performance, risque et contrôle remontées par les BU et fonctions. Toutes les données sont fictives.",
+    questions: [
+      { id: "risques_top",  q: "Top 3 risques majeurs cette semaine ?" },
+      { id: "bu_perf",      q: "Quelles BU sont sous-performantes vs target Q2 ?" },
+      { id: "controles",    q: "Où en est le déploiement des contrôles internes 2026 ?" },
+      { id: "incidents",    q: "Synthèse des incidents opérationnels de la semaine" }
+    ],
+    routes: [
+      { id:"audit_big4",   kw:["big4","big 4","audit externe","auditeur externe","kpmg","deloitte","pwc","ey","ernst"] },
+      { id:"compliance",   kw:["compliance","conformité","anti-corruption","corruption","gdpr","rgpd","alerte éthique","ethique"] },
+      { id:"maturite",     kw:["maturité","maturite","indice","site","sites","khouribga","jorf","safi","benguérir"] },
+      { id:"roi_ctrl",     kw:["ratio","coût","cout","efficacité","efficacite","roi","investissement contrôle","budget contrôle"] },
+      { id:"risques_top",  kw:["risque","risques","top","critique","critiques","majeur","majeurs","heatmap","matrice"] },
+      { id:"bu_perf",      kw:["bu","business unit","performance","sous-performance","target","cible","trimestre","q2","q1"] },
+      { id:"controles",    kw:["contrôle","controle","contrôles","controles","couverture","interne","internes"] },
+      { id:"incidents",    kw:["incident","incidents","opérationnel","operationnel","hse","cyber","phishing","accident"] },
+      { id:"brief",        kw:["brief","synthèse","résumé","semaine","jour","hebdo"] }
+    ],
+    answers: {
+      brief: {
+        title: "Brief Performance & Risk — semaine 19",
+        intro: "Trois sujets remontent en priorité depuis vendredi :",
+        list: [
+          { t:"bad",  txt:"<b>Incident industriel Khouribga</b> : arrêt 6h ligne de granulation, déclaration HSE en cours." },
+          { t:"warn", txt:"<b>BU Brésil</b> : EBIT Q1 -8% vs target — plan correctif attendu." },
+          { t:"warn", txt:"<b>Audit interne Q1 phosphates</b> : 3 findings ouverts, dont 1 majeur (ségrégation des tâches achats)." }
+        ],
+        sources: [
+          { d:"Rapport HSE Khouribga S19.pdf",   w:"Hicham N. · HSE Group" },
+          { d:"Flash performance BU Brésil.pdf", w:"Rita C. · CFO Brazil" },
+          { d:"Rapport audit interne Q1.docx",   w:"Driss A. · Dir. Audit Interne" }
+        ]
+      },
+      risques_top: {
+        title: "Top 3 risques — semaine 19",
+        kpis: [
+          { v:"3",  l:"risques critiques" },
+          { v:"12", l:"risques élevés" },
+          { v:"−2", l:"vs semaine 18" }
+        ],
+        intro: "Consolidation Group Risk Register à date :",
+        list: [
+          { t:"bad",  txt:"<b>Marché phosphate</b> — volatilité +14% sur 30 j, exposition couverture 62%." },
+          { t:"warn", txt:"<b>Maintenance lourde Jorf — ligne C</b> : dérive planning, impact mise en service +14 j." },
+          { t:"warn", txt:"<b>Cyber — phishing ciblé direction Finance</b> : 4 tentatives bloquées, 1 à investiguer." }
+        ],
+        decision: "Décision attendue : valider le renforcement couverture phosphate au Comité Risques du 15/05.",
+        sources: [
+          { d:"Heatmap_S19_Group_Risk.pdf",   w:"Karima H. · Group Risk" },
+          { d:"Note marché phosphate hebdo",  w:"Othmane R. · Sourcing" },
+          { d:"Bulletin Cyber CSIRT S19",     w:"Walid B. · CISO" }
+        ]
+      },
+      bu_perf: {
+        title: "Performance BU vs target Q2 2026",
+        kpis: [
+          { v:"6/9", l:"BU alignées" },
+          { v:"2",   l:"sous-perf. (>5%)" },
+          { v:"1",   l:"BU en alerte" }
+        ],
+        intro: "Synthèse de la performance EBIT vs target sur les BU principales :",
+        list: [
+          { t:"bad",  txt:"<b>BU Brésil</b> : -8,1% vs target — volumes en retrait, mix défavorable." },
+          { t:"warn", txt:"<b>BU Maroc Domestic</b> : -3,2% — pression prix locale, attendu rebond Q3." },
+          { t:"ok",   txt:"<b>BU Inde</b> : +12,4% — surperformance volumes TSP." },
+          { t:"ok",   txt:"<b>BU Europe</b> : aligné (+0,6%)." },
+          { t:"ok",   txt:"<b>BU Afrique Sub.</b> : +4,1% — pilote Sénégal en traction." }
+        ],
+        decision: "Action : revue de performance Brésil programmée le 16/05 avec le CEO BU.",
+        sources: [
+          { d:"Reporting performance BU avril.xlsx", w:"Karim B. · CFO Group" },
+          { d:"Flash performance BU Brésil.pdf",     w:"Rita C. · CFO Brazil" }
+        ]
+      },
+      controles: {
+        title: "Contrôles internes — déploiement 2026",
+        kpis: [
+          { v:"68%", l:"couverture actuelle" },
+          { v:"75%", l:"cible fin Q2" },
+          { v:"24",  l:"contrôles à finaliser" }
+        ],
+        intro: "Le plan de déploiement 2026 est <b>légèrement en retard</b> sur la cible Q2 (-7 pts).",
+        list: [
+          { t:"ok",   txt:"<b>Achats & finance</b> : 82% couverts." },
+          { t:"warn", txt:"<b>Industriel</b> : 58% — retard sur les sites Safi & Benguérir." },
+          { t:"warn", txt:"<b>IT / Cyber</b> : 64% — nouveau référentiel en intégration." },
+          { t:"ok",   txt:"<b>RH</b> : 78%." }
+        ],
+        decision: "Priorité : combler le retard sur Safi avec 6 contrôles à finaliser avant le 30/06.",
+        sources: [
+          { d:"Plan ICFR 2026 v3.xlsx",       w:"Driss A. · Dir. Audit Interne" },
+          { d:"Reporting contrôles Q1.pdf",   w:"Salima T. · Contrôle Interne" }
+        ]
+      },
+      incidents: {
+        title: "Incidents opérationnels — semaine 19",
+        kpis: [
+          { v:"4", l:"incidents" },
+          { v:"1", l:"majeur" },
+          { v:"0", l:"accident humain" }
+        ],
+        intro: "4 incidents remontés cette semaine sur l'ensemble du périmètre. Aucun accident humain.",
+        list: [
+          { t:"bad",  txt:"<b>Khouribga</b> : arrêt 6h ligne de granulation — origine mécanique, retour en service 9 mai." },
+          { t:"warn", txt:"<b>Jorf</b> : 2 incidents HSE mineurs (port EPI, déversement contenu)." },
+          { t:"warn", txt:"<b>IT Group</b> : tentative phishing ciblée Finance, 4 mails bloqués." },
+          { t:"ok",   txt:"<b>Supply chain Inde</b> : retard 3 j Mundra, rattrapage en cours." }
+        ],
+        sources: [
+          { d:"Rapport HSE Khouribga S19.pdf",  w:"Hicham N. · HSE Group" },
+          { d:"Log incidents Jorf S19",         w:"Yacine T. · Dir. Industriel" },
+          { d:"Bulletin Cyber CSIRT S19",       w:"Walid B. · CISO" }
+        ]
+      },
+      maturite: {
+        title: "Indice de maturité risque par site",
+        kpis: [
+          { v:"3,2/5", l:"maturité moyenne" },
+          { v:"4,1",   l:"meilleur site (Jorf)" },
+          { v:"2,8",   l:"site à renforcer" }
+        ],
+        intro: "Score moyen <b>3,2/5</b> — en hausse de 0,3 pt sur 12 mois, en ligne avec le plan triennal.",
+        list: [
+          { t:"ok",   txt:"<b>Jorf Lasfar</b> : 4,1 — référence Group." },
+          { t:"ok",   txt:"<b>Khouribga</b> : 3,5 — solide sur l'opérationnel, à renforcer côté cyber." },
+          { t:"warn", txt:"<b>Safi</b> : 3,0 — gap sur contrôles industriels." },
+          { t:"warn", txt:"<b>Benguérir</b> : 2,8 — plan de remise à niveau en attente de validation." }
+        ],
+        decision: "Décision attendue : valider l'enveloppe Benguérir (2,4 M MAD) en Comité Risques 15/05.",
+        sources: [
+          { d:"Évaluation maturité sites 2026.xlsx", w:"Karima H. · Group Risk" },
+          { d:"Plan remise à niveau Benguérir",      w:"Site Manager Benguérir" }
+        ]
+      },
+      roi_ctrl: {
+        title: "ROI du programme de contrôle interne 2026",
+        kpis: [
+          { v:"5,1×",  l:"ratio bénéfice/coût" },
+          { v:"18",    l:"M MAD investis" },
+          { v:"92",    l:"M MAD incidents évités" }
+        ],
+        intro: "Bilan à mi-année : le programme génère un <b>retour estimé de 5,1×</b> son coût, principalement via la prévention de pertes opérationnelles et erreurs comptables.",
+        list: [
+          { t:"ok",   txt:"<b>Prévention pertes opérationnelles</b> : 54 M MAD estimés (top 3 : achats, paie, stocks)." },
+          { t:"ok",   txt:"<b>Réduction findings audit externe</b> : -41% vs 2025 (effet direct sur frais Big4)." },
+          { t:"warn", txt:"<b>Coût opportunité</b> : 3 contrôles peu utilisés à automatiser ou retirer." }
+        ],
+        decision: "Recommandation : maintenir l'enveloppe 2026 et viser 6× en 2027 via automatisation.",
+        sources: [
+          { d:"Bilan ROI contrôles 2026 H1.pdf", w:"Salima T. · Contrôle Interne" },
+          { d:"Note méthodo valorisation",        w:"Driss A. · Dir. Audit Interne" }
+        ]
+      },
+      compliance: {
+        title: "Alertes Compliance — semaine 19",
+        kpis: [
+          { v:"0",  l:"alerte critique" },
+          { v:"2",  l:"cas en investigation" },
+          { v:"12", l:"formations en retard" }
+        ],
+        intro: "Aucune alerte critique en cours. Deux cas anti-corruption en investigation au stade screening tiers.",
+        list: [
+          { t:"ok",   txt:"<b>Anti-corruption</b> : 0 alerte critique, 2 cas en investigation (3rd party screening en cours)." },
+          { t:"warn", txt:"<b>Formations obligatoires</b> : 12 collaborateurs N-1/N-2 en retard sur le module Code éthique." },
+          { t:"ok",   txt:"<b>GDPR / Data Privacy</b> : 0 incident notifiable cette semaine." },
+          { t:"ok",   txt:"<b>Sanctions internationales</b> : screening fournisseurs à jour." }
+        ],
+        decision: "Action : relance dirigée par DRH pour clôturer les 12 formations en retard avant fin mai.",
+        sources: [
+          { d:"Reporting compliance hebdo.pdf",  w:"Nawal F. · Chief Compliance Officer" },
+          { d:"Suivi formations Code éthique",   w:"Mounir Z. · DRH Group" }
+        ]
+      },
+      audit_big4: {
+        state: "empty",
+        title: "Dernier rapport d'audit externe Big4",
+        intro: "Je n'ai trouvé <b>aucun rapport d'audit externe Big4</b> dans l'espace partagé Audit & Contrôle Interne sur les 90 derniers jours.",
+        list: [
+          { t:"warn", txt:"Le rapport interim peut ne pas avoir été déposé dans l'espace partagé." },
+          { t:"warn", txt:"Le tag « audit externe » n'est peut-être pas appliqué sur les documents existants." },
+          { t:"warn", txt:"Ou la mission n'a pas encore produit de livrable formel à ce stade." }
+        ],
+        cta: {
+          label: "Envoyer un rappel à Driss A. · Dir. Audit Interne",
+          sent:  "Rappel envoyé — vous serez notifié dès qu'un rapport est déposé."
+        },
+        sources: [
+          { d:"Espace Audit Externe · OneDrive partagé", w:"Driss A. · Dir. Audit Interne" }
+        ]
+      }
+    }
+  },
+  en: {
+    greeting: "Good morning, Youssef",
+    date: "Tuesday, May 12, 2026",
+    briefTitle: "Today's brief",
+    briefSub: "3 topics need your attention.",
+    sugLabel: "Suggested questions",
+    placeholder: "Ask anything…",
+    thinking: "Consolidating performance, risk and control data…",
+    sourcesLabel: "Sources",
+    hint: "<b>How to use:</b> tap a suggested question — or “Today's brief” — to see Sentinel compose an answer from performance, risk and control data reported by BUs and functions. All data is fictional.",
+    questions: [
+      { id: "risques_top", q: "Top 3 major risks this week?" },
+      { id: "bu_perf",     q: "Which BUs are underperforming vs Q2 target?" },
+      { id: "controles",   q: "How is 2026 internal control deployment progressing?" },
+      { id: "incidents",   q: "Weekly summary of operational incidents" }
+    ],
+    routes: [
+      { id:"audit_big4",   kw:["big4","big 4","external audit","external auditor","kpmg","deloitte","pwc","ey","ernst"] },
+      { id:"compliance",   kw:["compliance","anti-corruption","corruption","gdpr","privacy","ethics","whistleblow"] },
+      { id:"maturite",     kw:["maturity","index","site","sites","khouribga","jorf","safi","benguerir"] },
+      { id:"roi_ctrl",     kw:["ratio","cost","efficiency","roi","return","investment control","control budget"] },
+      { id:"risques_top",  kw:["risk","risks","top","critical","major","heatmap","matrix"] },
+      { id:"bu_perf",      kw:["bu","business unit","performance","underperform","target","quarter","q2","q1"] },
+      { id:"controles",    kw:["control","controls","coverage","internal","icfr"] },
+      { id:"incidents",    kw:["incident","incidents","operational","hse","cyber","phishing","accident"] },
+      { id:"brief",        kw:["brief","digest","summary","week","weekly","today"] }
+    ],
+    answers: {
+      brief: {
+        title: "Performance & Risk brief — week 19",
+        intro: "Three topics rise to the top since Friday:",
+        list: [
+          { t:"bad",  txt:"<b>Khouribga industrial incident</b>: 6h shutdown on granulation line, HSE filing in progress." },
+          { t:"warn", txt:"<b>Brazil BU</b>: Q1 EBIT -8% vs target — corrective plan expected." },
+          { t:"warn", txt:"<b>Phosphates Q1 internal audit</b>: 3 open findings, including 1 major (procurement segregation of duties)." }
+        ],
+        sources: [
+          { d:"Khouribga HSE report W19.pdf",   w:"Hicham N. · Group HSE" },
+          { d:"Brazil BU performance flash.pdf", w:"Rita C. · CFO Brazil" },
+          { d:"Q1 internal audit report.docx",   w:"Driss A. · Internal Audit Dir." }
+        ]
+      },
+      risques_top: {
+        title: "Top 3 risks — week 19",
+        kpis: [
+          { v:"3",  l:"critical risks" },
+          { v:"12", l:"high risks" },
+          { v:"−2", l:"vs week 18" }
+        ],
+        intro: "Group Risk Register snapshot as of today:",
+        list: [
+          { t:"bad",  txt:"<b>Phosphate market</b> — +14% volatility over 30 d, hedging coverage 62%." },
+          { t:"warn", txt:"<b>Heavy maintenance Jorf — line C</b>: schedule slippage, +14 d go-live impact." },
+          { t:"warn", txt:"<b>Cyber — targeted phishing on Finance</b>: 4 attempts blocked, 1 under investigation." }
+        ],
+        decision: "Decision needed: approve reinforced phosphate hedging at May 15 Risk Committee.",
+        sources: [
+          { d:"Heatmap_W19_Group_Risk.pdf",  w:"Karima H. · Group Risk" },
+          { d:"Weekly phosphate market note", w:"Othmane R. · Sourcing" },
+          { d:"CSIRT Cyber Bulletin W19",     w:"Walid B. · CISO" }
+        ]
+      },
+      bu_perf: {
+        title: "BU performance vs Q2 2026 target",
+        kpis: [
+          { v:"6/9", l:"BUs on track" },
+          { v:"2",   l:"underperf. (>5%)" },
+          { v:"1",   l:"BU on alert" }
+        ],
+        intro: "EBIT performance vs target across main BUs:",
+        list: [
+          { t:"bad",  txt:"<b>Brazil BU</b>: -8.1% vs target — volumes down, unfavorable mix." },
+          { t:"warn", txt:"<b>Morocco Domestic BU</b>: -3.2% — local price pressure, Q3 rebound expected." },
+          { t:"ok",   txt:"<b>India BU</b>: +12.4% — TSP volume overperformance." },
+          { t:"ok",   txt:"<b>Europe BU</b>: on track (+0.6%)." },
+          { t:"ok",   txt:"<b>Sub-Saharan Africa BU</b>: +4.1% — Senegal pilot gaining traction." }
+        ],
+        decision: "Action: Brazil performance review scheduled May 16 with BU CEO.",
+        sources: [
+          { d:"April BU performance reporting.xlsx", w:"Karim B. · Group CFO" },
+          { d:"Brazil BU performance flash.pdf",     w:"Rita C. · CFO Brazil" }
+        ]
+      },
+      controles: {
+        title: "Internal controls — 2026 deployment",
+        kpis: [
+          { v:"68%", l:"current coverage" },
+          { v:"75%", l:"end-Q2 target" },
+          { v:"24",  l:"controls pending" }
+        ],
+        intro: "2026 rollout is <b>slightly behind</b> Q2 target (-7 pts).",
+        list: [
+          { t:"ok",   txt:"<b>Procurement & Finance</b>: 82% covered." },
+          { t:"warn", txt:"<b>Industrial</b>: 58% — Safi & Benguerir sites lagging." },
+          { t:"warn", txt:"<b>IT / Cyber</b>: 64% — new framework being integrated." },
+          { t:"ok",   txt:"<b>HR</b>: 78%." }
+        ],
+        decision: "Priority: close Safi gap with 6 controls to finalize before June 30.",
+        sources: [
+          { d:"2026 ICFR plan v3.xlsx",       w:"Driss A. · Internal Audit Dir." },
+          { d:"Q1 control reporting.pdf",     w:"Salima T. · Internal Control" }
+        ]
+      },
+      incidents: {
+        title: "Operational incidents — week 19",
+        kpis: [
+          { v:"4", l:"incidents" },
+          { v:"1", l:"major" },
+          { v:"0", l:"human injury" }
+        ],
+        intro: "4 incidents reported this week across the perimeter. No human injury.",
+        list: [
+          { t:"bad",  txt:"<b>Khouribga</b>: 6h granulation line stop — mechanical, back online May 9." },
+          { t:"warn", txt:"<b>Jorf</b>: 2 minor HSE incidents (PPE, spill containment)." },
+          { t:"warn", txt:"<b>Group IT</b>: targeted phishing on Finance, 4 emails blocked." },
+          { t:"ok",   txt:"<b>India supply chain</b>: 3 d Mundra delay, recovery in progress." }
+        ],
+        sources: [
+          { d:"Khouribga HSE report W19.pdf",  w:"Hicham N. · Group HSE" },
+          { d:"Jorf incident log W19",         w:"Yacine T. · Industrial Dir." },
+          { d:"CSIRT Cyber Bulletin W19",      w:"Walid B. · CISO" }
+        ]
+      },
+      maturite: {
+        title: "Risk maturity index by site",
+        kpis: [
+          { v:"3.2/5", l:"average maturity" },
+          { v:"4.1",   l:"best site (Jorf)" },
+          { v:"2.8",   l:"site to uplift" }
+        ],
+        intro: "Average score <b>3.2/5</b> — up 0.3 pt over 12 months, in line with the 3-year plan.",
+        list: [
+          { t:"ok",   txt:"<b>Jorf Lasfar</b>: 4.1 — Group reference." },
+          { t:"ok",   txt:"<b>Khouribga</b>: 3.5 — strong on operations, needs cyber uplift." },
+          { t:"warn", txt:"<b>Safi</b>: 3.0 — gap on industrial controls." },
+          { t:"warn", txt:"<b>Benguerir</b>: 2.8 — uplift plan awaiting approval." }
+        ],
+        decision: "Decision needed: approve Benguerir envelope (2.4 MAD M) at May 15 Risk Committee.",
+        sources: [
+          { d:"2026 site maturity assessment.xlsx", w:"Karima H. · Group Risk" },
+          { d:"Benguerir uplift plan",              w:"Benguerir Site Manager" }
+        ]
+      },
+      roi_ctrl: {
+        title: "Internal control program ROI — 2026",
+        kpis: [
+          { v:"5.1×",  l:"benefit/cost ratio" },
+          { v:"18",    l:"MAD M invested" },
+          { v:"92",    l:"MAD M losses avoided" }
+        ],
+        intro: "Mid-year: program delivers an estimated <b>5.1× return</b>, mainly through avoided operational losses and accounting errors.",
+        list: [
+          { t:"ok",   txt:"<b>Operational loss prevention</b>: ~54 MAD M (top 3: procurement, payroll, inventory)." },
+          { t:"ok",   txt:"<b>External audit findings reduction</b>: -41% vs 2025 (direct Big4 fee impact)." },
+          { t:"warn", txt:"<b>Opportunity cost</b>: 3 low-use controls to automate or retire." }
+        ],
+        decision: "Recommendation: keep 2026 envelope and target 6× in 2027 via automation.",
+        sources: [
+          { d:"H1 controls ROI report.pdf", w:"Salima T. · Internal Control" },
+          { d:"Valuation methodology note",  w:"Driss A. · Internal Audit Dir." }
+        ]
+      },
+      compliance: {
+        title: "Compliance alerts — week 19",
+        kpis: [
+          { v:"0",  l:"critical alert" },
+          { v:"2",  l:"cases investigating" },
+          { v:"12", l:"trainings overdue" }
+        ],
+        intro: "No critical alert in progress. Two anti-corruption cases in third-party screening stage.",
+        list: [
+          { t:"ok",   txt:"<b>Anti-corruption</b>: 0 critical alert, 2 cases under investigation (3rd party screening)." },
+          { t:"warn", txt:"<b>Mandatory trainings</b>: 12 N-1/N-2 employees overdue on Code of Ethics module." },
+          { t:"ok",   txt:"<b>GDPR / Data Privacy</b>: 0 notifiable incident this week." },
+          { t:"ok",   txt:"<b>International sanctions</b>: supplier screening up to date." }
+        ],
+        decision: "Action: CHRO-led campaign to close the 12 overdue trainings before end of May.",
+        sources: [
+          { d:"Weekly compliance report.pdf",  w:"Nawal F. · Chief Compliance Officer" },
+          { d:"Code of Ethics training log",   w:"Mounir Z. · Group CHRO" }
+        ]
+      },
+      audit_big4: {
+        state: "empty",
+        title: "Latest Big4 external audit report",
+        intro: "I found <b>no Big4 external audit report</b> in the Audit & Internal Control shared workspace over the last 90 days.",
+        list: [
+          { t:"warn", txt:"The interim report may not have been uploaded to the shared workspace." },
+          { t:"warn", txt:"The “external audit” tag may not be applied to existing documents." },
+          { t:"warn", txt:"Or the engagement has not produced a formal deliverable at this stage." }
+        ],
+        cta: {
+          label: "Send a reminder to Driss A. · Internal Audit Dir.",
+          sent:  "Reminder sent — you'll be notified as soon as a report is uploaded."
+        },
+        sources: [
+          { d:"External Audit workspace · shared OneDrive", w:"Driss A. · Internal Audit Dir." }
+        ]
+      }
+    }
+  }
+};
+
+let lang = "fr";
+
+function tEl(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    if(i18n[lang][k]!==undefined) el.textContent=i18n[lang][k];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    el.setAttribute('placeholder', i18n[lang][el.getAttribute('data-i18n-ph')]);
+  });
+  document.querySelector('.hint').innerHTML = i18n[lang].hint;
+  document.documentElement.lang = lang;
+}
+
+function renderSugs(){
+  const root=document.getElementById('sugs'); root.innerHTML="";
+  i18n[lang].questions.forEach(q=>{
+    const el=document.createElement('div');
+    el.className='sug'; el.dataset.q=q.id;
+    el.innerHTML=`
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div class="q">${q.q}</div>
+      <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`;
+    el.addEventListener('click', ()=>ask(q.id, q.q));
+    root.appendChild(el);
+  });
+}
+
+function ask(id, label){
+  // hide initial state, show thread
+  document.getElementById('initial').style.display='none';
+  const thread=document.getElementById('thread');
+
+  // user bubble
+  const u=document.createElement('div');
+  u.className='bubble-user fade-in'; u.textContent=label;
+  thread.appendChild(u);
+
+  // thinking
+  const t=document.createElement('div');
+  t.className='thinking fade-in';
+  t.innerHTML=`<div class="matrix"></div><span>${i18n[lang].thinking}</span><span class="dots"><i></i><i></i><i></i></span>`;
+  thread.appendChild(t);
+  scrollDown();
+
+  setTimeout(()=>{
+    t.remove();
+    const a=renderAnswer(id);
+    thread.appendChild(a);
+    scrollDown();
+  }, 1400);
+}
+
+function renderAnswer(id){
+  const data=i18n[lang].answers[id]; if(!data) return document.createElement('div');
+  const el=document.createElement('div'); el.className='answer fade-in';
+  const isEmpty = data.state==='empty';
+  if(isEmpty) el.classList.add('empty');
+  const icMap = { ok:'✓', warn:'!', bad:'×' };
+  const headerLabel = isEmpty
+    ? (lang==='fr'?"Information non disponible":"Information unavailable")
+    : (lang==='fr'?"Synthèse D²nAI":"D²nAI synthesis");
+  const badgeContent = isEmpty ? "i" : "D²";
+
+  let kpisHTML='';
+  if(data.kpis){
+    kpisHTML=`<div class="kpi">${data.kpis.map(k=>`<div class="b"><div class="v">${k.v}</div><div class="l">${k.l}</div></div>`).join('')}</div>`;
+  }
+  const listHTML = data.list ? `<ul>${data.list.map(it=>`<li><span class="ic ic-${it.t}">${icMap[it.t]||'•'}</span>${it.txt}</li>`).join('')}</ul>` : '';
+  const decisionHTML = data.decision ? `<p style="margin-top:8px;padding:8px 10px;background:var(--green-50);border-left:3px solid var(--green-800);border-radius:6px;font-size:13px;color:var(--green-900)"><b>↳</b> ${data.decision}</p>` : '';
+  const ctaHTML = data.cta ? `
+    <div class="cta">
+      <button class="cta-btn" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <span>${data.cta.label}</span>
+        <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>` : '';
+  const sourcesHTML = data.sources ? `
+    <div class="sources">
+      <div class="lab">${i18n[lang].sourcesLabel}</div>
+      ${data.sources.map(s=>`<span class="src">📄 ${s.d} <span class="who">— ${s.w}</span></span>`).join('')}
+    </div>` : '';
+
+  el.innerHTML = `
+    <div class="head">
+      <div class="badge">${badgeContent}</div>
+      <div class="by">${headerLabel}</div>
+    </div>
+    <h4>${data.title}</h4>
+    ${kpisHTML}
+    ${data.intro?`<p>${data.intro}</p>`:''}
+    ${listHTML}
+    ${decisionHTML}
+    ${ctaHTML}
+    ${sourcesHTML}
+  `;
+
+  if(data.cta){
+    const btn=el.querySelector('.cta-btn');
+    btn.addEventListener('click', ()=>{
+      btn.classList.add('sent');
+      btn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M20 6 9 17l-5-5"/></svg>
+        <span>${data.cta.sent}</span>
+      `;
+      btn.disabled = true;
+    });
+  }
+
+  return el;
+}
+
+function scrollDown(){
+  const s=document.getElementById('scroll');
+  s.scrollTo({ top:s.scrollHeight, behavior:'smooth' });
+}
+
+function reset(){
+  document.getElementById('thread').innerHTML='';
+  document.getElementById('initial').style.display='';
+  document.getElementById('qinput').value='';
+  document.getElementById('scroll').scrollTo({top:0});
+}
+
+document.querySelectorAll('.lang button').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('.lang button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    lang=b.dataset.l;
+    tEl(); renderSugs(); reset();
+  });
+});
+document.getElementById('reset').addEventListener('click', reset);
+document.querySelector('.brief').addEventListener('click', ()=>ask('brief', i18n[lang].briefTitle));
+document.getElementById('send').addEventListener('click', ()=>{
+  const v=document.getElementById('qinput').value.trim();
+  if(!v) return;
+  const t=v.toLowerCase();
+  let id='brief', best=0;
+  (i18n[lang].routes||[]).forEach(r=>{
+    let score=0;
+    r.kw.forEach(k=>{ if(t.includes(k)) score++; });
+    if(score>best){best=score;id=r.id;}
+  });
+  ask(id, v);
+  document.getElementById('qinput').value='';
+});
+document.getElementById('qinput').addEventListener('keydown', e=>{
+  if(e.key==='Enter') document.getElementById('send').click();
+});
+
+// live clock
+function tick(){
+  const d=new Date();
+  document.getElementById('clock').textContent =
+    d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+}
+tick(); setInterval(tick, 30000);
+
+tEl(); renderSugs();
+</script>
+
+</body>
+</html>
