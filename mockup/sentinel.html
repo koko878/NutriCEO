@@ -333,6 +333,69 @@ body{
 @keyframes sentPulse{0%{transform:scale(.98)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
 .cta-btn.sent svg{flex:none}
 
+/* Reports — picker tiles */
+.picker-list{margin-top:8px}
+.picker-tile{
+  display:flex;align-items:center;gap:10px;
+  background:#fff;border:1px solid var(--line);border-radius:14px;
+  padding:11px 12px;margin-top:8px;cursor:pointer;
+  transition:.18s;
+}
+.picker-tile:hover{border-color:var(--green-500);background:var(--green-50)}
+.picker-tile .ico{
+  width:34px;height:34px;border-radius:10px;background:var(--green-50);
+  border:1px solid var(--green-100);
+  display:grid;place-items:center;font-size:14px;color:var(--green-800);font-weight:700;flex:none;
+}
+.picker-tile .txt{flex:1;min-width:0}
+.picker-tile .txt h5{font-size:13.5px;font-weight:600;color:var(--ink)}
+.picker-tile .txt p{font-size:11.5px;color:var(--muted);margin-top:1px;line-height:1.35}
+.picker-tile .arrow{margin-left:auto;color:var(--muted);flex:none}
+
+/* Reports — cover */
+.report-cover{
+  margin:6px 0 10px;padding:18px 16px;
+  background:linear-gradient(180deg,#fff 0%, var(--green-50) 100%);
+  border:1px solid var(--green-100);border-radius:14px;
+  border-top:4px solid var(--green-800);
+  position:relative;
+}
+.report-cover::after{
+  content:"";position:absolute;top:14px;right:14px;width:34px;height:34px;
+  border-radius:8px;background:var(--green-800);
+  background-image:repeating-linear-gradient(180deg,rgba(180,255,180,.3) 0 1px,transparent 1px 3px);
+  opacity:.9;
+}
+.report-cover .meta{font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--green-800);text-transform:uppercase}
+.report-cover .ttl{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--ink);margin-top:6px;line-height:1.2;padding-right:44px}
+.report-cover .sub{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.4}
+.report-cover .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.report-cover .tag{font-size:10px;font-weight:600;color:var(--green-800);background:#fff;border:1px solid var(--green-100);padding:3px 8px;border-radius:999px}
+
+/* Reports — sections (TOC) */
+.sections{margin:8px 0 4px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.sections .lab{font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:9px 12px 5px}
+.sections ol{list-style:none;padding:0;margin:0}
+.sections li{padding:8px 12px;font-size:12.5px;color:var(--ink-2);border-top:1px solid var(--line);display:flex;gap:10px;align-items:center}
+.sections li:first-of-type{border-top:0}
+.sections li .n{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--green-800);font-weight:700;width:18px;text-align:right;flex:none;line-height:1}
+
+/* Reports — action buttons */
+.actions-row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.act-btn{
+  flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;
+  background:var(--green-800);color:#fff;border:0;border-radius:10px;padding:9px 6px;
+  font:600 11.5px 'Inter',sans-serif;cursor:pointer;
+  box-shadow:0 4px 10px -6px rgba(27,94,32,.45);
+  transition:.18s;
+}
+.act-btn:hover{background:var(--green-900)}
+.act-btn.secondary{background:#fff;color:var(--green-800);border:1px solid var(--green-100);box-shadow:none}
+.act-btn.secondary:hover{background:var(--green-50)}
+.act-btn.done{background:var(--ok-bg);color:var(--ok);cursor:default;box-shadow:none;border:0}
+.act-btn svg{flex:none}
+.act-btn span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
 /* tap & feel */
 *{-webkit-tap-highlight-color:transparent}
 .sug,.brief,.icon-btn,.lang button,.reset,.src,.bubble-user{
@@ -425,7 +488,7 @@ body{
 
         <!-- initial state -->
         <div id="initial">
-          <div class="brief" data-q="brief">
+          <div class="brief" id="briefCard" data-q="brief">
             <div class="ico">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>
             </div>
@@ -434,6 +497,17 @@ body{
               <p data-i18n="briefSub">3 sujets demandent votre attention.</p>
             </div>
             <span class="pill">3</span>
+          </div>
+
+          <div class="brief" id="reportsCard" data-q="reports">
+            <div class="ico">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+            </div>
+            <div class="txt">
+              <h3 data-i18n="reportsTitle">Générer un rapport</h3>
+              <p data-i18n="reportsSub">5 modèles · Comité, BU, contrôles…</p>
+            </div>
+            <span class="pill">5</span>
           </div>
 
           <div class="suglabel" data-i18n="sugLabel">Questions suggérées</div>
@@ -479,7 +553,9 @@ const i18n = {
     placeholder: "Posez votre question…",
     thinking: "Consolidation des données performance, risque et contrôle…",
     sourcesLabel: "Sources",
-    hint: "<b>Comment utiliser :</b> appuyez sur une question suggérée — ou sur le « Brief du jour » — pour voir Sentinel composer une réponse à partir des données performance, risque et contrôle remontées par les BU et fonctions. Toutes les données sont fictives.",
+    reportsTitle: "Générer un rapport",
+    reportsSub: "5 modèles · Comité, BU, contrôles…",
+    hint: "<b>Comment utiliser :</b> appuyez sur une question suggérée — sur le « Brief du jour » — ou sur « Générer un rapport » pour voir Sentinel composer une réponse ou un livrable prêt à partager. Toutes les données sont fictives.",
     questions: [
       { id: "risques_top",  q: "Top 3 risques majeurs cette semaine ?" },
       { id: "bu_perf",      q: "Quelles BU sont sous-performantes vs target Q2 ?" },
@@ -487,6 +563,12 @@ const i18n = {
       { id: "incidents",    q: "Synthèse des incidents opérationnels de la semaine" }
     ],
     routes: [
+      { id:"report_risk",       kw:["rapport risque","rapport comité","rapport comite","rapport heatmap"] },
+      { id:"report_bu_perf",    kw:["rapport bu","rapport performance","rapport trimestriel","rapport p&l","performance trimestriel"] },
+      { id:"report_controls",   kw:["rapport contrôle","rapport controle","rapport contrôles","rapport icfr"] },
+      { id:"report_incidents",  kw:["rapport incident","rapport hse","bilan incident","rapport sécurité"] },
+      { id:"report_compliance", kw:["rapport compliance","rapport conformité","rapport conformite","rapport éthique"] },
+      { id:"report_picker",     kw:["rapport","rapports","modèle","modele","génère","genere","générer"] },
       { id:"audit_big4",   kw:["big4","big 4","audit externe","auditeur externe","kpmg","deloitte","pwc","ey","ernst"] },
       { id:"compliance",   kw:["compliance","conformité","anti-corruption","corruption","gdpr","rgpd","alerte éthique","ethique"] },
       { id:"maturite",     kw:["maturité","maturite","indice","site","sites","khouribga","jorf","safi","benguérir"] },
@@ -652,6 +734,180 @@ const i18n = {
           { d:"Suivi formations Code éthique",   w:"Mounir Z. · DRH Group" }
         ]
       },
+      report_picker: {
+        kind: "picker",
+        title: "Quel rapport souhaitez-vous générer ?",
+        intro: "Sélectionnez un modèle. Sentinel agrège les données depuis les espaces partagés et produit un livrable prêt à partager.",
+        options: [
+          { id:"report_risk",       icon:"⚠",  label:"Comité Risques mensuel",        desc:"Heatmap, top risques, mitigations, décisions" },
+          { id:"report_bu_perf",    icon:"%",  label:"Performance BU trimestriel",    desc:"Synthèse EBIT vs target par BU" },
+          { id:"report_controls",   icon:"✓",  label:"Déploiement contrôles 2026",    desc:"Couverture par domaine et site" },
+          { id:"report_incidents",  icon:"!",  label:"Bilan incidents & HSE",         desc:"Synthèse mensuelle, root cause, alertes" },
+          { id:"report_compliance", icon:"§",  label:"Compliance Group — Board",      desc:"Anti-corruption, GDPR, formations, sanctions" }
+        ]
+      },
+      report_risk: {
+        kind: "report",
+        title: "Comité Risques — mai 2026",
+        cover: {
+          classification: "Confidentiel · usage interne",
+          subtitle: "Synthèse mensuelle pour le Comité Exécutif et le Conseil d'Administration.",
+          pages: 18,
+          audience: "Comex · CA"
+        },
+        kpis: [
+          { v:"18", l:"pages" },
+          { v:"3",  l:"risques critiques" },
+          { v:"6",  l:"décisions soumises" }
+        ],
+        sections: [
+          "Synthèse exécutive",
+          "Heatmap risques Group",
+          "Top 10 risques majeurs",
+          "Évolution depuis avril",
+          "Plan de mitigation",
+          "Décisions attendues au Comité du 15/05"
+        ],
+        actions: [
+          { id:"dl",  label:"Télécharger PDF",   sent:"PDF téléchargé" },
+          { id:"eml", label:"Mailer au Comex",   sent:"Envoyé au Comex" },
+          { id:"sch", label:"Programmer mensuel", sent:"Récurrence activée" }
+        ],
+        sources: [
+          { d:"Heatmap_S19_Group_Risk.pdf",  w:"Karima H. · Group Risk" },
+          { d:"Note marché phosphate hebdo", w:"Othmane R. · Sourcing" },
+          { d:"Bulletin Cyber CSIRT S19",    w:"Walid B. · CISO" }
+        ]
+      },
+      report_bu_perf: {
+        kind: "report",
+        title: "Performance BU — Q2 2026",
+        cover: {
+          classification: "Confidentiel · Comex",
+          subtitle: "Revue trimestrielle de la performance EBIT par Business Unit, écart vs target et plans correctifs.",
+          pages: 24,
+          audience: "Comex · CFOs BU"
+        },
+        kpis: [
+          { v:"24", l:"pages" },
+          { v:"9",  l:"BU couvertes" },
+          { v:"2",  l:"plans correctifs" }
+        ],
+        sections: [
+          "Vue d'ensemble Group",
+          "Performance par BU",
+          "Focus BU sous-performantes",
+          "Drivers prix / volumes / mix",
+          "Plans correctifs proposés",
+          "Annexes méthodologie"
+        ],
+        actions: [
+          { id:"dl",  label:"Télécharger PDF", sent:"PDF téléchargé" },
+          { id:"eml", label:"Envoyer aux CFO", sent:"Envoyé aux CFO BU" },
+          { id:"sch", label:"Programmer trim.", sent:"Récurrence activée" }
+        ],
+        sources: [
+          { d:"Reporting performance BU avril.xlsx", w:"Karim B. · Group CFO" },
+          { d:"Flash performance BU Brésil.pdf",     w:"Rita C. · CFO Brazil" }
+        ]
+      },
+      report_controls: {
+        kind: "report",
+        title: "Déploiement contrôles internes — H1 2026",
+        cover: {
+          classification: "Confidentiel · usage interne",
+          subtitle: "État d'avancement du programme ICFR 2026, par domaine et par site, et plan de comblement des écarts.",
+          pages: 16,
+          audience: "Comité d'Audit · Audit Interne"
+        },
+        kpis: [
+          { v:"16", l:"pages" },
+          { v:"68%",l:"couverture H1" },
+          { v:"24", l:"contrôles ouverts" }
+        ],
+        sections: [
+          "Synthèse couverture",
+          "Détail par domaine",
+          "Détail par site industriel",
+          "Findings ouverts",
+          "Plan de comblement",
+          "Prochaines étapes Q3"
+        ],
+        actions: [
+          { id:"dl",  label:"Télécharger PDF",       sent:"PDF téléchargé" },
+          { id:"eml", label:"Envoyer Audit Interne", sent:"Envoyé à l'équipe" },
+          { id:"sch", label:"Programmer trim.",      sent:"Récurrence activée" }
+        ],
+        sources: [
+          { d:"Plan ICFR 2026 v3.xlsx",     w:"Driss A. · Dir. Audit Interne" },
+          { d:"Reporting contrôles Q1.pdf", w:"Salima T. · Contrôle Interne" }
+        ]
+      },
+      report_incidents: {
+        kind: "report",
+        title: "Bilan incidents & HSE — avril 2026",
+        cover: {
+          classification: "Restreint · HSE & Direction",
+          subtitle: "Consolidation des incidents opérationnels, root cause analysis et alertes cyber sur le mois écoulé.",
+          pages: 12,
+          audience: "Direction Industrielle · HSE · CISO"
+        },
+        kpis: [
+          { v:"12", l:"pages" },
+          { v:"7",  l:"incidents mois" },
+          { v:"0",  l:"accident humain" }
+        ],
+        sections: [
+          "Synthèse incidents",
+          "Détail par site & sévérité",
+          "Root cause analysis (top 3)",
+          "Incidents cyber & IT",
+          "Tendances 6 mois",
+          "Recommandations"
+        ],
+        actions: [
+          { id:"dl",  label:"Télécharger PDF",  sent:"PDF téléchargé" },
+          { id:"eml", label:"Envoyer Industriel", sent:"Envoyé à Yacine T." },
+          { id:"sch", label:"Programmer mensuel", sent:"Récurrence activée" }
+        ],
+        sources: [
+          { d:"Rapport HSE Khouribga S19.pdf", w:"Hicham N. · HSE Group" },
+          { d:"Log incidents Jorf avril",      w:"Yacine T. · Dir. Industriel" },
+          { d:"Bulletin Cyber CSIRT S19",      w:"Walid B. · CISO" }
+        ]
+      },
+      report_compliance: {
+        kind: "report",
+        title: "Compliance Group — Q1 2026",
+        cover: {
+          classification: "Confidentiel · Board pack",
+          subtitle: "Reporting trimestriel anti-corruption, GDPR, formations obligatoires et screening sanctions, pour le Comité d'Audit.",
+          pages: 22,
+          audience: "Comité d'Audit · CA"
+        },
+        kpis: [
+          { v:"22", l:"pages" },
+          { v:"0",  l:"alertes critiques" },
+          { v:"2",  l:"cas en investigation" }
+        ],
+        sections: [
+          "Synthèse Compliance Officer",
+          "Anti-corruption & alertes éthiques",
+          "GDPR / Data Privacy",
+          "Sanctions & screening tiers",
+          "Formations obligatoires",
+          "Plan d'actions Q2"
+        ],
+        actions: [
+          { id:"dl",  label:"Télécharger PDF",   sent:"PDF téléchargé" },
+          { id:"eml", label:"Envoyer au Board",  sent:"Envoyé au Board" },
+          { id:"sch", label:"Programmer trim.",  sent:"Récurrence activée" }
+        ],
+        sources: [
+          { d:"Reporting compliance trimestriel.pdf", w:"Nawal F. · Chief Compliance Officer" },
+          { d:"Suivi formations Code éthique",        w:"Mounir Z. · DRH Group" }
+        ]
+      },
       audit_big4: {
         state: "empty",
         title: "Dernier rapport d'audit externe Big4",
@@ -680,7 +936,9 @@ const i18n = {
     placeholder: "Ask anything…",
     thinking: "Consolidating performance, risk and control data…",
     sourcesLabel: "Sources",
-    hint: "<b>How to use:</b> tap a suggested question — or “Today's brief” — to see Sentinel compose an answer from performance, risk and control data reported by BUs and functions. All data is fictional.",
+    reportsTitle: "Generate a report",
+    reportsSub: "5 templates · Risk Committee, BU, controls…",
+    hint: "<b>How to use:</b> tap a suggested question — “Today's brief” — or “Generate a report” to see Sentinel compose an answer or a deliverable ready to share. All data is fictional.",
     questions: [
       { id: "risques_top", q: "Top 3 major risks this week?" },
       { id: "bu_perf",     q: "Which BUs are underperforming vs Q2 target?" },
@@ -688,6 +946,12 @@ const i18n = {
       { id: "incidents",   q: "Weekly summary of operational incidents" }
     ],
     routes: [
+      { id:"report_risk",       kw:["risk report","committee report","heatmap report"] },
+      { id:"report_bu_perf",    kw:["bu report","performance report","quarterly report"] },
+      { id:"report_controls",   kw:["controls report","control report","icfr report"] },
+      { id:"report_incidents",  kw:["incident report","hse report","safety report"] },
+      { id:"report_compliance", kw:["compliance report","ethics report"] },
+      { id:"report_picker",     kw:["report","reports","template","generate","produce"] },
       { id:"audit_big4",   kw:["big4","big 4","external audit","external auditor","kpmg","deloitte","pwc","ey","ernst"] },
       { id:"compliance",   kw:["compliance","anti-corruption","corruption","gdpr","privacy","ethics","whistleblow"] },
       { id:"maturite",     kw:["maturity","index","site","sites","khouribga","jorf","safi","benguerir"] },
@@ -853,6 +1117,180 @@ const i18n = {
           { d:"Code of Ethics training log",   w:"Mounir Z. · Group CHRO" }
         ]
       },
+      report_picker: {
+        kind: "picker",
+        title: "Which report would you like to generate?",
+        intro: "Pick a template. Sentinel aggregates data from shared workspaces and produces a ready-to-share deliverable.",
+        options: [
+          { id:"report_risk",       icon:"⚠",  label:"Monthly Risk Committee",        desc:"Heatmap, top risks, mitigations, decisions" },
+          { id:"report_bu_perf",    icon:"%",  label:"Quarterly BU performance",      desc:"EBIT vs target summary by BU" },
+          { id:"report_controls",   icon:"✓",  label:"2026 controls deployment",      desc:"Coverage by domain and site" },
+          { id:"report_incidents",  icon:"!",  label:"Incidents & HSE review",        desc:"Monthly synthesis, root cause, alerts" },
+          { id:"report_compliance", icon:"§",  label:"Group Compliance — Board",      desc:"Anti-corruption, GDPR, trainings, sanctions" }
+        ]
+      },
+      report_risk: {
+        kind: "report",
+        title: "Risk Committee — May 2026",
+        cover: {
+          classification: "Confidential · internal use",
+          subtitle: "Monthly synthesis for the Executive Committee and the Board.",
+          pages: 18,
+          audience: "Excom · Board"
+        },
+        kpis: [
+          { v:"18", l:"pages" },
+          { v:"3",  l:"critical risks" },
+          { v:"6",  l:"decisions tabled" }
+        ],
+        sections: [
+          "Executive summary",
+          "Group risk heatmap",
+          "Top 10 major risks",
+          "Trend since April",
+          "Mitigation plan",
+          "Decisions for May 15 Committee"
+        ],
+        actions: [
+          { id:"dl",  label:"Download PDF",   sent:"PDF downloaded" },
+          { id:"eml", label:"Email Excom",    sent:"Sent to Excom" },
+          { id:"sch", label:"Schedule monthly", sent:"Recurring schedule on" }
+        ],
+        sources: [
+          { d:"Heatmap_W19_Group_Risk.pdf",   w:"Karima H. · Group Risk" },
+          { d:"Weekly phosphate market note", w:"Othmane R. · Sourcing" },
+          { d:"CSIRT Cyber Bulletin W19",     w:"Walid B. · CISO" }
+        ]
+      },
+      report_bu_perf: {
+        kind: "report",
+        title: "BU performance — Q2 2026",
+        cover: {
+          classification: "Confidential · Excom",
+          subtitle: "Quarterly review of EBIT performance by Business Unit, variance vs target and corrective plans.",
+          pages: 24,
+          audience: "Excom · BU CFOs"
+        },
+        kpis: [
+          { v:"24", l:"pages" },
+          { v:"9",  l:"BUs covered" },
+          { v:"2",  l:"corrective plans" }
+        ],
+        sections: [
+          "Group overview",
+          "Performance by BU",
+          "Focus on underperforming BUs",
+          "Price / volume / mix drivers",
+          "Proposed corrective plans",
+          "Methodology annexes"
+        ],
+        actions: [
+          { id:"dl",  label:"Download PDF",     sent:"PDF downloaded" },
+          { id:"eml", label:"Send to BU CFOs",  sent:"Sent to BU CFOs" },
+          { id:"sch", label:"Schedule quarterly", sent:"Recurring schedule on" }
+        ],
+        sources: [
+          { d:"April BU performance reporting.xlsx", w:"Karim B. · Group CFO" },
+          { d:"Brazil BU performance flash.pdf",     w:"Rita C. · CFO Brazil" }
+        ]
+      },
+      report_controls: {
+        kind: "report",
+        title: "Internal controls deployment — H1 2026",
+        cover: {
+          classification: "Confidential · internal use",
+          subtitle: "Status of the 2026 ICFR program by domain and site, with the gap-closure plan.",
+          pages: 16,
+          audience: "Audit Committee · Internal Audit"
+        },
+        kpis: [
+          { v:"16", l:"pages" },
+          { v:"68%",l:"H1 coverage" },
+          { v:"24", l:"open controls" }
+        ],
+        sections: [
+          "Coverage summary",
+          "Detail by domain",
+          "Detail by industrial site",
+          "Open findings",
+          "Gap-closure plan",
+          "Q3 next steps"
+        ],
+        actions: [
+          { id:"dl",  label:"Download PDF",      sent:"PDF downloaded" },
+          { id:"eml", label:"Email Internal Audit", sent:"Sent to the team" },
+          { id:"sch", label:"Schedule quarterly", sent:"Recurring schedule on" }
+        ],
+        sources: [
+          { d:"2026 ICFR plan v3.xlsx",     w:"Driss A. · Internal Audit Dir." },
+          { d:"Q1 control reporting.pdf",   w:"Salima T. · Internal Control" }
+        ]
+      },
+      report_incidents: {
+        kind: "report",
+        title: "Incidents & HSE review — April 2026",
+        cover: {
+          classification: "Restricted · HSE & Management",
+          subtitle: "Consolidation of operational incidents, root-cause analysis and cyber alerts for the past month.",
+          pages: 12,
+          audience: "Industrial Dir. · HSE · CISO"
+        },
+        kpis: [
+          { v:"12", l:"pages" },
+          { v:"7",  l:"monthly incidents" },
+          { v:"0",  l:"human injury" }
+        ],
+        sections: [
+          "Incident summary",
+          "Detail by site & severity",
+          "Root-cause analysis (top 3)",
+          "Cyber & IT incidents",
+          "6-month trend",
+          "Recommendations"
+        ],
+        actions: [
+          { id:"dl",  label:"Download PDF",   sent:"PDF downloaded" },
+          { id:"eml", label:"Email Industrial", sent:"Sent to Yacine T." },
+          { id:"sch", label:"Schedule monthly", sent:"Recurring schedule on" }
+        ],
+        sources: [
+          { d:"Khouribga HSE report W19.pdf",  w:"Hicham N. · Group HSE" },
+          { d:"Jorf April incident log",       w:"Yacine T. · Industrial Dir." },
+          { d:"CSIRT Cyber Bulletin W19",      w:"Walid B. · CISO" }
+        ]
+      },
+      report_compliance: {
+        kind: "report",
+        title: "Group Compliance — Q1 2026",
+        cover: {
+          classification: "Confidential · Board pack",
+          subtitle: "Quarterly anti-corruption, GDPR, mandatory trainings and sanctions screening reporting, for the Audit Committee.",
+          pages: 22,
+          audience: "Audit Committee · Board"
+        },
+        kpis: [
+          { v:"22", l:"pages" },
+          { v:"0",  l:"critical alerts" },
+          { v:"2",  l:"cases investigating" }
+        ],
+        sections: [
+          "Compliance Officer summary",
+          "Anti-corruption & ethics alerts",
+          "GDPR / Data Privacy",
+          "Sanctions & third-party screening",
+          "Mandatory trainings",
+          "Q2 action plan"
+        ],
+        actions: [
+          { id:"dl",  label:"Download PDF",      sent:"PDF downloaded" },
+          { id:"eml", label:"Email the Board",   sent:"Sent to the Board" },
+          { id:"sch", label:"Schedule quarterly", sent:"Recurring schedule on" }
+        ],
+        sources: [
+          { d:"Quarterly compliance report.pdf", w:"Nawal F. · Chief Compliance Officer" },
+          { d:"Code of Ethics training log",     w:"Mounir Z. · Group CHRO" }
+        ]
+      },
       audit_big4: {
         state: "empty",
         title: "Latest Big4 external audit report",
@@ -903,19 +1341,30 @@ function renderSugs(){
 }
 
 function ask(id, label){
-  // hide initial state, show thread
   document.getElementById('initial').style.display='none';
   const thread=document.getElementById('thread');
 
-  // user bubble
   const u=document.createElement('div');
   u.className='bubble-user fade-in'; u.textContent=label;
   thread.appendChild(u);
 
-  // thinking
+  const data = i18n[lang].answers[id];
+  if(data && data.kind === 'picker'){
+    const a=renderAnswer(id);
+    thread.appendChild(a);
+    scrollDown();
+    return;
+  }
+
+  const isReport = data && data.kind === 'report';
+  const thinkText = isReport
+    ? (lang==='fr' ? "Compilation du rapport en cours…" : "Compiling the report…")
+    : i18n[lang].thinking;
+  const delay = isReport ? 2200 : 1400;
+
   const t=document.createElement('div');
   t.className='thinking fade-in';
-  t.innerHTML=`<div class="matrix"></div><span>${i18n[lang].thinking}</span><span class="dots"><i></i><i></i><i></i></span>`;
+  t.innerHTML=`<div class="matrix"></div><span>${thinkText}</span><span class="dots"><i></i><i></i><i></i></span>`;
   thread.appendChild(t);
   scrollDown();
 
@@ -924,12 +1373,100 @@ function ask(id, label){
     const a=renderAnswer(id);
     thread.appendChild(a);
     scrollDown();
-  }, 1400);
+  }, delay);
 }
 
 function renderAnswer(id){
   const data=i18n[lang].answers[id]; if(!data) return document.createElement('div');
   const el=document.createElement('div'); el.className='answer fade-in';
+
+  if(data.kind === 'picker'){
+    el.innerHTML = `
+      <div class="head">
+        <div class="badge">D²</div>
+        <div class="by">${lang==='fr'?"Sélection D²nAI":"D²nAI selection"}</div>
+      </div>
+      <h4>${data.title}</h4>
+      ${data.intro?`<p>${data.intro}</p>`:''}
+      <div class="picker-list">
+        ${data.options.map(o=>`
+          <div class="picker-tile" data-id="${o.id}">
+            <div class="ico">${o.icon||"·"}</div>
+            <div class="txt"><h5>${o.label}</h5><p>${o.desc}</p></div>
+            <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </div>`).join('')}
+      </div>`;
+    el.querySelectorAll('.picker-tile').forEach(tile=>{
+      tile.addEventListener('click', ()=>{
+        const targetId = tile.dataset.id;
+        const opt = data.options.find(o=>o.id===targetId);
+        ask(targetId, opt.label);
+      });
+    });
+    return el;
+  }
+
+  if(data.kind === 'report'){
+    let kpisR='';
+    if(data.kpis){
+      kpisR=`<div class="kpi">${data.kpis.map(k=>`<div class="b"><div class="v">${k.v}</div><div class="l">${k.l}</div></div>`).join('')}</div>`;
+    }
+    const sectionsHTML = data.sections ? `
+      <div class="sections">
+        <div class="lab">${lang==='fr'?"Sommaire":"Table of contents"}</div>
+        <ol>${data.sections.map((s,i)=>`<li><span class="n">${i+1}.</span><span>${s}</span></li>`).join('')}</ol>
+      </div>` : '';
+    const actIcons = {
+      dl:  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+      eml: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>',
+      sch: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'
+    };
+    const actionsHTML = data.actions ? `
+      <div class="actions-row">
+        ${data.actions.map((a,i)=>`<button class="act-btn ${i>0?'secondary':''}" data-act="${a.id}">${actIcons[a.id]||''}<span>${a.label}</span></button>`).join('')}
+      </div>` : '';
+    const sourcesR = data.sources ? `
+      <div class="sources">
+        <div class="lab">${i18n[lang].sourcesLabel}</div>
+        ${data.sources.map(s=>`<span class="src">📄 ${s.d} <span class="who">— ${s.w}</span></span>`).join('')}
+      </div>` : '';
+
+    el.innerHTML = `
+      <div class="head">
+        <div class="badge">D²</div>
+        <div class="by">${lang==='fr'?"Rapport généré":"Report generated"}</div>
+      </div>
+      <div class="report-cover">
+        <div class="meta">${data.cover.classification||""}</div>
+        <div class="ttl">${data.title}</div>
+        ${data.cover.subtitle?`<div class="sub">${data.cover.subtitle}</div>`:''}
+        <div class="tags">
+          ${data.cover.pages?`<span class="tag">${data.cover.pages} ${lang==='fr'?'pages':'pages'}</span>`:''}
+          ${data.cover.audience?`<span class="tag">${data.cover.audience}</span>`:''}
+        </div>
+      </div>
+      ${kpisR}
+      ${sectionsHTML}
+      ${actionsHTML}
+      ${sourcesR}
+    `;
+
+    el.querySelectorAll('.act-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const actId = btn.dataset.act;
+        const action = data.actions.find(a=>a.id===actId);
+        btn.classList.add('done');
+        btn.classList.remove('secondary');
+        btn.innerHTML = `
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>${action.sent}</span>
+        `;
+        btn.disabled = true;
+      });
+    });
+    return el;
+  }
+
   const isEmpty = data.state==='empty';
   if(isEmpty) el.classList.add('empty');
   const icMap = { ok:'✓', warn:'!', bad:'×' };
@@ -1008,7 +1545,8 @@ document.querySelectorAll('.lang button').forEach(b=>{
   });
 });
 document.getElementById('reset').addEventListener('click', reset);
-document.querySelector('.brief').addEventListener('click', ()=>ask('brief', i18n[lang].briefTitle));
+document.getElementById('briefCard').addEventListener('click', ()=>ask('brief', i18n[lang].briefTitle));
+document.getElementById('reportsCard').addEventListener('click', ()=>ask('report_picker', i18n[lang].reportsTitle));
 document.getElementById('send').addEventListener('click', ()=>{
   const v=document.getElementById('qinput').value.trim();
   if(!v) return;
