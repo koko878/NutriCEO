@@ -557,8 +557,11 @@ const i18n = {
     reportsSub: "5 modèles · Tableau de bord, Talents, DEI…",
     hint: "<b>Comment utiliser :</b> appuyez sur une question suggérée — sur le « Brief du jour » — ou sur « Générer un rapport » pour voir Helios composer une réponse ou un livrable à partir des données People & Talent. Toutes les données sont fictives.",
     questions: [
+      { id: "deadlines", q: "Des échéances RH cette semaine ?" },
       { id: "turnover",  q: "Turnover du mois et top regrettés ?" },
       { id: "postes",    q: "Postes critiques encore à pourvoir ?" },
+      { id: "pipeline",  q: "Recrutements en cours ?" },
+      { id: "payroll",   q: "Masse salariale à date ?" },
       { id: "revue",     q: "Statut de la campagne de revue annuelle ?" },
       { id: "climat",    q: "Synthèse climat social / IRC de la semaine" }
     ],
@@ -570,6 +573,9 @@ const i18n = {
       { id:"report_relations",   kw:["rapport climat","rapport social","rapport irc","rapport relations sociales"] },
       { id:"report_picker",      kw:["rapport","rapports","modèle","modele","génère","genere","générer"] },
       { id:"engagement_survey",  kw:["enquête","enquete","engagement 2026","survey","résultats enquête","resultats enquete"] },
+      { id:"deadlines",  kw:["échéance","echeance","échéances","echeances","deadline","deadlines","cette semaine","urgent","urgents","urgente","urgentes","agenda","calendrier"] },
+      { id:"payroll",    kw:["masse salariale","masse","paie","payroll","coût personnel","cout personnel","budget paie"] },
+      { id:"pipeline",   kw:["pipeline","candidat","candidats","funnel","sourcing","embauche","embauches","recrutements en cours","recrutements"] },
       { id:"absent",     kw:["absentéisme","absenteisme","absences","arrêts","arrets","maladie"] },
       { id:"paygap",     kw:["paygap","pay gap","égalité","egalite","rémunération","remuneration","écart h/f","ecart h/f","hommes femmes","hommes/femmes"] },
       { id:"formations", kw:["formation","formations","obligatoire","obligatoires","complétion","completion","module","modules"] },
@@ -674,6 +680,74 @@ const i18n = {
           { d:"CR CSE Jorf S19.pdf",          w:"Hassan T. · Relations Sociales" },
           { d:"Note médiation Safi.pdf",      w:"Ahmed S. · HRBP Industriel" },
           { d:"eNPS dashboard avril",         w:"Salma O. · People Analytics" }
+        ]
+      },
+      deadlines: {
+        title: "Échéances RH — semaine 19",
+        kpis: [
+          { v:"7", l:"échéances semaine" },
+          { v:"2", l:"urgentes (aujourd'hui/demain)" },
+          { v:"0", l:"dépassée" }
+        ],
+        intro: "Sept échéances cette semaine, dont <b>deux urgentes</b> nécessitant une validation immédiate.",
+        list: [
+          { t:"bad",  txt:"<b>Aujourd'hui</b> · Validation grade & package Head Agronomy India (revue rétention)." },
+          { t:"bad",  txt:"<b>Demain 13/05</b> · Visite terrain CEO + vous-même à Safi (médiation grève maintenance)." },
+          { t:"warn", txt:"<b>14/05</b> · Réunion HRBP Brazil & India — revue départs regrettés." },
+          { t:"warn", txt:"<b>15/05</b> · Signature avenant accord télétravail (CSE Group)." },
+          { t:"ok",   txt:"<b>16/05</b> · Comité Talents Q2 — calibration finale 9-box." },
+          { t:"ok",   txt:"<b>20/05</b> · Comité Diversité & Inclusion — plan rattrapage paygap." },
+          { t:"ok",   txt:"<b>25/05</b> · Deadline finale campagne revue annuelle." }
+        ],
+        decision: "Deux décisions immédiates : valider le grade Head Agronomy India + sign-off accord TT avant 15/05.",
+        sources: [
+          { d:"Calendrier DRH semaine 19", w:"Assistante DRH" },
+          { d:"CR Comex S18.pdf",          w:"Secrétariat Comex" },
+          { d:"Note relations sociales",   w:"Hassan T. · Relations Sociales" }
+        ]
+      },
+      payroll: {
+        title: "Masse salariale — à date 12/05/2026",
+        kpis: [
+          { v:"612",   l:"M MAD YTD" },
+          { v:"33,2%", l:"du budget annuel" },
+          { v:"+4,2%", l:"vs N-1 cumul" }
+        ],
+        intro: "À fin avril, masse salariale à <b>33,2%</b> du budget pour <b>33%</b> de l'année écoulée — globalement aligné. Trajectoire à surveiller côté variable Sales.",
+        list: [
+          { t:"ok",   txt:"<b>Industriel</b> · 47% du total — masse stable, effectifs constants." },
+          { t:"ok",   txt:"<b>R&D</b> · 12% — légère sous-consommation (recrutements ouverts non clôturés)." },
+          { t:"warn", txt:"<b>Sales</b> · 18% — surcoût lié aux variables Q1 atteints (accélérateurs Inde déclenchés)." },
+          { t:"ok",   txt:"<b>Fonctions support</b> · 23% — aligné." },
+          { t:"warn", txt:"<b>Effet promotions 2026</b> · +14 M MAD pleine année à intégrer au reforecast." }
+        ],
+        decision: "Action : reforecast masse salariale à présenter avec le CFO au Comex du 18/05.",
+        sources: [
+          { d:"Export paie SIRH avril.xlsx",   w:"Karim L. · Comp & Ben" },
+          { d:"Note variable commercial Q1",   w:"Khadija R. · HRBP Sales" },
+          { d:"Suivi promotions 2026.xlsx",    w:"Karim L. · Comp & Ben" }
+        ]
+      },
+      pipeline: {
+        title: "Pipeline de recrutement — semaine 19",
+        kpis: [
+          { v:"142", l:"candidats actifs" },
+          { v:"9",   l:"offres en cours" },
+          { v:"78%", l:"acceptation offres" }
+        ],
+        intro: "Pipeline <b>solide</b> avec 142 candidats actifs dans le funnel sur 23 postes ouverts. Taux d'acceptation au-dessus de la cible (78% vs 75%).",
+        list: [
+          { t:"ok",   txt:"<b>Sourcés</b> · 412 candidats ce mois (+18% vs N-1)." },
+          { t:"ok",   txt:"<b>Entretiens</b> · 67 en cours sur la semaine." },
+          { t:"ok",   txt:"<b>Offres en cours</b> · 9 (4 Industriel, 3 Sales, 2 R&D)." },
+          { t:"warn", txt:"<b>Refus d'offre cette semaine</b> · 2 (1 packaging Sales India, 1 Plant Manager Jorf — package)." },
+          { t:"ok",   txt:"<b>Top sources</b> · référencement interne 38%, LinkedIn 31%, écoles 18%, cabinets 13%." }
+        ],
+        decision: "Action : renforcer le sourcing campus pour D²nAI et R&D — 2 visites écoles d'ingénieurs prévues fin mai.",
+        sources: [
+          { d:"Funnel recrutement S19.xlsx", w:"Younes M. · Talent Acquisition" },
+          { d:"Note marché tech",            w:"Younes M. · Talent Acquisition" },
+          { d:"Plan campus 2026",            w:"Younes M. · Talent Acquisition" }
         ]
       },
       absent: {
@@ -941,8 +1015,11 @@ const i18n = {
     reportsSub: "5 templates · HR dashboard, Talents, DEI…",
     hint: "<b>How to use:</b> tap a suggested question — “Today's brief” — or “Generate a report” to see Helios compose an answer or a deliverable from People & Talent data. All data is fictional.",
     questions: [
+      { id: "deadlines",q: "Any HR deadlines this week?" },
       { id: "turnover", q: "Monthly turnover and regretted leavers?" },
       { id: "postes",   q: "Critical roles still open?" },
+      { id: "pipeline", q: "Hires in progress?" },
+      { id: "payroll",  q: "Payroll to date?" },
       { id: "revue",    q: "Status of the annual performance review?" },
       { id: "climat",   q: "Weekly employee relations & social climate" }
     ],
@@ -954,6 +1031,9 @@ const i18n = {
       { id:"report_relations",  kw:["social climate report","employee relations report"] },
       { id:"report_picker",     kw:["report","reports","template","generate","produce"] },
       { id:"engagement_survey", kw:["engagement survey","2026 survey","employee survey results"] },
+      { id:"deadlines", kw:["deadline","deadlines","this week","urgent","urgent matter","agenda","calendar"] },
+      { id:"payroll",   kw:["payroll","wage bill","salary cost","headcount cost"] },
+      { id:"pipeline",  kw:["pipeline","candidate","candidates","funnel","sourcing","hires in progress","hiring pipeline"] },
       { id:"absent",    kw:["absenteeism","absence","sick leave","absences"] },
       { id:"paygap",    kw:["paygap","pay gap","gender pay","gender equity","equal pay"] },
       { id:"formations",kw:["training","trainings","mandatory training","completion","compliance training"] },
@@ -1058,6 +1138,74 @@ const i18n = {
           { d:"Jorf CSE minutes W19.pdf",   w:"Hassan T. · Labor Relations" },
           { d:"Safi mediation note.pdf",    w:"Ahmed S. · HRBP Industrial" },
           { d:"April eNPS dashboard",       w:"Salma O. · People Analytics" }
+        ]
+      },
+      deadlines: {
+        title: "HR deadlines — week 19",
+        kpis: [
+          { v:"7", l:"weekly deadlines" },
+          { v:"2", l:"urgent (today/tomorrow)" },
+          { v:"0", l:"overdue" }
+        ],
+        intro: "Seven deadlines this week, <b>two of them urgent</b> requiring immediate validation.",
+        list: [
+          { t:"bad",  txt:"<b>Today</b> · Validate grade & package for Head of Agronomy India (retention review)." },
+          { t:"bad",  txt:"<b>Tomorrow May 13</b> · CEO + you on Safi site visit (maintenance strike mediation)." },
+          { t:"warn", txt:"<b>May 14</b> · Meeting with Brazil & India HRBPs — regretted leavers review." },
+          { t:"warn", txt:"<b>May 15</b> · Sign remote-work agreement amendment (Group CSE)." },
+          { t:"ok",   txt:"<b>May 16</b> · Q2 Talent Committee — 9-box final calibration." },
+          { t:"ok",   txt:"<b>May 20</b> · D&I Committee — pay gap catch-up plan." },
+          { t:"ok",   txt:"<b>May 25</b> · Final deadline for annual review campaign." }
+        ],
+        decision: "Two immediate decisions: approve Head Agronomy India grade + sign-off remote-work amendment before May 15.",
+        sources: [
+          { d:"HRD calendar week 19",     w:"HRD Assistant" },
+          { d:"Excom W18 minutes.pdf",    w:"Excom secretariat" },
+          { d:"Labor relations note",     w:"Hassan T. · Labor Relations" }
+        ]
+      },
+      payroll: {
+        title: "Payroll — as of May 12, 2026",
+        kpis: [
+          { v:"612",   l:"MAD M YTD" },
+          { v:"33.2%", l:"of annual budget" },
+          { v:"+4.2%", l:"vs LY cumulative" }
+        ],
+        intro: "End of April: payroll at <b>33.2%</b> of budget for <b>33%</b> of year elapsed — broadly on track. Watch Sales variable trajectory.",
+        list: [
+          { t:"ok",   txt:"<b>Industrial</b> · 47% of total — stable, constant headcount." },
+          { t:"ok",   txt:"<b>R&D</b> · 12% — slight underspend (open hires not yet closed)." },
+          { t:"warn", txt:"<b>Sales</b> · 18% — overspend linked to Q1 variable thresholds met (India accelerators triggered)." },
+          { t:"ok",   txt:"<b>Support functions</b> · 23% — on track." },
+          { t:"warn", txt:"<b>2026 promotions effect</b> · +14 MAD M full year to integrate in reforecast." }
+        ],
+        decision: "Action: payroll reforecast to present with CFO at May 18 Excom.",
+        sources: [
+          { d:"April HRIS payroll export.xlsx", w:"Karim L. · Comp & Ben" },
+          { d:"Q1 sales variable note",         w:"Khadija R. · HRBP Sales" },
+          { d:"2026 promotions tracking.xlsx",  w:"Karim L. · Comp & Ben" }
+        ]
+      },
+      pipeline: {
+        title: "Hiring pipeline — week 19",
+        kpis: [
+          { v:"142", l:"active candidates" },
+          { v:"9",   l:"offers in progress" },
+          { v:"78%", l:"offer acceptance" }
+        ],
+        intro: "<b>Solid</b> pipeline with 142 active candidates on 23 open roles. Acceptance rate above target (78% vs 75%).",
+        list: [
+          { t:"ok",   txt:"<b>Sourced</b> · 412 candidates this month (+18% vs LY)." },
+          { t:"ok",   txt:"<b>Interviews</b> · 67 in progress this week." },
+          { t:"ok",   txt:"<b>Offers in progress</b> · 9 (4 Industrial, 3 Sales, 2 R&D)." },
+          { t:"warn", txt:"<b>Offer declines this week</b> · 2 (1 packaging Sales India, 1 Plant Manager Jorf — package)." },
+          { t:"ok",   txt:"<b>Top sources</b> · internal referrals 38%, LinkedIn 31%, campus 18%, agencies 13%." }
+        ],
+        decision: "Action: reinforce campus sourcing for D²nAI and R&D — 2 engineering school visits scheduled end of May.",
+        sources: [
+          { d:"Recruitment funnel W19.xlsx", w:"Younes M. · Talent Acquisition" },
+          { d:"Tech market note",            w:"Younes M. · Talent Acquisition" },
+          { d:"2026 campus plan",            w:"Younes M. · Talent Acquisition" }
         ]
       },
       absent: {
