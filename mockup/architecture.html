@@ -186,6 +186,75 @@ p.intro{font-size:14px;color:var(--ink-2);line-height:1.55;margin-bottom:20px;ma
 }
 .foot .brand-mini{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--green-800);font-size:13px}
 
+/* High-level design hybride */
+.hld{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px;
+}
+.zone{
+  background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;position:relative;
+}
+.zone .badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:4px 8px;border-radius:6px;margin-bottom:10px;
+}
+.zone h3{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.zone .sub{font-size:11.5px;color:var(--muted);margin-bottom:10px}
+.zone ul{list-style:none;padding:0}
+.zone li{
+  font-size:12px;color:var(--ink-2);padding:6px 0;border-top:1px solid var(--line);
+  display:flex;align-items:flex-start;gap:8px;line-height:1.4;
+}
+.zone li:first-of-type{border-top:0;padding-top:2px}
+.zone li .ico{
+  width:22px;height:22px;border-radius:5px;background:var(--green-50);
+  display:grid;place-items:center;font:600 9px 'JetBrains Mono',monospace;color:var(--green-800);
+  flex:none;margin-top:1px;
+}
+.zone.onprem{border-top:4px solid #5C4A8C}
+.zone.onprem .badge{background:#EDE7F6;color:#5C4A8C}
+.zone.azure{border-top:4px solid #0078D4}
+.zone.azure .badge{background:#E3F2FD;color:#0078D4}
+.zone.atlas{border-top:4px solid #00684A}
+.zone.atlas .badge{background:#E0F2EC;color:#00684A}
+
+.flows{
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 18px;
+  margin-bottom:18px;
+}
+.flows h4{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green-800);margin-bottom:8px}
+.flows .row{
+  display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12.5px;color:var(--ink-2);line-height:1.5;
+  border-top:1px solid var(--line);
+}
+.flows .row:first-of-type{border-top:0;padding-top:0}
+.flows .row .from,.flows .row .to{font-weight:600;color:var(--ink);min-width:80px}
+.flows .row .arrow{color:var(--green-700);font-weight:700;font-size:14px}
+.flows .row .lab{flex:1}
+.flows .row .badge-link{
+  font:600 10px 'JetBrains Mono',monospace;color:var(--green-800);background:var(--green-50);
+  border:1px solid var(--green-100);padding:2px 6px;border-radius:6px;
+}
+
+.placement{
+  display:grid;grid-template-columns:1.4fr 1.3fr 2.3fr;gap:0;
+  background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;
+}
+.placement > div{padding:10px 12px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);font-size:12.5px;color:var(--ink-2);line-height:1.45}
+.placement > div:nth-child(3n){border-right:0}
+.placement > div.hd{background:var(--green-50);font-weight:600;color:var(--green-800);font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+.placement > div:nth-last-child(-n+3){border-bottom:0}
+.placement .loc{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:500}
+.placement .loc.atlas{color:#00684A}
+.placement .loc.azure{color:#0078D4}
+.placement .loc.onprem{color:#5C4A8C}
+
+@media (max-width: 900px){
+  .hld{grid-template-columns:1fr}
+  .placement{grid-template-columns:1fr;font-size:12px}
+  .placement > div{border-right:0}
+}
+
 @media print{
   body{background:#fff;padding:20px}
   .head, section{break-inside:avoid}
@@ -453,6 +522,127 @@ p.intro{font-size:14px;color:var(--ink-2);line-height:1.55;margin-bottom:20px;ma
       <div>Outlook (mails + agenda) · Contacts · Adobe Sign · Amex Corp · SharePoint Faris</div>
       <div>Envoyer SMS · Imprimer · Bloquer créneau · Décliner / accepter · Générer brief</div>
     </div>
+  </section>
+
+  <section>
+    <h2><span class="n">6</span>High-level design hybride — Maestro</h2>
+    <p class="intro">Stack <b>hybride par design</b> pour respecter la souveraineté des données sensibles (mailbox du CEO, mémoire stakeholder, briefs) : <b>Azure West Europe</b> pour le compute et l'IA, <b>MongoDB Atlas EU</b> pour le stockage des données sensibles avec Queryable Encryption, <b>Exchange on-prem</b> Group comme source de vérité jamais déplacée.</p>
+
+    <div class="hld">
+      <div class="zone onprem">
+        <span class="badge">● On-prem Group</span>
+        <h3>Source de vérité</h3>
+        <div class="sub">LAN OCP Group · jamais exposé Internet</div>
+        <ul>
+          <li><span class="ico">EWS</span><span><b>Exchange Server</b> (mail, calendrier, contacts, GAL) — accédé par EWS via service account dédié</span></li>
+          <li><span class="ico">SP</span><span><b>SharePoint on-prem</b> si applicable (notes Comex, dossiers réunion)</span></li>
+          <li><span class="ico">AD</span><span><b>Active Directory</b> Group — synchronisé avec Azure AD pour le SSO</span></li>
+          <li><span class="ico">FW</span><span><b>Firewall / proxy</b> Group — règles ouvertes vers le tenant Azure D²nAI uniquement</span></li>
+        </ul>
+      </div>
+
+      <div class="zone azure">
+        <span class="badge">● Azure West Europe</span>
+        <h3>Compute & IA</h3>
+        <div class="sub">Subscription D²nAI · réseau privé (VNet)</div>
+        <ul>
+          <li><span class="ico">PWA</span><span><b>Frontend</b> · Azure Static Web Apps + CDN (HTML/CSS/JS — votre mockup)</span></li>
+          <li><span class="ico">API</span><span><b>FastAPI</b> sur Azure Container Apps (orchestrateur, auth, routing)</span></li>
+          <li><span class="ico">AGT</span><span><b>Agent LangGraph</b> · Container Apps (tool calling, mémoire courte)</span></li>
+          <li><span class="ico">LLM</span><span><b>LLM</b> · modèle maison hébergé Azure ML + Claude Sonnet 4.6 (Anthropic Azure ou API) en fallback</span></li>
+          <li><span class="ico">EMB</span><span><b>Embedding service</b> BGE-M3 (multilingue FR/EN/AR)</span></li>
+          <li><span class="ico">SYN</span><span><b>Prefect</b> · ingestion EWS → embeddings → Atlas</span></li>
+          <li><span class="ico">OBS</span><span><b>App Insights + Langfuse</b> auto-hosted (traces LLM, coût, latence)</span></li>
+          <li><span class="ico">KV</span><span><b>Azure Key Vault</b> (secrets, certificats EWS, clés Atlas)</span></li>
+          <li><span class="ico">AAD</span><span><b>Azure AD</b> Group (SSO Sarah — réutilise compte OCP)</span></li>
+        </ul>
+      </div>
+
+      <div class="zone atlas">
+        <span class="badge">● MongoDB Atlas EU</span>
+        <h3>Données sensibles</h3>
+        <div class="sub">Région Frankfurt · CMK + Queryable Encryption</div>
+        <ul>
+          <li><span class="ico">VEC</span><span><b>Atlas Vector Search</b> — embeddings des mails, briefs, docs (jamais en clair côté Azure)</span></li>
+          <li><span class="ico">MEM</span><span><b>Stakeholder Memory</b> (Tanaka & co) — fiches relationnelles avec champs sensibles chiffrés</span></li>
+          <li><span class="ico">DOC</span><span><b>Briefs & rapports générés</b> (historique, versioning)</span></li>
+          <li><span class="ico">LOG</span><span><b>Audit trail immuable</b> — qui a demandé quoi, quelles sources retournées, à quel moment</span></li>
+          <li><span class="ico">CMK</span><span><b>Customer-Managed Keys</b> via Azure Key Vault (les clés ne quittent pas le périmètre OCP)</span></li>
+          <li><span class="ico">QE</span><span><b>Queryable Encryption</b> sur les champs sensibles (noms, sujets, chiffres) — recherche sans déchiffrer</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="flows">
+      <h4>Connectivité — uniquement des liens privés, jamais d'Internet public</h4>
+      <div class="row">
+        <span class="from">On-prem</span><span class="arrow">↔</span><span class="to">Azure</span>
+        <span class="lab"><b>Azure ExpressRoute</b> ou <b>VPN site-to-site</b>. Endpoint EWS Exchange exposé uniquement vers le VNet D²nAI. Mutual TLS, certificats KeyVault.</span>
+      </div>
+      <div class="row">
+        <span class="from">Azure</span><span class="arrow">↔</span><span class="to">Atlas</span>
+        <span class="lab"><b>Azure Private Link</b> + <b>VNet Peering</b>. Atlas n'expose pas d'IP publique. CMK gérées dans Azure Key Vault → les clés restent côté OCP.</span>
+      </div>
+      <div class="row">
+        <span class="from">Sarah</span><span class="arrow">↔</span><span class="to">Frontend</span>
+        <span class="lab"><b>SSO Azure AD</b> tenant Group. Sarah utilise son compte OCP. Sa délégation Outlook sur Faris est portée par son token (pas de service account élevé).</span>
+      </div>
+      <div class="row">
+        <span class="from">Backend</span><span class="arrow">↔</span><span class="to">LLM externe</span>
+        <span class="lab">Si Claude API : appel via <b>Anthropic sur Azure Marketplace</b> (même région EU, mêmes garanties data residency, no-training-on-data). Sinon 100% maison sur Azure ML.</span>
+      </div>
+    </div>
+
+    <h3 style="margin-top:24px;margin-bottom:8px">Placement des données — qui va où, pourquoi</h3>
+    <div class="placement">
+      <div class="hd">Donnée</div>
+      <div class="hd">Localisation</div>
+      <div class="hd">Justification</div>
+
+      <div><b>Mails Faris</b> (corps + pièces jointes)</div>
+      <div class="loc onprem">On-prem Exchange</div>
+      <div>Jamais déplacés. Lus à la volée par EWS, le contenu ne sort pas du LAN sauf chunks/embeddings indexés.</div>
+
+      <div><b>Embeddings de mails & docs</b></div>
+      <div class="loc atlas">Atlas Vector Search</div>
+      <div>Non-réversibles vers le texte original sans rapprochement. Stockés chiffrés CMK. Permettent la recherche sémantique sans exposer le clair.</div>
+
+      <div><b>Stakeholder Memory</b> (Tanaka, VIPs)</div>
+      <div class="loc atlas">Atlas (Queryable Encryption)</div>
+      <div>Données nominatives, relationnelles, sensibles (notes perso, do/don't). QE permet de chercher sans déchiffrer.</div>
+
+      <div><b>Briefs & rapports générés</b></div>
+      <div class="loc atlas">Atlas</div>
+      <div>Contiennent du contenu confidentiel (décisions, KPI). Historisés pour versioning et audit.</div>
+
+      <div><b>Audit trail</b> (chaque appel, chaque source)</div>
+      <div class="loc atlas">Atlas (collection immuable)</div>
+      <div>Exigence RSSI/DPO : traçabilité complète. Atlas time-series collection, write-only après création.</div>
+
+      <div><b>Métadonnées techniques</b> (config, users, sessions)</div>
+      <div class="loc azure">Azure Postgres</div>
+      <div>Non-sensible. Optimisé pour requêtes relationnelles classiques.</div>
+
+      <div><b>Cache de réponses fréquentes</b></div>
+      <div class="loc azure">Azure Redis</div>
+      <div>Données déjà filtrées par ACL, courte durée de vie (24h max), chiffrement at rest.</div>
+
+      <div><b>Modèle LLM + embedding model</b></div>
+      <div class="loc azure">Azure ML / Container Apps</div>
+      <div>Compute pur, le modèle ne stocke pas les requêtes (no training on data).</div>
+
+      <div><b>Frontend statique (PWA)</b></div>
+      <div class="loc azure">Azure Static Web Apps</div>
+      <div>Code public, aucun secret embarqué. Servi via CDN.</div>
+
+      <div><b>Secrets, certificats, clés CMK</b></div>
+      <div class="loc azure">Azure Key Vault</div>
+      <div>HSM-backed. Toutes les clés Atlas et les certificats EWS y sont stockés et tournés.</div>
+    </div>
+
+    <p style="margin-top:18px;font-size:12.5px;color:var(--muted);line-height:1.55">
+      <b style="color:var(--green-800)">Principe directeur :</b> les données <b>sensibles</b> (mails du CEO, mémoire stakeholder, briefs) vivent dans <b>Atlas avec Queryable Encryption</b> et clés CMK gérées par OCP. Les données <b>techniques</b> (config, cache, métadonnées) restent dans Azure. Les <b>sources brutes</b> (mailbox Exchange) ne quittent jamais le on-prem. Atlas et Azure sont reliés par des liens <b>100% privés</b>.
+    </p>
   </section>
 
   <footer class="foot">
