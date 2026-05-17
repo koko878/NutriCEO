@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#1B5E20">
+<title>Architecture cible — D²nAI · OCP Nutricrops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-900:#0F3D14;
+  --green-800:#1B5E20;
+  --green-700:#2E7D32;
+  --green-500:#4CAF50;
+  --green-100:#E8F0E8;
+  --green-50:#F2F7F2;
+  --ink:#13191A;
+  --ink-2:#3C4642;
+  --muted:#6B7268;
+  --line:#E6E9E5;
+  --bg:#FAFBFA;
+  --page:#EDEFEA;
+  --warn:#B45309;
+  --warn-bg:#FEF3C7;
+  --ok:#15803D;
+  --ok-bg:#DCFCE7;
+  --bad:#B91C1C;
+  --bad-bg:#FEE2E2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(900px 400px at 50% -100px, #E2E8DE 0%, transparent 70%),
+    var(--page);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  padding:40px 24px 80px;
+}
+
+.page{max-width:1100px;margin:0 auto}
+
+/* Header */
+.head{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:24px;
+  padding-bottom:24px;border-bottom:1px solid var(--line);margin-bottom:32px;
+}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{
+  width:48px;height:48px;border-radius:14px;
+  background:linear-gradient(135deg,var(--green-800),var(--green-900));
+  display:grid;place-items:center;
+  position:relative;overflow:hidden;
+  box-shadow:0 6px 16px -6px rgba(27,94,32,.5);
+}
+.logo::before{
+  content:"";position:absolute;inset:0;opacity:.22;
+  background:repeating-linear-gradient(180deg, rgba(180,255,180,.7) 0 1px, transparent 1px 3px);
+}
+.logo span{font-family:'Cormorant Garamond',serif;color:#E6F4E6;font-weight:700;font-size:22px;position:relative;letter-spacing:1px}
+.logo sup{font-size:11px;font-weight:600;top:-6px;position:relative;margin-left:-1px}
+.brand .t1{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.brand .t2{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--green-800);font-weight:700;line-height:1.1}
+.meta{font-size:12px;color:var(--muted);text-align:right;line-height:1.6}
+.meta b{color:var(--ink-2)}
+
+/* Title block */
+.title{margin-bottom:32px}
+.kicker{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--green-800);margin-bottom:10px}
+h1{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:600;letter-spacing:-.01em;line-height:1.1;color:var(--ink)}
+.lead{margin-top:12px;font-size:16px;color:var(--ink-2);max-width:680px;line-height:1.55}
+
+/* Sections */
+section{margin-top:48px}
+h2{
+  font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--ink);
+  display:flex;align-items:center;gap:10px;margin-bottom:16px;
+}
+h2 .n{
+  font-family:'Cormorant Garamond',serif;font-size:14px;color:#fff;
+  background:var(--green-800);width:26px;height:26px;border-radius:50%;
+  display:grid;place-items:center;font-weight:700;
+}
+h3{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:8px}
+p.intro{font-size:14px;color:var(--ink-2);line-height:1.55;margin-bottom:20px;max-width:760px}
+
+/* Layered stack */
+.stack{display:flex;flex-direction:column;gap:6px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px;box-shadow:0 1px 0 rgba(0,0,0,.02)}
+.layer{
+  display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:10px;
+  background:linear-gradient(90deg, var(--green-50) 0%, #fff 100%);
+  border:1px solid var(--green-100);
+  position:relative;
+}
+.layer .num{
+  font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--green-800);
+  width:34px;height:34px;border-radius:10px;background:#fff;border:1px solid var(--green-100);
+  display:grid;place-items:center;flex:none;
+}
+.layer .body{flex:1;min-width:0}
+.layer .title-l{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.layer .desc{font-size:12.5px;color:var(--muted);line-height:1.4}
+.layer .tech{
+  display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;
+}
+.layer .tech .chip{
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--green-800);
+  background:#fff;border:1px solid var(--green-100);padding:2px 7px;border-radius:6px;font-weight:500;
+}
+.layer.top{background:linear-gradient(90deg, #fff 0%, var(--green-50) 100%);border-color:var(--green-500);border-width:1.5px}
+.layer.top .num{background:var(--green-800);color:#fff;border-color:var(--green-800)}
+
+/* Request lifecycle */
+.flow{
+  background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;
+  display:grid;grid-template-columns:repeat(6,1fr);gap:14px;align-items:start;
+}
+.step{position:relative}
+.step .dot{
+  width:32px;height:32px;border-radius:50%;background:var(--green-800);color:#fff;
+  display:grid;place-items:center;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:14px;
+  margin-bottom:10px;
+}
+.step h4{font-size:12.5px;font-weight:600;color:var(--ink);margin-bottom:4px;line-height:1.3}
+.step p{font-size:11.5px;color:var(--muted);line-height:1.4}
+.step:not(:last-child)::after{
+  content:"→";position:absolute;top:6px;right:-12px;color:var(--green-500);font-size:18px;font-weight:700;
+}
+@media (max-width: 900px){
+  .flow{grid-template-columns:repeat(2,1fr)}
+  .step:not(:last-child)::after{display:none}
+}
+
+/* Risks grid */
+.risks{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.risk{
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;
+  border-top:3px solid var(--warn);
+}
+.risk h4{font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.risk h4 .b{
+  background:var(--warn-bg);color:var(--warn);font-size:10px;font-weight:700;
+  padding:2px 6px;border-radius:4px;letter-spacing:.04em;
+}
+.risk p{font-size:12px;color:var(--ink-2);line-height:1.5}
+.risk .fix{margin-top:6px;font-size:11.5px;color:var(--green-800);font-weight:500}
+@media (max-width: 800px){.risks{grid-template-columns:1fr}}
+
+/* Phases */
+.phases{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.phase{
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;position:relative;overflow:hidden;
+}
+.phase::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--green-800);
+}
+.phase .ph-kicker{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green-800);margin-bottom:4px}
+.phase h3{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.phase .dur{font-size:12px;color:var(--muted);margin-bottom:10px}
+.phase ul{list-style:none;padding:0;margin:0}
+.phase li{font-size:12.5px;color:var(--ink-2);padding:4px 0 4px 14px;position:relative;line-height:1.4}
+.phase li::before{content:"·";position:absolute;left:4px;color:var(--green-700);font-weight:700}
+.phase.future::before{background:var(--green-500);opacity:.6}
+.phase.future h3{color:var(--ink-2)}
+@media (max-width: 800px){.phases{grid-template-columns:1fr}}
+
+/* Personas mapping */
+.matrix{
+  display:grid;grid-template-columns:1fr 2fr 2fr;gap:0;
+  background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;
+}
+.matrix > div{padding:12px 14px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);font-size:13px;color:var(--ink-2);line-height:1.45}
+.matrix > div:nth-child(3n){border-right:0}
+.matrix > div.hd{background:var(--green-50);font-weight:600;color:var(--green-800);font-size:11.5px;letter-spacing:.04em;text-transform:uppercase}
+.matrix > div:nth-last-child(-n+3){border-bottom:0}
+.matrix b{color:var(--ink)}
+
+/* Footer */
+.foot{
+  margin-top:60px;padding-top:24px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:11.5px;color:var(--muted);
+}
+.foot .brand-mini{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--green-800);font-size:13px}
+
+@media print{
+  body{background:#fff;padding:20px}
+  .head, section{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="head">
+    <div class="brand">
+      <div class="logo"><span>D<sup>2</sup>n</span></div>
+      <div>
+        <div class="t1">OCP Nutricrops · D²nAI</div>
+        <div class="t2">Conversational Exec Apps — Architecture cible</div>
+      </div>
+    </div>
+    <div class="meta">
+      <div><b>Document</b> · v1 — pitch DSI / Comex</div>
+      <div><b>Auteur</b> · Équipe D²nAI</div>
+      <div><b>Date</b> · 12 mai 2026</div>
+    </div>
+  </header>
+
+  <div class="title">
+    <div class="kicker">Du mockup à la production</div>
+    <h1>L'architecture en 8 couches pour servir<br/>Faris, Youssef, Nadia, Sarah… et après.</h1>
+    <p class="lead">Une stack pragmatique, alignée sur l'écosystème Microsoft d'OCP, conçue pour shipper un MVP en 8-10 semaines avec une seule persona, puis dérouler les personas suivantes par incrément, sans refactor.</p>
+  </div>
+
+  <section>
+    <h2><span class="n">1</span>La stack en 8 couches</h2>
+    <p class="intro">Chaque couche est remplaçable indépendamment. Le LLM peut être notre modèle maison ou un modèle hébergé, sans toucher au reste. Le vector store peut grossir de pgvector à Qdrant sans refondre le pipeline.</p>
+
+    <div class="stack">
+      <div class="layer top">
+        <div class="num">8</div>
+        <div class="body">
+          <div class="title-l">Frontend mobile</div>
+          <div class="desc">Ce que tes dirigeants voient — les 4 mockups actuels en sont la projection.</div>
+          <div class="tech">
+            <span class="chip">PWA · React + Vite</span>
+            <span class="chip">React Native (si natif requis)</span>
+            <span class="chip">Tailwind</span>
+            <span class="chip">Web Push</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="layer">
+        <div class="num">7</div>
+        <div class="body">
+          <div class="title-l">API Gateway + Auth</div>
+          <div class="desc">Point d'entrée unique, SSO OCP, gestion des sessions, rate-limiting, audit trail.</div>
+          <div class="tech">
+            <span class="chip">FastAPI</span>
+            <span class="chip">Azure AD SSO (OIDC)</span>
+            <span class="chip">Azure API Mgmt</span>
+            <span class="chip">JWT + RBAC</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="layer">
+        <div class="num">6</div>
+        <div class="body">
+          <div class="title-l">Agent / Orchestrateur RAG</div>
+          <div class="desc">Le cerveau. Route la question → choisit les outils (retrieval, function calls, génération) → compose la réponse avec citations.</div>
+          <div class="tech">
+            <span class="chip">LangGraph</span>
+            <span class="chip">Pydantic AI</span>
+            <span class="chip">Tool calling</span>
+            <span class="chip">Memory store</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="layer">
+        <div class="num">5</div>
+        <div class="body">
+          <div class="title-l">LLM (génération + extraction)</div>
+          <div class="desc">Votre modèle maison pour le coût et la souveraineté ; modèle hébergé pour les cas durs (synthèse longue, raisonnement multi-étapes).</div>
+          <div class="tech">
+            <span class="chip">Modèle maison OCP</span>
+            <span class="chip">Claude Sonnet 4.6</span>
+            <span class="chip">Claude Opus 4.7 (fallback)</span>
+            <span class="chip">Mistral Large (option EU)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="layer">
+        <div class="num">4</div>
+        <div class="body">
+          <div class="title-l">Retrieval hybride</div>
+          <div class="desc">Vector seul ≠ assez. On combine recherche sémantique + lexicale + reranker pour la pertinence finale.</div>
+          <div class="tech">
+            <span class="chip">pgvector → Qdrant</span>
+            <span class="chip">BM25 (OpenSearch)</span>
+            <span class="chip">Reranker BGE / Cohere</span>
+            <span class="chip">Pre-filtering ACL</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="layer">
+        <div class="num">3</div>
+        <div class="body">
+          <div class="title-l">Embeddings + métadonnées + cache</div>
+          <div class="desc">Embeddings multilingues, métadonnées riches (owner, date, sensibilité, périmètre), cache des requêtes fréquentes.</div>
+          <div class="tech">
+            <span class="chip">BGE-M3 (multilingue FR/EN/AR)</span>
+            <span class="chip">PostgreSQL</span>
+            <span class="chip">Redis cache</span>
+            <span class="chip">S3 / OneDrive (blobs)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="layer">
+        <div class="num">2</div>
+        <div class="body">
+          <div class="title-l">Pipeline d'ingestion</div>
+          <div class="desc">Parsing (PDF, Word, Excel, mails), chunking sémantique, extraction structurée des chiffres, déduplication, versioning.</div>
+          <div class="tech">
+            <span class="chip">Prefect / Dagster</span>
+            <span class="chip">Unstructured.io</span>
+            <span class="chip">Webhook (temps réel)</span>
+            <span class="chip">Batch nuit (SIRH/ERP)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="layer">
+        <div class="num">1</div>
+        <div class="body">
+          <div class="title-l">Connecteurs sources</div>
+          <div class="desc">80% via Microsoft Graph (SharePoint, OneDrive, Outlook, Calendar, Teams). 20% custom pour SIRH, ERP, GRC.</div>
+          <div class="tech">
+            <span class="chip">Microsoft Graph API</span>
+            <span class="chip">Adobe Sign / DocuSign</span>
+            <span class="chip">SAP / Workday connectors</span>
+            <span class="chip">ServiceNow GRC</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">2</span>Le cycle de vie d'une question</h2>
+    <p class="intro">De *"où en est-on niveau budget OPEX consommé ?"* tapé sur le téléphone de Faris jusqu'à la réponse affichée avec ses 3 KPI et ses sources — sous 3 secondes cible.</p>
+    <div class="flow">
+      <div class="step"><div class="dot">1</div><h4>Auth & contexte</h4><p>SSO Azure AD, périmètre d'accès (qui peut voir quoi).</p></div>
+      <div class="step"><div class="dot">2</div><h4>Routing</h4><p>L'agent classe la question : Q&A, action, rapport, recherche.</p></div>
+      <div class="step"><div class="dot">3</div><h4>Retrieval</h4><p>BM25 + vector + reranker, filtré par les droits du user.</p></div>
+      <div class="step"><div class="dot">4</div><h4>Composition</h4><p>Construit le contexte LLM avec docs + métadonnées + structure attendue.</p></div>
+      <div class="step"><div class="dot">5</div><h4>Génération</h4><p>LLM produit la réponse structurée (KPIs, bullets, sources, décisions).</p></div>
+      <div class="step"><div class="dot">6</div><h4>Trace & log</h4><p>Langfuse : latence, coût, sources retournées, feedback user.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">3</span>Les 6 vrais cailloux (ce qui plante les projets)</h2>
+    <p class="intro">L'IA est la partie facile. Ce qui décide du succès, c'est presque toujours ailleurs.</p>
+    <div class="risks">
+      <div class="risk">
+        <h4>Permissions / ACL <span class="b">critique</span></h4>
+        <p>Faris ne doit pas voir les fiches paie. Nadia ne doit pas voir le pipeline M&A. À gérer <b>avant</b> le retrieval, pas après.</p>
+        <div class="fix">→ Pre-filtering au niveau du retrieval + audit chaque appel.</div>
+      </div>
+      <div class="risk">
+        <h4>Fraîcheur des données <span class="b">fort</span></h4>
+        <p>Calendrier temps réel, docs en horaire, SIRH en nocturne. À designer J1, pas en V2.</p>
+        <div class="fix">→ Webhooks Graph + batchs Prefect + SLA par source.</div>
+      </div>
+      <div class="risk">
+        <h4>Qualité des sources <span class="b">fort</span></h4>
+        <p>Si les N-1 déposent rien ou taggent mal, l'app retourne du vide. Le mockup le simule, la prod le subit.</p>
+        <div class="fix">→ Convention de nommage + "Sentinel d'ingestion" qui alerte sur les sources manquantes.</div>
+      </div>
+      <div class="risk">
+        <h4>Hallucinations sur chiffres <span class="b">critique</span></h4>
+        <p>Un dirigeant ne pardonne pas un chiffre inventé. Le LLM ne doit pas inventer de KPI.</p>
+        <div class="fix">→ Citations obligatoires + extraction structurée (les chiffres viennent d'un sheet, pas du LLM).</div>
+      </div>
+      <div class="risk">
+        <h4>Latence <span class="b">élevé</span></h4>
+        <p>Sous 3 s ou il ferme l'app. Le streaming masque, mais ne résout pas tout.</p>
+        <div class="fix">→ Streaming + cache + pré-calcul des briefs récurrents (à 6h, pas à la demande).</div>
+      </div>
+      <div class="risk">
+        <h4>Adoption <span class="b">critique</span></h4>
+        <p>L'app c'est 20%. Les 80% c'est sponsor exécutif + training EA/dirigeant + KPI d'usage hebdo.</p>
+        <div class="fix">→ Adoption owner dédié + 1 dirigeant ambassadeur + revue hebdo des usages.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">4</span>Trajectoire en 3 phases</h2>
+    <p class="intro">On ne ship pas les 4 personas en même temps. On valide la mécanique sur une seule, puis on déroule.</p>
+    <div class="phases">
+      <div class="phase">
+        <div class="ph-kicker">Phase 1 — MVP</div>
+        <h3>NutriCEO pour Faris</h3>
+        <div class="dur">8 à 10 semaines · 4 ETP</div>
+        <ul>
+          <li>1 persona, 1 source (SharePoint Comex)</li>
+          <li>5 questions structurées, 0 action</li>
+          <li>Réponses avec citations</li>
+          <li>Frontend PWA, auth SSO</li>
+          <li>Critère go/no-go : 80% de réponses jugées utiles par Faris</li>
+        </ul>
+      </div>
+      <div class="phase">
+        <div class="ph-kicker">Phase 2 — V1</div>
+        <h3>+ Sentinel & actions</h3>
+        <div class="dur">+ 3 mois · 6 ETP</div>
+        <ul>
+          <li>2ᵉ persona (Youssef · CPRO)</li>
+          <li>Actions : signer, mailer, programmer</li>
+          <li>Connecteurs Outlook + Adobe Sign</li>
+          <li>Observabilité Langfuse</li>
+          <li>Génération de rapports basiques</li>
+        </ul>
+      </div>
+      <div class="phase future">
+        <div class="ph-kicker">Phase 3 — V2</div>
+        <h3>Helios, Maestro & échelle</h3>
+        <div class="dur">+ 6 mois · équipe complète</div>
+        <ul>
+          <li>4 personas en production</li>
+          <li>Génération de briefs multi-pages</li>
+          <li>Multi-tenant (BUs / filiales)</li>
+          <li>Stakeholder Memory + agenda intelligent</li>
+          <li>Mobile natif si besoin (iOS)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">5</span>Sources & connecteurs par persona</h2>
+    <p class="intro">Chaque persona a ses sources de vérité. Le pipeline d'ingestion doit s'adapter sans dupliquer le code.</p>
+    <div class="matrix">
+      <div class="hd">Persona</div>
+      <div class="hd">Sources principales</div>
+      <div class="hd">Actions / Function calls</div>
+
+      <div><b>Faris</b> · CEO Nutricrops<br/><span style="font-size:11px;color:var(--muted)">NutriCEO</span></div>
+      <div>SharePoint Comex · Notes N-1 · Reporting financier · CR Comex</div>
+      <div>Mailer · Programmer une réunion · Signer un doc</div>
+
+      <div><b>Youssef</b> · CPRO Group<br/><span style="font-size:11px;color:var(--muted)">Sentinel</span></div>
+      <div>ServiceNow GRC · Risk register · Audit findings · Reporting BU · CSIRT</div>
+      <div>Mailer Comex · Programmer rapport mensuel · Escalade</div>
+
+      <div><b>Nadia</b> · DRH Nutricrops<br/><span style="font-size:11px;color:var(--muted)">Helios</span></div>
+      <div>SIRH (Workday/SAP) · LMS · Outils People Analytics · Adobe Sign</div>
+      <div>Lancer campagne formation · Mailer HRBP · Programmer revue</div>
+
+      <div><b>Sarah</b> · EA de Faris<br/><span style="font-size:11px;color:var(--muted)">Maestro</span></div>
+      <div>Outlook (mails + agenda) · Contacts · Adobe Sign · Amex Corp · SharePoint Faris</div>
+      <div>Envoyer SMS · Imprimer · Bloquer créneau · Décliner / accepter · Générer brief</div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div>NutriCEO · Sentinel · Helios · Maestro — prototypes D²nAI</div>
+    <div class="brand-mini">Empowering execs to deliver sustainable decisions for a growing world.</div>
+  </footer>
+
+</div>
+
+</body>
+</html>
