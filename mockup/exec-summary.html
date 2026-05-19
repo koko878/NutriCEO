@@ -1,13 +1,13 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#1B5E20">
-<title>Vision Data & Digital — Executive Summary · D²nAI · OCP Nutricrops</title>
+<title>Digital & Data Vision — Executive Summary · D²nAI · OCP Nutricrops</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --green-900:#0F3D14;
@@ -15,13 +15,13 @@
   --green-700:#2E7D32;
   --green-500:#4CAF50;
   --green-100:#E8F0E8;
-  --green-50:#F2F7F2;
+  --green-50:#F4F8F3;
   --ink:#13191A;
   --ink-2:#3C4642;
-  --muted:#6B7268;
-  --line:#E6E9E5;
-  --bg:#FAFBFA;
-  --page:#EDEFEA;
+  --muted:#73796F;
+  --line:#EAECE6;
+  --line-soft:#F1F2EC;
+  --bg:#FCFCFA;
   --warn:#B45309;
   --warn-bg:#FEF3C7;
   --ok:#15803D;
@@ -29,325 +29,272 @@
   --bad:#B91C1C;
   --bad-bg:#FEE2E2;
 }
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
 html,body{min-height:100%}
 body{
   font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:
-    radial-gradient(900px 400px at 50% -100px, #E2E8DE 0%, transparent 70%),
-    var(--page);
+  background:var(--bg);
   color:var(--ink);
-  -webkit-font-smoothing:antialiased;
-  padding:32px 20px 100px;
+  font-size:14px;
+  line-height:1.5;
+  padding:28px 24px 60px;
 }
-.page{max-width:1100px;margin:0 auto}
+.page{max-width:1080px;margin:0 auto}
 
 /* Header */
 .head{
-  display:flex;justify-content:space-between;align-items:center;gap:24px;
-  padding-bottom:20px;border-bottom:1px solid var(--line);margin-bottom:24px;
+  display:flex;justify-content:space-between;align-items:center;gap:20px;
+  padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:28px;
 }
-.brand{display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:12px}
 .logo{
-  width:48px;height:48px;border-radius:14px;
+  width:40px;height:40px;border-radius:11px;
   background:linear-gradient(135deg,var(--green-800),var(--green-900));
   display:grid;place-items:center;position:relative;overflow:hidden;
-  box-shadow:0 6px 16px -6px rgba(27,94,32,.5);
 }
 .logo::before{
   content:"";position:absolute;inset:0;opacity:.22;
   background:repeating-linear-gradient(180deg, rgba(180,255,180,.7) 0 1px, transparent 1px 3px);
 }
-.logo span{font-family:'Cormorant Garamond',serif;color:#E6F4E6;font-weight:700;font-size:22px;position:relative;letter-spacing:1px}
-.logo sup{font-size:11px;font-weight:600;top:-6px;position:relative;margin-left:-1px}
-.brand .t1{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:600}
-.brand .t2{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--green-800);font-weight:700;line-height:1.1}
-.meta{font-size:11.5px;color:var(--muted);text-align:right;line-height:1.6}
-.meta b{color:var(--ink-2)}
+.logo span{font-family:'Cormorant Garamond',serif;color:#E6F4E6;font-weight:700;font-size:18px;position:relative;letter-spacing:1px}
+.logo sup{font-size:9px;font-weight:600;top:-5px;position:relative}
+.brand .t1{font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.brand .t2{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--green-800);font-weight:700;line-height:1.1}
+.meta{font-size:11px;color:var(--muted);text-align:right;line-height:1.6}
+.meta b{color:var(--ink-2);font-weight:600}
 
 /* Hero */
-.hero{
-  background:linear-gradient(135deg, #fff 0%, var(--green-50) 100%);
-  border:1px solid var(--green-100);border-top:5px solid var(--green-800);
-  border-radius:18px;padding:38px 32px;margin-bottom:36px;
-  position:relative;overflow:hidden;
-}
-.hero::after{
-  content:"";position:absolute;top:24px;right:32px;width:80px;height:80px;
-  background:var(--green-800);border-radius:18px;opacity:.95;
-  background-image:repeating-linear-gradient(180deg,rgba(180,255,180,.4) 0 2px,transparent 2px 5px);
-}
-.kicker{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--green-800);margin-bottom:14px}
+.hero{margin-bottom:34px}
+.kicker{font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--green-800);margin-bottom:14px}
 .hero h1{
-  font-family:'Cormorant Garamond',serif;font-weight:600;font-size:46px;
-  line-height:1.05;letter-spacing:-.01em;color:var(--ink);max-width:680px;
+  font-family:'Cormorant Garamond',serif;font-weight:600;font-size:38px;
+  line-height:1.1;letter-spacing:-.01em;color:var(--ink);max-width:720px;
 }
 .hero h1 em{font-style:italic;color:var(--green-800);font-weight:700}
-.hero .lead{
-  margin-top:20px;font-size:17px;color:var(--ink-2);max-width:680px;line-height:1.55;
-}
-.hero .nums{
-  display:flex;gap:18px;margin-top:26px;flex-wrap:wrap;
-}
-.hero .num{
-  background:#fff;border:1px solid var(--green-100);border-radius:12px;padding:12px 16px;
-  min-width:170px;
-}
-.hero .num .v{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--green-800);line-height:1}
-.hero .num .l{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.3}
+.hero .lead{margin-top:14px;font-size:14.5px;color:var(--ink-2);max-width:680px;line-height:1.55}
+.hero .nums{display:flex;gap:14px;margin-top:22px;flex-wrap:wrap}
+.hero .num{padding:8px 0;border-left:2px solid var(--green-100);padding-left:14px;min-width:130px}
+.hero .num .v{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--green-800);line-height:1}
+.hero .num .l{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.3}
 
-/* Section header */
+/* Section heading */
 section{margin-bottom:36px}
-.s-head{display:flex;align-items:baseline;justify-content:space-between;gap:18px;margin-bottom:14px}
-.s-head h2{
-  font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--ink);
-  display:flex;align-items:center;gap:10px;
+.s-head{display:flex;align-items:baseline;gap:14px;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--line-soft)}
+.s-num{
+  font-family:'Cormorant Garamond',serif;font-size:11px;font-weight:700;
+  color:var(--green-800);letter-spacing:.1em;
 }
-.s-head h2 .n{
-  font-family:'Cormorant Garamond',serif;font-size:14px;color:#fff;
-  background:var(--green-800);width:26px;height:26px;border-radius:50%;
-  display:grid;place-items:center;font-weight:700;
-}
-.s-sub{font-size:13px;color:var(--muted);max-width:540px;text-align:right;line-height:1.5}
+.s-head h2{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--ink);flex:1}
+.s-head .s-sub{font-size:11.5px;color:var(--muted);line-height:1.4;text-align:right;max-width:300px}
 
-/* Snapshot */
-.snap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-.col{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}
-.col h3{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.col h3 .icb{
-  width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:13px;font-weight:700;flex:none;
+/* Snapshot (state of play) */
+.snap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.col{padding:0}
+.col h3{
+  font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink);margin-bottom:8px;display:flex;align-items:center;gap:8px;
 }
-.col.ok h3 .icb{background:var(--ok-bg);color:var(--ok)}
-.col.go h3 .icb{background:#E3F2FD;color:#0078D4}
-.col.stuck h3 .icb{background:var(--warn-bg);color:var(--warn)}
+.col h3 .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.col.ok h3 .dot{background:var(--ok)}
+.col.go h3 .dot{background:#0078D4}
+.col.stuck h3 .dot{background:var(--warn)}
 .col ul{list-style:none;padding:0}
-.col li{font-size:12.5px;color:var(--ink-2);padding:5px 0;line-height:1.4;border-top:1px dashed var(--line);padding-left:14px;position:relative}
-.col li:first-of-type{border-top:0;padding-top:2px}
-.col li::before{content:"·";position:absolute;left:4px;color:var(--green-700);font-weight:700}
-@media(max-width:900px){.snap{grid-template-columns:1fr}}
+.col li{font-size:12.5px;color:var(--ink-2);padding:5px 0;line-height:1.45;border-top:1px solid var(--line-soft)}
+.col li:first-of-type{border-top:0;padding-top:0}
+.col li b{color:var(--ink);font-weight:600}
+@media(max-width:840px){.snap{grid-template-columns:1fr}}
 
-/* Pillars */
-.pillars{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-.pillar{
-  background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;
-  cursor:pointer;transition:all .2s;
-  position:relative;overflow:hidden;
+/* Phases */
+.phases-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.phase-card{
+  border:1px solid var(--line);border-radius:12px;padding:18px;cursor:pointer;
+  transition:all .15s ease;background:#fff;position:relative;
 }
-.pillar:hover{transform:translateY(-2px);box-shadow:0 12px 28px -16px rgba(0,0,0,.18);border-color:var(--green-500)}
-.pillar .num{
-  font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:600;color:var(--green-100);
-  position:absolute;top:8px;right:16px;line-height:1;letter-spacing:-.04em;
+.phase-card:hover{border-color:var(--green-500);transform:translateY(-1px)}
+.phase-card .n{
+  font-family:'Cormorant Garamond',serif;font-size:11px;font-weight:700;
+  color:var(--green-700);letter-spacing:.12em;
 }
-.pillar h3{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--ink);margin-bottom:4px}
-.pillar .sub{font-size:11.5px;color:var(--green-800);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
-.pillar p{font-size:13px;color:var(--ink-2);line-height:1.5;margin-bottom:10px}
-.pillar .detail{
-  max-height:0;overflow:hidden;transition:max-height .3s ease;
-  font-size:12.5px;color:var(--ink-2);line-height:1.5;
-}
-.pillar.open .detail{max-height:600px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
-.pillar .more{font-size:11.5px;color:var(--green-800);font-weight:600;margin-top:6px;display:inline-flex;align-items:center;gap:4px}
-.pillar.open .more .ar{transform:rotate(180deg)}
-.pillar .more .ar{display:inline-block;transition:transform .2s}
-.pillar ul{list-style:none;padding:0;margin-top:6px}
-.pillar li{font-size:12px;color:var(--ink-2);padding:3px 0 3px 14px;position:relative;line-height:1.45}
-.pillar li::before{content:"→";position:absolute;left:0;color:var(--green-700);font-weight:700}
-@media(max-width:900px){.pillars{grid-template-columns:1fr}}
+.phase-card .yr{font-size:11px;color:var(--muted);margin-top:2px;font-family:'JetBrains Mono',monospace}
+.phase-card h3{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--ink);margin-top:10px;line-height:1.25}
+.phase-card p{font-size:12.5px;color:var(--ink-2);line-height:1.5;margin-top:8px}
+.phase-card .more{font-size:10.5px;font-weight:600;color:var(--green-800);margin-top:10px;letter-spacing:.04em;text-transform:uppercase;display:inline-flex;align-items:center;gap:4px}
+.phase-card .more .ar{display:inline-block;transition:transform .2s}
+.phase-card.open .more .ar{transform:rotate(180deg)}
+.phase-card .detail{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.phase-card.open .detail{max-height:600px;padding-top:10px;margin-top:10px;border-top:1px solid var(--line-soft)}
+.phase-card ul{list-style:none;padding:0}
+.phase-card li{font-size:12px;color:var(--ink-2);padding:3px 0 3px 12px;position:relative;line-height:1.45}
+.phase-card li::before{content:"·";position:absolute;left:2px;color:var(--green-700);font-weight:700}
+@media(max-width:840px){.phases-grid{grid-template-columns:1fr}}
 
 /* Roadmap */
-.timeline{
-  background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;position:relative;
-}
-.tlrow{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;
-}
-.tlrow::before{
-  content:"";position:absolute;top:38px;left:8%;right:8%;height:3px;background:var(--green-100);z-index:0;
-}
-.tlrow::after{
-  content:"";position:absolute;top:38px;left:8%;width:var(--progress, 22%);max-width:84%;height:3px;background:var(--green-800);z-index:1;transition:width .5s;
-}
-.tlpoint{
-  text-align:center;position:relative;z-index:2;cursor:pointer;padding-top:18px;
-}
+.tl{padding:14px 18px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.tlrow{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;padding-top:6px}
+.tlrow::before{content:"";position:absolute;top:24px;left:10%;right:10%;height:2px;background:var(--line);z-index:0}
+.tlrow::after{content:"";position:absolute;top:24px;left:10%;width:var(--prog,20%);max-width:80%;height:2px;background:var(--green-800);z-index:1;transition:width .5s}
+.tlpoint{text-align:center;position:relative;z-index:2;cursor:pointer}
 .tlpoint .ring{
-  width:40px;height:40px;border-radius:50%;background:#fff;border:3px solid var(--green-100);
+  width:30px;height:30px;border-radius:50%;background:#fff;border:2px solid var(--line);
   margin:0 auto;display:grid;place-items:center;
-  font-family:'Cormorant Garamond',serif;font-weight:700;color:var(--green-700);font-size:16px;
+  font-family:'Cormorant Garamond',serif;font-weight:700;color:var(--muted);font-size:13px;
   transition:all .2s;
 }
 .tlpoint.done .ring{background:var(--green-800);border-color:var(--green-800);color:#fff}
-.tlpoint.current .ring{background:#fff;border-color:var(--green-800);color:var(--green-800);box-shadow:0 0 0 4px var(--green-50)}
-.tlpoint:hover .ring{transform:scale(1.06)}
-.tlpoint .when{font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--green-800);margin-top:10px;text-transform:uppercase}
-.tlpoint .ttl{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--ink);margin-top:4px;line-height:1.2}
-.tlpoint .blurb{font-size:11.5px;color:var(--muted);margin-top:4px;padding:0 6px;line-height:1.3}
+.tlpoint.current .ring{background:#fff;border-color:var(--green-800);color:var(--green-800);box-shadow:0 0 0 3px var(--green-50)}
+.tlpoint:hover .ring{transform:scale(1.08)}
+.tlpoint .when{font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--green-800);margin-top:8px;text-transform:uppercase}
+.tlpoint .ttl{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--ink);margin-top:2px}
+.tlpoint .blurb{font-size:10.5px;color:var(--muted);margin-top:2px;padding:0 4px;line-height:1.35}
 .tldetail{
-  margin-top:18px;background:var(--green-50);border:1px solid var(--green-100);
-  border-radius:12px;padding:16px 18px;
+  margin-top:14px;padding-top:14px;border-top:1px solid var(--line-soft);
   display:none;
 }
 .tldetail.show{display:block}
-.tldetail h4{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--ink);margin-bottom:4px}
-.tldetail .when{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--green-800);text-transform:uppercase;margin-bottom:8px}
-.tldetail ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.tldetail li{font-size:12.5px;color:var(--ink-2);padding:3px 0 3px 16px;position:relative;line-height:1.45}
-.tldetail li::before{content:"✓";position:absolute;left:0;color:var(--green-800);font-weight:700}
-@media(max-width:760px){.tldetail ul{grid-template-columns:1fr}.tlrow{grid-template-columns:repeat(2,1fr);row-gap:16px}.tlrow::before,.tlrow::after{display:none}}
+.tldetail .meta-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px}
+.tldetail .when{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--green-800);text-transform:uppercase}
+.tldetail h4{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--ink)}
+.tldetail ul{list-style:none;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:3px 14px;margin-top:6px}
+.tldetail li{font-size:12px;color:var(--ink-2);padding:3px 0 3px 12px;position:relative;line-height:1.45}
+.tldetail li::before{content:"✓";position:absolute;left:0;color:var(--green-700);font-weight:700;font-size:10px;top:5px}
+@media(max-width:720px){.tldetail ul{grid-template-columns:1fr}.tlrow{grid-template-columns:repeat(2,1fr);row-gap:14px}.tlrow::before,.tlrow::after{display:none}}
+
+/* EA Study */
+.tracks{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px}
+.track{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fff;border-top:3px solid var(--green-800)}
+.track.top-down{border-top-color:#5C4A8C}
+.track .tbadge{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.track h4{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--ink);font-weight:600;margin-bottom:4px}
+.track .lead-t{font-size:12px;color:var(--ink-2);line-height:1.5;margin-bottom:12px}
+.deliv-list{display:flex;flex-direction:column;gap:8px}
+.deliv .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.deliv h5{font-size:12px;font-weight:600;color:var(--ink);line-height:1.3}
+.deliv .pct{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--green-800);line-height:1;flex:none}
+.deliv .pct.zero{color:var(--muted)}
+.deliv .bar{height:3px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:5px}
+.deliv .fill{height:100%;background:var(--green-800);border-radius:99px;transition:width .5s ease}
+.deliv .meta-t{font-size:10.5px;color:var(--muted);margin-top:4px;line-height:1.4}
+
+.milestones{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:12px}
+.ms{padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:#fff;position:relative}
+.ms.done{border-left:3px solid var(--ok)}
+.ms.now{border-left:3px solid var(--green-800);background:var(--green-50)}
+.ms.next{border-left:3px solid var(--warn)}
+.ms.future{border-left:3px solid var(--line)}
+.ms .when{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ms h5{font-size:11.5px;font-weight:600;color:var(--ink);margin-top:3px;line-height:1.3}
+.ms .sta{font-size:10px;color:var(--muted);margin-top:2px;font-style:italic;line-height:1.3}
+@media(max-width:720px){.milestones{grid-template-columns:1fr 1fr}.tracks{grid-template-columns:1fr}}
+
+.ea-link{
+  margin-top:12px;border:1px solid var(--line);border-left:3px solid var(--warn);
+  border-radius:8px;padding:10px 12px;font-size:12px;color:var(--ink-2);line-height:1.5;background:#fff;
+}
+.ea-link b{color:var(--ink)}
 
 /* Co-pilots */
-.copilots{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.copilots{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .copilot{
-  background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;
-  text-decoration:none;color:inherit;display:block;transition:.2s;position:relative;
+  border:1px solid var(--line);border-radius:11px;padding:14px;background:#fff;
+  text-decoration:none;color:inherit;display:block;transition:.15s;
 }
-.copilot:hover{transform:translateY(-2px);box-shadow:0 12px 22px -14px rgba(0,0,0,.15);border-color:var(--green-500)}
+.copilot:hover{border-color:var(--green-500);transform:translateY(-1px)}
 .copilot .ico{
-  width:48px;height:48px;border-radius:12px;
+  width:36px;height:36px;border-radius:9px;
   background:linear-gradient(135deg,var(--green-800),var(--green-900));
-  display:grid;place-items:center;color:#E6F4E6;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:20px;
+  display:grid;place-items:center;color:#E6F4E6;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:16px;
   margin-bottom:10px;position:relative;overflow:hidden;
 }
-.copilot .ico::before{
-  content:"";position:absolute;inset:0;opacity:.18;
-  background:repeating-linear-gradient(180deg,rgba(180,255,180,.7) 0 1px,transparent 1px 3px);
-}
-.copilot h4{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--ink)}
-.copilot .who{font-size:11px;color:var(--muted);margin-top:2px}
-.copilot .desc{font-size:11.5px;color:var(--ink-2);margin-top:6px;line-height:1.4}
-.copilot .open{font-size:10.5px;color:var(--green-800);font-weight:600;margin-top:8px;letter-spacing:.04em;text-transform:uppercase}
-.copilot.future{opacity:.55}
-.copilot.future .ico{background:linear-gradient(135deg,var(--muted),var(--ink-2))}
-@media(max-width:900px){.copilots{grid-template-columns:1fr 1fr}}
+.copilot .ico::before{content:"";position:absolute;inset:0;opacity:.18;background:repeating-linear-gradient(180deg,rgba(180,255,180,.7) 0 1px,transparent 1px 3px)}
+.copilot h4{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--ink)}
+.copilot .who{font-size:10.5px;color:var(--muted);margin-top:1px}
+.copilot .desc{font-size:11px;color:var(--ink-2);margin-top:6px;line-height:1.4}
+.copilot .open{font-size:9.5px;color:var(--green-800);font-weight:600;margin-top:8px;letter-spacing:.06em;text-transform:uppercase}
+@media(max-width:840px){.copilots{grid-template-columns:1fr 1fr}}
+.arch-link{margin-top:10px;font-size:12px;color:var(--muted);text-align:center}
+.arch-link a{color:var(--green-800);font-weight:600;text-decoration:none;border-bottom:1px solid var(--green-100)}
 
-/* Invest */
-.invest{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:14px}
-.bigfig{
-  background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;
-  border-top:3px solid var(--green-800);
-}
-.bigfig .v{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:700;color:var(--green-800);line-height:1}
-.bigfig .l{font-size:12px;color:var(--muted);margin-top:4px;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
-.bigfig p{font-size:12.5px;color:var(--ink-2);margin-top:10px;line-height:1.5}
-@media(max-width:760px){.invest{grid-template-columns:1fr}}
+/* Investment */
+.invest{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.bigfig{padding:14px 16px;border:1px solid var(--line);border-radius:11px;background:#fff;border-left:3px solid var(--green-800)}
+.bigfig .v{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:var(--green-800);line-height:1}
+.bigfig .l{font-size:10.5px;color:var(--muted);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.bigfig p{font-size:11.5px;color:var(--ink-2);margin-top:8px;line-height:1.5}
+@media(max-width:720px){.invest{grid-template-columns:1fr}}
 
 /* Decisions */
-.dec{display:flex;flex-direction:column;gap:10px}
+.dec{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .decision{
-  background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;
-  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  border:1px solid var(--line);border-radius:11px;padding:14px;background:#fff;
+  display:flex;flex-direction:column;gap:10px;
 }
-.decision .body{flex:1;min-width:240px}
-.decision h4{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:3px}
-.decision p{font-size:12.5px;color:var(--muted);line-height:1.45}
-.btns{display:flex;gap:6px;flex-wrap:wrap}
+.decision .body{flex:1}
+.decision h4{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px;line-height:1.35}
+.decision h4 .tag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:6px;letter-spacing:.04em;text-transform:uppercase;vertical-align:1px}
+.decision h4 .tag.warn{background:var(--warn-bg);color:var(--warn)}
+.decision h4 .tag.bad{background:var(--bad-bg);color:var(--bad)}
+.decision p{font-size:11.5px;color:var(--muted);line-height:1.5}
+.btns{display:flex;gap:5px;flex-wrap:wrap}
 .btn{
-  border:0;cursor:pointer;font:600 12px 'Inter',sans-serif;
-  padding:8px 12px;border-radius:9px;transition:.18s;
-  display:inline-flex;align-items:center;gap:6px;
+  border:0;cursor:pointer;font:600 11px 'Inter',sans-serif;
+  padding:6px 10px;border-radius:7px;transition:.15s;
+  display:inline-flex;align-items:center;gap:4px;
 }
 .btn.ok{background:var(--green-800);color:#fff}
 .btn.ok:hover{background:var(--green-900)}
 .btn.q{background:#fff;color:var(--ink-2);border:1px solid var(--line)}
-.btn.q:hover{background:var(--green-50);color:var(--green-800);border-color:var(--green-100)}
+.btn.q:hover{background:var(--line-soft)}
 .btn.ko{background:#fff;color:var(--bad);border:1px solid var(--bad-bg)}
 .btn.ko:hover{background:var(--bad-bg)}
 .btn.locked{background:var(--ok-bg);color:var(--ok);cursor:default}
 .btn.locked-q{background:#FFF7E0;color:var(--warn);cursor:default}
 .btn.locked-ko{background:var(--bad-bg);color:var(--bad);cursor:default}
+.decision.spanwide{grid-column:1 / -1}
+@media(max-width:720px){.dec{grid-template-columns:1fr}}
 
-/* Feedback */
-.feedback{
-  background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;
+/* Notes */
+.notes{padding:14px;border:1px solid var(--line);border-radius:11px;background:#fff}
+.notes label{font-size:11.5px;font-weight:600;color:var(--ink);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+.notes textarea{
+  width:100%;min-height:70px;border:1px solid var(--line);border-radius:8px;padding:10px;
+  font:400 12.5px 'Inter',sans-serif;color:var(--ink);resize:vertical;background:#fff;outline:none;
 }
-.feedback label{font-size:13px;font-weight:600;color:var(--ink);display:block;margin-bottom:8px}
-.feedback textarea{
-  width:100%;min-height:90px;border:1px solid var(--green-100);border-radius:10px;
-  padding:12px;font:400 13px 'Inter',sans-serif;color:var(--ink);resize:vertical;
-  background:var(--green-50);outline:none;
-}
-.feedback textarea:focus{border-color:var(--green-500);background:#fff}
-.feedback .row{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+.notes textarea:focus{border-color:var(--green-500)}
+.notes .row{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
 .send{
-  background:var(--green-800);color:#fff;border:0;padding:10px 16px;border-radius:10px;
-  font:600 13px 'Inter',sans-serif;cursor:pointer;transition:.18s;
-  display:inline-flex;align-items:center;gap:8px;
+  background:var(--green-800);color:#fff;border:0;padding:8px 14px;border-radius:8px;
+  font:600 12px 'Inter',sans-serif;cursor:pointer;transition:.15s;
+  display:inline-flex;align-items:center;gap:6px;
 }
 .send:hover{background:var(--green-900)}
 .send.done{background:var(--ok-bg);color:var(--ok);cursor:default}
-.summary-pill{
-  font-size:12px;color:var(--muted);margin-left:auto;
-}
+.summary-pill{font-size:11px;color:var(--muted);margin-left:auto}
 .summary-pill b{color:var(--green-800)}
-
-/* EA Study section */
-.tracks{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
-.track{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;border-left:4px solid var(--green-800)}
-.track.bottom-up{border-left-color:#0078D4}
-.track.top-down{border-left-color:#5C4A8C}
-.track .tbadge{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;display:inline-block;padding:3px 8px;border-radius:6px}
-.track.bottom-up .tbadge{background:#E3F2FD;color:#0078D4}
-.track.top-down .tbadge{background:#EDE7F6;color:#5C4A8C}
-.track h4{font-family:'Cormorant Garamond',serif;font-size:19px;color:var(--ink);margin-bottom:6px}
-.track .lead-t{font-size:12.5px;color:var(--ink-2);line-height:1.5;margin-bottom:10px}
-
-.deliv-list{display:flex;flex-direction:column;gap:8px}
-.deliv{background:var(--green-50);border:1px solid var(--green-100);border-radius:10px;padding:10px 12px}
-.deliv .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.deliv h5{font-size:12.5px;font-weight:600;color:var(--ink);line-height:1.3}
-.deliv .pct{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--green-800);line-height:1;flex:none}
-.deliv .pct.zero{color:var(--muted)}
-.deliv .bar{height:5px;background:#fff;border:1px solid var(--green-100);border-radius:99px;overflow:hidden;margin-top:6px}
-.deliv .fill{height:100%;background:var(--green-800);border-radius:99px;transition:width .6s ease}
-.deliv .meta-t{font-size:10.5px;color:var(--muted);margin-top:4px}
-
-.milestones{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px}
-.ms{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative}
-.ms.done{border-top:3px solid var(--ok)}
-.ms.now{border-top:3px solid var(--green-800);box-shadow:0 0 0 3px var(--green-50)}
-.ms.next{border-top:3px solid var(--warn)}
-.ms.future{border-top:3px solid #c9d1c5;opacity:.85}
-.ms .when{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.ms h5{font-size:12px;font-weight:600;color:var(--ink);margin-top:4px;line-height:1.3}
-.ms .sta{font-size:10.5px;color:var(--muted);margin-top:4px;font-style:italic}
-.ms .icb{position:absolute;top:8px;right:10px;width:18px;height:18px;border-radius:5px;display:grid;place-items:center;font-size:10px;font-weight:700}
-.ms.done .icb{background:var(--ok-bg);color:var(--ok)}
-.ms.now .icb{background:var(--green-100);color:var(--green-800)}
-.ms.next .icb{background:var(--warn-bg);color:var(--warn)}
-.ms.future .icb{background:#f2f2f2;color:var(--muted)}
-@media(max-width:800px){.milestones{grid-template-columns:1fr 1fr}.tracks{grid-template-columns:1fr}}
-
-.ea-link{
-  margin-top:14px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--warn);
-  border-radius:10px;padding:12px 14px;font-size:12.5px;color:var(--ink-2);line-height:1.5;
-}
-.ea-link b{color:var(--ink)}
 
 /* Footer */
 .foot{
-  margin-top:50px;padding-top:20px;border-top:1px solid var(--line);
+  margin-top:36px;padding-top:14px;border-top:1px solid var(--line);
   display:flex;justify-content:space-between;align-items:center;
-  font-size:11px;color:var(--muted);
+  font-size:10.5px;color:var(--muted);flex-wrap:wrap;gap:10px;
 }
-.foot .brand-mini{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--green-800);font-size:13px}
+.foot .brand-mini{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--green-800);font-size:12px}
 
-/* Floating progress */
+/* Floating score */
 .scorebar{
-  position:fixed;bottom:18px;right:18px;background:#fff;
-  border:1px solid var(--line);border-radius:14px;padding:10px 14px;
-  box-shadow:0 12px 28px -16px rgba(0,0,0,.18);
-  font-size:11.5px;color:var(--ink-2);display:flex;gap:14px;align-items:center;
-  z-index:50;
+  position:fixed;bottom:16px;right:16px;background:#fff;
+  border:1px solid var(--line);border-radius:11px;padding:8px 12px;
+  box-shadow:0 10px 24px -14px rgba(0,0,0,.2);
+  font-size:10.5px;color:var(--ink-2);display:flex;gap:12px;align-items:center;z-index:50;
 }
-.scorebar .grp{display:flex;align-items:center;gap:5px}
-.scorebar .v{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:16px;color:var(--green-800)}
+.scorebar .grp{display:flex;align-items:center;gap:4px}
+.scorebar .v{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:14px;color:var(--green-800)}
 .scorebar .v.warn{color:var(--warn)}
 .scorebar .v.bad{color:var(--bad)}
-@media(max-width:600px){.scorebar{left:18px;right:18px;justify-content:center}}
+@media(max-width:600px){.scorebar{left:16px;right:16px;justify-content:center}}
 
 @media print{
-  body{background:#fff;padding:20px}
-  section, .hero{break-inside:avoid}
+  body{background:#fff;padding:18px}
+  section{break-inside:avoid}
   .scorebar{display:none}
 }
 </style>
@@ -361,64 +308,63 @@ section{margin-bottom:36px}
       <div class="logo"><span>D<sup>2</sup>n</span></div>
       <div>
         <div class="t1">OCP Nutricrops · D²nAI</div>
-        <div class="t2">Vision Data & Digital 2026-2028</div>
+        <div class="t2">Digital &amp; Data Vision 2025–2030</div>
       </div>
     </div>
     <div class="meta">
-      <div><b>Pour</b> · Faris B., CEO</div>
-      <div><b>De</b> · Équipe D²nAI</div>
-      <div><b>Date</b> · 12 mai 2026</div>
+      <div><b>For</b> · Faris B., CEO</div>
+      <div><b>From</b> · D²nAI Team</div>
+      <div><b>Date</b> · May 19, 2026</div>
     </div>
   </header>
 
-  <div class="hero">
-    <div class="kicker">Executive summary — interactif</div>
-    <h1>Faire de Nutricrops la BU <em>data-driven de référence</em> du groupe OCP — en 3 phases sur 5 ans.</h1>
-    <p class="lead"><b>Phase 1 (2025-2027)</b> · digitaliser l'ensemble des process métier et maîtriser notre patrimoine informationnel. <b>Phase 2 (2026-2028)</b> · pousser nos fondations aux autres SBU pour booster leur roadmap. <b>Phase 3 (2028-2030)</b> · exploiter ce patrimoine comme levier de growth.</p>
+  <section class="hero">
+    <div class="kicker">Executive Summary</div>
+    <h1>Making Nutricrops the <em>data-driven reference</em> business unit of OCP Group.</h1>
+    <p class="lead">Three phases over five years: master our information assets, then push our foundations across the Group, then leverage them for growth.</p>
     <div class="nums">
-      <div class="num"><div class="v">4</div><div class="l">produits Data &amp; AI en prod</div></div>
-      <div class="num"><div class="v">8</div><div class="l">guildes domaines actives</div></div>
-      <div class="num"><div class="v">17</div><div class="l">recrutements P0 prioritaires</div></div>
-      <div class="num"><div class="v">5,7 M</div><div class="l">MAD/an économisés vs externe</div></div>
+      <div class="num"><div class="v">4</div><div class="l">Data &amp; AI products live</div></div>
+      <div class="num"><div class="v">8</div><div class="l">Domain guilds active</div></div>
+      <div class="num"><div class="v">17</div><div class="l">Priority hires (P0)</div></div>
+      <div class="num"><div class="v">5.7M</div><div class="l">MAD/yr savings vs external</div></div>
     </div>
-  </div>
+  </section>
 
   <section>
     <div class="s-head">
-      <h2><span class="n">1</span>Où on en est aujourd'hui</h2>
-      <div class="s-sub">Lecture honnête de l'état des lieux — ce qui tourne, ce qui démarre, ce qui coince.</div>
+      <span class="s-num">01</span>
+      <h2>State of play</h2>
+      <div class="s-sub">An honest read on what works, what's starting, what's stuck.</div>
     </div>
     <div class="snap">
       <div class="col ok">
-        <h3><span class="icb">✓</span>Ce qui tourne</h3>
+        <h3><span class="dot"></span>What works</h3>
         <ul>
-          <li><b>4 produits Data &amp; AI en prod</b> · COO Cockpit, Market Intel Platform, Trial Data Analytics, BI for EPM</li>
-          <li>Backbone enterprise : Salesforce, SAP, Workday, SAP BW</li>
-          <li>Infra <b>hybride &amp; souveraine</b> benchmarkée par Microsoft à l'échelle Afrique</li>
-          <li>AI Lab opérationnel : POC → MVP → Scale</li>
-          <li>Fondation cybersécurité : Zero Trust, NIST, monitoring déployés</li>
+          <li><b>4 products in production</b> · COO Cockpit, Market Intelligence Platform, Trial Analytics, BI for EPM</li>
+          <li>Enterprise backbone deployed: Salesforce, SAP, Workday, SAP BW</li>
+          <li>Hybrid sovereign infra benchmarked by Microsoft at African scale</li>
+          <li>AI Lab operational · PoC → MVP → Scale capability</li>
+          <li>Cybersecurity foundation in place · Zero Trust, NIST, monitoring</li>
         </ul>
       </div>
       <div class="col go">
-        <h3><span class="icb">→</span>Ce qui démarre</h3>
+        <h3><span class="dot"></span>What's starting</h3>
         <ul>
-          <li>Org D²nAI structurée en <b>3 verticales + 8 guildes</b> domaines</li>
-          <li>Recrutement P0 lancé · <b>17 ETP prioritaires</b></li>
-          <li>ESG / Presgo on-prem · Workday · SAP HCM · NutriTalent</li>
+          <li>Organization structured in <b>3 verticals + 8 domain guilds</b></li>
+          <li>P0 recruitment in flight · <b>17 priority hires</b></li>
+          <li>ESG / Presgo · Workday · SAP HCM · NutriTalent</li>
           <li>MDM Semarchy xDM · AgCore · Client Master Data</li>
-          <li>Déploiement régional : Brésil, Afrique, Europe, Inde</li>
-          <li>2 nouveaux produits AI : Knowledge Mgmt, Smart Agro Reco</li>
+          <li>Regional rollout · Brazil, Africa, Europe, India</li>
         </ul>
       </div>
       <div class="col stuck">
-        <h3><span class="icb">!</span>Ce qui coince</h3>
+        <h3><span class="dot"></span>What's stuck</h3>
         <ul>
-          <li><b>Périmètre "Gros Solutions" hors maîtrise</b> · ownership éclaté sur SAP, Salesforce, Ariba, Workday</li>
-          <li><b>Cybersécurité</b> à structurer · équipe et gouvernance à staffer (P0)</li>
-          <li>Sous-déploiement des produits AI sur les BU (PoC à scale)</li>
-          <li>Processus encore manuels ou semi-digitaux (intégration, planning, HR)</li>
-          <li>Gap de capacités régionales (Data, AI, plateformes)</li>
-          <li>Dépendance Group sur tenant Azure AD + Exchange on-prem</li>
+          <li><b>"Big Solutions" perimeter outside D²nAI control</b> · SAP, Salesforce, Ariba, Workday</li>
+          <li><b>Cybersecurity</b> needs a dedicated team and governance</li>
+          <li>AI products proven but under-scaled across BUs</li>
+          <li>Key processes still manual or semi-digital</li>
+          <li>Regional capability gap · uneven across geographies</li>
         </ul>
       </div>
     </div>
@@ -426,60 +372,59 @@ section{margin-bottom:36px}
 
   <section>
     <div class="s-head">
-      <h2><span class="n">2</span>La vision en 3 phases (2025-2030)</h2>
-      <div class="s-sub">Cliquez sur une phase pour ouvrir le détail.</div>
+      <span class="s-num">02</span>
+      <h2>Vision in 3 phases (2025–2030)</h2>
+      <div class="s-sub">Tap a phase to open the detail.</div>
     </div>
-    <div class="pillars">
-      <div class="pillar" data-id="p1">
-        <div class="num">I</div>
-        <div class="sub">2025 — 2027</div>
-        <h3>Maîtriser le patrimoine Nutricrops</h3>
-        <p>Digitaliser l'ensemble des process métier de Nutricrops <b>et</b> mettre sous maîtrise notre patrimoine informationnel — la base sur laquelle tout le reste se construit.</p>
-        <span class="more">Voir le détail <span class="ar">↓</span></span>
+    <div class="phases-grid">
+      <div class="phase-card" data-id="p1">
+        <div class="n">Phase I</div>
+        <div class="yr">2025 — 2027</div>
+        <h3>Master Nutricrops information assets</h3>
+        <p>Digitalize every business process and bring our information assets under one consistent governance.</p>
+        <span class="more">Detail <span class="ar">↓</span></span>
         <div class="detail">
           <ul>
-            <li><b>E2E Process Digitalization</b> · NPD, NutriTrial, Sampling, DPA, prioritisation business</li>
-            <li><b>Data Governance &amp; Master Data</b> · Semarchy xDM, Product/Client MDM, AgCore, Data Privacy</li>
-            <li><b>Backbone enterprise consolidé</b> · SAP roll-out international, Workday/SAP HCM, Salesforce CLM, ARIBA, e-signature</li>
-            <li><b>Trial Data Platform v2</b> + Core Data Model 2.0 (Brésil, LATAM, Inde, Afrique)</li>
-            <li><b>Cybersécurité structurée</b> · équipe dédiée, ISO 27001/42001 fin 2026</li>
-            <li><b>Cible</b> · 12 produits Data/AI en prod, infra hybride souveraine certifiée</li>
+            <li>E2E Process Digitalization · NPD, NutriTrial, Sampling, DPA</li>
+            <li>Master Data &amp; Governance · Semarchy xDM, Product/Client MDM, AgCore</li>
+            <li>Enterprise backbone consolidated · SAP international, Workday/SAP HCM, Salesforce CLM, ARIBA</li>
+            <li>Trial Data Platform v2 + Core Data Model 2.0 across regions</li>
+            <li>Cybersecurity team built · ISO 27001/42001 by end 2026</li>
+            <li>Target · 12 data/AI products in production</li>
           </ul>
         </div>
       </div>
-
-      <div class="pillar" data-id="p2">
-        <div class="num">II</div>
-        <div class="sub">2026 — 2028</div>
-        <h3>Essaimer aux SBU du groupe</h3>
-        <p>Pousser nos fondations (infra benchmarkée par Microsoft, plateformes Data, AI Lab, gouvernance) aux autres SBU pour booster leur roadmap et faire de Nutricrops la <b>référence Data du groupe</b>.</p>
-        <span class="more">Voir le détail <span class="ar">↓</span></span>
+      <div class="phase-card" data-id="p2">
+        <div class="n">Phase II</div>
+        <div class="yr">2026 — 2028</div>
+        <h3>Scale foundations to other SBUs</h3>
+        <p>Push our infra, platforms, AI Lab and governance to the broader OCP Group as a shared backbone.</p>
+        <span class="more">Detail <span class="ar">↓</span></span>
         <div class="detail">
           <ul>
-            <li><b>Infra partagée</b> · landing zones régionales, plateformes data communes</li>
-            <li><b>Standards Group</b> · normes data, sécurité, architecture, MDM</li>
-            <li><b>Produits scalés</b> · COO Cockpit, Market Intel, EPM en offre Group</li>
-            <li><b>Co-pilotes exec</b> · NutriCEO/Sentinel/Helios/Maestro extensibles aux SBU</li>
-            <li><b>Partenariats stratégiques</b> · Microsoft, UM6P, Databricks, AgriEdge, OCP Solutions</li>
-            <li><b>Cible</b> · 2-3 SBU adoptantes, modèle de recharge intra-Group</li>
+            <li>Shared infra · regional landing zones, common data platforms</li>
+            <li>Group standards · data, security, architecture, MDM</li>
+            <li>Products scaled to Group · COO Cockpit, Market Intel, EPM</li>
+            <li>Executive co-pilots extensible to other SBUs</li>
+            <li>Strategic partnerships · Microsoft, UM6P, Databricks, AgriEdge</li>
+            <li>Target · 2–3 SBUs onboarded with intra-Group rechargeback model</li>
           </ul>
         </div>
       </div>
-
-      <div class="pillar" data-id="p3">
-        <div class="num">III</div>
-        <div class="sub">2028 — 2030</div>
-        <h3>Exploiter comme levier de growth</h3>
-        <p>Transformer le patrimoine informationnel construit en avantage compétitif tangible — pricing, agronomie, sourcing, nouveaux services data — et le monétiser au-delà de l'interne.</p>
-        <span class="more">Voir le détail <span class="ar">↓</span></span>
+      <div class="phase-card" data-id="p3">
+        <div class="n">Phase III</div>
+        <div class="yr">2028 — 2030</div>
+        <h3>Leverage information for growth</h3>
+        <p>Turn the information patrimony into competitive advantage — pricing, agronomy, new data services.</p>
+        <span class="more">Detail <span class="ar">↓</span></span>
         <div class="detail">
           <ul>
-            <li><b>Pricing intelligence</b> phosphates &amp; engrais spécialisés à l'échelle marché</li>
-            <li><b>Smart Agro Recommendations</b> AI · précision agronomique, satellite, sol</li>
-            <li><b>Knowledge Management</b> AI · capitaliser l'expertise OCP</li>
-            <li><b>Services data</b> vers clients distributeurs &amp; partenaires (data products externes)</li>
-            <li><b>Modèle maison LLM</b> en production sur 80% des cas, souveraineté assumée</li>
-            <li><b>Cible</b> · contribution mesurable à la marge / revenus nouveaux</li>
+            <li>Pricing intelligence at global market scale</li>
+            <li>Smart Agro Recommendations AI · precision farming, satellite</li>
+            <li>Knowledge Management AI · capture OCP-wide expertise</li>
+            <li>External data products toward distributors &amp; partners</li>
+            <li>In-house LLM in production on 80% of cases</li>
+            <li>Target · measurable contribution to margin and new revenue</li>
           </ul>
         </div>
       </div>
@@ -488,47 +433,49 @@ section{margin-bottom:36px}
 
   <section>
     <div class="s-head">
-      <h2><span class="n">3</span>Roadmap 18 mois</h2>
-      <div class="s-sub">Cliquez sur un jalon pour voir ce qu'on livre.</div>
+      <span class="s-num">03</span>
+      <h2>Roadmap</h2>
+      <div class="s-sub">Tap a milestone to see what we ship.</div>
     </div>
-    <div class="timeline">
-      <div class="tlrow" id="tlrow" style="--progress:18%">
+    <div class="tl">
+      <div class="tlrow" id="tlrow" style="--prog:18%">
         <div class="tlpoint current" data-ph="0">
           <div class="ring">1</div>
           <div class="when">H2 2026</div>
-          <div class="ttl">Maîtrise</div>
-          <div class="blurb">EA Study rollout · Cyber · 17 P0 · MDM</div>
+          <div class="ttl">Control</div>
+          <div class="blurb">EA rollout · Cyber · P0 · MDM</div>
         </div>
         <div class="tlpoint" data-ph="1">
           <div class="ring">2</div>
           <div class="when">2027</div>
-          <div class="ttl">Digitalisation</div>
-          <div class="blurb">E2E process + ISO certif + 12 produits</div>
+          <div class="ttl">Digitalize</div>
+          <div class="blurb">E2E processes · ISO · 12 products</div>
         </div>
         <div class="tlpoint" data-ph="2">
           <div class="ring">3</div>
-          <div class="when">2026 — 2028</div>
-          <div class="ttl">Group scaling</div>
-          <div class="blurb">Infra/standards essaimés aux SBU</div>
+          <div class="when">2026–28</div>
+          <div class="ttl">Group scale</div>
+          <div class="blurb">Standards &amp; infra to other SBUs</div>
         </div>
         <div class="tlpoint" data-ph="3">
           <div class="ring">4</div>
-          <div class="when">2028 — 2030</div>
+          <div class="when">2028–30</div>
           <div class="ttl">Growth lever</div>
-          <div class="blurb">Pricing AI · Agro AI · services data</div>
+          <div class="blurb">Pricing AI · Agro AI · data services</div>
         </div>
       </div>
-
       <div class="tldetail" id="tldetail">
-        <div class="when" id="phWhen">Étape 1 · H2 2026 — mise sous maîtrise</div>
-        <h4 id="phTitle">Maîtrise du périmètre Nutricrops</h4>
+        <div class="meta-row">
+          <div class="when" id="phWhen">Step 1 · H2 2026 — Control</div>
+        </div>
+        <h4 id="phTitle">Master the Nutricrops perimeter</h4>
         <ul id="phList">
-          <li>EA Study · Application 360° rollout périmètre complet (mi-juin) — ~28 apps déjà cataloguées</li>
-          <li>EA Study · BCM scoring + process mapping joint task force (juillet)</li>
-          <li>EA Study · Guiding principles (septembre) + Target architecture (octobre) → cadre 'Gros Solutions'</li>
-          <li>Cybersécurité structurée : Manager + Architect + 2 SoC engineers (P0)</li>
-          <li>17 ETP P0 recrutés (Data Office, Architecture, Guildes)</li>
-          <li>Semarchy xDM en prod + ESG Presgo Go/No-Go + Workday/SAP HCM lancés</li>
+          <li>EA Study · Application 360° rollout complete (mid-June)</li>
+          <li>EA Study · BCM scoring + process mapping (July, joint task force)</li>
+          <li>EA Study · Guiding principles (Sept) + Target architecture (Oct)</li>
+          <li>Cybersecurity team in place: Manager, Architect, 2 SoC engineers</li>
+          <li>17 P0 ETPs hired across Data, Architecture, Guilds</li>
+          <li>Semarchy MDM in prod · ESG Go/No-Go · Workday/SAP HCM launched</li>
         </ul>
       </div>
     </div>
@@ -536,240 +483,196 @@ section{margin-bottom:36px}
 
   <section>
     <div class="s-head">
-      <h2><span class="n">4</span>Programme phare · Enterprise Architecture Study</h2>
-      <div class="s-sub">Le levier opérationnel pour reprendre la maîtrise du périmètre IT (décision #2).</div>
+      <span class="s-num">04</span>
+      <h2>Flagship program · Enterprise Architecture Study</h2>
+      <div class="s-sub">The operational lever behind decision #2.</div>
     </div>
-    <p class="intro" style="font-size:14px;color:var(--ink-2);line-height:1.55;margin-bottom:18px;max-width:760px">
-      Étude lancée fin 2025 pour <b>définir une IT organization cohérente, agile, alignée sur la value chain</b>. Méthodologie en 2 stages (AS-IS / TO-BE), coordination avec le Group Architecture Council pour l'alignement cross-SBU. État au <b>19 mai 2026</b> :
-    </p>
 
     <div class="tracks">
-      <div class="track bottom-up">
-        <span class="tbadge">● Bottom-up</span>
-        <h4>Track 1 — AS-IS Analysis</h4>
-        <p class="lead-t">Inventaire holistique du paysage applicatif via le framework <b>Application 360°</b> (Core Identity · Architecture · Governance · Functional coverage · Data view CRUD/IN/OUT · Statut). Inclut l'identification du Shadow IT.</p>
+      <div class="track">
+        <div class="tbadge">Bottom-up · AS-IS</div>
+        <h4>Track 1 — Current state analysis</h4>
+        <p class="lead-t">Holistic landscape inventory through the <b>Application 360°</b> framework: identity, architecture, governance, functional coverage, CRUD/inbound/outbound data view, including Shadow IT.</p>
         <div class="deliv-list">
           <div class="deliv">
-            <div class="top">
-              <h5>Application 360° inventory</h5>
-              <span class="pct">75%</span>
-            </div>
+            <div class="top"><h5>Application 360° inventory</h5><span class="pct">75%</span></div>
             <div class="bar"><div class="fill" style="width:75%"></div></div>
-            <div class="meta-t">Pilot SAP / Salesforce / S&amp;A complété (~28 apps cataloguées) · rollout périmètre complet mi-juin</div>
+            <div class="meta-t">Pilot on SAP / Salesforce / S&amp;A done · ~28 apps catalogued · full perimeter mid-June</div>
           </div>
           <div class="deliv">
-            <div class="top">
-              <h5>Business Capability Map (scored)</h5>
-              <span class="pct">5%</span>
-            </div>
+            <div class="top"><h5>Business Capability Map (scored)</h5><span class="pct">5%</span></div>
             <div class="bar"><div class="fill" style="width:5%"></div></div>
-            <div class="meta-t">Joint task force · juillet 2026 · aligné avec BCM Group</div>
+            <div class="meta-t">Joint task force · July · aligned with Group BCM</div>
           </div>
           <div class="deliv">
-            <div class="top">
-              <h5>End-to-end process mapping</h5>
-              <span class="pct">5%</span>
-            </div>
+            <div class="top"><h5>End-to-end process mapping</h5><span class="pct">5%</span></div>
             <div class="bar"><div class="fill" style="width:5%"></div></div>
-            <div class="meta-t">Gaps fonctionnels · overlaps · Shadow IT · ruptures de continuité</div>
+            <div class="meta-t">Functional gaps, overlaps, Shadow IT, continuity breaks</div>
           </div>
         </div>
       </div>
 
       <div class="track top-down">
-        <span class="tbadge">● Top-down</span>
-        <h4>Track 2 — TO-BE Definition</h4>
-        <p class="lead-t">Modélisation de l'IS cible à partir des Business Capabilities et Processes, avec règles de gouvernance et boundaries claires entre domaines de responsabilité.</p>
+        <div class="tbadge">Top-down · TO-BE</div>
+        <h4>Track 2 — Target architecture</h4>
+        <p class="lead-t">Modeling of the target IS from business capabilities and processes, with governance rules and clear boundaries between domains of responsibility.</p>
         <div class="deliv-list">
           <div class="deliv">
-            <div class="top">
-              <h5>Guiding principles</h5>
-              <span class="pct zero">0%</span>
-            </div>
+            <div class="top"><h5>Guiding principles</h5><span class="pct zero">0%</span></div>
             <div class="bar"><div class="fill" style="width:0%"></div></div>
-            <div class="meta-t">Digital continuity · data sovereignty · API-first · single source of truth · cible septembre 2026</div>
+            <div class="meta-t">Digital continuity · data sovereignty · API-first · single source of truth · September</div>
           </div>
           <div class="deliv">
-            <div class="top">
-              <h5>Target architecture &amp; roadmap</h5>
-              <span class="pct zero">0%</span>
-            </div>
+            <div class="top"><h5>Target architecture &amp; roadmap</h5><span class="pct zero">0%</span></div>
             <div class="bar"><div class="fill" style="width:0%"></div></div>
-            <div class="meta-t">Modélisation IS cible all-layers · règles de design · cible octobre 2026</div>
+            <div class="meta-t">Layered target IS · design rules · October</div>
           </div>
           <div class="deliv">
-            <div class="top">
-              <h5>Cross-SBU Architecture Council alignment</h5>
-              <span class="pct zero">—</span>
-            </div>
+            <div class="top"><h5>Cross-SBU alignment (Architecture Council)</h5><span class="pct zero">—</span></div>
             <div class="bar"><div class="fill" style="width:0%"></div></div>
-            <div class="meta-t">Coordination Group taskforce permanente — déclencheur du scaling phase 2</div>
+            <div class="meta-t">Continuous · trigger for phase 2 scaling</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="milestones">
-      <div class="ms done">
-        <span class="icb">✓</span>
-        <div class="when">Avril 2026</div>
-        <h5>Pilot inventory</h5>
-        <div class="sta">SAP · Salesforce · S&amp;A complétés</div>
-      </div>
-      <div class="ms now">
-        <span class="icb">●</span>
-        <div class="when">Mi-juin 2026</div>
-        <h5>Inventory rollout</h5>
-        <div class="sta">Extension périmètre IT complet · en cours</div>
-      </div>
-      <div class="ms next">
-        <span class="icb">!</span>
-        <div class="when">Juillet 2026</div>
-        <h5>BCM + Process mapping</h5>
-        <div class="sta">Joint effort task force Group</div>
-      </div>
-      <div class="ms future">
-        <span class="icb">→</span>
-        <div class="when">Septembre 2026</div>
-        <h5>Guiding principles</h5>
-        <div class="sta">Règles d'architecture fondamentales</div>
-      </div>
-      <div class="ms future">
-        <span class="icb">→</span>
-        <div class="when">Octobre 2026</div>
-        <h5>Target architecture</h5>
-        <div class="sta">IS cible all-layers · roadmap transition</div>
-      </div>
+      <div class="ms done"><div class="when">Apr 2026</div><h5>Pilot inventory</h5><div class="sta">SAP · Salesforce · S&amp;A · done</div></div>
+      <div class="ms now"><div class="when">Mid-Jun 2026</div><h5>Inventory rollout</h5><div class="sta">Full IT perimeter · in progress</div></div>
+      <div class="ms next"><div class="when">Jul 2026</div><h5>BCM + process map</h5><div class="sta">Joint task force</div></div>
+      <div class="ms future"><div class="when">Sep 2026</div><h5>Guiding principles</h5><div class="sta">Architectural rules</div></div>
+      <div class="ms future"><div class="when">Oct 2026</div><h5>Target architecture</h5><div class="sta">Layered IS · transition roadmap</div></div>
     </div>
 
     <div class="ea-link">
-      <b>Lien avec la décision #2</b> · Le rollout Application 360° de mi-juin met sous gouvernance D²nAI les "Gros Solutions" actuellement éclatées (SAP MM/SD/FI/CO/PS, ARIBA, Salesforce Sales Cloud + PLM, Workday, Kyriba, ServiceNow…). La cible architecture d'octobre formalisera le modèle de pilotage cible.
+      <b>Link to decision #2</b> · The mid-June rollout brings under D²nAI governance the currently fragmented "Big Solutions" (SAP MM/SD/FI/CO/PS, ARIBA, Salesforce Sales + PLM, Workday, Kyriba, ServiceNow, etc.). The October target architecture formalises the steady-state operating model.
     </div>
   </section>
 
   <section>
     <div class="s-head">
-      <h2><span class="n">5</span>Co-pilotes exec — POCs sur la fondation</h2>
-      <div class="s-sub">4 prototypes interactifs construits sur l'infra hybride, à valider avant industrialisation.</div>
+      <span class="s-num">05</span>
+      <h2>Executive co-pilots — proofs of concept</h2>
+      <div class="s-sub">Four prototypes built on the foundation. Tap to open.</div>
     </div>
     <div class="copilots">
       <a class="copilot" href="index.html" target="_blank">
         <div class="ico">N</div>
         <h4>NutriCEO</h4>
-        <div class="who">Faris · CEO Nutricrops</div>
-        <div class="desc">Pilotage transverse Comex : OPEX, roadmap usine, ventes BU, risques semaine.</div>
-        <div class="open">Ouvrir la démo →</div>
+        <div class="who">Faris · CEO</div>
+        <div class="desc">Transverse Excom pilot: OPEX, plant roadmap, BU sales, weekly risks.</div>
+        <div class="open">Open demo →</div>
       </a>
       <a class="copilot" href="sentinel.html" target="_blank">
         <div class="ico">S</div>
         <h4>Sentinel</h4>
-        <div class="who">CPRO · Performance & Risk</div>
-        <div class="desc">Top risques, BU sous-performantes, contrôles internes, incidents, génération de rapports.</div>
-        <div class="open">Ouvrir la démo →</div>
+        <div class="who">CPRO · Perf &amp; Risk</div>
+        <div class="desc">Top risks, BU underperformance, internal controls, incidents, report generation.</div>
+        <div class="open">Open demo →</div>
       </a>
       <a class="copilot" href="helios.html" target="_blank">
         <div class="ico">H</div>
         <h4>Helios</h4>
-        <div class="who">Nadia · DRH</div>
-        <div class="desc">Turnover, postes critiques, climat social, masse salariale, pipeline recrutement.</div>
-        <div class="open">Ouvrir la démo →</div>
+        <div class="who">CHRO</div>
+        <div class="desc">Turnover, critical hires, social climate, payroll, hiring pipeline.</div>
+        <div class="open">Open demo →</div>
       </a>
       <a class="copilot" href="maestro.html" target="_blank">
         <div class="ico">M</div>
         <h4>Maestro</h4>
-        <div class="who">Sarah · EA du CEO</div>
-        <div class="desc">Meeting co-pilot, inbox triage, stakeholder memory, briefs, agenda intelligent.</div>
-        <div class="open">Ouvrir la démo →</div>
+        <div class="who">EA of the CEO</div>
+        <div class="desc">Meeting co-pilot, inbox triage, stakeholder memory, briefs, smart agenda.</div>
+        <div class="open">Open demo →</div>
       </a>
     </div>
-    <p style="margin-top:14px;font-size:12.5px;color:var(--muted);text-align:center">
-      Vous voulez voir l'architecture technique cible ? <a href="architecture.html" target="_blank" style="color:var(--green-800);font-weight:600;text-decoration:none">Ouvrir le high-level design →</a>
-    </p>
+    <div class="arch-link">Want the target architecture? <a href="architecture.html" target="_blank">Open the high-level design</a></div>
   </section>
 
   <section>
     <div class="s-head">
-      <h2><span class="n">6</span>Investissement & ROI</h2>
-      <div class="s-sub">Ordre de grandeur — à affiner avec la DAF en Comité Q3.</div>
+      <span class="s-num">06</span>
+      <h2>Investment &amp; ROI</h2>
+      <div class="s-sub">Order of magnitude — to refine with the CFO at next Excom.</div>
     </div>
     <div class="invest">
       <div class="bigfig">
         <div class="v">22 ETP</div>
-        <div class="l">Sourcing cible (P0+P1+P2)</div>
-        <p><b>17 P0</b> urgents · 1 P1 · 4 P2. Répartis sur Data Office, Architecture/Infra/Cyber et les guildes domaines.</p>
+        <div class="l">Sourcing target (P0+P1+P2)</div>
+        <p>17 P0 urgent · 1 P1 · 4 P2. Spread across Data Office, Architecture/Infra/Cyber and the domain guilds.</p>
       </div>
       <div class="bigfig">
-        <div class="v">16,3 M</div>
-        <div class="l">MAD/an — coût interne (scénario 3)</div>
-        <p>vs <b>22 M MAD</b> en achat externe équivalent — économie nette annuelle <b>5,7 M MAD</b>. Internalisation = OPEX réduit + compétences capitalisées.</p>
+        <div class="v">16.3M</div>
+        <div class="l">MAD/year · internal cost</div>
+        <p>vs <b>22M MAD</b> equivalent external sourcing — net annual savings <b>5.7M MAD</b>. Internalisation = lower OPEX + capitalised skills.</p>
       </div>
       <div class="bigfig">
-        <div class="v">∑</div>
-        <div class="l">Économies cumulées 3 ans</div>
-        <p>Plus de <b>17 M MAD</b> sur 3 ans à effectif constant. Plus le ROI indirect : meilleures décisions, time-to-market produits, valeur Group.</p>
+        <div class="v">17M+</div>
+        <div class="l">Cumulative savings · 3 years</div>
+        <p>At constant headcount, vs full external sourcing. Plus indirect ROI: better decisions, faster time-to-market, Group reuse value.</p>
       </div>
     </div>
   </section>
 
   <section>
     <div class="s-head">
-      <h2><span class="n">7</span>Décisions attendues de toi</h2>
-      <div class="s-sub">4 arbitrages pour débloquer la trajectoire — un clic par décision.</div>
+      <span class="s-num">07</span>
+      <h2>Decisions we need from you</h2>
+      <div class="s-sub">Five calls to unlock the trajectory.</div>
     </div>
     <div class="dec">
-      <div class="decision" data-id="d1">
+      <div class="decision spanwide" data-id="d1">
         <div class="body">
-          <h4>1 · Valider la vision 2025-2030 en 3 phases</h4>
-          <p>Maîtrise du patrimoine Nutricrops (2025-2027) → essaimage SBU Group (2026-2028) → levier de growth (2028-2030).</p>
+          <h4>1 · Approve the 2025–2030 vision in three phases</h4>
+          <p>Master Nutricrops information assets (2025–27) → scale to Group SBUs (2026–28) → leverage as growth driver (2028–30).</p>
         </div>
         <div class="btns">
-          <button class="btn ok" data-vote="ok">✓ Je valide</button>
-          <button class="btn q" data-vote="q">? J'ai des questions</button>
-          <button class="btn ko" data-vote="ko">✗ À reporter</button>
+          <button class="btn ok" data-vote="ok">✓ Approve</button>
+          <button class="btn q" data-vote="q">? Questions</button>
+          <button class="btn ko" data-vote="ko">✗ Defer</button>
         </div>
       </div>
       <div class="decision" data-id="d2">
         <div class="body">
-          <h4>2 · Reprendre la maîtrise des "Gros Solutions" <span style="color:var(--warn);font-size:11px;background:var(--warn-bg);padding:2px 6px;border-radius:4px;margin-left:6px;font-weight:700">point sensible</span></h4>
-          <p>Aujourd'hui, un périmètre entier (SAP, Salesforce, Ariba, Workday…) est porté en dehors de D²nAI, sans gouvernance unifiée. Les enjeux Nutricrops actuels demandent de le récupérer sous notre maîtrise.</p>
+          <h4>2 · Reclaim "Big Solutions" governance <span class="tag warn">Sensitive</span></h4>
+          <p>Today an entire perimeter (SAP, Salesforce, Ariba, Workday…) runs outside D²nAI without unified governance. Current Nutricrops priorities call for bringing it under our control.</p>
         </div>
         <div class="btns">
-          <button class="btn ok" data-vote="ok">✓ Je valide</button>
-          <button class="btn q" data-vote="q">? J'ai des questions</button>
-          <button class="btn ko" data-vote="ko">✗ À reporter</button>
+          <button class="btn ok" data-vote="ok">✓ Approve</button>
+          <button class="btn q" data-vote="q">? Questions</button>
+          <button class="btn ko" data-vote="ko">✗ Defer</button>
         </div>
       </div>
       <div class="decision" data-id="d3">
         <div class="body">
-          <h4>3 · Structurer la fonction Cybersécurité <span style="color:var(--bad);font-size:11px;background:var(--bad-bg);padding:2px 6px;border-radius:4px;margin-left:6px;font-weight:700">validation explicite demandée</span></h4>
-          <p>La fondation cyber existe (Zero Trust, NIST). Il manque une <b>équipe dédiée</b> et une gouvernance formalisée : Manager + Architect + 2 SoC engineers (P0), cible ISO 27001/42001 fin 2026.</p>
+          <h4>3 · Structure the Cybersecurity function <span class="tag bad">Explicit validation</span></h4>
+          <p>Cyber foundations are in place (Zero Trust, NIST). What's missing is a <b>dedicated team</b> with formal governance: Manager + Architect + 2 SoC engineers (P0), target ISO 27001/42001 by end 2026.</p>
         </div>
         <div class="btns">
-          <button class="btn ok" data-vote="ok">✓ Je valide</button>
-          <button class="btn q" data-vote="q">? J'ai des questions</button>
-          <button class="btn ko" data-vote="ko">✗ À reporter</button>
+          <button class="btn ok" data-vote="ok">✓ Approve</button>
+          <button class="btn q" data-vote="q">? Questions</button>
+          <button class="btn ko" data-vote="ko">✗ Defer</button>
         </div>
       </div>
       <div class="decision" data-id="d4">
         <div class="body">
-          <h4>4 · Approuver le plan de sourcing d'équipe</h4>
-          <p>17 P0 (urgent), jusqu'à 22 ETP à 18 mois. Internalisation pour <b>réduire l'OPEX (5,7 M MAD/an d'économies vs externe)</b> et capitaliser les compétences en interne.</p>
+          <h4>4 · Approve the sourcing plan</h4>
+          <p>17 P0 hires (urgent), up to 22 ETPs over 18 months. Internalisation to <b>cut OPEX (~5.7M MAD/yr saved vs external)</b> and build skills in-house.</p>
         </div>
         <div class="btns">
-          <button class="btn ok" data-vote="ok">✓ Je valide</button>
-          <button class="btn q" data-vote="q">? J'ai des questions</button>
-          <button class="btn ko" data-vote="ko">✗ À reporter</button>
+          <button class="btn ok" data-vote="ok">✓ Approve</button>
+          <button class="btn q" data-vote="q">? Questions</button>
+          <button class="btn ko" data-vote="ko">✗ Defer</button>
         </div>
       </div>
       <div class="decision" data-id="d5">
         <div class="body">
-          <h4>5 · Sponsoriser scaling Group + comité trimestriel</h4>
-          <p>Soutien direct CEO pour faciliter l'essaimage aux SBU, et désignation d'un comité de pilotage trimestriel (CEO + CFO + DRH + sponsors Group).</p>
+          <h4>5 · Sponsor Group scaling + quarterly steering</h4>
+          <p>Direct CEO support to ease scaling to other SBUs, plus designation of a quarterly steering committee (CEO + CFO + CHRO + Group sponsors).</p>
         </div>
         <div class="btns">
-          <button class="btn ok" data-vote="ok">✓ Je valide</button>
-          <button class="btn q" data-vote="q">? J'ai des questions</button>
-          <button class="btn ko" data-vote="ko">✗ À reporter</button>
+          <button class="btn ok" data-vote="ok">✓ Approve</button>
+          <button class="btn q" data-vote="q">? Questions</button>
+          <button class="btn ko" data-vote="ko">✗ Defer</button>
         </div>
       </div>
     </div>
@@ -777,92 +680,92 @@ section{margin-bottom:36px}
 
   <section>
     <div class="s-head">
-      <h2><span class="n">8</span>Tes remarques</h2>
-      <div class="s-sub">Une note pour l'équipe D²nAI — directement transmise à Sarah à l'envoi.</div>
+      <span class="s-num">08</span>
+      <h2>Your notes</h2>
+      <div class="s-sub">Forwarded to the D²nAI team on send.</div>
     </div>
-    <div class="feedback">
-      <label for="fb">Note libre, questions, points de vigilance…</label>
-      <textarea id="fb" placeholder="Tape ici. Tu peux aussi laisser vide et juste cliquer sur Envoyer pour valider tes votes."></textarea>
+    <div class="notes">
+      <label for="fb">Free text · questions · watch-outs</label>
+      <textarea id="fb" placeholder="Type here. You can also leave it blank and click Send to record your votes only."></textarea>
       <div class="row">
         <button class="send" id="sendBtn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4 20-7z"/></svg>
-          Envoyer à l'équipe D²nAI
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4 20-7z"/></svg>
+          Send to D²nAI team
         </button>
-        <div class="summary-pill" id="summary">aucune décision validée</div>
+        <div class="summary-pill" id="summary">no decision recorded yet</div>
       </div>
     </div>
   </section>
 
   <footer class="foot">
-    <div>D²nAI · OCP Nutricrops · Executive summary v1</div>
+    <div>D²nAI · OCP Nutricrops · Executive Summary v2 · May 19, 2026</div>
     <div class="brand-mini">Feed the data to feed the decision.</div>
   </footer>
 
 </div>
 
 <div class="scorebar" id="scorebar">
-  <div class="grp"><span class="v" id="okCount">0</span><span>validées</span></div>
+  <div class="grp"><span class="v" id="okCount">0</span><span>approved</span></div>
   <div class="grp"><span class="v warn" id="qCount">0</span><span>questions</span></div>
-  <div class="grp"><span class="v bad" id="koCount">0</span><span>à reporter</span></div>
+  <div class="grp"><span class="v bad" id="koCount">0</span><span>deferred</span></div>
 </div>
 
 <script>
-// Pillar expand
-document.querySelectorAll('.pillar').forEach(p=>{
+document.querySelectorAll('.phase-card').forEach(p=>{
   p.addEventListener('click', ()=>p.classList.toggle('open'));
 });
 
-// Roadmap phases
 const phases = [
   {
-    when:"Étape 1 · H2 2026 — mise sous maîtrise",
-    title:"Maîtrise du périmètre Nutricrops",
+    when:"Step 1 · H2 2026 — Control",
+    title:"Master the Nutricrops perimeter",
     items:[
-      "EA Study · Application 360° rollout périmètre complet (mi-juin) — ~28 apps déjà cataloguées",
-      "EA Study · BCM scoring + process mapping joint task force (juillet)",
-      "EA Study · Guiding principles (septembre) + Target architecture (octobre) → cadre 'Gros Solutions'",
-      "Cybersécurité structurée : Manager + Architect + 2 SoC engineers (P0)",
-      "17 ETP P0 recrutés (Data Office, Architecture, Guildes)",
-      "Semarchy xDM en prod + ESG Presgo Go/No-Go + Workday/SAP HCM lancés"
+      "EA Study · Application 360° rollout complete (mid-June) — ~28 apps already catalogued",
+      "EA Study · BCM scoring + process mapping with task force (July)",
+      "EA Study · Guiding principles (Sept) + Target architecture (Oct) → 'Big Solutions' frame",
+      "Cybersecurity team: Manager, Architect, 2 SoC engineers (P0)",
+      "17 P0 ETPs hired (Data Office, Architecture, Guilds)",
+      "Semarchy MDM in prod + ESG Go/No-Go + Workday/SAP HCM launched"
     ]
   },
   {
-    when:"Étape 2 · 2027 — digitalisation complète",
-    title:"E2E digitalization + certifications",
+    when:"Step 2 · 2027 — Digitalize",
+    title:"End-to-end digitalization + certifications",
     items:[
-      "Programme E2E Process Digitalization : NPD, NutriTrial, Sampling, DPA",
-      "Trial Data Platform v2 + Core Data Model 2.0 (4 régions)",
-      "ISO 27001/42001 obtenus (Microsoft SOW engagée)",
-      "EPM Dashboard relancé avec sponsor identifié",
-      "Sovereign Hybrid AI : NutriRadar mobile, AI Lab Private Cloud",
-      "Auto-reporting Comex automatisé (Operations Cockpit v2)"
+      "E2E Process Digitalization · NPD, NutriTrial, Sampling, DPA",
+      "Trial Data Platform v2 + Core Data Model 2.0 across regions",
+      "ISO 27001/42001 obtained (Microsoft SOW engaged)",
+      "EPM dashboard relaunched with identified sponsor",
+      "Sovereign Hybrid AI · NutriRadar mobile, AI Lab private cloud",
+      "Auto-reporting Excom (Operations Cockpit v2)"
     ]
   },
   {
-    when:"Étape 3 · 2026 — 2028 — essaimage Group",
-    title:"Pousser fondations aux SBU OCP",
+    when:"Step 3 · 2026 — 2028 — Group scaling",
+    title:"Foundations pushed to other SBUs",
     items:[
-      "Infra hybride sovereign comme asset Group (benchmark Microsoft)",
-      "Landing zones régionales : Brésil, Afrique, Europe, Inde activées",
-      "Standards Group : data, sécurité, architecture, MDM",
-      "Produits scalés Group : COO Cockpit, Market Intel, EPM",
-      "Co-pilotes exec (NutriCEO/Sentinel/Helios/Maestro) extensibles",
-      "Modèle de recharge intra-Group défini avec OCP Solutions"
+      "Hybrid sovereign infra as Group asset (Microsoft-benchmarked)",
+      "Regional landing zones · Brazil, Africa, Europe, India",
+      "Group standards · data, security, architecture, MDM",
+      "Products scaled · COO Cockpit, Market Intel, EPM",
+      "Executive co-pilots extensible (NutriCEO, Sentinel, Helios, Maestro)",
+      "Intra-Group rechargeback model with OCP Solutions"
     ]
   },
   {
-    when:"Étape 4 · 2028 — 2030 — levier de growth",
-    title:"Exploiter le patrimoine comme avantage compétitif",
+    when:"Step 4 · 2028 — 2030 — Growth lever",
+    title:"Information patrimony as competitive advantage",
     items:[
-      "Pricing intelligence à l'échelle marché global",
-      "Smart Agro Recommendations AI (précision, satellite, sol)",
-      "Knowledge Management AI déployé sur expertise OCP",
-      "Data products externes vers distributeurs & partenaires",
-      "Modèle maison LLM en prod sur 80% des cas",
-      "Contribution mesurable à la marge et aux revenus nouveaux"
+      "Pricing intelligence at global market scale",
+      "Smart Agro Recommendations AI (precision, satellite, soil)",
+      "Knowledge Management AI capturing OCP-wide expertise",
+      "External data products toward distributors &amp; partners",
+      "In-house LLM in prod on 80% of cases",
+      "Measurable contribution to margin and new revenue"
     ]
   }
 ];
+
 const tlpoints = document.querySelectorAll('.tlpoint');
 const tldetail = document.getElementById('tldetail');
 const phWhen = document.getElementById('phWhen');
@@ -871,8 +774,7 @@ const phList = document.getElementById('phList');
 const tlrow = document.getElementById('tlrow');
 function showPhase(i){
   tlpoints.forEach((p,idx)=>{
-    p.classList.remove('current');
-    p.classList.remove('done');
+    p.classList.remove('current','done');
     if(idx<i) p.classList.add('done');
     if(idx===i) p.classList.add('current');
   });
@@ -881,56 +783,48 @@ function showPhase(i){
   phTitle.textContent = ph.title;
   phList.innerHTML = ph.items.map(x=>`<li>${x}</li>`).join('');
   tldetail.classList.add('show');
-  const progress = 8 + (i/3)*84;
-  tlrow.style.setProperty('--progress', progress+'%');
+  const progress = 10 + (i/3)*80;
+  tlrow.style.setProperty('--prog', progress+'%');
 }
-tlpoints.forEach(p=>{
-  p.addEventListener('click', ()=>showPhase(parseInt(p.dataset.ph)));
-});
+tlpoints.forEach(p=>p.addEventListener('click', ()=>showPhase(parseInt(p.dataset.ph))));
 showPhase(0);
 
-// Decisions voting
 const votes = {};
 function recalc(){
-  let ok=0, q=0, ko=0;
+  let ok=0,q=0,ko=0;
   Object.values(votes).forEach(v=>{
     if(v==='ok') ok++;
     if(v==='q') q++;
     if(v==='ko') ko++;
   });
-  document.getElementById('okCount').textContent = ok;
-  document.getElementById('qCount').textContent = q;
-  document.getElementById('koCount').textContent = ko;
-  const sum = document.getElementById('summary');
-  if(ok+q+ko===0) sum.innerHTML = 'aucune décision validée';
-  else sum.innerHTML = `<b>${ok}</b> validées · <b>${q}</b> questions · <b>${ko}</b> reportées`;
+  document.getElementById('okCount').textContent=ok;
+  document.getElementById('qCount').textContent=q;
+  document.getElementById('koCount').textContent=ko;
+  const s=document.getElementById('summary');
+  if(ok+q+ko===0) s.innerHTML='no decision recorded yet';
+  else s.innerHTML=`<b>${ok}</b> approved · <b>${q}</b> questions · <b>${ko}</b> deferred`;
 }
 document.querySelectorAll('.decision').forEach(d=>{
-  const id = d.dataset.id;
+  const id=d.dataset.id;
   d.querySelectorAll('.btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      const vote = btn.dataset.vote;
-      votes[id] = vote;
-      // Update visual state
-      d.querySelectorAll('.btn').forEach(b=>{
-        b.classList.remove('locked','locked-q','locked-ko');
-      });
+      const vote=btn.dataset.vote;
+      votes[id]=vote;
+      d.querySelectorAll('.btn').forEach(b=>b.classList.remove('locked','locked-q','locked-ko'));
       btn.classList.add(vote==='ok'?'locked':vote==='q'?'locked-q':'locked-ko');
       recalc();
     });
   });
 });
 
-// Send
 document.getElementById('sendBtn').addEventListener('click', ()=>{
-  const btn = document.getElementById('sendBtn');
-  const note = document.getElementById('fb').value.trim();
+  const btn=document.getElementById('sendBtn');
   btn.classList.add('done');
-  btn.innerHTML = `
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-    Envoyé à Sarah — l'équipe D²nAI recevra le récap dans la matinée.
+  btn.innerHTML=`
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+    Sent — D²nAI team will pick it up in the morning.
   `;
-  btn.disabled = true;
+  btn.disabled=true;
 });
 recalc();
 </script>
