@@ -280,6 +280,49 @@ section{margin-bottom:36px}
 }
 .summary-pill b{color:var(--green-800)}
 
+/* EA Study section */
+.tracks{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.track{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;border-left:4px solid var(--green-800)}
+.track.bottom-up{border-left-color:#0078D4}
+.track.top-down{border-left-color:#5C4A8C}
+.track .tbadge{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;display:inline-block;padding:3px 8px;border-radius:6px}
+.track.bottom-up .tbadge{background:#E3F2FD;color:#0078D4}
+.track.top-down .tbadge{background:#EDE7F6;color:#5C4A8C}
+.track h4{font-family:'Cormorant Garamond',serif;font-size:19px;color:var(--ink);margin-bottom:6px}
+.track .lead-t{font-size:12.5px;color:var(--ink-2);line-height:1.5;margin-bottom:10px}
+
+.deliv-list{display:flex;flex-direction:column;gap:8px}
+.deliv{background:var(--green-50);border:1px solid var(--green-100);border-radius:10px;padding:10px 12px}
+.deliv .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.deliv h5{font-size:12.5px;font-weight:600;color:var(--ink);line-height:1.3}
+.deliv .pct{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--green-800);line-height:1;flex:none}
+.deliv .pct.zero{color:var(--muted)}
+.deliv .bar{height:5px;background:#fff;border:1px solid var(--green-100);border-radius:99px;overflow:hidden;margin-top:6px}
+.deliv .fill{height:100%;background:var(--green-800);border-radius:99px;transition:width .6s ease}
+.deliv .meta-t{font-size:10.5px;color:var(--muted);margin-top:4px}
+
+.milestones{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px}
+.ms{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative}
+.ms.done{border-top:3px solid var(--ok)}
+.ms.now{border-top:3px solid var(--green-800);box-shadow:0 0 0 3px var(--green-50)}
+.ms.next{border-top:3px solid var(--warn)}
+.ms.future{border-top:3px solid #c9d1c5;opacity:.85}
+.ms .when{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ms h5{font-size:12px;font-weight:600;color:var(--ink);margin-top:4px;line-height:1.3}
+.ms .sta{font-size:10.5px;color:var(--muted);margin-top:4px;font-style:italic}
+.ms .icb{position:absolute;top:8px;right:10px;width:18px;height:18px;border-radius:5px;display:grid;place-items:center;font-size:10px;font-weight:700}
+.ms.done .icb{background:var(--ok-bg);color:var(--ok)}
+.ms.now .icb{background:var(--green-100);color:var(--green-800)}
+.ms.next .icb{background:var(--warn-bg);color:var(--warn)}
+.ms.future .icb{background:#f2f2f2;color:var(--muted)}
+@media(max-width:800px){.milestones{grid-template-columns:1fr 1fr}.tracks{grid-template-columns:1fr}}
+
+.ea-link{
+  margin-top:14px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--warn);
+  border-radius:10px;padding:12px 14px;font-size:12.5px;color:var(--ink-2);line-height:1.5;
+}
+.ea-link b{color:var(--ink)}
+
 /* Footer */
 .foot{
   margin-top:50px;padding-top:20px;border-top:1px solid var(--line);
@@ -454,7 +497,7 @@ section{margin-bottom:36px}
           <div class="ring">1</div>
           <div class="when">H2 2026</div>
           <div class="ttl">Maîtrise</div>
-          <div class="blurb">Cyber structurée + MDM + 17 P0</div>
+          <div class="blurb">EA Study rollout · Cyber · 17 P0 · MDM</div>
         </div>
         <div class="tlpoint" data-ph="1">
           <div class="ring">2</div>
@@ -480,12 +523,12 @@ section{margin-bottom:36px}
         <div class="when" id="phWhen">Étape 1 · H2 2026 — mise sous maîtrise</div>
         <h4 id="phTitle">Maîtrise du périmètre Nutricrops</h4>
         <ul id="phList">
+          <li>EA Study · Application 360° rollout périmètre complet (mi-juin) — ~28 apps déjà cataloguées</li>
+          <li>EA Study · BCM scoring + process mapping joint task force (juillet)</li>
+          <li>EA Study · Guiding principles (septembre) + Target architecture (octobre) → cadre 'Gros Solutions'</li>
           <li>Cybersécurité structurée : Manager + Architect + 2 SoC engineers (P0)</li>
           <li>17 ETP P0 recrutés (Data Office, Architecture, Guildes)</li>
-          <li>Reprise gouvernance des 'Gros Solutions' (SAP, Salesforce, Ariba, Workday)</li>
-          <li>Semarchy xDM en prod · MDM Produit + Client en cours</li>
-          <li>ESG (Presgo on-prem) Go/No-Go validé</li>
-          <li>Workday + SAP HCM lancés · NutriTalent déployé</li>
+          <li>Semarchy xDM en prod + ESG Presgo Go/No-Go + Workday/SAP HCM lancés</li>
         </ul>
       </div>
     </div>
@@ -493,7 +536,120 @@ section{margin-bottom:36px}
 
   <section>
     <div class="s-head">
-      <h2><span class="n">4</span>Co-pilotes exec — POCs sur la fondation</h2>
+      <h2><span class="n">4</span>Programme phare · Enterprise Architecture Study</h2>
+      <div class="s-sub">Le levier opérationnel pour reprendre la maîtrise du périmètre IT (décision #2).</div>
+    </div>
+    <p class="intro" style="font-size:14px;color:var(--ink-2);line-height:1.55;margin-bottom:18px;max-width:760px">
+      Étude lancée fin 2025 pour <b>définir une IT organization cohérente, agile, alignée sur la value chain</b>. Méthodologie en 2 stages (AS-IS / TO-BE), coordination avec le Group Architecture Council pour l'alignement cross-SBU. État au <b>19 mai 2026</b> :
+    </p>
+
+    <div class="tracks">
+      <div class="track bottom-up">
+        <span class="tbadge">● Bottom-up</span>
+        <h4>Track 1 — AS-IS Analysis</h4>
+        <p class="lead-t">Inventaire holistique du paysage applicatif via le framework <b>Application 360°</b> (Core Identity · Architecture · Governance · Functional coverage · Data view CRUD/IN/OUT · Statut). Inclut l'identification du Shadow IT.</p>
+        <div class="deliv-list">
+          <div class="deliv">
+            <div class="top">
+              <h5>Application 360° inventory</h5>
+              <span class="pct">75%</span>
+            </div>
+            <div class="bar"><div class="fill" style="width:75%"></div></div>
+            <div class="meta-t">Pilot SAP / Salesforce / S&amp;A complété (~28 apps cataloguées) · rollout périmètre complet mi-juin</div>
+          </div>
+          <div class="deliv">
+            <div class="top">
+              <h5>Business Capability Map (scored)</h5>
+              <span class="pct">5%</span>
+            </div>
+            <div class="bar"><div class="fill" style="width:5%"></div></div>
+            <div class="meta-t">Joint task force · juillet 2026 · aligné avec BCM Group</div>
+          </div>
+          <div class="deliv">
+            <div class="top">
+              <h5>End-to-end process mapping</h5>
+              <span class="pct">5%</span>
+            </div>
+            <div class="bar"><div class="fill" style="width:5%"></div></div>
+            <div class="meta-t">Gaps fonctionnels · overlaps · Shadow IT · ruptures de continuité</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="track top-down">
+        <span class="tbadge">● Top-down</span>
+        <h4>Track 2 — TO-BE Definition</h4>
+        <p class="lead-t">Modélisation de l'IS cible à partir des Business Capabilities et Processes, avec règles de gouvernance et boundaries claires entre domaines de responsabilité.</p>
+        <div class="deliv-list">
+          <div class="deliv">
+            <div class="top">
+              <h5>Guiding principles</h5>
+              <span class="pct zero">0%</span>
+            </div>
+            <div class="bar"><div class="fill" style="width:0%"></div></div>
+            <div class="meta-t">Digital continuity · data sovereignty · API-first · single source of truth · cible septembre 2026</div>
+          </div>
+          <div class="deliv">
+            <div class="top">
+              <h5>Target architecture &amp; roadmap</h5>
+              <span class="pct zero">0%</span>
+            </div>
+            <div class="bar"><div class="fill" style="width:0%"></div></div>
+            <div class="meta-t">Modélisation IS cible all-layers · règles de design · cible octobre 2026</div>
+          </div>
+          <div class="deliv">
+            <div class="top">
+              <h5>Cross-SBU Architecture Council alignment</h5>
+              <span class="pct zero">—</span>
+            </div>
+            <div class="bar"><div class="fill" style="width:0%"></div></div>
+            <div class="meta-t">Coordination Group taskforce permanente — déclencheur du scaling phase 2</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="milestones">
+      <div class="ms done">
+        <span class="icb">✓</span>
+        <div class="when">Avril 2026</div>
+        <h5>Pilot inventory</h5>
+        <div class="sta">SAP · Salesforce · S&amp;A complétés</div>
+      </div>
+      <div class="ms now">
+        <span class="icb">●</span>
+        <div class="when">Mi-juin 2026</div>
+        <h5>Inventory rollout</h5>
+        <div class="sta">Extension périmètre IT complet · en cours</div>
+      </div>
+      <div class="ms next">
+        <span class="icb">!</span>
+        <div class="when">Juillet 2026</div>
+        <h5>BCM + Process mapping</h5>
+        <div class="sta">Joint effort task force Group</div>
+      </div>
+      <div class="ms future">
+        <span class="icb">→</span>
+        <div class="when">Septembre 2026</div>
+        <h5>Guiding principles</h5>
+        <div class="sta">Règles d'architecture fondamentales</div>
+      </div>
+      <div class="ms future">
+        <span class="icb">→</span>
+        <div class="when">Octobre 2026</div>
+        <h5>Target architecture</h5>
+        <div class="sta">IS cible all-layers · roadmap transition</div>
+      </div>
+    </div>
+
+    <div class="ea-link">
+      <b>Lien avec la décision #2</b> · Le rollout Application 360° de mi-juin met sous gouvernance D²nAI les "Gros Solutions" actuellement éclatées (SAP MM/SD/FI/CO/PS, ARIBA, Salesforce Sales Cloud + PLM, Workday, Kyriba, ServiceNow…). La cible architecture d'octobre formalisera le modèle de pilotage cible.
+    </div>
+  </section>
+
+  <section>
+    <div class="s-head">
+      <h2><span class="n">5</span>Co-pilotes exec — POCs sur la fondation</h2>
       <div class="s-sub">4 prototypes interactifs construits sur l'infra hybride, à valider avant industrialisation.</div>
     </div>
     <div class="copilots">
@@ -533,7 +689,7 @@ section{margin-bottom:36px}
 
   <section>
     <div class="s-head">
-      <h2><span class="n">5</span>Investissement & ROI</h2>
+      <h2><span class="n">6</span>Investissement & ROI</h2>
       <div class="s-sub">Ordre de grandeur — à affiner avec la DAF en Comité Q3.</div>
     </div>
     <div class="invest">
@@ -557,7 +713,7 @@ section{margin-bottom:36px}
 
   <section>
     <div class="s-head">
-      <h2><span class="n">6</span>Décisions attendues de toi</h2>
+      <h2><span class="n">7</span>Décisions attendues de toi</h2>
       <div class="s-sub">4 arbitrages pour débloquer la trajectoire — un clic par décision.</div>
     </div>
     <div class="dec">
@@ -621,7 +777,7 @@ section{margin-bottom:36px}
 
   <section>
     <div class="s-head">
-      <h2><span class="n">7</span>Tes remarques</h2>
+      <h2><span class="n">8</span>Tes remarques</h2>
       <div class="s-sub">Une note pour l'équipe D²nAI — directement transmise à Sarah à l'envoi.</div>
     </div>
     <div class="feedback">
@@ -662,12 +818,12 @@ const phases = [
     when:"Étape 1 · H2 2026 — mise sous maîtrise",
     title:"Maîtrise du périmètre Nutricrops",
     items:[
+      "EA Study · Application 360° rollout périmètre complet (mi-juin) — ~28 apps déjà cataloguées",
+      "EA Study · BCM scoring + process mapping joint task force (juillet)",
+      "EA Study · Guiding principles (septembre) + Target architecture (octobre) → cadre 'Gros Solutions'",
       "Cybersécurité structurée : Manager + Architect + 2 SoC engineers (P0)",
       "17 ETP P0 recrutés (Data Office, Architecture, Guildes)",
-      "Reprise gouvernance des 'Gros Solutions' (SAP, Salesforce, Ariba, Workday)",
-      "Semarchy xDM en prod · MDM Produit + Client en cours",
-      "ESG (Presgo on-prem) Go/No-Go validé",
-      "Workday + SAP HCM lancés · NutriTalent déployé"
+      "Semarchy xDM en prod + ESG Presgo Go/No-Go + Workday/SAP HCM lancés"
     ]
   },
   {
