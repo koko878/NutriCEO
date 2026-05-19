@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#1B5E20">
+<title>Vision Data & Digital — Executive Summary · D²nAI · OCP Nutricrops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-900:#0F3D14;
+  --green-800:#1B5E20;
+  --green-700:#2E7D32;
+  --green-500:#4CAF50;
+  --green-100:#E8F0E8;
+  --green-50:#F2F7F2;
+  --ink:#13191A;
+  --ink-2:#3C4642;
+  --muted:#6B7268;
+  --line:#E6E9E5;
+  --bg:#FAFBFA;
+  --page:#EDEFEA;
+  --warn:#B45309;
+  --warn-bg:#FEF3C7;
+  --ok:#15803D;
+  --ok-bg:#DCFCE7;
+  --bad:#B91C1C;
+  --bad-bg:#FEE2E2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(900px 400px at 50% -100px, #E2E8DE 0%, transparent 70%),
+    var(--page);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  padding:32px 20px 100px;
+}
+.page{max-width:1100px;margin:0 auto}
+
+/* Header */
+.head{
+  display:flex;justify-content:space-between;align-items:center;gap:24px;
+  padding-bottom:20px;border-bottom:1px solid var(--line);margin-bottom:24px;
+}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{
+  width:48px;height:48px;border-radius:14px;
+  background:linear-gradient(135deg,var(--green-800),var(--green-900));
+  display:grid;place-items:center;position:relative;overflow:hidden;
+  box-shadow:0 6px 16px -6px rgba(27,94,32,.5);
+}
+.logo::before{
+  content:"";position:absolute;inset:0;opacity:.22;
+  background:repeating-linear-gradient(180deg, rgba(180,255,180,.7) 0 1px, transparent 1px 3px);
+}
+.logo span{font-family:'Cormorant Garamond',serif;color:#E6F4E6;font-weight:700;font-size:22px;position:relative;letter-spacing:1px}
+.logo sup{font-size:11px;font-weight:600;top:-6px;position:relative;margin-left:-1px}
+.brand .t1{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.brand .t2{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--green-800);font-weight:700;line-height:1.1}
+.meta{font-size:11.5px;color:var(--muted);text-align:right;line-height:1.6}
+.meta b{color:var(--ink-2)}
+
+/* Hero */
+.hero{
+  background:linear-gradient(135deg, #fff 0%, var(--green-50) 100%);
+  border:1px solid var(--green-100);border-top:5px solid var(--green-800);
+  border-radius:18px;padding:38px 32px;margin-bottom:36px;
+  position:relative;overflow:hidden;
+}
+.hero::after{
+  content:"";position:absolute;top:24px;right:32px;width:80px;height:80px;
+  background:var(--green-800);border-radius:18px;opacity:.95;
+  background-image:repeating-linear-gradient(180deg,rgba(180,255,180,.4) 0 2px,transparent 2px 5px);
+}
+.kicker{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--green-800);margin-bottom:14px}
+.hero h1{
+  font-family:'Cormorant Garamond',serif;font-weight:600;font-size:46px;
+  line-height:1.05;letter-spacing:-.01em;color:var(--ink);max-width:680px;
+}
+.hero h1 em{font-style:italic;color:var(--green-800);font-weight:700}
+.hero .lead{
+  margin-top:20px;font-size:17px;color:var(--ink-2);max-width:680px;line-height:1.55;
+}
+.hero .nums{
+  display:flex;gap:18px;margin-top:26px;flex-wrap:wrap;
+}
+.hero .num{
+  background:#fff;border:1px solid var(--green-100);border-radius:12px;padding:12px 16px;
+  min-width:170px;
+}
+.hero .num .v{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--green-800);line-height:1}
+.hero .num .l{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.3}
+
+/* Section header */
+section{margin-bottom:36px}
+.s-head{display:flex;align-items:baseline;justify-content:space-between;gap:18px;margin-bottom:14px}
+.s-head h2{
+  font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--ink);
+  display:flex;align-items:center;gap:10px;
+}
+.s-head h2 .n{
+  font-family:'Cormorant Garamond',serif;font-size:14px;color:#fff;
+  background:var(--green-800);width:26px;height:26px;border-radius:50%;
+  display:grid;place-items:center;font-weight:700;
+}
+.s-sub{font-size:13px;color:var(--muted);max-width:540px;text-align:right;line-height:1.5}
+
+/* Snapshot */
+.snap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.col{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}
+.col h3{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.col h3 .icb{
+  width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:13px;font-weight:700;flex:none;
+}
+.col.ok h3 .icb{background:var(--ok-bg);color:var(--ok)}
+.col.go h3 .icb{background:#E3F2FD;color:#0078D4}
+.col.stuck h3 .icb{background:var(--warn-bg);color:var(--warn)}
+.col ul{list-style:none;padding:0}
+.col li{font-size:12.5px;color:var(--ink-2);padding:5px 0;line-height:1.4;border-top:1px dashed var(--line);padding-left:14px;position:relative}
+.col li:first-of-type{border-top:0;padding-top:2px}
+.col li::before{content:"·";position:absolute;left:4px;color:var(--green-700);font-weight:700}
+@media(max-width:900px){.snap{grid-template-columns:1fr}}
+
+/* Pillars */
+.pillars{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.pillar{
+  background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;
+  cursor:pointer;transition:all .2s;
+  position:relative;overflow:hidden;
+}
+.pillar:hover{transform:translateY(-2px);box-shadow:0 12px 28px -16px rgba(0,0,0,.18);border-color:var(--green-500)}
+.pillar .num{
+  font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:600;color:var(--green-100);
+  position:absolute;top:8px;right:16px;line-height:1;letter-spacing:-.04em;
+}
+.pillar h3{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.pillar .sub{font-size:11.5px;color:var(--green-800);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.pillar p{font-size:13px;color:var(--ink-2);line-height:1.5;margin-bottom:10px}
+.pillar .detail{
+  max-height:0;overflow:hidden;transition:max-height .3s ease;
+  font-size:12.5px;color:var(--ink-2);line-height:1.5;
+}
+.pillar.open .detail{max-height:600px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.pillar .more{font-size:11.5px;color:var(--green-800);font-weight:600;margin-top:6px;display:inline-flex;align-items:center;gap:4px}
+.pillar.open .more .ar{transform:rotate(180deg)}
+.pillar .more .ar{display:inline-block;transition:transform .2s}
+.pillar ul{list-style:none;padding:0;margin-top:6px}
+.pillar li{font-size:12px;color:var(--ink-2);padding:3px 0 3px 14px;position:relative;line-height:1.45}
+.pillar li::before{content:"→";position:absolute;left:0;color:var(--green-700);font-weight:700}
+@media(max-width:900px){.pillars{grid-template-columns:1fr}}
+
+/* Roadmap */
+.timeline{
+  background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;position:relative;
+}
+.tlrow{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;
+}
+.tlrow::before{
+  content:"";position:absolute;top:38px;left:8%;right:8%;height:3px;background:var(--green-100);z-index:0;
+}
+.tlrow::after{
+  content:"";position:absolute;top:38px;left:8%;width:var(--progress, 22%);max-width:84%;height:3px;background:var(--green-800);z-index:1;transition:width .5s;
+}
+.tlpoint{
+  text-align:center;position:relative;z-index:2;cursor:pointer;padding-top:18px;
+}
+.tlpoint .ring{
+  width:40px;height:40px;border-radius:50%;background:#fff;border:3px solid var(--green-100);
+  margin:0 auto;display:grid;place-items:center;
+  font-family:'Cormorant Garamond',serif;font-weight:700;color:var(--green-700);font-size:16px;
+  transition:all .2s;
+}
+.tlpoint.done .ring{background:var(--green-800);border-color:var(--green-800);color:#fff}
+.tlpoint.current .ring{background:#fff;border-color:var(--green-800);color:var(--green-800);box-shadow:0 0 0 4px var(--green-50)}
+.tlpoint:hover .ring{transform:scale(1.06)}
+.tlpoint .when{font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--green-800);margin-top:10px;text-transform:uppercase}
+.tlpoint .ttl{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--ink);margin-top:4px;line-height:1.2}
+.tlpoint .blurb{font-size:11.5px;color:var(--muted);margin-top:4px;padding:0 6px;line-height:1.3}
+.tldetail{
+  margin-top:18px;background:var(--green-50);border:1px solid var(--green-100);
+  border-radius:12px;padding:16px 18px;
+  display:none;
+}
+.tldetail.show{display:block}
+.tldetail h4{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.tldetail .when{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--green-800);text-transform:uppercase;margin-bottom:8px}
+.tldetail ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.tldetail li{font-size:12.5px;color:var(--ink-2);padding:3px 0 3px 16px;position:relative;line-height:1.45}
+.tldetail li::before{content:"✓";position:absolute;left:0;color:var(--green-800);font-weight:700}
+@media(max-width:760px){.tldetail ul{grid-template-columns:1fr}.tlrow{grid-template-columns:repeat(2,1fr);row-gap:16px}.tlrow::before,.tlrow::after{display:none}}
+
+/* Co-pilots */
+.copilots{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.copilot{
+  background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;
+  text-decoration:none;color:inherit;display:block;transition:.2s;position:relative;
+}
+.copilot:hover{transform:translateY(-2px);box-shadow:0 12px 22px -14px rgba(0,0,0,.15);border-color:var(--green-500)}
+.copilot .ico{
+  width:48px;height:48px;border-radius:12px;
+  background:linear-gradient(135deg,var(--green-800),var(--green-900));
+  display:grid;place-items:center;color:#E6F4E6;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:20px;
+  margin-bottom:10px;position:relative;overflow:hidden;
+}
+.copilot .ico::before{
+  content:"";position:absolute;inset:0;opacity:.18;
+  background:repeating-linear-gradient(180deg,rgba(180,255,180,.7) 0 1px,transparent 1px 3px);
+}
+.copilot h4{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--ink)}
+.copilot .who{font-size:11px;color:var(--muted);margin-top:2px}
+.copilot .desc{font-size:11.5px;color:var(--ink-2);margin-top:6px;line-height:1.4}
+.copilot .open{font-size:10.5px;color:var(--green-800);font-weight:600;margin-top:8px;letter-spacing:.04em;text-transform:uppercase}
+.copilot.future{opacity:.55}
+.copilot.future .ico{background:linear-gradient(135deg,var(--muted),var(--ink-2))}
+@media(max-width:900px){.copilots{grid-template-columns:1fr 1fr}}
+
+/* Invest */
+.invest{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:14px}
+.bigfig{
+  background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;
+  border-top:3px solid var(--green-800);
+}
+.bigfig .v{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:700;color:var(--green-800);line-height:1}
+.bigfig .l{font-size:12px;color:var(--muted);margin-top:4px;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.bigfig p{font-size:12.5px;color:var(--ink-2);margin-top:10px;line-height:1.5}
+@media(max-width:760px){.invest{grid-template-columns:1fr}}
+
+/* Decisions */
+.dec{display:flex;flex-direction:column;gap:10px}
+.decision{
+  background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.decision .body{flex:1;min-width:240px}
+.decision h4{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.decision p{font-size:12.5px;color:var(--muted);line-height:1.45}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+.btn{
+  border:0;cursor:pointer;font:600 12px 'Inter',sans-serif;
+  padding:8px 12px;border-radius:9px;transition:.18s;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.btn.ok{background:var(--green-800);color:#fff}
+.btn.ok:hover{background:var(--green-900)}
+.btn.q{background:#fff;color:var(--ink-2);border:1px solid var(--line)}
+.btn.q:hover{background:var(--green-50);color:var(--green-800);border-color:var(--green-100)}
+.btn.ko{background:#fff;color:var(--bad);border:1px solid var(--bad-bg)}
+.btn.ko:hover{background:var(--bad-bg)}
+.btn.locked{background:var(--ok-bg);color:var(--ok);cursor:default}
+.btn.locked-q{background:#FFF7E0;color:var(--warn);cursor:default}
+.btn.locked-ko{background:var(--bad-bg);color:var(--bad);cursor:default}
+
+/* Feedback */
+.feedback{
+  background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;
+}
+.feedback label{font-size:13px;font-weight:600;color:var(--ink);display:block;margin-bottom:8px}
+.feedback textarea{
+  width:100%;min-height:90px;border:1px solid var(--green-100);border-radius:10px;
+  padding:12px;font:400 13px 'Inter',sans-serif;color:var(--ink);resize:vertical;
+  background:var(--green-50);outline:none;
+}
+.feedback textarea:focus{border-color:var(--green-500);background:#fff}
+.feedback .row{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+.send{
+  background:var(--green-800);color:#fff;border:0;padding:10px 16px;border-radius:10px;
+  font:600 13px 'Inter',sans-serif;cursor:pointer;transition:.18s;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.send:hover{background:var(--green-900)}
+.send.done{background:var(--ok-bg);color:var(--ok);cursor:default}
+.summary-pill{
+  font-size:12px;color:var(--muted);margin-left:auto;
+}
+.summary-pill b{color:var(--green-800)}
+
+/* Footer */
+.foot{
+  margin-top:50px;padding-top:20px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;color:var(--muted);
+}
+.foot .brand-mini{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--green-800);font-size:13px}
+
+/* Floating progress */
+.scorebar{
+  position:fixed;bottom:18px;right:18px;background:#fff;
+  border:1px solid var(--line);border-radius:14px;padding:10px 14px;
+  box-shadow:0 12px 28px -16px rgba(0,0,0,.18);
+  font-size:11.5px;color:var(--ink-2);display:flex;gap:14px;align-items:center;
+  z-index:50;
+}
+.scorebar .grp{display:flex;align-items:center;gap:5px}
+.scorebar .v{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:16px;color:var(--green-800)}
+.scorebar .v.warn{color:var(--warn)}
+.scorebar .v.bad{color:var(--bad)}
+@media(max-width:600px){.scorebar{left:18px;right:18px;justify-content:center}}
+
+@media print{
+  body{background:#fff;padding:20px}
+  section, .hero{break-inside:avoid}
+  .scorebar{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="head">
+    <div class="brand">
+      <div class="logo"><span>D<sup>2</sup>n</span></div>
+      <div>
+        <div class="t1">OCP Nutricrops · D²nAI</div>
+        <div class="t2">Vision Data & Digital 2026-2028</div>
+      </div>
+    </div>
+    <div class="meta">
+      <div><b>Pour</b> · Faris B., CEO</div>
+      <div><b>De</b> · Équipe D²nAI</div>
+      <div><b>Date</b> · 12 mai 2026</div>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="kicker">Executive summary — interactif</div>
+    <h1>Faire de Nutricrops la <em>première business unit data-driven</em> du groupe OCP — en 18 mois.</h1>
+    <p class="lead">Une stratégie en 3 piliers : industrialiser la fondation data, livrer des produits digitaux qui débloquent les métiers, et déployer une nouvelle génération de co-pilotes IA pour le Comex et ses équipes.</p>
+    <div class="nums">
+      <div class="num"><div class="v">3</div><div class="l">piliers stratégiques</div></div>
+      <div class="num"><div class="v">4</div><div class="l">co-pilotes IA livrables H1 2027</div></div>
+      <div class="num"><div class="v">~25</div><div class="l">équipe cible D²nAI</div></div>
+      <div class="num"><div class="v">5x</div><div class="l">ROI espéré sur 24 mois</div></div>
+    </div>
+  </div>
+
+  <section>
+    <div class="s-head">
+      <h2><span class="n">1</span>Où on en est aujourd'hui</h2>
+      <div class="s-sub">Lecture honnête de l'état des lieux — ce qui tourne, ce qui démarre, ce qui coince.</div>
+    </div>
+    <div class="snap">
+      <div class="col ok">
+        <h3><span class="icb">✓</span>Ce qui tourne</h3>
+        <ul>
+          <li>Équipe D²nAI constituée et opérationnelle</li>
+          <li>Sponsoring exécutif validé (CEO + DRH)</li>
+          <li>Premiers POC livrés sur l'industriel & le sourcing</li>
+          <li>Stack Azure + Atlas en place, première charge en prod</li>
+          <li>4 prototypes Comex validés (NutriCEO, Sentinel, Helios, Maestro)</li>
+        </ul>
+      </div>
+      <div class="col go">
+        <h3><span class="icb">→</span>Ce qui démarre</h3>
+        <ul>
+          <li>Data foundation : data lake, catalog, lineage</li>
+          <li>MVP co-pilote exec sur la mailbox CEO (Maestro)</li>
+          <li>Plateforme de reporting automatisée pour les BU</li>
+          <li>Modèle LLM maison en cours d'évaluation interne</li>
+          <li>Programme de formation data literacy Comex</li>
+        </ul>
+      </div>
+      <div class="col stuck">
+        <h3><span class="icb">!</span>Ce qui coince</h3>
+        <ul>
+          <li>Dépendances Group : tenant Azure AD, Exchange on-prem</li>
+          <li>Gouvernance data : ownership flou entre BU et fonctions</li>
+          <li>Sources fragmentées (SIRH, ERP, GRC, agronomie)</li>
+          <li>Acquisition talents seniors ML / data eng — marché tendu</li>
+          <li>Cycle de validation RSSI/DPO encore artisanal</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="s-head">
+      <h2><span class="n">2</span>La vision en 3 piliers</h2>
+      <div class="s-sub">Cliquez sur un pilier pour ouvrir le détail.</div>
+    </div>
+    <div class="pillars">
+      <div class="pillar" data-id="p1">
+        <div class="num">I</div>
+        <div class="sub">Fondation</div>
+        <h3>Data Foundation industrielle</h3>
+        <p>Une couche data unifiée, gouvernée et accessible — pour que tout produit digital ou IA construit dessus parte sur des bases solides.</p>
+        <span class="more">Voir le détail <span class="ar">↓</span></span>
+        <div class="detail">
+          <ul>
+            <li><b>Data Lake</b> Azure ADLS Gen2 + Atlas pour le sensible</li>
+            <li><b>Catalog & lineage</b> (Microsoft Purview / Atlan)</li>
+            <li><b>Data contracts</b> entre producteurs (BU) et consommateurs (D²nAI, Finance, Risk)</li>
+            <li><b>Qualité</b> : profiling automatisé, SLA par dataset</li>
+            <li><b>Self-service</b> analytics pour le top 50 managers</li>
+            <li><b>Cible</b> : 80% des datasets stratégiques gouvernés fin 2027</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pillar" data-id="p2">
+        <div class="num">II</div>
+        <div class="sub">Produits</div>
+        <h3>Digital Products métier</h3>
+        <p>Une dizaine d'applis et automatisations qui débloquent des cycles métier concrets — pas du POC, des produits en production avec des KPI d'usage.</p>
+        <span class="more">Voir le détail <span class="ar">↓</span></span>
+        <div class="detail">
+          <ul>
+            <li><b>Pricing intelligence</b> phosphates & engrais spécialisés</li>
+            <li><b>Précision agronomique</b> (recommandations terrain, satellite)</li>
+            <li><b>Sourcing</b> matières premières automatisé</li>
+            <li><b>Maintenance prédictive</b> sites industriels (Jorf, Khouribga, Safi)</li>
+            <li><b>Compliance</b> & screening tiers automatisé</li>
+            <li><b>Cible</b> : 12 produits en prod fin 2027, mesurés en valeur générée</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pillar" data-id="p3">
+        <div class="num">III</div>
+        <div class="sub">Co-pilotes</div>
+        <h3>AI Co-pilots pour le Comex</h3>
+        <p>Une suite de co-pilotes IA pour les dirigeants et leurs équipes — chacun branché sur ses sources, capable de répondre, synthétiser et générer des livrables.</p>
+        <span class="more">Voir le détail <span class="ar">↓</span></span>
+        <div class="detail">
+          <ul>
+            <li><b>NutriCEO</b> · pour le CEO — pilotage Comex transverse</li>
+            <li><b>Sentinel</b> · pour le CPRO — performance, risk & control</li>
+            <li><b>Helios</b> · pour la DRH — people & talent</li>
+            <li><b>Maestro</b> · pour l'EA du CEO — orchestration agenda, mails, briefs</li>
+            <li><b>Cible</b> : 4 co-pilotes en prod fin 2027, extension Group à partir de 2028</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="s-head">
+      <h2><span class="n">3</span>Roadmap 18 mois</h2>
+      <div class="s-sub">Cliquez sur un jalon pour voir ce qu'on livre.</div>
+    </div>
+    <div class="timeline">
+      <div class="tlrow" id="tlrow" style="--progress:18%">
+        <div class="tlpoint current" data-ph="0">
+          <div class="ring">1</div>
+          <div class="when">H2 2026</div>
+          <div class="ttl">Foundation</div>
+          <div class="blurb">Data lake + 1ᵉʳ co-pilote MVP</div>
+        </div>
+        <div class="tlpoint" data-ph="1">
+          <div class="ring">2</div>
+          <div class="when">Q1 2027</div>
+          <div class="ttl">Produits</div>
+          <div class="blurb">3 produits en prod + Sentinel</div>
+        </div>
+        <div class="tlpoint" data-ph="2">
+          <div class="ring">3</div>
+          <div class="when">Q2 2027</div>
+          <div class="ttl">Échelle</div>
+          <div class="blurb">Helios + Maestro · 6 produits</div>
+        </div>
+        <div class="tlpoint" data-ph="3">
+          <div class="ring">4</div>
+          <div class="when">H2 2027</div>
+          <div class="ttl">Industrialisation</div>
+          <div class="blurb">12 produits · réplication Group</div>
+        </div>
+      </div>
+
+      <div class="tldetail" id="tldetail">
+        <div class="when" id="phWhen">Phase 1 · H2 2026</div>
+        <h4 id="phTitle">Foundation — la fondation qui rend tout possible</h4>
+        <ul id="phList">
+          <li>Data lake Azure + Atlas en prod</li>
+          <li>Catalog & lineage v1 (top 30 datasets)</li>
+          <li>MVP NutriCEO en main de Faris</li>
+          <li>POC pricing intelligence sur phosphates</li>
+          <li>Hub D²nAI lancé (équipe + locaux + rituel)</li>
+          <li>Adoption owner désignée, KPI d'usage en place</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="s-head">
+      <h2><span class="n">4</span>Les 4 co-pilotes — démo cliquable</h2>
+      <div class="s-sub">Chaque tuile ouvre la maquette interactive du co-pilote.</div>
+    </div>
+    <div class="copilots">
+      <a class="copilot" href="index.html" target="_blank">
+        <div class="ico">N</div>
+        <h4>NutriCEO</h4>
+        <div class="who">Faris · CEO Nutricrops</div>
+        <div class="desc">Pilotage transverse Comex : OPEX, roadmap usine, ventes BU, risques semaine.</div>
+        <div class="open">Ouvrir la démo →</div>
+      </a>
+      <a class="copilot" href="sentinel.html" target="_blank">
+        <div class="ico">S</div>
+        <h4>Sentinel</h4>
+        <div class="who">CPRO · Performance & Risk</div>
+        <div class="desc">Top risques, BU sous-performantes, contrôles internes, incidents, génération de rapports.</div>
+        <div class="open">Ouvrir la démo →</div>
+      </a>
+      <a class="copilot" href="helios.html" target="_blank">
+        <div class="ico">H</div>
+        <h4>Helios</h4>
+        <div class="who">Nadia · DRH</div>
+        <div class="desc">Turnover, postes critiques, climat social, masse salariale, pipeline recrutement.</div>
+        <div class="open">Ouvrir la démo →</div>
+      </a>
+      <a class="copilot" href="maestro.html" target="_blank">
+        <div class="ico">M</div>
+        <h4>Maestro</h4>
+        <div class="who">Sarah · EA du CEO</div>
+        <div class="desc">Meeting co-pilot, inbox triage, stakeholder memory, briefs, agenda intelligent.</div>
+        <div class="open">Ouvrir la démo →</div>
+      </a>
+    </div>
+    <p style="margin-top:14px;font-size:12.5px;color:var(--muted);text-align:center">
+      Vous voulez voir l'architecture technique cible ? <a href="architecture.html" target="_blank" style="color:var(--green-800);font-weight:600;text-decoration:none">Ouvrir le high-level design →</a>
+    </p>
+  </section>
+
+  <section>
+    <div class="s-head">
+      <h2><span class="n">5</span>Investissement & ROI</h2>
+      <div class="s-sub">Ordre de grandeur — à affiner avec la DAF en Comité Q3.</div>
+    </div>
+    <div class="invest">
+      <div class="bigfig">
+        <div class="v">~30 M MAD</div>
+        <div class="l">Budget annuel cible</div>
+        <p>Équipe (60%), licences & cloud (25%), conseil externe ponctuel (10%), formation (5%). Phasé sur 24 mois.</p>
+      </div>
+      <div class="bigfig">
+        <div class="v">~25</div>
+        <div class="l">ETP cible</div>
+        <p>Data engineers, ML engineers, product managers, full-stack, change manager, data stewards. Recrutement progressif sur 18 mois.</p>
+      </div>
+      <div class="bigfig">
+        <div class="v">5×</div>
+        <div class="l">ROI espéré (24 mois)</div>
+        <p>Combinaison de temps économisé (Comex + équipes), de meilleures décisions (marge, sourcing) et de revenus nouveaux (pricing, agronomie).</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="s-head">
+      <h2><span class="n">6</span>Décisions attendues de toi</h2>
+      <div class="s-sub">4 arbitrages pour débloquer la trajectoire — un clic par décision.</div>
+    </div>
+    <div class="dec">
+      <div class="decision" data-id="d1">
+        <div class="body">
+          <h4>1 · Valider la vision et les 3 piliers</h4>
+          <p>Foundation + Digital Products + AI Co-pilots, sur 18 mois.</p>
+        </div>
+        <div class="btns">
+          <button class="btn ok" data-vote="ok">✓ Je valide</button>
+          <button class="btn q" data-vote="q">? J'ai des questions</button>
+          <button class="btn ko" data-vote="ko">✗ À reporter</button>
+        </div>
+      </div>
+      <div class="decision" data-id="d2">
+        <div class="body">
+          <h4>2 · Sponsoriser la demande Group</h4>
+          <p>Tenant Azure AD, accès Exchange on-prem, RSSI, DPO — il faut votre soutien direct pour débloquer.</p>
+        </div>
+        <div class="btns">
+          <button class="btn ok" data-vote="ok">✓ Je valide</button>
+          <button class="btn q" data-vote="q">? J'ai des questions</button>
+          <button class="btn ko" data-vote="ko">✗ À reporter</button>
+        </div>
+      </div>
+      <div class="decision" data-id="d3">
+        <div class="body">
+          <h4>3 · Allouer le budget Q3 2026 (~6 M MAD)</h4>
+          <p>Démarrage phase 1, recrutements clés (lead ML, lead data eng), licences Atlas + cloud Azure.</p>
+        </div>
+        <div class="btns">
+          <button class="btn ok" data-vote="ok">✓ Je valide</button>
+          <button class="btn q" data-vote="q">? J'ai des questions</button>
+          <button class="btn ko" data-vote="ko">✗ À reporter</button>
+        </div>
+      </div>
+      <div class="decision" data-id="d4">
+        <div class="body">
+          <h4>4 · Désigner un Comité de pilotage trimestriel</h4>
+          <p>CEO + CFO + DRH + CIO Group + sponsor BU. Revue de KPI d'usage, valeur générée, écarts vs plan.</p>
+        </div>
+        <div class="btns">
+          <button class="btn ok" data-vote="ok">✓ Je valide</button>
+          <button class="btn q" data-vote="q">? J'ai des questions</button>
+          <button class="btn ko" data-vote="ko">✗ À reporter</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="s-head">
+      <h2><span class="n">7</span>Tes remarques</h2>
+      <div class="s-sub">Une note pour l'équipe D²nAI — directement transmise à Sarah à l'envoi.</div>
+    </div>
+    <div class="feedback">
+      <label for="fb">Note libre, questions, points de vigilance…</label>
+      <textarea id="fb" placeholder="Tape ici. Tu peux aussi laisser vide et juste cliquer sur Envoyer pour valider tes votes."></textarea>
+      <div class="row">
+        <button class="send" id="sendBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4 20-7z"/></svg>
+          Envoyer à l'équipe D²nAI
+        </button>
+        <div class="summary-pill" id="summary">aucune décision validée</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div>D²nAI · OCP Nutricrops · Executive summary v1</div>
+    <div class="brand-mini">Feed the data to feed the decision.</div>
+  </footer>
+
+</div>
+
+<div class="scorebar" id="scorebar">
+  <div class="grp"><span class="v" id="okCount">0</span><span>validées</span></div>
+  <div class="grp"><span class="v warn" id="qCount">0</span><span>questions</span></div>
+  <div class="grp"><span class="v bad" id="koCount">0</span><span>à reporter</span></div>
+</div>
+
+<script>
+// Pillar expand
+document.querySelectorAll('.pillar').forEach(p=>{
+  p.addEventListener('click', ()=>p.classList.toggle('open'));
+});
+
+// Roadmap phases
+const phases = [
+  {
+    when:"Phase 1 · H2 2026",
+    title:"Foundation — la fondation qui rend tout possible",
+    items:[
+      "Data lake Azure + Atlas en prod",
+      "Catalog & lineage v1 (top 30 datasets)",
+      "MVP NutriCEO en main de Faris",
+      "POC pricing intelligence sur phosphates",
+      "Hub D²nAI lancé (équipe + locaux + rituel)",
+      "Adoption owner désignée, KPI d'usage en place"
+    ]
+  },
+  {
+    when:"Phase 2 · Q1 2027",
+    title:"Produits — premiers gains visibles métier",
+    items:[
+      "Sentinel en pilote pour le CPRO Group",
+      "3 produits digitaux en prod : pricing, sourcing, maintenance prédictive Jorf",
+      "Catalog data étendu à 80 datasets",
+      "Auto-reporting Comex automatisé",
+      "Premiers KPI d'usage trimestriels",
+      "Roadshow BU pour activer la demande"
+    ]
+  },
+  {
+    when:"Phase 3 · Q2 2027",
+    title:"Échelle — la suite Comex au complet",
+    items:[
+      "Helios en main de Nadia",
+      "Maestro en main de l'EA de Faris",
+      "6 produits digitaux en prod",
+      "Programme data literacy : 100 managers formés",
+      "Premières offres Group (Sentinel pour CPRO Group)",
+      "Mesure de valeur générée publiée"
+    ]
+  },
+  {
+    when:"Phase 4 · H2 2027",
+    title:"Industrialisation — pérenniser et étendre",
+    items:[
+      "12 produits digitaux en prod, gouvernance produit",
+      "Réplication des co-pilotes vers 2 autres BU Group",
+      "Modèle maison LLM en production sur 80% des cas",
+      "Mesure d'impact business : >5× ROI cumulé",
+      "Cellule MLOps consolidée, on-call rotation",
+      "Prep stratégie 2028-2030"
+    ]
+  }
+];
+const tlpoints = document.querySelectorAll('.tlpoint');
+const tldetail = document.getElementById('tldetail');
+const phWhen = document.getElementById('phWhen');
+const phTitle = document.getElementById('phTitle');
+const phList = document.getElementById('phList');
+const tlrow = document.getElementById('tlrow');
+function showPhase(i){
+  tlpoints.forEach((p,idx)=>{
+    p.classList.remove('current');
+    p.classList.remove('done');
+    if(idx<i) p.classList.add('done');
+    if(idx===i) p.classList.add('current');
+  });
+  const ph = phases[i];
+  phWhen.textContent = ph.when;
+  phTitle.textContent = ph.title;
+  phList.innerHTML = ph.items.map(x=>`<li>${x}</li>`).join('');
+  tldetail.classList.add('show');
+  const progress = 8 + (i/3)*84;
+  tlrow.style.setProperty('--progress', progress+'%');
+}
+tlpoints.forEach(p=>{
+  p.addEventListener('click', ()=>showPhase(parseInt(p.dataset.ph)));
+});
+showPhase(0);
+
+// Decisions voting
+const votes = {};
+function recalc(){
+  let ok=0, q=0, ko=0;
+  Object.values(votes).forEach(v=>{
+    if(v==='ok') ok++;
+    if(v==='q') q++;
+    if(v==='ko') ko++;
+  });
+  document.getElementById('okCount').textContent = ok;
+  document.getElementById('qCount').textContent = q;
+  document.getElementById('koCount').textContent = ko;
+  const sum = document.getElementById('summary');
+  if(ok+q+ko===0) sum.innerHTML = 'aucune décision validée';
+  else sum.innerHTML = `<b>${ok}</b> validées · <b>${q}</b> questions · <b>${ko}</b> reportées`;
+}
+document.querySelectorAll('.decision').forEach(d=>{
+  const id = d.dataset.id;
+  d.querySelectorAll('.btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const vote = btn.dataset.vote;
+      votes[id] = vote;
+      // Update visual state
+      d.querySelectorAll('.btn').forEach(b=>{
+        b.classList.remove('locked','locked-q','locked-ko');
+      });
+      btn.classList.add(vote==='ok'?'locked':vote==='q'?'locked-q':'locked-ko');
+      recalc();
+    });
+  });
+});
+
+// Send
+document.getElementById('sendBtn').addEventListener('click', ()=>{
+  const btn = document.getElementById('sendBtn');
+  const note = document.getElementById('fb').value.trim();
+  btn.classList.add('done');
+  btn.innerHTML = `
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+    Envoyé à Sarah — l'équipe D²nAI recevra le récap dans la matinée.
+  `;
+  btn.disabled = true;
+});
+recalc();
+</script>
+
+</body>
+</html>
