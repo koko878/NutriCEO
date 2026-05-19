@@ -818,13 +818,54 @@ document.querySelectorAll('.decision').forEach(d=>{
 });
 
 document.getElementById('sendBtn').addEventListener('click', ()=>{
-  const btn=document.getElementById('sendBtn');
+  // ⚠ Replace with your OCP email before sharing the link to the CEO
+  const RECIPIENT_EMAIL = "your.name@ocpnutricrops.com";
+
+  const decisionLabels = {
+    d1: "1. Approve 2025–2030 vision (3 phases)",
+    d2: "2. Reclaim 'Big Solutions' governance",
+    d3: "3. Structure the Cybersecurity function",
+    d4: "4. Approve the sourcing plan (17 P0)",
+    d5: "5. Sponsor Group scaling + steering"
+  };
+  const voteLabels = { ok: "✓ Approve", q: "? Questions", ko: "✗ Defer" };
+
+  const decisionLines = Object.keys(decisionLabels).map(id => {
+    const v = votes[id];
+    return `${decisionLabels[id]} — ${v ? voteLabels[v] : "(no answer)"}`;
+  }).join('\n');
+
+  const notes = document.getElementById('fb').value.trim();
+  const summary = `${Object.values(votes).filter(v=>v==='ok').length} approved · ${Object.values(votes).filter(v=>v==='q').length} questions · ${Object.values(votes).filter(v=>v==='ko').length} deferred`;
+
+  const subject = "Executive Summary — feedback from CEO";
+  const body = [
+    "Hi,",
+    "",
+    "Here is my feedback on the Digital & Data Executive Summary (v2, May 19 2026).",
+    "",
+    "── DECISIONS ──",
+    decisionLines,
+    "",
+    "Summary: " + summary,
+    "",
+    "── NOTES ──",
+    notes || "(no additional notes)",
+    "",
+    "—",
+    "Sent from the D²nAI Executive Summary"
+  ].join('\n');
+
+  const url = `mailto:${RECIPIENT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.location.href = url;
+
+  const btn = document.getElementById('sendBtn');
   btn.classList.add('done');
-  btn.innerHTML=`
+  btn.innerHTML = `
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-    Sent — D²nAI team will pick it up in the morning.
+    Email draft opened — hit send in your mail client.
   `;
-  btn.disabled=true;
+  btn.disabled = true;
 });
 recalc();
 </script>
