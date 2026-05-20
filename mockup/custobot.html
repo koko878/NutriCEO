@@ -1,0 +1,1507 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#1B5E20">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CustoBot">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%231B5E20'/%3E%3Cpath d='M90 36 L103 77 L144 90 L103 103 L90 144 L77 103 L36 90 L77 77 Z' fill='%23E6F4E6'/%3E%3C/svg%3E">
+<title>CustoBot — D²nAI · OCP Nutricrops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-900:#0F3D14;
+  --green-800:#1B5E20;
+  --green-700:#2E7D32;
+  --green-500:#4CAF50;
+  --green-100:#E8F0E8;
+  --green-50:#F2F7F2;
+  --ink:#13191A;
+  --ink-2:#3C4642;
+  --muted:#6B7268;
+  --line:#E6E9E5;
+  --bg:#FAFBFA;
+  --page:#EDEFEA;
+  --warn:#B45309;
+  --warn-bg:#FEF3C7;
+  --ok:#15803D;
+  --ok-bg:#DCFCE7;
+  --bad:#B91C1C;
+  --bad-bg:#FEE2E2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #E2E8DE 0%, transparent 60%),
+    var(--page);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  display:grid;
+  place-items:center;
+  min-height:100vh;
+  padding:24px 16px;
+}
+
+/* Frame around phone */
+.stage{
+  display:flex;flex-direction:column;align-items:center;gap:18px;
+}
+.legend{
+  text-align:center;color:var(--muted);font-size:12px;letter-spacing:.04em;text-transform:uppercase;
+}
+.legend .brand{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-style:italic;color:var(--green-800);
+  font-size:14px;text-transform:none;letter-spacing:.02em;
+}
+
+/* iPhone frame */
+.phone{
+  position:relative;
+  width:390px;height:844px;
+  background:#0a0a0a;
+  border-radius:54px;
+  padding:14px;
+  box-shadow:
+    0 30px 60px -20px rgba(0,0,0,.35),
+    0 0 0 1px rgba(255,255,255,.06) inset,
+    0 0 0 2px #1a1a1a;
+}
+.notch{
+  position:absolute;left:50%;top:18px;transform:translateX(-50%);
+  width:120px;height:32px;background:#000;border-radius:20px;z-index:5;
+}
+.screen{
+  position:relative;
+  width:100%;height:100%;
+  background:var(--bg);
+  border-radius:42px;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+}
+
+/* status bar */
+.status{
+  height:48px;display:flex;align-items:flex-end;justify-content:space-between;
+  padding:0 28px 6px;font-size:14px;font-weight:600;color:var(--ink);
+}
+.status .icons{display:flex;gap:5px;align-items:center}
+.dot{width:4px;height:4px;background:var(--ink);border-radius:50%}
+.battery{width:22px;height:11px;border:1.2px solid var(--ink);border-radius:3px;position:relative}
+.battery::after{content:"";position:absolute;right:-3px;top:2.5px;width:2px;height:4px;background:var(--ink);border-radius:0 1px 1px 0}
+.battery::before{content:"";position:absolute;left:1px;top:1px;bottom:1px;width:80%;background:var(--ink);border-radius:1px}
+
+/* header */
+.appbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 20px 14px;
+}
+.brandmark{
+  display:flex;align-items:center;gap:10px;
+}
+.logo{
+  width:34px;height:34px;border-radius:10px;
+  background:
+    linear-gradient(135deg, var(--green-800), var(--green-900));
+  display:grid;place-items:center;
+  position:relative;overflow:hidden;
+  box-shadow:0 4px 10px -4px rgba(27,94,32,.45);
+}
+.logo::before{
+  content:"";position:absolute;inset:0;opacity:.18;
+  background-image:
+    repeating-linear-gradient(180deg, rgba(180,255,180,.6) 0 1px, transparent 1px 3px);
+  mix-blend-mode:screen;
+}
+.logo span{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  color:#E6F4E6;font-weight:700;font-size:16px;line-height:1;
+  position:relative;letter-spacing:.5px;
+}
+.logo sup{font-size:9px;font-weight:600;margin-left:-1px;top:-4px;position:relative}
+.brandtext{display:flex;flex-direction:column;line-height:1.05}
+.brandtext .t1{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.brandtext .t2{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--green-800);font-weight:700}
+
+.lang{
+  display:flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px;
+}
+.lang button{
+  border:0;background:transparent;font:600 11px/1 'Inter',sans-serif;
+  padding:6px 10px;border-radius:999px;color:var(--muted);cursor:pointer;
+  transition:.2s;
+}
+.lang button.on{background:var(--green-800);color:#fff}
+
+/* greeting */
+.hello{
+  padding:4px 22px 8px;
+}
+.hello h1{
+  font-family:'Cormorant Garamond',serif;
+  font-weight:600;font-size:30px;color:var(--ink);letter-spacing:-.01em;
+}
+.hello .date{
+  color:var(--muted);font-size:13px;margin-top:2px;
+}
+
+/* daily brief card */
+.scroll{
+  flex:1;overflow-y:auto;padding:8px 16px 12px;
+}
+.scroll::-webkit-scrollbar{width:0}
+
+.brief{
+  margin:8px 6px 14px;background:#fff;border:1px solid var(--line);
+  border-radius:18px;padding:14px 16px;cursor:pointer;
+  display:flex;gap:12px;align-items:center;
+  transition:.2s;
+  box-shadow:0 1px 0 rgba(0,0,0,.02);
+}
+.brief:hover{transform:translateY(-1px);box-shadow:0 6px 18px -10px rgba(0,0,0,.18)}
+.brief .ico{
+  width:38px;height:38px;border-radius:12px;background:var(--green-100);
+  display:grid;place-items:center;color:var(--green-800);flex:none;
+}
+.brief .txt h3{font-size:14px;font-weight:600;color:var(--ink)}
+.brief .txt p{font-size:12.5px;color:var(--muted);margin-top:2px}
+.brief .pill{
+  margin-left:auto;font-size:11px;font-weight:600;color:#fff;background:var(--green-800);
+  padding:4px 8px;border-radius:999px;flex:none;
+}
+
+/* suggestions */
+.suglabel{
+  font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);padding:4px 8px 8px;
+}
+.sugs{display:flex;flex-direction:column;gap:8px;padding:0 6px}
+.sug{
+  background:#fff;border:1px solid var(--line);border-radius:14px;
+  padding:13px 14px;display:flex;align-items:center;gap:10px;
+  cursor:pointer;transition:.18s;
+}
+.sug:hover{border-color:var(--green-500);background:var(--green-50)}
+.sug .q{font-size:13.5px;color:var(--ink-2);font-weight:500;line-height:1.35}
+.sug .arrow{margin-left:auto;color:var(--muted);flex:none}
+
+/* conversation */
+.thread{display:flex;flex-direction:column;gap:14px;padding:8px 4px 6px}
+.bubble-user{
+  align-self:flex-end;max-width:84%;
+  background:var(--green-800);color:#fff;
+  border-radius:18px 18px 4px 18px;padding:10px 14px;
+  font-size:14px;line-height:1.4;
+  box-shadow:0 6px 14px -8px rgba(27,94,32,.45);
+}
+.answer{
+  background:#fff;border:1px solid var(--line);border-radius:18px;
+  padding:14px 16px;
+}
+.answer .head{
+  display:flex;align-items:center;gap:8px;margin-bottom:8px;
+}
+.answer .head .badge{
+  width:22px;height:22px;border-radius:6px;background:var(--green-800);
+  display:grid;place-items:center;color:#fff;font:700 10px 'Cormorant Garamond',serif;
+}
+.answer .head .by{font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.answer h4{font-size:14px;font-weight:600;color:var(--ink);margin:8px 0 4px}
+.answer p{font-size:13.5px;color:var(--ink-2);line-height:1.55;margin:6px 0}
+.answer ul{margin:6px 0 6px 4px;padding:0;list-style:none}
+.answer ul li{font-size:13px;color:var(--ink-2);padding:4px 0 4px 22px;position:relative;line-height:1.45}
+.answer ul li .ic{position:absolute;left:0;top:5px;width:16px;height:16px;border-radius:4px;display:grid;place-items:center;font-size:10px;font-weight:700}
+.ic-ok{background:var(--ok-bg);color:var(--ok)}
+.ic-warn{background:var(--warn-bg);color:var(--warn)}
+.ic-bad{background:var(--bad-bg);color:var(--bad)}
+.kpi{
+  display:flex;gap:8px;margin:8px 0 4px;flex-wrap:wrap;
+}
+.kpi .b{
+  background:var(--green-50);border:1px solid var(--green-100);
+  border-radius:10px;padding:8px 10px;flex:1;min-width:90px;
+}
+.kpi .b .v{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--green-800);line-height:1}
+.kpi .b .l{font-size:10.5px;color:var(--muted);margin-top:3px;letter-spacing:.02em}
+.sources{
+  margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);
+  display:flex;flex-wrap:wrap;gap:6px;
+}
+.sources .lab{font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;width:100%;margin-bottom:2px}
+.src{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--green-50);border:1px solid var(--green-100);
+  color:var(--green-800);font-size:11.5px;font-weight:500;
+  padding:5px 9px;border-radius:999px;cursor:pointer;
+}
+.src .who{color:var(--muted);font-weight:500}
+
+/* thinking */
+.thinking{
+  display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12.5px;
+  padding:10px 14px;background:#fff;border:1px solid var(--line);border-radius:14px;
+}
+.thinking .matrix{
+  width:18px;height:18px;border-radius:5px;background:var(--green-800);
+  position:relative;overflow:hidden;
+}
+.thinking .matrix::after{
+  content:"01·10·11·00·10·11";position:absolute;inset:0;
+  font:700 7px/1 'Inter',monospace;color:#9ae39a;letter-spacing:1px;white-space:nowrap;
+  animation:rain 1.4s linear infinite;text-align:center;padding-top:2px;
+}
+@keyframes rain{
+  0%{transform:translateY(-50%)}
+  100%{transform:translateY(50%)}
+}
+.dots{display:inline-flex;gap:3px}
+.dots i{width:5px;height:5px;background:var(--green-800);border-radius:50%;opacity:.4;animation:blink 1.1s ease-in-out infinite}
+.dots i:nth-child(2){animation-delay:.18s}
+.dots i:nth-child(3){animation-delay:.36s}
+@keyframes blink{0%,100%{opacity:.25;transform:scale(.85)}50%{opacity:1;transform:scale(1)}}
+
+/* input bar */
+.composer{
+  border-top:1px solid var(--line);background:#fff;
+  padding:10px 14px 18px;display:flex;align-items:center;gap:8px;
+}
+.composer .field{
+  flex:1;display:flex;align-items:center;gap:8px;
+  background:var(--green-50);border:1px solid var(--green-100);border-radius:999px;
+  padding:10px 14px;
+}
+.composer input{
+  flex:1;border:0;background:transparent;outline:none;
+  font:500 14px 'Inter',sans-serif;color:var(--ink);
+}
+.composer input::placeholder{color:var(--muted)}
+.icon-btn{
+  width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+  border:0;background:var(--green-800);color:#fff;cursor:pointer;flex:none;
+  transition:.2s;
+}
+.icon-btn:hover{background:var(--green-900)}
+.icon-btn.ghost{background:transparent;color:var(--green-800);border:1px solid var(--green-100);background:var(--green-50)}
+
+/* home indicator */
+.handle{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:130px;height:4px;background:#1a1a1a;border-radius:3px;z-index:4}
+
+/* tiny anim on bubbles */
+.fade-in{animation:fade .35s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* reset btn */
+.reset{
+  background:transparent;border:0;color:var(--muted);font:600 11px 'Inter',sans-serif;
+  cursor:pointer;padding:4px 8px;border-radius:6px;
+}
+.reset:hover{color:var(--green-800);background:var(--green-50)}
+
+/* helper hint outside phone */
+.hint{
+  max-width:420px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.5;
+}
+.hint b{color:var(--ink-2)}
+
+/* Empty / info state */
+.answer.empty .head .badge{background:#B45309;font-family:'Inter',sans-serif;font-size:13px;font-weight:700}
+.answer.empty .head .by{color:#B45309}
+
+/* CTA action button */
+.cta{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.cta-btn{
+  width:100%;display:flex;align-items:center;gap:10px;
+  background:var(--green-800);color:#fff;border:0;border-radius:12px;
+  padding:11px 14px;font:600 12.5px 'Inter',sans-serif;cursor:pointer;
+  box-shadow:0 6px 14px -8px rgba(27,94,32,.45);
+  transition:.2s;text-align:left;
+}
+.cta-btn:hover{background:var(--green-900)}
+.cta-btn span{flex:1;line-height:1.3}
+.cta-btn .arrow{margin-left:auto;flex:none;opacity:.85}
+.cta-btn.sent{
+  background:var(--ok-bg);color:var(--ok);cursor:default;box-shadow:none;
+  animation:sentPulse .35s ease;
+}
+@keyframes sentPulse{0%{transform:scale(.98)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
+.cta-btn.sent svg{flex:none}
+
+/* Reports — picker tiles */
+.picker-list{margin-top:8px}
+.picker-tile{
+  display:flex;align-items:center;gap:10px;
+  background:#fff;border:1px solid var(--line);border-radius:14px;
+  padding:11px 12px;margin-top:8px;cursor:pointer;
+  transition:.18s;
+}
+.picker-tile:hover{border-color:var(--green-500);background:var(--green-50)}
+.picker-tile .ico{
+  width:34px;height:34px;border-radius:10px;background:var(--green-50);
+  border:1px solid var(--green-100);
+  display:grid;place-items:center;font-size:14px;color:var(--green-800);font-weight:700;flex:none;
+}
+.picker-tile .txt{flex:1;min-width:0}
+.picker-tile .txt h5{font-size:13.5px;font-weight:600;color:var(--ink)}
+.picker-tile .txt p{font-size:11.5px;color:var(--muted);margin-top:1px;line-height:1.35}
+.picker-tile .arrow{margin-left:auto;color:var(--muted);flex:none}
+
+/* Reports — cover */
+.report-cover{
+  margin:6px 0 10px;padding:18px 16px;
+  background:linear-gradient(180deg,#fff 0%, var(--green-50) 100%);
+  border:1px solid var(--green-100);border-radius:14px;
+  border-top:4px solid var(--green-800);
+  position:relative;
+}
+.report-cover::after{
+  content:"";position:absolute;top:14px;right:14px;width:34px;height:34px;
+  border-radius:8px;background:var(--green-800);
+  background-image:repeating-linear-gradient(180deg,rgba(180,255,180,.3) 0 1px,transparent 1px 3px);
+  opacity:.9;
+}
+.report-cover .meta{font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--green-800);text-transform:uppercase}
+.report-cover .ttl{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--ink);margin-top:6px;line-height:1.2;padding-right:44px}
+.report-cover .sub{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.4}
+.report-cover .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.report-cover .tag{font-size:10px;font-weight:600;color:var(--green-800);background:#fff;border:1px solid var(--green-100);padding:3px 8px;border-radius:999px}
+
+/* Reports — sections (TOC) */
+.sections{margin:8px 0 4px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.sections .lab{font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:9px 12px 5px}
+.sections ol{list-style:none;padding:0;margin:0}
+.sections li{padding:8px 12px;font-size:12.5px;color:var(--ink-2);border-top:1px solid var(--line);display:flex;gap:10px;align-items:center}
+.sections li:first-of-type{border-top:0}
+.sections li .n{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--green-800);font-weight:700;width:18px;text-align:right;flex:none;line-height:1}
+
+/* Reports — action buttons */
+.actions-row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.act-btn{
+  flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;
+  background:var(--green-800);color:#fff;border:0;border-radius:10px;padding:9px 6px;
+  font:600 11.5px 'Inter',sans-serif;cursor:pointer;
+  box-shadow:0 4px 10px -6px rgba(27,94,32,.45);
+  transition:.18s;
+}
+.act-btn:hover{background:var(--green-900)}
+.act-btn.secondary{background:#fff;color:var(--green-800);border:1px solid var(--green-100);box-shadow:none}
+.act-btn.secondary:hover{background:var(--green-50)}
+.act-btn.done{background:var(--ok-bg);color:var(--ok);cursor:default;box-shadow:none;border:0}
+.act-btn svg{flex:none}
+.act-btn span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* tap & feel */
+*{-webkit-tap-highlight-color:transparent}
+.sug,.brief,.icon-btn,.lang button,.reset,.src,.bubble-user{
+  touch-action:manipulation;
+  -webkit-user-select:none;user-select:none;
+}
+.composer input{-webkit-user-select:text;user-select:text;font-size:16px}
+
+/* mobile fullscreen — kill the phone frame, become the app */
+@media (max-width: 600px) {
+  body{
+    padding:0;background:var(--bg);
+    display:block;min-height:100dvh;
+    overscroll-behavior:none;
+  }
+  .stage{gap:0}
+  .legend,.hint{display:none}
+  .phone{
+    width:100%;height:100dvh;height:100vh;
+    border-radius:0;padding:0;background:var(--bg);
+    box-shadow:none;
+  }
+  .notch,.handle{display:none}
+  .screen{
+    border-radius:0;
+    padding-top:env(safe-area-inset-top);
+  }
+  .status{display:none}
+  .appbar{padding-top:12px}
+  .composer{
+    padding-bottom:calc(14px + env(safe-area-inset-bottom));
+  }
+  .scroll{padding-bottom:18px}
+}
+
+/* installed PWA (added to home screen) — hide browser-only hints */
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  .status{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <div class="legend">
+    <div>CustoBot — prototype de démonstration</div>
+    <div class="brand">Conçu par D²nAI · OCP Nutricrops</div>
+  </div>
+
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+
+      <!-- status bar -->
+      <div class="status">
+        <span id="clock">9:41</span>
+        <span class="icons">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span style="margin-left:6px" class="battery"></span>
+        </span>
+      </div>
+
+      <!-- appbar -->
+      <div class="appbar">
+        <div class="brandmark">
+          <div class="logo"><span>D<sup>2</sup>n</span></div>
+          <div class="brandtext">
+            <div class="t1">OCP Nutricrops · Customization BU</div>
+            <div class="t2">CustoBot</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button class="reset" id="reset" title="Recommencer">↻</button>
+          <div class="lang">
+            <button data-l="fr" class="on">FR</button>
+            <button data-l="en">EN</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- greeting -->
+      <div class="hello">
+        <h1 data-i18n="greeting">Bonjour</h1>
+        <div class="date" data-i18n="date">Mardi 12 mai 2026</div>
+      </div>
+
+      <!-- scrollable -->
+      <div class="scroll" id="scroll">
+
+        <!-- initial state -->
+        <div id="initial">
+          <div class="brief" id="briefCard" data-q="brief">
+            <div class="ico">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>
+            </div>
+            <div class="txt">
+              <h3 data-i18n="briefTitle">Brief du jour</h3>
+              <p data-i18n="briefSub">3 sujets demandent votre attention.</p>
+            </div>
+            <span class="pill">3</span>
+          </div>
+
+          <div class="brief" id="reportsCard" data-q="reports">
+            <div class="ico">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+            </div>
+            <div class="txt">
+              <h3 data-i18n="reportsTitle">Générer un rapport</h3>
+              <p data-i18n="reportsSub">5 modèles · Comité, BU, contrôles…</p>
+            </div>
+            <span class="pill">5</span>
+          </div>
+
+          <div class="suglabel" data-i18n="sugLabel">Questions suggérées</div>
+          <div class="sugs" id="sugs"></div>
+        </div>
+
+        <!-- conversation -->
+        <div class="thread" id="thread"></div>
+      </div>
+
+      <!-- composer -->
+      <div class="composer">
+        <div class="field">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7268" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="qinput" data-i18n-ph="placeholder" placeholder="Posez votre question…" />
+        </div>
+        <button class="icon-btn ghost" title="Voix">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10a7 7 0 0 1-14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+        </button>
+        <button class="icon-btn" id="send" title="Envoyer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4 20-7z"/></svg>
+        </button>
+      </div>
+
+    </div>
+    <div class="handle"></div>
+  </div>
+
+  <div class="hint">
+    <b>Comment utiliser :</b> appuyez sur une question suggérée — ou sur le « Brief du jour » — pour voir l'app composer une réponse à partir des documents des 25 N-1. Toutes les données sont fictives.
+  </div>
+
+</div>
+
+<script>
+const i18n = {
+  fr: {
+    greeting: "Bonjour, Siham",
+    date: "Vendredi 16 mai 2026",
+    briefTitle: "Brief du jour",
+    briefSub: "3 sujets prêts à exploiter.",
+    sugLabel: "Questions suggérées",
+    placeholder: "Demande, ou décris ce que tu veux produire…",
+    thinking: "Lecture du repo : docs, minutes, audios, données marché…",
+    sourcesLabel: "Sources du repo",
+    reportsTitle: "Générer un livrable",
+    reportsSub: "5 formats · Deck, analyse, brief, vidéo, recap",
+    hint: "<b>Comment utiliser :</b> appuie sur une question suggérée — sur le « Brief du jour » — ou sur « Générer un livrable » pour voir CustoBot exploiter tout le repo marketing (documents, comptes-rendus, enregistrements audio, données marché) en différents formats. Données fictives.",
+    questions: [
+      { id: "market_analysis", q: "Analyse marché — gamme premium personnalisée Inde" },
+      { id: "report_deck",     q: "Génère un deck pour le COMEX customisation" },
+      { id: "workshop_recap",  q: "Résume le dernier workshop (depuis l'audio)" },
+      { id: "trends",          q: "Tendances de nos 3 derniers échanges ?" }
+    ],
+    routes: [
+      { id:"report_deck",   kw:["deck","slide","slides","présentation","presentation","powerpoint","ppt","comex"] },
+      { id:"report_video",  kw:["vidéo","video","script","heygen","avatar","capsule"] },
+      { id:"report_brief",  kw:["brief","one-pager","one pager","note de cadrage","argumentaire"] },
+      { id:"report_recap",  kw:["recap","compte-rendu","compte rendu","minutes","résume","resume","résumé"] },
+      { id:"report_market", kw:["rapport marché","rapport marche","rapport analyse"] },
+      { id:"report_picker", kw:["génère","genere","générer","produire","créer","creer","livrable","modèle","modele","rapport"] },
+      { id:"consumer_study",kw:["étude consommateur","etude consommateur","consumer study","insights consommateur","panel"] },
+      { id:"search_packaging", kw:["packaging","emballage","cherche","dit sur","mentionné","mentionne","retrouve"] },
+      { id:"market_numbers", kw:["chiffre","chiffres","données pour","donnees pour","data slide","stat"] },
+      { id:"compare_messages", kw:["compare","comparaison","messages clés","messages cles","2024","2025","évolution discours"] },
+      { id:"market_analysis", kw:["analyse","marché","marche","market","concurrent","concurrence","premium","inde","tsp"] },
+      { id:"workshop_recap", kw:["workshop","atelier","réunion","reunion","audio","enregistrement"] },
+      { id:"trends",        kw:["tendance","tendances","trend","échanges","echanges","croise","insight"] },
+      { id:"brief",         kw:["brief du jour","synthèse","résumé du jour","jour","aujourd'hui"] }
+    ],
+    answers: {
+      brief: {
+        title: "Brief du jour — Marketing Customization",
+        intro: "Trois sujets prêts à exploiter depuis le dernier workshop :",
+        list: [
+          { t:"ok",   txt:"<b>Workshop customization (jeudi)</b> · enregistrement audio traité (58 min) — recap prêt à valider." },
+          { t:"warn", txt:"<b>Données marché TSP Inde rafraîchies</b> (MDP) · angle fort pour ta prochaine slide." },
+          { t:"warn", txt:"<b>Deck COMEX customisation</b> attendu vendredi · base disponible dans le repo." }
+        ],
+        sources: [
+          { i:"🎙", d:"Audio workshop 14/05 (58 min)", w:"Repo · transcription auto" },
+          { i:"📊", d:"Market Data Platform — TSP Inde", w:"MDP · maj quotidienne" },
+          { i:"🖼", d:"COMEX_customisation_Q1.pptx",  w:"Repo · deck précédent" }
+        ]
+      },
+      market_analysis: {
+        title: "Analyse marché — gamme premium personnalisée · Inde",
+        kpis: [
+          { v:"+18%", l:"croissance segment" },
+          { v:"12%",  l:"part de marché OCP" },
+          { v:"3",    l:"concurrents clés" }
+        ],
+        intro: "Synthèse croisée des données MDP, des notes marché et des 2 derniers calls distributeurs (audio).",
+        list: [
+          { t:"ok",   txt:"<b>Demande</b> · segment premium +18% sur 12 mois, tiré par canne à sucre & coton (États du Sud)." },
+          { t:"warn", txt:"<b>Concurrence</b> · un acteur chinois s'aligne sur le sur-mesure — fenêtre de 18 mois." },
+          { t:"ok",   txt:"<b>Prix</b> · premium moyen +14% vs gamme standard, accepté par les distributeurs clés." },
+          { t:"ok",   txt:"<b>Opportunité</b> · personnalisation formule + service agronomique = différenciateur n°1 cité en call." }
+        ],
+        decision: "Angle recommandé pour le deck COMEX : « le sur-mesure comme rempart à la concurrence prix ».",
+        sources: [
+          { i:"📊", d:"MDP — segment premium Inde", w:"Eureka B. · Operations" },
+          { i:"🎙", d:"Call distributeur Iffco 12/05", w:"Sales India" },
+          { i:"📄", d:"Note marché phosphates avril", w:"Othmane R. · Sourcing" }
+        ]
+      },
+      workshop_recap: {
+        title: "Recap — Workshop Customization (jeudi 14/05)",
+        kpis: [
+          { v:"58", l:"min d'audio traité" },
+          { v:"5",  l:"participants" },
+          { v:"7",  l:"décisions" }
+        ],
+        intro: "Synthèse générée depuis l'<b>enregistrement audio</b> + les minutes du workshop.",
+        list: [
+          { t:"ok",   txt:"<b>Priorité validée</b> · packaging premium comme premier chantier customisation." },
+          { t:"warn", txt:"<b>Contrainte budget</b> · focus sur des outils peu coûteux / déjà payés (Copilot, think-cell)." },
+          { t:"ok",   txt:"<b>Profiter du calme</b> · former les équipes sur les outils pendant la période creuse." },
+          { t:"ok",   txt:"<b>Roadmap</b> · 3 tracks marketing à présenter au COMEX." }
+        ],
+        decision: "Actions assignées : Ibtissame (guide workshop), Siham (découverte NutriRadar lundi), démo HeyGen.",
+        sources: [
+          { i:"🎙", d:"Audio workshop 14/05 (58 min)", w:"Repo · transcription auto" },
+          { i:"📝", d:"Minutes workshop customisation", w:"Ibtissame F." }
+        ]
+      },
+      trends: {
+        title: "Tendances — nos 3 derniers échanges",
+        intro: "Croisement de 2 workshops + 1 call client (audio + minutes + notes).",
+        list: [
+          { t:"ok",   txt:"<b>Récurrent</b> · le sur-mesure revient dans 3/3 échanges comme principal argument différenciant." },
+          { t:"warn", txt:"<b>Signal faible</b> · la contrainte budget pousse vers l'optimisation des outils déjà payés." },
+          { t:"ok",   txt:"<b>Émergent</b> · forte appétence pour le contenu vidéo court (capsules produit)." },
+          { t:"ok",   txt:"<b>Demande interne</b> · automatiser la production de slides est cité 2 fois comme priorité." }
+        ],
+        decision: "À capitaliser dans la roadmap : sur-mesure (message), outils (efficacité), vidéo (format).",
+        sources: [
+          { i:"🎙", d:"Audio workshop 14/05", w:"Repo" },
+          { i:"🎙", d:"Audio call client 08/05", w:"Repo" },
+          { i:"📝", d:"Minutes atelier roadmap", w:"Repo" }
+        ]
+      },
+      search_packaging: {
+        title: "Recherche — « packaging premium » dans le repo",
+        kpis: [
+          { v:"6",  l:"occurrences trouvées" },
+          { v:"3",  l:"sources" },
+          { v:"2",  l:"décisions liées" }
+        ],
+        intro: "CustoBot a cherché dans les documents, minutes <b>et les enregistrements audio</b> :",
+        list: [
+          { t:"ok",   txt:"<b>Audio workshop 14/05 (12:30)</b> · « le packaging premium, c'est notre premier chantier customisation »." },
+          { t:"ok",   txt:"<b>Minutes atelier roadmap</b> · packaging cité comme quick-win à fort impact image." },
+          { t:"warn", txt:"<b>Note marché</b> · les distributeurs Inde demandent un packaging adapté aux petits exploitants." }
+        ],
+        decision: "Veux-tu que je compile ces extraits dans un brief packaging d'une page ?",
+        sources: [
+          { i:"🎙", d:"Audio workshop 14/05 — 12:30", w:"Repo" },
+          { i:"📝", d:"Minutes atelier roadmap", w:"Repo" },
+          { i:"📄", d:"Note marché distributeurs Inde", w:"Sales India" }
+        ]
+      },
+      market_numbers: {
+        title: "Chiffres marché — prêts pour une slide",
+        kpis: [
+          { v:"+18%", l:"croissance premium" },
+          { v:"12%",  l:"part OCP" },
+          { v:"+14%", l:"premium prix vs standard" }
+        ],
+        intro: "Extraits chiffrés sourcés depuis MDP, formatés pour insertion directe dans un deck.",
+        list: [
+          { t:"ok",   txt:"<b>Volume premium Inde</b> · 18 kT en mai (+50% vs N-1)." },
+          { t:"ok",   txt:"<b>Part de marché OCP</b> · 12% sur le segment personnalisé." },
+          { t:"ok",   txt:"<b>Prix moyen</b> · 5 280 MAD/T (+14% vs gamme standard)." }
+        ],
+        decision: "Je peux générer directement une slide « chiffres marché » prête à coller. Tape « génère un deck ».",
+        sources: [
+          { i:"📊", d:"MDP — TSP Inde mai 2026", w:"Eureka B. · Operations" }
+        ]
+      },
+      compare_messages: {
+        title: "Messages clés — 2024 vs 2025",
+        intro: "Comparaison des décks et argumentaires des deux années (repo : 14 présentations analysées).",
+        list: [
+          { t:"warn", txt:"<b>2024</b> · message centré sur la <i>performance agronomique</i> (rendement, NPK)." },
+          { t:"ok",   txt:"<b>2025</b> · bascule vers <i>durabilité + sur-mesure</i> (sol, climat, personnalisation)." },
+          { t:"ok",   txt:"<b>Constante</b> · la fiabilité OCP reste l'argument socle dans les deux années." },
+          { t:"warn", txt:"<b>Manque</b> · le volet « service & data » n'est pas encore dans le discours marketing." }
+        ],
+        decision: "Recommandation : intégrer « customisation pilotée par la data » comme nouveau pilier 2026.",
+        sources: [
+          { i:"🖼", d:"14 décks 2024-2025", w:"Repo · archive marketing" },
+          { i:"📄", d:"Argumentaires commerciaux", w:"Repo" }
+        ]
+      },
+      consumer_study: {
+        state: "empty",
+        title: "Résultats de l'étude consommateurs Q1",
+        intro: "Je n'ai trouvé <b>aucun rapport final</b> de l'étude consommateurs Q1 dans le repo. Dernier élément : le brief de cadrage envoyé à l'agence en février.",
+        list: [
+          { t:"warn", txt:"Le livrable final n'a peut-être pas été déposé dans le repo." },
+          { t:"warn", txt:"L'agence peut être encore en phase de terrain / analyse." },
+          { t:"warn", txt:"Ou l'enregistrement des focus groups n'a pas été ajouté aux sources audio." }
+        ],
+        cta: {
+          label: "Envoyer un rappel à l'agence (via Ibtissame F.)",
+          sent:  "Rappel envoyé — tu seras notifiée dès que les résultats sont déposés."
+        },
+        sources: [
+          { i:"📄", d:"Brief cadrage étude conso (fév.)", w:"Repo · marketing" }
+        ]
+      },
+      report_picker: {
+        kind: "picker",
+        title: "Quel livrable veux-tu générer ?",
+        intro: "CustoBot exploite tout le repo (docs, minutes, audios, données marché) et le décline dans le format choisi.",
+        options: [
+          { id:"report_deck",   icon:"▦", label:"Deck / présentation",   desc:"Slides brandées depuis un brief ou des données — ton chantier n°1" },
+          { id:"report_market", icon:"%", label:"Analyse marché",         desc:"Note d'analyse structurée depuis MDP + repo" },
+          { id:"report_brief",  icon:"▤", label:"Brief / one-pager",      desc:"Argumentaire ou note de cadrage en une page" },
+          { id:"report_video",  icon:"►", label:"Script vidéo (HeyGen)",  desc:"Script + storyboard pour capsule avatar" },
+          { id:"report_recap",  icon:"✎", label:"Recap de réunion",       desc:"Compte-rendu + actions depuis un audio/minutes" }
+        ]
+      },
+      report_deck: {
+        kind: "report",
+        title: "Deck COMEX — Customisation · gamme premium",
+        cover: {
+          classification: "Brouillon · à relire par Siham",
+          subtitle: "Deck généré depuis le repo : données marché MDP, recap workshop, argumentaires 2025.",
+          pages: 12,
+          audience: "COMEX Nutricrops"
+        },
+        kpis: [
+          { v:"12", l:"slides" },
+          { v:"4",  l:"sources croisées" },
+          { v:"3",  l:"messages clés" }
+        ],
+        sections: [
+          "Couverture & message clé",
+          "Marché premium Inde (chiffres MDP)",
+          "Le sur-mesure comme différenciateur",
+          "Concurrence & fenêtre 18 mois",
+          "Roadmap customisation — 3 tracks",
+          "Demande budgétaire & quick-wins"
+        ],
+        actions: [
+          { id:"dl",  label:"Télécharger PPTX",  sent:"PPTX téléchargé" },
+          { id:"eml", label:"Envoyer pour relecture", sent:"Envoyé à l'équipe" },
+          { id:"sch", label:"Ouvrir dans PowerPoint", sent:"Ouverture PowerPoint" }
+        ],
+        sources: [
+          { i:"📊", d:"MDP — premium Inde", w:"Operations" },
+          { i:"🎙", d:"Audio workshop 14/05", w:"Repo" },
+          { i:"🖼", d:"Décks 2025", w:"Repo · archive" }
+        ]
+      },
+      report_market: {
+        kind: "report",
+        title: "Analyse marché — Customisation premium",
+        cover: {
+          classification: "Interne · marketing",
+          subtitle: "Note d'analyse structurée croisant MDP, notes marché et calls distributeurs.",
+          pages: 6,
+          audience: "Marketing · Sales"
+        },
+        kpis: [
+          { v:"6",  l:"pages" },
+          { v:"+18%", l:"croissance segment" },
+          { v:"3",  l:"concurrents suivis" }
+        ],
+        sections: [
+          "Synthèse exécutive",
+          "Taille & croissance du segment",
+          "Dynamique concurrentielle",
+          "Pricing & willingness to pay",
+          "Opportunités de différenciation",
+          "Recommandations marketing"
+        ],
+        actions: [
+          { id:"dl",  label:"Télécharger PDF",  sent:"PDF téléchargé" },
+          { id:"eml", label:"Partager à Sales", sent:"Partagé à Sales" },
+          { id:"sch", label:"Programmer maj mensuelle", sent:"Récurrence activée" }
+        ],
+        sources: [
+          { i:"📊", d:"MDP — segment premium", w:"Operations" },
+          { i:"🎙", d:"Calls distributeurs", w:"Sales India" }
+        ]
+      },
+      report_brief: {
+        kind: "report",
+        title: "One-pager — Packaging premium",
+        cover: {
+          classification: "Brouillon · 1 page",
+          subtitle: "Argumentaire packaging premium compilé depuis les extraits du repo.",
+          pages: 1,
+          audience: "Management · pitch budget"
+        },
+        kpis: [
+          { v:"1",  l:"page" },
+          { v:"3",  l:"arguments clés" },
+          { v:"6",  l:"extraits sourcés" }
+        ],
+        sections: [
+          "Le besoin en une phrase",
+          "3 arguments clés (chiffrés)",
+          "Coût & quick-win",
+          "Prochaine étape & ask"
+        ],
+        actions: [
+          { id:"dl",  label:"Télécharger PDF",  sent:"PDF téléchargé" },
+          { id:"eml", label:"Envoyer au management", sent:"Envoyé" },
+          { id:"sch", label:"Dupliquer comme modèle", sent:"Modèle créé" }
+        ],
+        sources: [
+          { i:"🎙", d:"Audio workshop — 12:30", w:"Repo" },
+          { i:"📝", d:"Minutes atelier roadmap", w:"Repo" }
+        ]
+      },
+      report_video: {
+        kind: "report",
+        title: "Script vidéo — Capsule « sur-mesure » (HeyGen)",
+        cover: {
+          classification: "Brouillon · 90 sec",
+          subtitle: "Script + storyboard prêts pour génération avatar HeyGen.",
+          pages: 2,
+          audience: "Réseaux · distributeurs"
+        },
+        kpis: [
+          { v:"90", l:"secondes" },
+          { v:"5",  l:"plans" },
+          { v:"1",  l:"avatar + voix off" }
+        ],
+        sections: [
+          "Accroche (0-10s)",
+          "Problème distributeur (10-30s)",
+          "Solution sur-mesure OCP (30-60s)",
+          "Preuve chiffrée (60-80s)",
+          "Call-to-action (80-90s)"
+        ],
+        actions: [
+          { id:"dl",  label:"Télécharger script",  sent:"Script téléchargé" },
+          { id:"eml", label:"Envoyer vers HeyGen", sent:"Transféré à HeyGen" },
+          { id:"sch", label:"Décliner 3 langues", sent:"FR/EN/HI en file" }
+        ],
+        sources: [
+          { i:"🎙", d:"Audio call client (ton & verbatim)", w:"Repo" },
+          { i:"📊", d:"MDP — preuve chiffrée", w:"Operations" }
+        ]
+      },
+      report_recap: {
+        kind: "report",
+        title: "Compte-rendu — Workshop Customization 14/05",
+        cover: {
+          classification: "Interne · à diffuser",
+          subtitle: "Compte-rendu généré depuis l'enregistrement audio (58 min) + minutes.",
+          pages: 3,
+          audience: "Équipe marketing · D²nAI"
+        },
+        kpis: [
+          { v:"3",  l:"pages" },
+          { v:"7",  l:"décisions" },
+          { v:"5",  l:"actions assignées" }
+        ],
+        sections: [
+          "Participants & objectif",
+          "Points clés (depuis l'audio)",
+          "Décisions prises",
+          "Actions & responsables",
+          "Prochaines étapes"
+        ],
+        actions: [
+          { id:"dl",  label:"Télécharger PDF",  sent:"PDF téléchargé" },
+          { id:"eml", label:"Diffuser à l'équipe", sent:"Diffusé" },
+          { id:"sch", label:"Créer les tâches (Asana)", sent:"5 tâches créées" }
+        ],
+        sources: [
+          { i:"🎙", d:"Audio workshop 14/05 (58 min)", w:"Repo · transcription auto" },
+          { i:"📝", d:"Minutes Ibtissame F.", w:"Repo" }
+        ]
+      }
+    }
+  },
+  en: {
+    greeting: "Good morning, Siham",
+    date: "Friday, May 16, 2026",
+    briefTitle: "Today's brief",
+    briefSub: "3 topics ready to use.",
+    sugLabel: "Suggested questions",
+    placeholder: "Ask, or describe what you want to produce…",
+    thinking: "Reading the repo: docs, minutes, audio, market data…",
+    sourcesLabel: "Repo sources",
+    reportsTitle: "Generate a deliverable",
+    reportsSub: "5 formats · Deck, analysis, brief, video, recap",
+    hint: "<b>How to use:</b> tap a suggested question — “Today's brief” — or “Generate a deliverable” to see CustoBot exploit the whole marketing repo (documents, minutes, audio recordings, market data) in different formats. Fictional data.",
+    questions: [
+      { id: "market_analysis", q: "Market analysis — premium customised range, India" },
+      { id: "report_deck",     q: "Generate a deck for the customization Excom" },
+      { id: "workshop_recap",  q: "Summarise the last workshop (from audio)" },
+      { id: "trends",          q: "Trends across our last 3 exchanges?" }
+    ],
+    routes: [
+      { id:"report_deck",   kw:["deck","slide","slides","presentation","powerpoint","ppt","excom"] },
+      { id:"report_video",  kw:["video","script","heygen","avatar","clip"] },
+      { id:"report_brief",  kw:["brief","one-pager","one pager","talking points"] },
+      { id:"report_recap",  kw:["recap","minutes","summarise","summarize","meeting notes"] },
+      { id:"report_market", kw:["market report","analysis report"] },
+      { id:"report_picker", kw:["generate","produce","create","deliverable","template","report"] },
+      { id:"consumer_study",kw:["consumer study","consumer insights","panel","focus group"] },
+      { id:"search_packaging", kw:["packaging","search","said about","mentioned","find"] },
+      { id:"market_numbers", kw:["number","numbers","figures","data for","stat"] },
+      { id:"compare_messages", kw:["compare","comparison","key messages","2024","2025"] },
+      { id:"market_analysis", kw:["analysis","market","competitor","competition","premium","india","tsp"] },
+      { id:"workshop_recap", kw:["workshop","meeting","audio","recording"] },
+      { id:"trends",        kw:["trend","trends","exchanges","insight","recurring"] },
+      { id:"brief",         kw:["today's brief","digest","today"] }
+    ],
+    answers: {
+      brief: {
+        title: "Today's brief — Customization Marketing",
+        intro: "Three topics ready to use since the last workshop:",
+        list: [
+          { t:"ok",   txt:"<b>Customization workshop (Thu)</b> · audio recording processed (58 min) — recap ready to validate." },
+          { t:"warn", txt:"<b>India TSP market data refreshed</b> (MDP) · strong angle for your next slide." },
+          { t:"warn", txt:"<b>Customization Excom deck</b> due Friday · base available in the repo." }
+        ],
+        sources: [
+          { i:"🎙", d:"Workshop audio 05/14 (58 min)", w:"Repo · auto transcript" },
+          { i:"📊", d:"Market Data Platform — India TSP", w:"MDP · daily refresh" },
+          { i:"🖼", d:"Excom_customization_Q1.pptx",  w:"Repo · prior deck" }
+        ]
+      },
+      market_analysis: {
+        title: "Market analysis — premium customised range · India",
+        kpis: [
+          { v:"+18%", l:"segment growth" },
+          { v:"12%",  l:"OCP market share" },
+          { v:"3",    l:"key competitors" }
+        ],
+        intro: "Synthesis across MDP data, market notes and the last 2 distributor calls (audio).",
+        list: [
+          { t:"ok",   txt:"<b>Demand</b> · premium segment +18% over 12 months, driven by sugar cane & cotton (South)." },
+          { t:"warn", txt:"<b>Competition</b> · a Chinese player is moving into customisation — 18-month window." },
+          { t:"ok",   txt:"<b>Pricing</b> · average premium +14% vs standard, accepted by key distributors." },
+          { t:"ok",   txt:"<b>Opportunity</b> · formula customisation + agronomy service = #1 differentiator cited in calls." }
+        ],
+        decision: "Recommended deck angle: 'customisation as a moat against price competition'.",
+        sources: [
+          { i:"📊", d:"MDP — India premium segment", w:"Eureka B. · Operations" },
+          { i:"🎙", d:"Iffco distributor call 05/12", w:"Sales India" },
+          { i:"📄", d:"April phosphate market note", w:"Othmane R. · Sourcing" }
+        ]
+      },
+      workshop_recap: {
+        title: "Recap — Customization workshop (Thu 05/14)",
+        kpis: [
+          { v:"58", l:"min of audio" },
+          { v:"5",  l:"participants" },
+          { v:"7",  l:"decisions" }
+        ],
+        intro: "Synthesis generated from the <b>audio recording</b> + workshop minutes.",
+        list: [
+          { t:"ok",   txt:"<b>Priority confirmed</b> · premium packaging as first customisation workstream." },
+          { t:"warn", txt:"<b>Budget constraint</b> · focus on cheap / already-paid tools (Copilot, think-cell)." },
+          { t:"ok",   txt:"<b>Use the lull</b> · train the teams on tools during the quiet period." },
+          { t:"ok",   txt:"<b>Roadmap</b> · 3 marketing tracks to present to Excom." }
+        ],
+        decision: "Actions: Ibtissame (workshop guide), Siham (NutriRadar discovery Monday), HeyGen demo.",
+        sources: [
+          { i:"🎙", d:"Workshop audio 05/14 (58 min)", w:"Repo · auto transcript" },
+          { i:"📝", d:"Customization workshop minutes", w:"Ibtissame F." }
+        ]
+      },
+      trends: {
+        title: "Trends — our last 3 exchanges",
+        intro: "Crossing 2 workshops + 1 client call (audio + minutes + notes).",
+        list: [
+          { t:"ok",   txt:"<b>Recurring</b> · customisation appears in 3/3 exchanges as the main differentiator." },
+          { t:"warn", txt:"<b>Weak signal</b> · budget pressure pushes toward optimising already-paid tools." },
+          { t:"ok",   txt:"<b>Emerging</b> · strong appetite for short video content (product clips)." },
+          { t:"ok",   txt:"<b>Internal ask</b> · automating slide production cited twice as a priority." }
+        ],
+        decision: "Capitalise in the roadmap: customisation (message), tools (efficiency), video (format).",
+        sources: [
+          { i:"🎙", d:"Workshop audio 05/14", w:"Repo" },
+          { i:"🎙", d:"Client call audio 05/08", w:"Repo" },
+          { i:"📝", d:"Roadmap workshop minutes", w:"Repo" }
+        ]
+      },
+      search_packaging: {
+        title: "Search — 'premium packaging' in the repo",
+        kpis: [
+          { v:"6",  l:"hits found" },
+          { v:"3",  l:"sources" },
+          { v:"2",  l:"linked decisions" }
+        ],
+        intro: "CustoBot searched documents, minutes <b>and audio recordings</b>:",
+        list: [
+          { t:"ok",   txt:"<b>Workshop audio 05/14 (12:30)</b> · 'premium packaging is our first customisation workstream'." },
+          { t:"ok",   txt:"<b>Roadmap workshop minutes</b> · packaging cited as a high-image-impact quick win." },
+          { t:"warn", txt:"<b>Market note</b> · India distributors ask for packaging suited to smallholders." }
+        ],
+        decision: "Want me to compile these excerpts into a one-page packaging brief?",
+        sources: [
+          { i:"🎙", d:"Workshop audio 05/14 — 12:30", w:"Repo" },
+          { i:"📝", d:"Roadmap workshop minutes", w:"Repo" },
+          { i:"📄", d:"India distributors market note", w:"Sales India" }
+        ]
+      },
+      market_numbers: {
+        title: "Market figures — ready for a slide",
+        kpis: [
+          { v:"+18%", l:"premium growth" },
+          { v:"12%",  l:"OCP share" },
+          { v:"+14%", l:"premium price vs std" }
+        ],
+        intro: "Sourced figures from MDP, formatted for direct insertion in a deck.",
+        list: [
+          { t:"ok",   txt:"<b>India premium volume</b> · 18 kT in May (+50% vs LY)." },
+          { t:"ok",   txt:"<b>OCP market share</b> · 12% on the customised segment." },
+          { t:"ok",   txt:"<b>Average price</b> · 5,280 MAD/T (+14% vs standard range)." }
+        ],
+        decision: "I can generate a ready-to-paste 'market figures' slide. Type 'generate a deck'.",
+        sources: [
+          { i:"📊", d:"MDP — India TSP May 2026", w:"Eureka B. · Operations" }
+        ]
+      },
+      compare_messages: {
+        title: "Key messages — 2024 vs 2025",
+        intro: "Comparison of both years' decks and talking points (repo: 14 presentations analysed).",
+        list: [
+          { t:"warn", txt:"<b>2024</b> · message centred on <i>agronomic performance</i> (yield, NPK)." },
+          { t:"ok",   txt:"<b>2025</b> · shift toward <i>sustainability + customisation</i> (soil, climate, personalisation)." },
+          { t:"ok",   txt:"<b>Constant</b> · OCP reliability remains the bedrock argument both years." },
+          { t:"warn", txt:"<b>Gap</b> · the 'service & data' angle is not yet in the marketing narrative." }
+        ],
+        decision: "Recommendation: add 'data-driven customisation' as a new 2026 pillar.",
+        sources: [
+          { i:"🖼", d:"14 decks 2024-2025", w:"Repo · marketing archive" },
+          { i:"📄", d:"Sales talking points", w:"Repo" }
+        ]
+      },
+      consumer_study: {
+        state: "empty",
+        title: "Q1 consumer study results",
+        intro: "I found <b>no final report</b> for the Q1 consumer study in the repo. Latest item: the framing brief sent to the agency in February.",
+        list: [
+          { t:"warn", txt:"The final deliverable may not have been uploaded to the repo." },
+          { t:"warn", txt:"The agency may still be in field / analysis phase." },
+          { t:"warn", txt:"Or the focus-group recordings haven't been added to the audio sources." }
+        ],
+        cta: {
+          label: "Send a reminder to the agency (via Ibtissame F.)",
+          sent:  "Reminder sent — you'll be notified once results are uploaded."
+        },
+        sources: [
+          { i:"📄", d:"Consumer study framing brief (Feb)", w:"Repo · marketing" }
+        ]
+      },
+      report_picker: {
+        kind: "picker",
+        title: "Which deliverable do you want to generate?",
+        intro: "CustoBot exploits the whole repo (docs, minutes, audio, market data) and renders it in the chosen format.",
+        options: [
+          { id:"report_deck",   icon:"▦", label:"Deck / presentation",  desc:"Branded slides from a brief or data — your #1 pain" },
+          { id:"report_market", icon:"%", label:"Market analysis",       desc:"Structured analysis note from MDP + repo" },
+          { id:"report_brief",  icon:"▤", label:"Brief / one-pager",     desc:"Talking points or framing note on one page" },
+          { id:"report_video",  icon:"►", label:"Video script (HeyGen)", desc:"Script + storyboard for an avatar clip" },
+          { id:"report_recap",  icon:"✎", label:"Meeting recap",         desc:"Minutes + actions from an audio/minutes" }
+        ]
+      },
+      report_deck: {
+        kind: "report",
+        title: "Excom deck — Customization · premium range",
+        cover: {
+          classification: "Draft · for Siham's review",
+          subtitle: "Deck generated from the repo: MDP market data, workshop recap, 2025 talking points.",
+          pages: 12,
+          audience: "Nutricrops Excom"
+        },
+        kpis: [
+          { v:"12", l:"slides" },
+          { v:"4",  l:"crossed sources" },
+          { v:"3",  l:"key messages" }
+        ],
+        sections: [
+          "Cover & key message",
+          "India premium market (MDP figures)",
+          "Customisation as differentiator",
+          "Competition & 18-month window",
+          "Customization roadmap — 3 tracks",
+          "Budget ask & quick wins"
+        ],
+        actions: [
+          { id:"dl",  label:"Download PPTX",  sent:"PPTX downloaded" },
+          { id:"eml", label:"Send for review", sent:"Sent to the team" },
+          { id:"sch", label:"Open in PowerPoint", sent:"Opening PowerPoint" }
+        ],
+        sources: [
+          { i:"📊", d:"MDP — India premium", w:"Operations" },
+          { i:"🎙", d:"Workshop audio 05/14", w:"Repo" },
+          { i:"🖼", d:"2025 decks", w:"Repo · archive" }
+        ]
+      },
+      report_market: {
+        kind: "report",
+        title: "Market analysis — Premium customisation",
+        cover: {
+          classification: "Internal · marketing",
+          subtitle: "Structured analysis note crossing MDP, market notes and distributor calls.",
+          pages: 6,
+          audience: "Marketing · Sales"
+        },
+        kpis: [
+          { v:"6",  l:"pages" },
+          { v:"+18%", l:"segment growth" },
+          { v:"3",  l:"competitors tracked" }
+        ],
+        sections: [
+          "Executive summary",
+          "Segment size & growth",
+          "Competitive dynamics",
+          "Pricing & willingness to pay",
+          "Differentiation opportunities",
+          "Marketing recommendations"
+        ],
+        actions: [
+          { id:"dl",  label:"Download PDF",  sent:"PDF downloaded" },
+          { id:"eml", label:"Share with Sales", sent:"Shared with Sales" },
+          { id:"sch", label:"Schedule monthly refresh", sent:"Recurring on" }
+        ],
+        sources: [
+          { i:"📊", d:"MDP — premium segment", w:"Operations" },
+          { i:"🎙", d:"Distributor calls", w:"Sales India" }
+        ]
+      },
+      report_brief: {
+        kind: "report",
+        title: "One-pager — Premium packaging",
+        cover: {
+          classification: "Draft · 1 page",
+          subtitle: "Premium packaging talking points compiled from repo excerpts.",
+          pages: 1,
+          audience: "Management · budget pitch"
+        },
+        kpis: [
+          { v:"1",  l:"page" },
+          { v:"3",  l:"key arguments" },
+          { v:"6",  l:"sourced excerpts" }
+        ],
+        sections: [
+          "The need in one sentence",
+          "3 key arguments (with figures)",
+          "Cost & quick win",
+          "Next step & ask"
+        ],
+        actions: [
+          { id:"dl",  label:"Download PDF",  sent:"PDF downloaded" },
+          { id:"eml", label:"Send to management", sent:"Sent" },
+          { id:"sch", label:"Save as template", sent:"Template saved" }
+        ],
+        sources: [
+          { i:"🎙", d:"Workshop audio — 12:30", w:"Repo" },
+          { i:"📝", d:"Roadmap workshop minutes", w:"Repo" }
+        ]
+      },
+      report_video: {
+        kind: "report",
+        title: "Video script — 'Customisation' clip (HeyGen)",
+        cover: {
+          classification: "Draft · 90 sec",
+          subtitle: "Script + storyboard ready for HeyGen avatar generation.",
+          pages: 2,
+          audience: "Social · distributors"
+        },
+        kpis: [
+          { v:"90", l:"seconds" },
+          { v:"5",  l:"shots" },
+          { v:"1",  l:"avatar + voice-over" }
+        ],
+        sections: [
+          "Hook (0-10s)",
+          "Distributor pain (10-30s)",
+          "OCP customisation solution (30-60s)",
+          "Proof in figures (60-80s)",
+          "Call-to-action (80-90s)"
+        ],
+        actions: [
+          { id:"dl",  label:"Download script",  sent:"Script downloaded" },
+          { id:"eml", label:"Push to HeyGen", sent:"Pushed to HeyGen" },
+          { id:"sch", label:"Localise 3 languages", sent:"FR/EN/HI queued" }
+        ],
+        sources: [
+          { i:"🎙", d:"Client call audio (tone & verbatim)", w:"Repo" },
+          { i:"📊", d:"MDP — proof figures", w:"Operations" }
+        ]
+      },
+      report_recap: {
+        kind: "report",
+        title: "Meeting recap — Customization workshop 05/14",
+        cover: {
+          classification: "Internal · to circulate",
+          subtitle: "Recap generated from the audio recording (58 min) + minutes.",
+          pages: 3,
+          audience: "Marketing team · D²nAI"
+        },
+        kpis: [
+          { v:"3",  l:"pages" },
+          { v:"7",  l:"decisions" },
+          { v:"5",  l:"assigned actions" }
+        ],
+        sections: [
+          "Participants & objective",
+          "Key points (from audio)",
+          "Decisions taken",
+          "Actions & owners",
+          "Next steps"
+        ],
+        actions: [
+          { id:"dl",  label:"Download PDF",  sent:"PDF downloaded" },
+          { id:"eml", label:"Circulate to team", sent:"Circulated" },
+          { id:"sch", label:"Create tasks (Asana)", sent:"5 tasks created" }
+        ],
+        sources: [
+          { i:"🎙", d:"Workshop audio 05/14 (58 min)", w:"Repo · auto transcript" },
+          { i:"📝", d:"Minutes by Ibtissame F.", w:"Repo" }
+        ]
+      }
+    }
+  }
+};
+
+let lang = "fr";
+
+function tEl(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    if(i18n[lang][k]!==undefined) el.textContent=i18n[lang][k];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    el.setAttribute('placeholder', i18n[lang][el.getAttribute('data-i18n-ph')]);
+  });
+  document.querySelector('.hint').innerHTML = i18n[lang].hint;
+  document.documentElement.lang = lang;
+}
+
+function renderSugs(){
+  const root=document.getElementById('sugs'); root.innerHTML="";
+  i18n[lang].questions.forEach(q=>{
+    const el=document.createElement('div');
+    el.className='sug'; el.dataset.q=q.id;
+    el.innerHTML=`
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div class="q">${q.q}</div>
+      <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`;
+    el.addEventListener('click', ()=>ask(q.id, q.q));
+    root.appendChild(el);
+  });
+}
+
+function ask(id, label){
+  document.getElementById('initial').style.display='none';
+  const thread=document.getElementById('thread');
+
+  const u=document.createElement('div');
+  u.className='bubble-user fade-in'; u.textContent=label;
+  thread.appendChild(u);
+
+  const data = i18n[lang].answers[id];
+  if(data && data.kind === 'picker'){
+    const a=renderAnswer(id);
+    thread.appendChild(a);
+    scrollDown();
+    return;
+  }
+
+  const isReport = data && data.kind === 'report';
+  const thinkText = isReport
+    ? (lang==='fr' ? "Compilation du rapport en cours…" : "Compiling the report…")
+    : i18n[lang].thinking;
+  const delay = isReport ? 2200 : 1400;
+
+  const t=document.createElement('div');
+  t.className='thinking fade-in';
+  t.innerHTML=`<div class="matrix"></div><span>${thinkText}</span><span class="dots"><i></i><i></i><i></i></span>`;
+  thread.appendChild(t);
+  scrollDown();
+
+  setTimeout(()=>{
+    t.remove();
+    const a=renderAnswer(id);
+    thread.appendChild(a);
+    scrollDown();
+  }, delay);
+}
+
+function renderAnswer(id){
+  const data=i18n[lang].answers[id]; if(!data) return document.createElement('div');
+  const el=document.createElement('div'); el.className='answer fade-in';
+
+  if(data.kind === 'picker'){
+    el.innerHTML = `
+      <div class="head">
+        <div class="badge">D²</div>
+        <div class="by">${lang==='fr'?"Sélection D²nAI":"D²nAI selection"}</div>
+      </div>
+      <h4>${data.title}</h4>
+      ${data.intro?`<p>${data.intro}</p>`:''}
+      <div class="picker-list">
+        ${data.options.map(o=>`
+          <div class="picker-tile" data-id="${o.id}">
+            <div class="ico">${o.icon||"·"}</div>
+            <div class="txt"><h5>${o.label}</h5><p>${o.desc}</p></div>
+            <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </div>`).join('')}
+      </div>`;
+    el.querySelectorAll('.picker-tile').forEach(tile=>{
+      tile.addEventListener('click', ()=>{
+        const targetId = tile.dataset.id;
+        const opt = data.options.find(o=>o.id===targetId);
+        ask(targetId, opt.label);
+      });
+    });
+    return el;
+  }
+
+  if(data.kind === 'report'){
+    let kpisR='';
+    if(data.kpis){
+      kpisR=`<div class="kpi">${data.kpis.map(k=>`<div class="b"><div class="v">${k.v}</div><div class="l">${k.l}</div></div>`).join('')}</div>`;
+    }
+    const sectionsHTML = data.sections ? `
+      <div class="sections">
+        <div class="lab">${lang==='fr'?"Sommaire":"Table of contents"}</div>
+        <ol>${data.sections.map((s,i)=>`<li><span class="n">${i+1}.</span><span>${s}</span></li>`).join('')}</ol>
+      </div>` : '';
+    const actIcons = {
+      dl:  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+      eml: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>',
+      sch: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'
+    };
+    const actionsHTML = data.actions ? `
+      <div class="actions-row">
+        ${data.actions.map((a,i)=>`<button class="act-btn ${i>0?'secondary':''}" data-act="${a.id}">${actIcons[a.id]||''}<span>${a.label}</span></button>`).join('')}
+      </div>` : '';
+    const sourcesR = data.sources ? `
+      <div class="sources">
+        <div class="lab">${i18n[lang].sourcesLabel}</div>
+        ${data.sources.map(s=>`<span class="src">${s.i||'📄'} ${s.d} <span class="who">— ${s.w}</span></span>`).join('')}
+      </div>` : '';
+
+    el.innerHTML = `
+      <div class="head">
+        <div class="badge">D²</div>
+        <div class="by">${lang==='fr'?"Rapport généré":"Report generated"}</div>
+      </div>
+      <div class="report-cover">
+        <div class="meta">${data.cover.classification||""}</div>
+        <div class="ttl">${data.title}</div>
+        ${data.cover.subtitle?`<div class="sub">${data.cover.subtitle}</div>`:''}
+        <div class="tags">
+          ${data.cover.pages?`<span class="tag">${data.cover.pages} ${lang==='fr'?'pages':'pages'}</span>`:''}
+          ${data.cover.audience?`<span class="tag">${data.cover.audience}</span>`:''}
+        </div>
+      </div>
+      ${kpisR}
+      ${sectionsHTML}
+      ${actionsHTML}
+      ${sourcesR}
+    `;
+
+    el.querySelectorAll('.act-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const actId = btn.dataset.act;
+        const action = data.actions.find(a=>a.id===actId);
+        btn.classList.add('done');
+        btn.classList.remove('secondary');
+        btn.innerHTML = `
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>${action.sent}</span>
+        `;
+        btn.disabled = true;
+      });
+    });
+    return el;
+  }
+
+  const isEmpty = data.state==='empty';
+  if(isEmpty) el.classList.add('empty');
+  const icMap = { ok:'✓', warn:'!', bad:'×' };
+  const headerLabel = isEmpty
+    ? (lang==='fr'?"Information non disponible":"Information unavailable")
+    : (lang==='fr'?"Synthèse D²nAI":"D²nAI synthesis");
+  const badgeContent = isEmpty ? "i" : "D²";
+
+  let kpisHTML='';
+  if(data.kpis){
+    kpisHTML=`<div class="kpi">${data.kpis.map(k=>`<div class="b"><div class="v">${k.v}</div><div class="l">${k.l}</div></div>`).join('')}</div>`;
+  }
+  const listHTML = data.list ? `<ul>${data.list.map(it=>`<li><span class="ic ic-${it.t}">${icMap[it.t]||'•'}</span>${it.txt}</li>`).join('')}</ul>` : '';
+  const decisionHTML = data.decision ? `<p style="margin-top:8px;padding:8px 10px;background:var(--green-50);border-left:3px solid var(--green-800);border-radius:6px;font-size:13px;color:var(--green-900)"><b>↳</b> ${data.decision}</p>` : '';
+  const ctaHTML = data.cta ? `
+    <div class="cta">
+      <button class="cta-btn" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <span>${data.cta.label}</span>
+        <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>` : '';
+  const sourcesHTML = data.sources ? `
+    <div class="sources">
+      <div class="lab">${i18n[lang].sourcesLabel}</div>
+      ${data.sources.map(s=>`<span class="src">📄 ${s.d} <span class="who">— ${s.w}</span></span>`).join('')}
+    </div>` : '';
+
+  el.innerHTML = `
+    <div class="head">
+      <div class="badge">${badgeContent}</div>
+      <div class="by">${headerLabel}</div>
+    </div>
+    <h4>${data.title}</h4>
+    ${kpisHTML}
+    ${data.intro?`<p>${data.intro}</p>`:''}
+    ${listHTML}
+    ${decisionHTML}
+    ${ctaHTML}
+    ${sourcesHTML}
+  `;
+
+  if(data.cta){
+    const btn=el.querySelector('.cta-btn');
+    btn.addEventListener('click', ()=>{
+      btn.classList.add('sent');
+      btn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M20 6 9 17l-5-5"/></svg>
+        <span>${data.cta.sent}</span>
+      `;
+      btn.disabled = true;
+    });
+  }
+
+  return el;
+}
+
+function scrollDown(){
+  const s=document.getElementById('scroll');
+  s.scrollTo({ top:s.scrollHeight, behavior:'smooth' });
+}
+
+function reset(){
+  document.getElementById('thread').innerHTML='';
+  document.getElementById('initial').style.display='';
+  document.getElementById('qinput').value='';
+  document.getElementById('scroll').scrollTo({top:0});
+}
+
+document.querySelectorAll('.lang button').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('.lang button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    lang=b.dataset.l;
+    tEl(); renderSugs(); reset();
+  });
+});
+document.getElementById('reset').addEventListener('click', reset);
+document.getElementById('briefCard').addEventListener('click', ()=>ask('brief', i18n[lang].briefTitle));
+document.getElementById('reportsCard').addEventListener('click', ()=>ask('report_picker', i18n[lang].reportsTitle));
+document.getElementById('send').addEventListener('click', ()=>{
+  const v=document.getElementById('qinput').value.trim();
+  if(!v) return;
+  const t=v.toLowerCase();
+  let id='brief', best=0;
+  (i18n[lang].routes||[]).forEach(r=>{
+    let score=0;
+    r.kw.forEach(k=>{ if(t.includes(k)) score++; });
+    if(score>best){best=score;id=r.id;}
+  });
+  ask(id, v);
+  document.getElementById('qinput').value='';
+});
+document.getElementById('qinput').addEventListener('keydown', e=>{
+  if(e.key==='Enter') document.getElementById('send').click();
+});
+
+// live clock
+function tick(){
+  const d=new Date();
+  document.getElementById('clock').textContent =
+    d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+}
+tick(); setInterval(tick, 30000);
+
+tEl(); renderSugs();
+</script>
+
+</body>
+</html>
