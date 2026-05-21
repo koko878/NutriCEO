@@ -145,7 +145,8 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 .prod .ph{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
 .prod h4{font-size:13px;font-weight:600;color:var(--ink)}
 .prod .tagp{font-size:9px;font-weight:700;padding:2px 6px;border-radius:5px;letter-spacing:.04em;text-transform:uppercase;flex:none}
-.prod .tagp.live{background:var(--ok-bg);color:var(--ok)}.prod .tagp.build{background:#E3F2FD;color:#0078D4}.prod .tagp.pilot{background:var(--warn-bg);color:var(--warn)}
+.prod .tagp.live{background:var(--ok-bg);color:var(--ok)}.prod .tagp.build{background:#E3F2FD;color:#0078D4}.prod .tagp.pilot{background:var(--warn-bg);color:var(--warn)}.prod .tagp.idea{background:#EDE7F6;color:#5C4A8C}
+.prod.idea{border-style:dashed;background:#FCFBFE}
 .prod p{font-size:11px;color:var(--ink-2);line-height:1.4}
 .prod .open{font-size:9.5px;color:var(--green-800);font-weight:600;margin-top:6px;letter-spacing:.05em;text-transform:uppercase}
 .platforms{display:flex;flex-wrap:wrap;gap:8px}
@@ -476,7 +477,27 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   <div class="acc">
     <div class="acc-head"><span class="s-num">05</span><h2>Products to scale &amp; platforms to sustain</h2><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div>
     <div class="acc-body"><div class="acc-inner">
-      <div class="block-label">6 flagship products to scale</div>
+      <div class="block-label">Live in production</div>
+      <div class="prods">
+        <div class="prod">
+          <div class="ph"><h4>Market Intelligence Platform</h4><span class="tagp live">Live</span></div>
+          <p>Trade flows, S&amp;D, price indices powering pricing &amp; commercial strategy.</p>
+        </div>
+        <div class="prod">
+          <div class="ph"><h4>COO Cockpit</h4><span class="tagp live">Live</span></div>
+          <p>Real-time operational dashboard for executive decision-making across BUs.</p>
+        </div>
+        <div class="prod">
+          <div class="ph"><h4>EPM BI · first wave</h4><span class="tagp live">Live</span></div>
+          <p>Enterprise performance management dashboards for financial planning &amp; reporting.</p>
+        </div>
+        <div class="prod">
+          <div class="ph"><h4>NutriRadar</h4><span class="tagp live">Live</span></div>
+          <p>Nutricrops's second brain — AI search across the company's knowledge.</p>
+        </div>
+      </div>
+
+      <div class="block-label">Products to scale</div>
       <div class="prods">
         <button class="prod link" data-demo="nutriceo.html" data-title="CEO Assistant — NutriCEO">
           <div class="ph"><h4>CEO Assistant</h4><span class="tagp pilot">Prototype</span></div>
@@ -489,12 +510,8 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
           <div class="open">Open demo →</div>
         </button>
         <div class="prod">
-          <div class="ph"><h4>Market Intelligence Platform</h4><span class="tagp live">Live</span></div>
-          <p>Trade flows, S&amp;D, price indices powering pricing &amp; commercial strategy.</p>
-        </div>
-        <div class="prod">
-          <div class="ph"><h4>EPM Assistant</h4><span class="tagp build">Relaunch</span></div>
-          <p>Automated performance reporting &amp; financial planning for executives.</p>
+          <div class="ph"><h4>EPM Assistant</h4><span class="tagp build">Next wave</span></div>
+          <p>Conversational performance management on top of the EPM BI foundation.</p>
         </div>
         <div class="prod">
           <div class="ph"><h4>AI Lab</h4><span class="tagp live">Operational</span></div>
@@ -503,6 +520,22 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
         <div class="prod">
           <div class="ph"><h4>Knowledge Management Platform</h4><span class="tagp build">In build</span></div>
           <p>Capture, organize and share organizational intelligence at scale.</p>
+        </div>
+      </div>
+
+      <div class="block-label">Ideas · next wave</div>
+      <div class="prods">
+        <div class="prod idea">
+          <div class="ph"><h4>Augmented risk management</h4><span class="tagp idea">Idea</span></div>
+          <p>AI-assisted risk identification, scoring and monitoring across the Group.</p>
+        </div>
+        <div class="prod idea">
+          <div class="ph"><h4>Automated credit risk management</h4><span class="tagp idea">Idea</span></div>
+          <p>Automated customer credit scoring, limits and exposure monitoring.</p>
+        </div>
+        <div class="prod idea">
+          <div class="ph"><h4>Augmented marketing</h4><span class="tagp idea">Idea</span></div>
+          <p>GenAI for market analysis, content, decks and campaign acceleration.</p>
         </div>
       </div>
 
@@ -578,7 +611,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   </div>
 
   <footer class="foot">
-    <div>D²nAI · OCP Nutricrops · Executive Summary · <b>v9</b> · 21 May build</div>
+    <div>D²nAI · OCP Nutricrops · Executive Summary · <b>v10</b> · 21 May build</div>
     <div class="brand-mini">Feed the data to feed the decision.</div>
   </footer>
 
