@@ -214,6 +214,26 @@ section{margin-bottom:36px}
 .arch-link{margin-top:10px;font-size:12px;color:var(--muted);text-align:center}
 .arch-link a{color:var(--green-800);font-weight:600;text-decoration:none;border-bottom:1px solid var(--green-100)}
 
+/* Products to scale / platforms to sustain */
+.block-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green-800);margin:0 0 10px}
+.prods{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.prod{border:1px solid var(--line);border-radius:11px;padding:13px 14px;background:#fff;display:block;text-decoration:none;color:inherit;transition:.15s;position:relative}
+.prod.link:hover{border-color:var(--green-500);transform:translateY(-1px)}
+.prod .ph{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.prod h4{font-size:13px;font-weight:600;color:var(--ink)}
+.prod .tagp{font-size:9px;font-weight:700;padding:2px 6px;border-radius:5px;letter-spacing:.04em;text-transform:uppercase;flex:none}
+.prod .tagp.live{background:var(--ok-bg);color:var(--ok)}
+.prod .tagp.build{background:#E3F2FD;color:#0078D4}
+.prod .tagp.pilot{background:var(--warn-bg);color:var(--warn)}
+.prod p{font-size:11px;color:var(--ink-2);line-height:1.4}
+.prod .open{font-size:9.5px;color:var(--green-800);font-weight:600;margin-top:6px;letter-spacing:.05em;text-transform:uppercase}
+.platforms{display:flex;flex-wrap:wrap;gap:8px}
+.plat{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:9px;padding:9px 12px;background:#fff;font-size:12px;color:var(--ink-2)}
+.plat b{color:var(--ink);font-weight:600}
+.plat .pdot{width:7px;height:7px;border-radius:50%;background:var(--green-700);flex:none}
+@media(max-width:840px){.prods{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.prods{grid-template-columns:1fr}}
+
 /* Investment */
 .invest{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .bigfig{padding:14px 16px;border:1px solid var(--line);border-radius:11px;background:#fff;border-left:3px solid var(--green-800)}
@@ -321,7 +341,7 @@ section{margin-bottom:36px}
   <section class="hero">
     <div class="kicker">Executive Summary</div>
     <h1>Making Nutricrops the <em>data-driven reference</em> business unit of OCP Group.</h1>
-    <p class="lead">Three phases over five years: master our information assets, then push our foundations across the Group, then leverage them for growth.</p>
+    <p class="lead">Three pillars: <b>digitalize</b> the business to end 2027 (kill bottlenecks, decisions in minutes), <b>radiate</b> our edge across the OCP ecosystem (2026–2028), and <b>create value</b> from our information patrimony — continuously, in the background.</p>
     <div class="nums">
       <div class="num"><div class="v">4</div><div class="l">Data &amp; AI products live</div></div>
       <div class="num"><div class="v">8</div><div class="l">Domain guilds active</div></div>
@@ -373,57 +393,57 @@ section{margin-bottom:36px}
   <section>
     <div class="s-head">
       <span class="s-num">02</span>
-      <h2>Vision in 3 phases (2025–2030)</h2>
-      <div class="s-sub">Tap a phase to open the detail.</div>
+      <h2>Vision in 3 pillars</h2>
+      <div class="s-sub">Tap a pillar to open the detail.</div>
     </div>
     <div class="phases-grid">
       <div class="phase-card" data-id="p1">
-        <div class="n">Phase I</div>
-        <div class="yr">2025 — 2027</div>
-        <h3>Master Nutricrops information assets</h3>
-        <p>Digitalize every business process and bring our information assets under one consistent governance.</p>
+        <div class="n">Pillar I · Digitalization</div>
+        <div class="yr">to end 2027</div>
+        <h3>Kill the bottlenecks</h3>
+        <p>Let the business remove its own bottlenecks, create reliable and easily accessible information, and turn decisions from days into minutes.</p>
         <span class="more">Detail <span class="ar">↓</span></span>
         <div class="detail">
           <ul>
-            <li>E2E Process Digitalization · NPD, NutriTrial, Sampling, DPA</li>
-            <li>Master Data &amp; Governance · Semarchy xDM, Product/Client MDM, AgCore</li>
-            <li>Enterprise backbone consolidated · SAP international, Workday/SAP HCM, Salesforce CLM, ARIBA</li>
-            <li>Trial Data Platform v2 + Core Data Model 2.0 across regions</li>
-            <li>Cybersecurity team built · ISO 27001/42001 by end 2026</li>
-            <li>Target · 12 data/AI products in production</li>
+            <li>Remove operational bottlenecks across business processes</li>
+            <li>One reliable, accessible source of truth · MDM, governance, EA Study</li>
+            <li>Decision support in <b>minutes, not days</b></li>
+            <li>E2E digitalization · NutriTrial, NPD, Sampling, DPA</li>
+            <li>Enterprise backbone consolidated · SAP, Salesforce, Workday</li>
+            <li>Target · 12 data/AI products in production by end 2027</li>
           </ul>
         </div>
       </div>
       <div class="phase-card" data-id="p2">
-        <div class="n">Phase II</div>
+        <div class="n">Pillar II · Outreach</div>
         <div class="yr">2026 — 2028</div>
-        <h3>Scale foundations to other SBUs</h3>
-        <p>Push our infra, platforms, AI Lab and governance to the broader OCP Group as a shared backbone.</p>
+        <h3>Radiate across the OCP ecosystem</h3>
+        <p>Showcase our progress to the rest of OCP and its SBUs — become the Group's acceleration booster.</p>
         <span class="more">Detail <span class="ar">↓</span></span>
         <div class="detail">
           <ul>
-            <li>Shared infra · regional landing zones, common data platforms</li>
-            <li>Group standards · data, security, architecture, MDM</li>
-            <li>Products scaled to Group · COO Cockpit, Market Intel, EPM</li>
-            <li>Executive co-pilots extensible to other SBUs</li>
-            <li>Strategic partnerships · Microsoft, UM6P, Databricks, AgriEdge</li>
-            <li>Target · 2–3 SBUs onboarded with intra-Group rechargeback model</li>
+            <li>Hybrid sovereign infra as a shared Group asset</li>
+            <li>Standards &amp; platforms reused by other SBUs</li>
+            <li>Flagship products scaled Group-wide (Market Intel, EPM, co-pilots)</li>
+            <li>Architecture Council alignment · intra-Group rechargeback</li>
+            <li>Strategic partnerships · Microsoft, UM6P, AgriEdge</li>
+            <li>Target · 2–3 SBUs accelerated on our foundations</li>
           </ul>
         </div>
       </div>
       <div class="phase-card" data-id="p3">
-        <div class="n">Phase III</div>
-        <div class="yr">2028 — 2030</div>
-        <h3>Leverage information for growth</h3>
-        <p>Turn the information patrimony into competitive advantage — pricing, agronomy, new data services.</p>
+        <div class="n">Pillar III · Value creation</div>
+        <div class="yr">ongoing · in background</div>
+        <h3>Turn the patrimony into new value</h3>
+        <p>Create new value from our information assets as they build up — continuously, in parallel with the other two pillars.</p>
         <span class="more">Detail <span class="ar">↓</span></span>
         <div class="detail">
           <ul>
-            <li>Pricing intelligence at global market scale</li>
+            <li>Pricing intelligence at market scale</li>
             <li>Smart Agro Recommendations AI · precision farming, satellite</li>
-            <li>Knowledge Management AI · capture OCP-wide expertise</li>
+            <li>Knowledge Management across OCP expertise</li>
             <li>External data products toward distributors &amp; partners</li>
-            <li>In-house LLM in production on 80% of cases</li>
+            <li>In-house LLM in production</li>
             <li>Target · measurable contribution to margin and new revenue</li>
           </ul>
         </div>
@@ -454,13 +474,13 @@ section{margin-bottom:36px}
         <div class="tlpoint" data-ph="2">
           <div class="ring">3</div>
           <div class="when">2026–28</div>
-          <div class="ttl">Group scale</div>
+          <div class="ttl">Outreach</div>
           <div class="blurb">Standards &amp; infra to other SBUs</div>
         </div>
         <div class="tlpoint" data-ph="3">
           <div class="ring">4</div>
           <div class="when">2028–30</div>
-          <div class="ttl">Growth lever</div>
+          <div class="ttl">Value creation</div>
           <div class="blurb">Pricing AI · Agro AI · data services</div>
         </div>
       </div>
@@ -545,47 +565,56 @@ section{margin-bottom:36px}
     </div>
 
     <div class="ea-link">
-      <b>Link to decision #2</b> · The mid-June rollout brings under D²nAI governance the currently fragmented "Big Solutions" (SAP MM/SD/FI/CO/PS, ARIBA, Salesforce Sales + PLM, Workday, Kyriba, ServiceNow, etc.). The October target architecture formalises the steady-state operating model.
+      <b>Backbone of Pillar I</b> · The mid-June rollout brings the whole IT perimeter under one governance — including the platforms run today outside D²nAI (SAP, Salesforce, Ariba, Workday, Kyriba, ServiceNow…). The October target architecture sets the steady-state operating model.
     </div>
   </section>
 
   <section>
     <div class="s-head">
       <span class="s-num">05</span>
-      <h2>Executive co-pilots — proofs of concept</h2>
-      <div class="s-sub">Four prototypes built on the foundation. Tap to open.</div>
+      <h2>Products to scale &amp; platforms to sustain</h2>
+      <div class="s-sub">What we grow, and what we keep running underneath.</div>
     </div>
-    <div class="copilots">
-      <a class="copilot" href="index.html" target="_blank">
-        <div class="ico">N</div>
-        <h4>NutriCEO</h4>
-        <div class="who">Faris · CEO</div>
-        <div class="desc">Transverse Excom pilot: OPEX, plant roadmap, BU sales, weekly risks.</div>
+
+    <div class="block-label">6 flagship products to scale</div>
+    <div class="prods">
+      <a class="prod link" href="index.html" target="_blank">
+        <div class="ph"><h4>CEO Assistant</h4><span class="tagp pilot">Prototype</span></div>
+        <p>Transverse Excom co-pilot · OPEX, plant roadmap, BU sales, risks.</p>
         <div class="open">Open demo →</div>
       </a>
-      <a class="copilot" href="sentinel.html" target="_blank">
-        <div class="ico">S</div>
-        <h4>Sentinel</h4>
-        <div class="who">CPRO · Perf &amp; Risk</div>
-        <div class="desc">Top risks, BU underperformance, internal controls, incidents, report generation.</div>
+      <a class="prod link" href="helios.html" target="_blank">
+        <div class="ph"><h4>Helios — HR Assistant</h4><span class="tagp pilot">Prototype</span></div>
+        <p>Turnover, critical hires, social climate, payroll, hiring pipeline.</p>
         <div class="open">Open demo →</div>
       </a>
-      <a class="copilot" href="helios.html" target="_blank">
-        <div class="ico">H</div>
-        <h4>Helios</h4>
-        <div class="who">CHRO</div>
-        <div class="desc">Turnover, critical hires, social climate, payroll, hiring pipeline.</div>
-        <div class="open">Open demo →</div>
-      </a>
-      <a class="copilot" href="maestro.html" target="_blank">
-        <div class="ico">M</div>
-        <h4>Maestro</h4>
-        <div class="who">EA of the CEO</div>
-        <div class="desc">Meeting co-pilot, inbox triage, stakeholder memory, briefs, smart agenda.</div>
-        <div class="open">Open demo →</div>
-      </a>
+      <div class="prod">
+        <div class="ph"><h4>Market Intelligence Platform</h4><span class="tagp live">Live</span></div>
+        <p>Trade flows, S&amp;D, price indices powering pricing &amp; commercial strategy.</p>
+      </div>
+      <div class="prod">
+        <div class="ph"><h4>EPM Assistant</h4><span class="tagp build">Relaunch</span></div>
+        <p>Automated performance reporting &amp; financial planning for executives.</p>
+      </div>
+      <div class="prod">
+        <div class="ph"><h4>AI Lab</h4><span class="tagp live">Operational</span></div>
+        <p>Complex AI use cases · PoC → MVP → Scale · sovereign hybrid models.</p>
+      </div>
+      <div class="prod">
+        <div class="ph"><h4>Knowledge Management Platform</h4><span class="tagp build">In build</span></div>
+        <p>Capture, organize and share organizational intelligence at scale.</p>
+      </div>
     </div>
-    <div class="arch-link">Want the target architecture? <a href="architecture.html" target="_blank">Open the high-level design</a></div>
+
+    <div class="block-label">4 digital platforms to sustain</div>
+    <div class="platforms">
+      <div class="plat"><span class="pdot"></span><b>Salesforce</b> · Lead-to-Order, CRM, PLM</div>
+      <div class="plat"><span class="pdot"></span><b>SAP</b> · Order-to-Cash, Finance, Production, Procurement</div>
+      <div class="plat"><span class="pdot"></span><b>Workday</b> · Hire-to-Retire, Core HR, Payroll</div>
+      <div class="plat"><span class="pdot"></span><b>IT Asset Mgmt &amp; Helpdesk</b> · ServiceNow ITSM</div>
+    </div>
+
+    <div class="arch-link">Explore the co-pilot prototypes (<a href="sentinel.html" target="_blank">Sentinel</a> · <a href="maestro.html" target="_blank">Maestro</a> · <a href="custobot.html" target="_blank">CustoBot</a>) or the <a href="architecture.html" target="_blank">target architecture</a>.</div>
   </section>
 
   <section>
@@ -616,14 +645,14 @@ section{margin-bottom:36px}
   <section>
     <div class="s-head">
       <span class="s-num">07</span>
-      <h2>Decisions we need from you</h2>
-      <div class="s-sub">Five calls to unlock the trajectory.</div>
+      <h2>Decisions we need now</h2>
+      <div class="s-sub">Two short-term calls unblock the whole trajectory.</div>
     </div>
     <div class="dec">
-      <div class="decision spanwide" data-id="d1">
+      <div class="decision spanwide" data-id="d3">
         <div class="body">
-          <h4>1 · Approve the 2025–2030 vision in three phases</h4>
-          <p>Master Nutricrops information assets (2025–27) → scale to Group SBUs (2026–28) → leverage as growth driver (2028–30).</p>
+          <h4>1 · Structure the Cybersecurity team — now <span class="tag bad">Asphyxiation felt</span></h4>
+          <p>Cyber runs on <b>best-effort</b> today and the team is suffocating. Foundations exist (Zero Trust, NIST) but we need a <b>dedicated team</b>: Manager + Architect + 2 SoC engineers (P0), target ISO 27001/42001 by end 2026.</p>
         </div>
         <div class="btns">
           <button class="btn ok" data-vote="ok">✓ Approve</button>
@@ -631,10 +660,10 @@ section{margin-bottom:36px}
           <button class="btn ko" data-vote="ko">✗ Defer</button>
         </div>
       </div>
-      <div class="decision" data-id="d2">
+      <div class="decision spanwide" data-id="d4">
         <div class="body">
-          <h4>2 · Reclaim "Big Solutions" governance <span class="tag warn">Sensitive</span></h4>
-          <p>Today an entire perimeter (SAP, Salesforce, Ariba, Workday…) runs outside D²nAI without unified governance. Current Nutricrops priorities call for bringing it under our control.</p>
+          <h4>2 · Unblock delivery-force recruitment <span class="tag warn">Blocking</span></h4>
+          <p>The delivery force is gated by external dependency and the current freeze. Without it, the roadmap stalls. <b>17 P0 hires (up to 22 ETPs)</b> — internalisation cuts OPEX (~5.7M MAD/yr saved vs external) and capitalises skills. Business case: <i>D²nAI Organization</i> deck.</p>
         </div>
         <div class="btns">
           <button class="btn ok" data-vote="ok">✓ Approve</button>
@@ -642,21 +671,10 @@ section{margin-bottom:36px}
           <button class="btn ko" data-vote="ko">✗ Defer</button>
         </div>
       </div>
-      <div class="decision" data-id="d3">
+      <div class="decision" data-id="d1">
         <div class="body">
-          <h4>3 · Structure the Cybersecurity function <span class="tag bad">Explicit validation</span></h4>
-          <p>Cyber foundations are in place (Zero Trust, NIST). What's missing is a <b>dedicated team</b> with formal governance: Manager + Architect + 2 SoC engineers (P0), target ISO 27001/42001 by end 2026.</p>
-        </div>
-        <div class="btns">
-          <button class="btn ok" data-vote="ok">✓ Approve</button>
-          <button class="btn q" data-vote="q">? Questions</button>
-          <button class="btn ko" data-vote="ko">✗ Defer</button>
-        </div>
-      </div>
-      <div class="decision" data-id="d4">
-        <div class="body">
-          <h4>4 · Approve the sourcing plan</h4>
-          <p>17 P0 hires (urgent), up to 22 ETPs over 18 months. Internalisation to <b>cut OPEX (~5.7M MAD/yr saved vs external)</b> and build skills in-house.</p>
+          <h4>+ Endorse the 3-pillar vision</h4>
+          <p>Digitalize (to 2027) · radiate across the Group (2026–28) · create value continuously.</p>
         </div>
         <div class="btns">
           <button class="btn ok" data-vote="ok">✓ Approve</button>
@@ -666,8 +684,8 @@ section{margin-bottom:36px}
       </div>
       <div class="decision" data-id="d5">
         <div class="body">
-          <h4>5 · Sponsor Group scaling + quarterly steering</h4>
-          <p>Direct CEO support to ease scaling to other SBUs, plus designation of a quarterly steering committee (CEO + CFO + CHRO + Group sponsors).</p>
+          <h4>+ Sponsor Group outreach + quarterly steering</h4>
+          <p>CEO backing to ease SBU adoption, plus a quarterly steering committee (CEO + CFO + CHRO + Group sponsors).</p>
         </div>
         <div class="btns">
           <button class="btn ok" data-vote="ok">✓ Approve</button>
@@ -741,8 +759,8 @@ const phases = [
     ]
   },
   {
-    when:"Step 3 · 2026 — 2028 — Group scaling",
-    title:"Foundations pushed to other SBUs",
+    when:"Pillar II · 2026 — 2028 — Outreach",
+    title:"Radiate foundations across OCP SBUs",
     items:[
       "Hybrid sovereign infra as Group asset (Microsoft-benchmarked)",
       "Regional landing zones · Brazil, Africa, Europe, India",
@@ -753,7 +771,7 @@ const phases = [
     ]
   },
   {
-    when:"Step 4 · 2028 — 2030 — Growth lever",
+    when:"Pillar III · ongoing — Value creation",
     title:"Information patrimony as competitive advantage",
     items:[
       "Pricing intelligence at global market scale",
@@ -821,11 +839,10 @@ document.getElementById('sendBtn').addEventListener('click', ()=>{
   const RECIPIENT_EMAIL = "hamza.kohen@ocpnutricrops.com";
 
   const decisionLabels = {
-    d1: "1. Approve 2025–2030 vision (3 phases)",
-    d2: "2. Reclaim 'Big Solutions' governance",
-    d3: "3. Structure the Cybersecurity function",
-    d4: "4. Approve the sourcing plan (17 P0)",
-    d5: "5. Sponsor Group scaling + steering"
+    d3: "1. Structure the Cybersecurity team (now)",
+    d4: "2. Unblock delivery-force recruitment (17 P0)",
+    d1: "+ Endorse the 3-pillar vision",
+    d5: "+ Sponsor Group outreach + steering"
   };
   const voteLabels = { ok: "✓ Approve", q: "? Questions", ko: "✗ Defer" };
 
