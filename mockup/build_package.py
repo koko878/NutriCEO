@@ -8,10 +8,9 @@ import json, base64, pathlib
 BASE = pathlib.Path(__file__).parent
 OUT = BASE / "nutricrops-demo.html"
 
-DOCS = ["exec-summary", "architecture", "nutriceo", "sentinel", "helios", "maestro", "custobot"]
+DOCS = ["exec-summary", "nutriceo", "sentinel", "helios", "maestro", "custobot"]
 TITLES = {
     "exec-summary": "Executive Summary",
-    "architecture": "Target Architecture",
     "nutriceo": "NutriCEO · CEO",
     "sentinel": "Sentinel · Performance & Risk",
     "helios": "Helios · HR",
@@ -116,16 +115,11 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
     <p>Start with the executive summary, dive into the target architecture, or open any executive co-pilot prototype. Everything runs inside this single file.</p>
   </div>
 
-  <div class="group-label">Strategy &amp; architecture</div>
+  <div class="group-label">Strategy</div>
   <div class="grid">
     <div class="card full" onclick="loadDoc('exec-summary')">
       <div class="ico">★</div>
       <div class="b"><h3>Executive Summary</h3><div class="who">For the CEO · vision, roadmap, decisions</div><p>3-pillar vision, roadmap, EA Study, products to scale, the 2 short-term decisions to validate.</p></div>
-      <svg class="arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-    </div>
-    <div class="card full" onclick="loadDoc('architecture')">
-      <div class="ico alt">⛶</div>
-      <div class="b"><h3>Target Architecture</h3><div class="who">For the DSI / CTO · high-level design</div><p>8-layer stack, request lifecycle, hybrid Azure + Atlas + on-prem design, risks, roadmap.</p></div>
       <svg class="arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
     </div>
   </div>
