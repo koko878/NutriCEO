@@ -422,11 +422,10 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
     <div class="acc-head"><span class="s-num">03</span><h2>Roadmap</h2><span class="hint">tap a milestone</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div>
     <div class="acc-body"><div class="acc-inner">
       <div class="tl">
-        <div class="tlrow" id="tlrow" style="--prog:18%">
-          <div class="tlpoint current" data-ph="0"><div class="ring">1</div><div class="when">H2 2026</div><div class="ttl">Control</div><div class="blurb">EA rollout · Cyber · P0 · MDM</div></div>
-          <div class="tlpoint" data-ph="1"><div class="ring">2</div><div class="when">2027</div><div class="ttl">Digitalize</div><div class="blurb">E2E processes · ISO · 12 products</div></div>
-          <div class="tlpoint" data-ph="2"><div class="ring">3</div><div class="when">2026–28</div><div class="ttl">Outreach</div><div class="blurb">Standards &amp; infra to other SBUs</div></div>
-          <div class="tlpoint" data-ph="3"><div class="ring">4</div><div class="when">ongoing</div><div class="ttl">Value creation</div><div class="blurb">Pricing AI · Agro AI · data services</div></div>
+        <div class="tlrow" id="tlrow" style="--prog:10%">
+          <div class="tlpoint current" data-ph="0"><div class="ring">1</div><div class="when">2026–2027</div><div class="ttl">Digitize</div><div class="blurb">Salesforce · SAP · S2P · H2R · S&amp;OP</div></div>
+          <div class="tlpoint" data-ph="1"><div class="ring">2</div><div class="when">2026–28</div><div class="ttl">Outreach</div><div class="blurb">Standards &amp; infra to other SBUs</div></div>
+          <div class="tlpoint" data-ph="2"><div class="ring">3</div><div class="when">ongoing</div><div class="ttl">Value creation</div><div class="blurb">Pricing AI · Agro AI · data services</div></div>
         </div>
         <div class="tldetail" id="tldetail">
           <div class="when" id="phWhen"></div>
@@ -579,7 +578,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   </div>
 
   <footer class="foot">
-    <div>D²nAI · OCP Nutricrops · Executive Summary · <b>v8</b> · 21 May build</div>
+    <div>D²nAI · OCP Nutricrops · Executive Summary · <b>v9</b> · 21 May build</div>
     <div class="brand-mini">Feed the data to feed the decision.</div>
   </footer>
 
@@ -663,20 +662,12 @@ const COVERAGE = {"Upstream": {"cov": 15, "tot": 16, "groups": [{"l2": "Innovati
 
 /* Roadmap */
 const phases = [
-  { when:"Pillar I · H2 2026 — Control", title:"Master the Nutricrops perimeter", items:[
-    "EA Study · Application 360° rollout complete (mid-June) — ~28 apps catalogued",
-    "EA Study · BCM scoring + process mapping with task force (July)",
-    "EA Study · Guiding principles (Sept) + Target architecture (Oct)",
-    "Cybersecurity team: Manager, Architect, 2 SoC engineers (P0)",
-    "17 P0 ETPs hired (Data Office, Architecture, Guilds)",
-    "Semarchy MDM in prod + ESG Go/No-Go + Workday/SAP HCM launched"]},
-  { when:"Pillar I · 2027 — Digitalize", title:"End-to-end digitalization + certifications", items:[
-    "E2E Process Digitalization · NPD, NutriTrial, Sampling, DPA",
-    "Trial Data Platform v2 + Core Data Model 2.0 across regions",
-    "ISO 27001/42001 obtained (Microsoft SOW engaged)",
-    "EPM Assistant relaunched with identified sponsor",
-    "Sovereign Hybrid AI · NutriRadar mobile, AI Lab private cloud",
-    "Auto-reporting Excom (Operations Cockpit v2)"]},
+  { when:"Pillar I · 2026 — 2027 — Digitize", title:"Digitize the core value chains", items:[
+    "Salesforce revamp and finalization (incl. regions)",
+    "SAP rollout (incl. regions)",
+    "Digitization of the S2P value chain",
+    "Digitization of the H2R value chain",
+    "Digitization of the S&amp;OP, demand planning and pricing / volume allocation value chains"]},
   { when:"Pillar II · 2026 — 2028 — Outreach", title:"Radiate foundations across OCP SBUs", items:[
     "Hybrid sovereign infra as Group asset (Microsoft-benchmarked)",
     "Regional landing zones · Brazil, Africa, Europe, India",
@@ -701,7 +692,7 @@ function showPhase(i){
   document.getElementById('phTitle').textContent=ph.title;
   document.getElementById('phList').innerHTML=ph.items.map(x=>`<li>${x}</li>`).join('');
   tldetail.classList.add('show');
-  document.getElementById('tlrow').style.setProperty('--prog',(10+(i/3)*80)+'%');
+  document.getElementById('tlrow').style.setProperty('--prog',(10+(i/Math.max(1,tlpoints.length-1))*80)+'%');
 }
 tlpoints.forEach(p=>p.addEventListener('click',()=>showPhase(parseInt(p.dataset.ph))));
 showPhase(0);
