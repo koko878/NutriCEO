@@ -119,16 +119,31 @@
       rec.interimResults = true;
       rec.continuous = false;
       var listening = false, base = '';
+      var EN = rec.lang === 'en-US';
 
       mic.addEventListener('click', function () {
         if (busy) return;
         if (listening) { rec.stop(); return; }
+        if (!window.isSecureContext) {
+          addError(EN ? 'Voice needs a secure (HTTPS) page.' : 'Le micro nécessite une page sécurisée (HTTPS).');
+          return;
+        }
         base = input.value ? input.value.trim() + ' ' : '';
         try { rec.start(); } catch (e) { /* already started */ }
       });
       rec.onstart  = function () { listening = true;  mic.classList.add('rec'); };
       rec.onend    = function () { listening = false; mic.classList.remove('rec'); input.focus(); };
-      rec.onerror  = function () { listening = false; mic.classList.remove('rec'); };
+      rec.onerror  = function (e) {
+        listening = false; mic.classList.remove('rec');
+        var map = {
+          'not-allowed':         EN ? 'Microphone blocked — allow it in your browser.' : 'Micro bloqué — autorisez-le dans le navigateur.',
+          'service-not-allowed': EN ? 'Microphone blocked — allow it in your browser.' : 'Micro bloqué — autorisez-le dans le navigateur.',
+          'audio-capture':       EN ? 'No microphone detected.' : 'Aucun micro détecté.',
+          'no-speech':           EN ? 'No speech detected — try again.' : "Aucune parole détectée — réessayez.",
+          'network':             EN ? 'Speech service unreachable (network).' : 'Service vocal injoignable (réseau).'
+        };
+        addError(map[e && e.error] || (EN ? 'Voice input error.' : 'Erreur de saisie vocale.'));
+      };
       rec.onresult = function (e) {
         var txt = '';
         for (var i = 0; i < e.results.length; i++) txt += e.results[i][0].transcript;
