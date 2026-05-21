@@ -219,6 +219,12 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 .dmap-head .rate{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--muted)}
 .dmap-head .rate b{font-size:22px;color:var(--green-800);font-weight:700}
 .legend2{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:12px;font-size:11px;color:var(--ink-2)}
+.dstats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.ds{font-size:11px;font-weight:600;padding:4px 10px;border-radius:7px}
+.ds.done{background:var(--green-100);color:var(--green-800)}
+.ds.no{background:#EEF0EC;color:#73796F}
+.ds.warn{background:var(--warn-bg);color:var(--warn)}
+.dsource{font-size:10px;color:var(--muted);margin-top:10px;font-style:italic}
 .legend2 span{display:inline-flex;align-items:center;gap:5px}
 .legend2 i{width:10px;height:10px;border-radius:3px;display:inline-block}
 .lg-done{background:var(--green-700)}.lg-part{background:var(--warn)}.lg-prog{background:#0078D4}.lg-no{background:#CDD2C9}
@@ -350,25 +356,28 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 
       <div class="dmap">
         <div class="dmap-head">
-          <div class="lbl">Pillar I focus · digitalization of core value chains</div>
-          <div class="rate"><b>~27%</b> digitalized · 8 value chains</div>
+          <div class="lbl">Pillar I focus · digital coverage by process domain</div>
+          <div class="rate"><b>46%</b> covered · 124 / 267 processes</div>
+        </div>
+        <div class="dstats">
+          <span class="ds done">124 covered</span>
+          <span class="ds no">138 not documented</span>
+          <span class="ds warn">5 shadow IT</span>
         </div>
         <div class="legend2">
-          <span><i class="lg-done"></i> Digitalized</span>
-          <span><i class="lg-part"></i> Partial / revamp</span>
-          <span><i class="lg-prog"></i> In progress</span>
-          <span><i class="lg-no"></i> Not yet</span>
+          <span><i class="lg-done"></i> Well covered · ≥60%</span>
+          <span><i class="lg-part"></i> Partial · 30–59%</span>
+          <span><i class="lg-no"></i> Early / not yet · &lt;30%</span>
         </div>
         <div class="dgrid">
-          <div class="dtile done"><div class="ac">H2R</div><div class="nm">Hire-to-Retire</div><span class="st">Digitalized · Workday revamp</span><div class="bar"><div class="fill" style="width:100%"></div></div></div>
-          <div class="dtile part"><div class="ac">O2C</div><div class="nm">Order-to-Cash</div><span class="st">50% · revamp needed</span><div class="bar"><div class="fill" style="width:50%"></div></div></div>
-          <div class="dtile part"><div class="ac">SRM</div><div class="nm">Supplier Relationship Mgmt</div><span class="st">Partial</span><div class="bar"><div class="fill" style="width:40%"></div></div></div>
-          <div class="dtile prog"><div class="ac">ITAM</div><div class="nm">IT Asset Management</div><span class="st">In progress</span><div class="bar"><div class="fill" style="width:25%"></div></div></div>
-          <div class="dtile no"><div class="ac">S2P</div><div class="nm">Source-to-Pay</div><span class="st">Not yet</span><div class="bar"><div class="fill" style="width:0%"></div></div></div>
-          <div class="dtile no"><div class="ac">S&amp;OP</div><div class="nm">Sales &amp; Operations Planning</div><span class="st">Not yet</span><div class="bar"><div class="fill" style="width:0%"></div></div></div>
-          <div class="dtile no"><div class="ac">DP</div><div class="nm">Demand Planning</div><span class="st">Not yet</span><div class="bar"><div class="fill" style="width:0%"></div></div></div>
-          <div class="dtile no"><div class="ac">PM</div><div class="nm">Pricing Management</div><span class="st">Not yet</span><div class="bar"><div class="fill" style="width:0%"></div></div></div>
+          <div class="dtile done"><div class="ac">94%</div><div class="nm">Upstream · Innovation, R&amp;D &amp; Agronomy</div><span class="st">15 / 16 processes</span><div class="bar"><div class="fill" style="width:94%"></div></div></div>
+          <div class="dtile done"><div class="ac">61%</div><div class="nm">Downstream · Commercial Execution</div><span class="st">11 / 18 processes</span><div class="bar"><div class="fill" style="width:61%"></div></div></div>
+          <div class="dtile part"><div class="ac">53%</div><div class="nm">Support &amp; Enablers</div><span class="st">68 / 129 processes</span><div class="bar"><div class="fill" style="width:53%"></div></div></div>
+          <div class="dtile part"><div class="ac">33%</div><div class="nm">Midstream · SC &amp; Industrial Ops</div><span class="st">19 / 57 processes</span><div class="bar"><div class="fill" style="width:33%"></div></div></div>
+          <div class="dtile no"><div class="ac">26%</div><div class="nm">Pilotage · Steering &amp; Governance</div><span class="st">7 / 27 processes</span><div class="bar"><div class="fill" style="width:26%"></div></div></div>
+          <div class="dtile no"><div class="ac">19%</div><div class="nm">Market &amp; Growth</div><span class="st">4 / 21 processes</span><div class="bar"><div class="fill" style="width:19%"></div></div></div>
         </div>
+        <div class="dsource">Source · Digital Coverage Dashboard — 267 processes mapped (Process Cartography, Apr 2026)</div>
       </div>
     </div></div>
   </div>
