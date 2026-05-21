@@ -106,4 +106,35 @@
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(input.value); }
   });
   send.addEventListener('click', function () { ask(input.value); });
+
+  /* Voice input → text (browser Web Speech API, live transcription) */
+  var mic = root.querySelector('#dnai-mic');
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (mic) {
+    if (!SR) {
+      mic.style.display = 'none';
+    } else {
+      var rec = new SR();
+      rec.lang = (navigator.language && navigator.language.toLowerCase().indexOf('en') === 0) ? 'en-US' : 'fr-FR';
+      rec.interimResults = true;
+      rec.continuous = false;
+      var listening = false, base = '';
+
+      mic.addEventListener('click', function () {
+        if (busy) return;
+        if (listening) { rec.stop(); return; }
+        base = input.value ? input.value.trim() + ' ' : '';
+        try { rec.start(); } catch (e) { /* already started */ }
+      });
+      rec.onstart  = function () { listening = true;  mic.classList.add('rec'); };
+      rec.onend    = function () { listening = false; mic.classList.remove('rec'); input.focus(); };
+      rec.onerror  = function () { listening = false; mic.classList.remove('rec'); };
+      rec.onresult = function (e) {
+        var txt = '';
+        for (var i = 0; i < e.results.length; i++) txt += e.results[i][0].transcript;
+        input.value = base + txt;
+        autosize();
+      };
+    }
+  }
 })();
