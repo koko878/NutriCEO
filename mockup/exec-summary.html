@@ -178,6 +178,9 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 .btn.ko{background:#fff;color:var(--bad);border:1px solid var(--bad-bg)}.btn.ko:hover{background:var(--bad-bg)}
 .btn.locked{background:var(--ok-bg);color:var(--ok);cursor:default}.btn.locked-q{background:#FFF7E0;color:var(--warn);cursor:default}.btn.locked-ko{background:var(--bad-bg);color:var(--bad);cursor:default}
 .decision.spanwide{grid-column:1 / -1}
+.qbox{margin-top:2px}
+.qbox textarea{width:100%;min-height:46px;border:1px solid var(--warn-bg);border-radius:8px;padding:8px 10px;font:400 12px 'Inter',sans-serif;color:var(--ink);resize:vertical;background:#FFFDF5;outline:none}
+.qbox textarea:focus{border-color:var(--warn)}
 @media(max-width:720px){.dec{grid-template-columns:1fr}}
 
 /* Notes */
@@ -541,19 +544,23 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
           <div><h4>1 · Structure the Cybersecurity team — now <span class="tag bad">Asphyxiation felt</span></h4>
           <p>Cyber runs on <b>best-effort</b> today and the team is suffocating. Foundations exist (Zero Trust, NIST) but we need a <b>dedicated team</b>: Manager + Architect + 2 SoC engineers (P0), target ISO 27001/42001 by end 2026.</p></div>
           <div class="btns"><button class="btn ok" data-vote="ok">✓ Approve</button><button class="btn q" data-vote="q">? Questions</button><button class="btn ko" data-vote="ko">✗ Defer</button></div>
+          <div class="qbox" hidden><textarea class="qta" placeholder="Type your question on this point…"></textarea></div>
         </div>
         <div class="decision spanwide" data-id="d4">
           <div><h4>2 · Unblock delivery-force recruitment <span class="tag warn">Blocking</span></h4>
           <p>The delivery force is gated by external dependency and the current freeze. Without it, the roadmap stalls. <b>17 P0 hires (up to 22 ETPs)</b> — internalisation cuts OPEX (~5.7M MAD/yr vs external) and capitalises skills. Business case: <i>D²nAI Organization</i> deck.</p></div>
           <div class="btns"><button class="btn ok" data-vote="ok">✓ Approve</button><button class="btn q" data-vote="q">? Questions</button><button class="btn ko" data-vote="ko">✗ Defer</button></div>
+          <div class="qbox" hidden><textarea class="qta" placeholder="Type your question on this point…"></textarea></div>
         </div>
         <div class="decision" data-id="d1">
           <div><h4>+ Endorse the 3-pillar vision</h4><p>Digitalize (to 2027) · radiate across the Group (2026–28) · create value continuously.</p></div>
           <div class="btns"><button class="btn ok" data-vote="ok">✓ Approve</button><button class="btn q" data-vote="q">? Questions</button><button class="btn ko" data-vote="ko">✗ Defer</button></div>
+          <div class="qbox" hidden><textarea class="qta" placeholder="Type your question on this point…"></textarea></div>
         </div>
         <div class="decision" data-id="d5">
           <div><h4>+ Sponsor Group outreach + steering</h4><p>CEO backing to ease SBU adoption, plus a quarterly steering committee.</p></div>
           <div class="btns"><button class="btn ok" data-vote="ok">✓ Approve</button><button class="btn q" data-vote="q">? Questions</button><button class="btn ko" data-vote="ko">✗ Defer</button></div>
+          <div class="qbox" hidden><textarea class="qta" placeholder="Type your question on this point…"></textarea></div>
         </div>
       </div>
     </div></div>
@@ -564,15 +571,8 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
     <div class="acc-head"><span class="s-num">08</span><h2>Your notes</h2><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div>
     <div class="acc-body"><div class="acc-inner">
       <div class="notes">
-        <label for="fb">Free text · questions · watch-outs</label>
-        <textarea id="fb" placeholder="Type here. You can also leave it blank and click Send to record your votes only."></textarea>
-        <div class="row">
-          <button class="send" id="sendBtn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm5.8 14.13c-.25.7-1.44 1.33-1.98 1.38-.53.05-1.02.24-3.45-.72-2.9-1.14-4.76-4.1-4.9-4.29-.14-.19-1.18-1.57-1.18-2.99 0-1.42.75-2.12 1.01-2.41.26-.29.57-.36.76-.36.19 0 .38 0 .55.01.18.01.41-.07.64.49.25.6.84 2.07.91 2.22.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.29.76 1.25 1.63 2.02 1.12.99 2.06 1.3 2.35 1.45.29.15.46.12.63-.07.17-.19.73-.85.92-1.14.19-.29.39-.24.64-.15.26.1 1.66.78 1.95.93.29.15.48.22.55.34.07.12.07.7-.18 1.4Z"/></svg>
-            Send via WhatsApp
-          </button>
-          <div class="summary-pill" id="summary">no decision recorded yet</div>
-        </div>
+        <label for="fb">General note · watch-outs (optional)</label>
+        <textarea id="fb" placeholder="Anything to add beyond the per-decision questions…"></textarea>
       </div>
     </div></div>
   </div>
@@ -585,9 +585,13 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 </div>
 
 <div class="scorebar" id="scorebar">
-  <div class="grp"><span class="v" id="okCount">0</span><span>approved</span></div>
-  <div class="grp"><span class="v warn" id="qCount">0</span><span>questions</span></div>
-  <div class="grp"><span class="v bad" id="koCount">0</span><span>deferred</span></div>
+  <div class="grp"><span class="v" id="okCount">0</span><span>app.</span></div>
+  <div class="grp"><span class="v warn" id="qCount">0</span><span>q.</span></div>
+  <div class="grp"><span class="v bad" id="koCount">0</span><span>def.</span></div>
+  <button class="send" id="sendBtn">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm5.8 14.13c-.25.7-1.44 1.33-1.98 1.38-.53.05-1.02.24-3.45-.72-2.9-1.14-4.76-4.1-4.9-4.29-.14-.19-1.18-1.57-1.18-2.99 0-1.42.75-2.12 1.01-2.41.26-.29.57-.36.76-.36.19 0 .38 0 .55.01.18.01.41-.07.64.49.25.6.84 2.07.91 2.22.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.29.76 1.25 1.63 2.02 1.12.99 2.06 1.3 2.35 1.45.29.15.46.12.63-.07.17-.19.73-.85.92-1.14.19-.29.39-.24.64-.15.26.1 1.66.78 1.95.93.29.15.48.22.55.34.07.12.07.7-.18 1.4Z"/></svg>
+    Send via WhatsApp
+  </button>
 </div>
 
 <div class="modal" id="modal">
@@ -703,18 +707,24 @@ showPhase(0);
 
 /* Decisions */
 const votes={};
+const qNotes={};
 function recalc(){
   let ok=0,q=0,ko=0;
   Object.values(votes).forEach(v=>{if(v==='ok')ok++;if(v==='q')q++;if(v==='ko')ko++;});
   okCount.textContent=ok;qCount.textContent=q;koCount.textContent=ko;
-  summary.innerHTML=(ok+q+ko===0)?'no decision recorded yet':`<b>${ok}</b> approved · <b>${q}</b> questions · <b>${ko}</b> deferred`;
 }
 document.querySelectorAll('.decision').forEach(d=>{
+  const id=d.dataset.id;
+  const qbox=d.querySelector('.qbox');
+  const qta=d.querySelector('.qta');
+  if(qta) qta.addEventListener('input',()=>{qNotes[id]=qta.value.trim();});
   d.querySelectorAll('.btn').forEach(btn=>{
     btn.addEventListener('click',()=>{
-      votes[d.dataset.id]=btn.dataset.vote;
+      const v=btn.dataset.vote;
+      votes[id]=v;
       d.querySelectorAll('.btn').forEach(b=>b.classList.remove('locked','locked-q','locked-ko'));
-      btn.classList.add(btn.dataset.vote==='ok'?'locked':btn.dataset.vote==='q'?'locked-q':'locked-ko');
+      btn.classList.add(v==='ok'?'locked':v==='q'?'locked-q':'locked-ko');
+      if(qbox){ if(v==='q'){qbox.hidden=false; if(qta) qta.focus();} else {qbox.hidden=true;} }
       recalc();
     });
   });
@@ -741,10 +751,14 @@ document.getElementById('sendBtn').addEventListener('click',()=>{
   const WHATSAPP_NUMBER="212662214011";
   const decisionLabels={d3:"1. Structure the Cybersecurity team (now)",d4:"2. Unblock delivery-force recruitment (17 P0)",d1:"+ Endorse the 3-pillar vision",d5:"+ Sponsor Group outreach + steering"};
   const voteLabels={ok:"Approve",q:"Questions",ko:"Defer"};
-  const lines=Object.keys(decisionLabels).map(id=>`${decisionLabels[id]} — ${votes[id]?voteLabels[votes[id]]:"(no answer)"}`).join('\n');
+  const lines=Object.keys(decisionLabels).map(id=>{
+    let l=`${decisionLabels[id]} — ${votes[id]?voteLabels[votes[id]]:"(no answer)"}`;
+    if(votes[id]==='q' && qNotes[id]) l+=`\n   ↳ Q: ${qNotes[id]}`;
+    return l;
+  }).join('\n');
   const notes=document.getElementById('fb').value.trim();
   const sum=`${Object.values(votes).filter(v=>v==='ok').length} approved · ${Object.values(votes).filter(v=>v==='q').length} questions · ${Object.values(votes).filter(v=>v==='ko').length} deferred`;
-  const text=["*Executive Summary — feedback from CEO*","","*Decisions*",lines,"",sum,"","*Notes*",notes||"(no additional notes)","","_Sent from the D²nAI Executive Summary_"].join('\n');
+  const text=["*Executive Summary — feedback from CEO*","","*Decisions*",lines,"",sum,"","*General note*",notes||"(none)","","_Sent from the D²nAI Executive Summary_"].join('\n');
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`,'_blank');
   const btn=document.getElementById('sendBtn');
   btn.classList.add('done');
