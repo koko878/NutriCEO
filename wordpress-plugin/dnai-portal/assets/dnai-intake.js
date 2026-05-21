@@ -107,49 +107,61 @@
   });
   send.addEventListener('click', function () { ask(input.value); });
 
-  /* Voice input → text (browser Web Speech API, live transcription) */
+  /* Voice input → record audio, transcribe server-side via the AI Lab (Whisper) */
   var mic = root.querySelector('#dnai-mic');
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (mic) {
-    if (!SR) {
+    var EN = (navigator.language || '').toLowerCase().indexOf('en') === 0;
+    var canRecord = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+    if (!canRecord) {
       mic.style.display = 'none';
     } else {
-      var rec = new SR();
-      rec.lang = (navigator.language && navigator.language.toLowerCase().indexOf('en') === 0) ? 'en-US' : 'fr-FR';
-      rec.interimResults = true;
-      rec.continuous = false;
-      var listening = false, base = '';
-      var EN = rec.lang === 'en-US';
+      var recorder = null, chunks = [], recording = false, stream = null;
+
+      function stopStream() { if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; } }
 
       mic.addEventListener('click', function () {
-        if (busy) return;
-        if (listening) { rec.stop(); return; }
+        if (busy || mic.disabled) return;
+        if (recording) { try { recorder.stop(); } catch (e) {} return; }
         if (!window.isSecureContext) {
           addError(EN ? 'Voice needs a secure (HTTPS) page.' : 'Le micro nécessite une page sécurisée (HTTPS).');
           return;
         }
-        base = input.value ? input.value.trim() + ' ' : '';
-        try { rec.start(); } catch (e) { /* already started */ }
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(function (s) {
+          stream = s; chunks = [];
+          recorder = new MediaRecorder(s);
+          recorder.ondataavailable = function (e) { if (e.data && e.data.size > 0) chunks.push(e.data); };
+          recorder.onstop = function () {
+            stopStream(); recording = false; mic.classList.remove('rec');
+            if (!chunks.length) return;
+            transcribe(new Blob(chunks, { type: recorder.mimeType || 'audio/webm' }));
+          };
+          recorder.start();
+          recording = true; mic.classList.add('rec');
+        }).catch(function () {
+          addError(EN ? 'Microphone blocked — allow it in your browser.' : 'Micro bloqué — autorisez-le dans le navigateur.');
+        });
       });
-      rec.onstart  = function () { listening = true;  mic.classList.add('rec'); };
-      rec.onend    = function () { listening = false; mic.classList.remove('rec'); input.focus(); };
-      rec.onerror  = function (e) {
-        listening = false; mic.classList.remove('rec');
-        var map = {
-          'not-allowed':         EN ? 'Microphone blocked — allow it in your browser.' : 'Micro bloqué — autorisez-le dans le navigateur.',
-          'service-not-allowed': EN ? 'Microphone blocked — allow it in your browser.' : 'Micro bloqué — autorisez-le dans le navigateur.',
-          'audio-capture':       EN ? 'No microphone detected.' : 'Aucun micro détecté.',
-          'no-speech':           EN ? 'No speech detected — try again.' : "Aucune parole détectée — réessayez.",
-          'network':             EN ? 'Speech service unreachable (network).' : 'Service vocal injoignable (réseau).'
-        };
-        addError(map[e && e.error] || (EN ? 'Voice input error.' : 'Erreur de saisie vocale.'));
-      };
-      rec.onresult = function (e) {
-        var txt = '';
-        for (var i = 0; i < e.results.length; i++) txt += e.results[i][0].transcript;
-        input.value = base + txt;
-        autosize();
-      };
+
+      function transcribe(blob) {
+        mic.classList.add('busy'); mic.disabled = true;
+        var type = blob.type || 'audio/webm';
+        var ext = type.indexOf('ogg') > -1 ? 'ogg' : (type.indexOf('mp4') > -1 || type.indexOf('mpeg') > -1 ? 'mp4' : 'webm');
+        var fd = new FormData();
+        fd.append('audio', blob, 'audio.' + ext);
+        fetch(DNAI.rest + '/transcribe', { method: 'POST', headers: { 'X-WP-Nonce': DNAI.nonce }, body: fd })
+          .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+          .then(function (res) {
+            if (!res.ok || !res.j || res.j.text === undefined) {
+              addError((res.j && res.j.error) ? res.j.error : (EN ? 'Transcription error.' : 'Erreur de transcription.'));
+              return;
+            }
+            var t = (res.j.text || '').trim();
+            if (t) { input.value = (input.value ? input.value.trim() + ' ' : '') + t; autosize(); }
+            input.focus();
+          })
+          .catch(function () { addError(EN ? 'Network error.' : 'Erreur réseau.'); })
+          .finally(function () { mic.classList.remove('busy'); mic.disabled = false; });
+      }
     }
   }
 })();

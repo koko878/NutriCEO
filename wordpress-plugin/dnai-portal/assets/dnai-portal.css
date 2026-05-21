@@ -51,7 +51,10 @@
 .dnai-compose button.dnai-mic{background:var(--g50);color:var(--g800);border:1px solid var(--line)}
 .dnai-compose button.dnai-mic:hover{background:var(--g100)}
 .dnai-compose button.dnai-mic.rec{background:#DC2626;color:#fff;border-color:#DC2626;animation:dnaipulse 1.2s infinite}
+.dnai-compose button.dnai-mic.busy{color:var(--g700)}
+.dnai-compose button.dnai-mic.busy svg{animation:dnaispin 0.9s linear infinite}
 @keyframes dnaipulse{0%{box-shadow:0 0 0 0 rgba(220,38,38,.5)}70%{box-shadow:0 0 0 9px rgba(220,38,38,0)}100%{box-shadow:0 0 0 0 rgba(220,38,38,0)}}
+@keyframes dnaispin{to{transform:rotate(360deg)}}
 
 /* Captured-need confirmation card */
 .dnai-brief{align-self:stretch;max-width:100%;background:#fff;border:1px solid var(--g100);border-left:4px solid var(--g800);border-radius:12px;padding:14px}

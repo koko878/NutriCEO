@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI Portal — Intake Genie & Product Catalog
  * Description:       Homepage chatbot that challenges, categorizes and structures Data/Digital/AI needs (powered by the AI Lab LLM, OpenAI-compatible / Open WebUI), plus a product catalog of live and in-development products.
- * Version:           1.1.1
+ * Version:           1.2.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-portal
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_PORTAL_VER', '1.1.1' );
+define( 'DNAI_PORTAL_VER', '1.2.0' );
 define( 'DNAI_PORTAL_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_PORTAL_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -126,6 +126,8 @@ function dnai_sanitize_settings( $in ) {
 		'api_path'      => isset( $in['api_path'] ) ? sanitize_text_field( $in['api_path'] ) : '/api/chat/completions',
 		'api_key'       => isset( $in['api_key'] ) ? trim( $in['api_key'] ) : '',
 		'model'         => isset( $in['model'] ) ? sanitize_text_field( $in['model'] ) : 'dnai-intake-genie',
+		'stt_path'      => isset( $in['stt_path'] ) ? sanitize_text_field( $in['stt_path'] ) : '/audio/transcriptions',
+		'stt_model'     => isset( $in['stt_model'] ) ? sanitize_text_field( $in['stt_model'] ) : 'whisper-1',
 		'system_prompt' => isset( $in['system_prompt'] ) ? wp_kses_post( $in['system_prompt'] ) : '',
 		'notify_email'  => isset( $in['notify_email'] ) ? sanitize_email( $in['notify_email'] ) : '',
 	);
@@ -136,6 +138,8 @@ function dnai_settings_page() {
 	$path   = dnai_get_opt( 'api_path', '/api/chat/completions' );
 	$key    = dnai_get_opt( 'api_key', '' );
 	$model  = dnai_get_opt( 'model', 'dnai-intake-genie' );
+	$sttp   = dnai_get_opt( 'stt_path', '/audio/transcriptions' );
+	$sttm   = dnai_get_opt( 'stt_model', 'whisper-1' );
 	$prompt = dnai_get_opt( 'system_prompt', dnai_default_system_prompt() );
 	$email  = dnai_get_opt( 'notify_email', get_option( 'admin_email' ) );
 	?>
@@ -159,6 +163,12 @@ function dnai_settings_page() {
 					<p class="description">Open WebUI → Settings → Account → API Keys. Stored server-side, never exposed to the browser.</p></td></tr>
 				<tr><th><label>Model</label></th>
 					<td><input type="text" name="dnai_portal_settings[model]" value="<?php echo esc_attr( $model ); ?>" class="regular-text" placeholder="dnai-intake-genie"></td></tr>
+				<tr><th><label>Voice — transcription path</label></th>
+					<td><input type="text" name="dnai_portal_settings[stt_path]" value="<?php echo esc_attr( $sttp ); ?>" class="regular-text">
+					<p class="description">Speech-to-text endpoint on the AI Lab (OpenAI-compatible). Standard: <code>/audio/transcriptions</code>. Open WebUI may use <code>/api/v1/audio/transcriptions</code>.</p></td></tr>
+				<tr><th><label>Voice — transcription model</label></th>
+					<td><input type="text" name="dnai_portal_settings[stt_model]" value="<?php echo esc_attr( $sttm ); ?>" class="regular-text" placeholder="whisper-1">
+					<p class="description">Whisper model name on the lab (e.g. <code>whisper-1</code> or <code>whisper</code>).</p></td></tr>
 				<tr><th><label>Notify email</label></th>
 					<td><input type="email" name="dnai_portal_settings[notify_email]" value="<?php echo esc_attr( $email ); ?>" class="regular-text">
 					<p class="description">Each submitted need is emailed here (and saved under “D²nAI Needs”).</p></td></tr>
@@ -234,6 +244,11 @@ add_action( 'rest_api_init', function () {
 		'callback'            => 'dnai_rest_need',
 		'permission_callback' => 'dnai_rest_permission',
 	) );
+	register_rest_route( 'dnai/v1', '/transcribe', array(
+		'methods'             => 'POST',
+		'callback'            => 'dnai_rest_transcribe',
+		'permission_callback' => 'dnai_rest_permission',
+	) );
 } );
 
 function dnai_rest_permission( $request ) {
@@ -287,6 +302,65 @@ function dnai_rest_chat( WP_REST_Request $request ) {
 	}
 
 	return new WP_REST_Response( array( 'reply' => $body['choices'][0]['message']['content'] ), 200 );
+}
+
+function dnai_rest_transcribe( WP_REST_Request $request ) {
+	$base  = dnai_get_opt( 'base_url' );
+	$key   = dnai_get_opt( 'api_key' );
+	$path  = dnai_get_opt( 'stt_path', '/audio/transcriptions' );
+	$model = dnai_get_opt( 'stt_model', 'whisper-1' );
+	if ( ! $base || ! $key ) {
+		return new WP_REST_Response( array( 'error' => 'LLM not configured.' ), 503 );
+	}
+
+	$files = $request->get_file_params();
+	if ( empty( $files['audio']['tmp_name'] ) || ! is_uploaded_file( $files['audio']['tmp_name'] ) ) {
+		return new WP_REST_Response( array( 'error' => 'No audio received.' ), 400 );
+	}
+	$file = $files['audio'];
+	if ( ! empty( $file['size'] ) && $file['size'] > 25 * 1024 * 1024 ) {
+		return new WP_REST_Response( array( 'error' => 'Audio too large (max 25 MB).' ), 400 );
+	}
+	$data = file_get_contents( $file['tmp_name'] );
+	if ( $data === false || $data === '' ) {
+		return new WP_REST_Response( array( 'error' => 'Empty audio.' ), 400 );
+	}
+
+	$mime     = ! empty( $file['type'] ) ? preg_replace( '/[^a-zA-Z0-9\/\.\-\+]/', '', $file['type'] ) : 'audio/webm';
+	$filename = preg_replace( '/[^a-zA-Z0-9\.\-_]/', '', basename( (string) $file['name'] ) );
+	if ( $filename === '' ) $filename = 'audio.webm';
+
+	$boundary = wp_generate_password( 24, false );
+	$eol  = "\r\n";
+	$body = '--' . $boundary . $eol
+		. 'Content-Disposition: form-data; name="model"' . $eol . $eol
+		. $model . $eol
+		. '--' . $boundary . $eol
+		. 'Content-Disposition: form-data; name="file"; filename="' . $filename . '"' . $eol
+		. 'Content-Type: ' . $mime . $eol . $eol
+		. $data . $eol
+		. '--' . $boundary . '--' . $eol;
+
+	$resp = wp_remote_post( rtrim( $base, '/' ) . $path, array(
+		'timeout' => 60,
+		'headers' => array(
+			'Authorization' => 'Bearer ' . $key,
+			'Content-Type'  => 'multipart/form-data; boundary=' . $boundary,
+		),
+		'body'    => $body,
+	) );
+
+	if ( is_wp_error( $resp ) ) {
+		return new WP_REST_Response( array( 'error' => 'AI Lab unreachable: ' . $resp->get_error_message() ), 502 );
+	}
+	$code = wp_remote_retrieve_response_code( $resp );
+	$rb   = json_decode( wp_remote_retrieve_body( $resp ), true );
+	if ( $code >= 400 ) {
+		$msg = isset( $rb['error']['message'] ) ? $rb['error']['message'] : ( 'Transcription error (HTTP ' . $code . '). Check the voice path/model in settings.' );
+		return new WP_REST_Response( array( 'error' => $msg ), 502 );
+	}
+	$text = isset( $rb['text'] ) ? $rb['text'] : ( isset( $rb['transcription'] ) ? $rb['transcription'] : '' );
+	return new WP_REST_Response( array( 'text' => (string) $text ), 200 );
 }
 
 function dnai_rest_need( WP_REST_Request $request ) {
