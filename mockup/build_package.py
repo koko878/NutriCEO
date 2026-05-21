@@ -67,6 +67,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 .logo::before{content:"";position:absolute;inset:0;opacity:.22;background:repeating-linear-gradient(180deg,rgba(180,255,180,.7) 0 1px,transparent 1px 3px)}
 .logo span{font-family:'Cormorant Garamond',serif;color:#E6F4E6;font-weight:700;font-size:24px;position:relative;letter-spacing:1px}
 .logo sup{font-size:12px;font-weight:600;top:-6px;position:relative}
+.logo-img{width:52px;height:52px;border-radius:14px;object-fit:contain;background:#fff;border:1px solid var(--line);padding:5px;box-shadow:0 8px 20px -8px rgba(27,94,32,.25);flex:none}
 .head .t1{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:600}
 .head .t2{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--green-800);font-weight:700;line-height:1.1}
 .hero{margin-bottom:34px}
@@ -106,8 +107,8 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 <body>
 <div id="home">
   <div class="head">
-    <div class="logo"><span>D<sup>2</sup>n</span></div>
-    <div><div class="t1">OCP Nutricrops · Data, Digital &amp; AI</div><div class="t2">D²nAI — Demo</div></div>
+    <img class="logo-img" src="__FAVICON__" alt="D²nAI">
+    <div><div class="t1">OCP Nutricrops · Data, Digital &amp; AI</div><div class="t2">D²nAI — State of the art as of May 2026</div></div>
   </div>
   <div class="hero">
     <div class="kicker">One file · all our work</div>
