@@ -604,8 +604,7 @@ modal.addEventListener('click',e=>{if(e.target===modal){modal.classList.remove('
 
 /* Send → WhatsApp */
 document.getElementById('sendBtn').addEventListener('click',()=>{
-  // ⚠ Your WhatsApp number, international format, no "+" no spaces (e.g. Morocco: 2126XXXXXXXX)
-  const WHATSAPP_NUMBER="2126XXXXXXXX";
+  const WHATSAPP_NUMBER="212662214011";
   const decisionLabels={d3:"1. Structure the Cybersecurity team (now)",d4:"2. Unblock delivery-force recruitment (17 P0)",d1:"+ Endorse the 3-pillar vision",d5:"+ Sponsor Group outreach + steering"};
   const voteLabels={ok:"Approve",q:"Questions",ko:"Defer"};
   const lines=Object.keys(decisionLabels).map(id=>`${decisionLabels[id]} — ${votes[id]?voteLabels[votes[id]]:"(no answer)"}`).join('\n');
