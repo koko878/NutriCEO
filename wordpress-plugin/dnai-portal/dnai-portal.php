@@ -141,7 +141,10 @@ function dnai_settings_page() {
 	?>
 	<div class="wrap">
 		<h1>D²nAI Portal — settings</h1>
-		<p>Plug the AI Lab LLM (Open WebUI / OpenAI-compatible). Shortcodes: <code>[dnai_intake]</code> (chatbot) and <code>[dnai_catalog]</code> (product catalog).</p>
+		<p>Plug the AI Lab LLM (Open WebUI / OpenAI-compatible). Shortcodes: <code>[dnai_home]</code> (full homepage), <code>[dnai_intake]</code> (chatbot) and <code>[dnai_catalog]</code> (product catalog).</p>
+		<?php if ( isset( $_GET['seeded'] ) ) : ?>
+			<div class="notice notice-success is-dismissible"><p><?php echo (int) $_GET['seeded']; ?> sample product(s) added under <strong>D²nAI Products</strong>.</p></div>
+		<?php endif; ?>
 		<form method="post" action="options.php">
 			<?php settings_fields( 'dnai_portal' ); ?>
 			<table class="form-table" role="presentation">
@@ -165,9 +168,57 @@ function dnai_settings_page() {
 			</table>
 			<?php submit_button(); ?>
 		</form>
+		<hr>
+		<h2>Sample products</h2>
+		<p>Seed a starter catalog (Market Intelligence Hub, COO Cockpit, EPM &amp; BI Suite, NutriRadar, Agronomy / Document Co-pilots, plus idea-stage products). Existing titles are skipped, so it is safe to run once.</p>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+			<input type="hidden" name="action" value="dnai_seed_products">
+			<?php wp_nonce_field( 'dnai_seed' ); ?>
+			<?php submit_button( 'Seed sample products', 'secondary' ); ?>
+		</form>
 	</div>
 	<?php
 }
+
+/* -------------------------------------------------------------------------
+ * 2bis. Seed sample products (one click, idempotent)
+ * ---------------------------------------------------------------------- */
+function dnai_sample_products() {
+	return array(
+		array( 'Market Intelligence Hub', 'live', 'Data',    'Phosphate & fertilizer market watch: prices, trade flows and competitor signals consolidated into one decision cockpit.' ),
+		array( 'COO Cockpit',             'live', 'Digital', 'Real-time operations steering — production, supply, OTIF and KPIs unified in a single live dashboard.' ),
+		array( 'EPM &amp; BI Suite',          'live', 'Data',    'Financial planning (EPM) and self-service BI for management: trusted reporting, forecasts and drill-down.' ),
+		array( 'NutriRadar',              'dev',  'AI',      'Early-warning engine that surfaces agronomic and market signals through predictive models.' ),
+		array( 'Agronomy Co-pilot',       'dev',  'AI',      'AI assistant recommending personalized fertilization by crop, soil and climate context.' ),
+		array( 'Document Co-pilot',       'dev',  'AI',      'Internal document search & synthesis (RAG) so teams find and summarize knowledge instantly.' ),
+		array( 'Soil-to-Yield Predictor', 'idea', 'AI',      'Model linking soil, climate and input data to expected yield, to guide nutrition strategy.' ),
+		array( 'Customer 360',            'idea', 'Data',    'Unified view of farmers and distributors to personalize the offer and anticipate needs.' ),
+	);
+}
+
+add_action( 'admin_post_dnai_seed_products', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! check_admin_referer( 'dnai_seed' ) ) wp_die( 'Not allowed' );
+	$created = 0;
+	foreach ( dnai_sample_products() as $p ) {
+		list( $title, $status, $cat, $desc ) = $p;
+		$dupe = get_posts( array( 'post_type' => 'dnai_product', 'title' => $title, 'posts_per_page' => 1, 'fields' => 'ids', 'post_status' => 'any' ) );
+		if ( ! empty( $dupe ) ) continue;
+		$id = wp_insert_post( array(
+			'post_type'    => 'dnai_product',
+			'post_status'  => 'publish',
+			'post_title'   => $title,
+			'post_excerpt' => $desc,
+			'post_content' => $desc,
+		) );
+		if ( $id && ! is_wp_error( $id ) ) {
+			update_post_meta( $id, 'dnai_status', $status );
+			update_post_meta( $id, 'dnai_category', $cat );
+			$created++;
+		}
+	}
+	wp_safe_redirect( add_query_arg( array( 'page' => 'dnai-portal', 'seeded' => $created ), admin_url( 'options-general.php' ) ) );
+	exit;
+} );
 
 /* -------------------------------------------------------------------------
  * 3. REST API — chat proxy (keeps API key server-side) + need capture
@@ -315,6 +366,36 @@ function dnai_sc_intake( $atts ) {
 	<?php return ob_get_clean();
 }
 add_shortcode( 'dnai_intake', 'dnai_sc_intake' );
+
+function dnai_sc_home( $atts ) {
+	wp_enqueue_style( 'dnai-portal' );
+	$a = shortcode_atts( array(
+		'eyebrow'  => 'OCP Nutricrops · Data, Digital & AI',
+		'title'    => 'D²nAI',
+		'baseline' => 'Empowering farmers to deliver sustainable nutrition for a growing world.',
+		'intro'    => 'Une idée, un irritant, un besoin Data / Digital / IA ? Décrivez-le ci-dessous : notre assistant le challenge, le cadre et le transmet à l\'équipe D²nAI. — Got a Data / Digital / AI need? Describe it and our assistant will frame it for the team.',
+	), $atts );
+
+	ob_start(); ?>
+	<section class="dnai-home">
+		<div class="dnai-hero">
+			<span class="dnai-eyebrow"><?php echo esc_html( $a['eyebrow'] ); ?></span>
+			<h1 class="dnai-wordmark"><?php echo esc_html( $a['title'] ); ?></h1>
+			<p class="dnai-baseline"><?php echo esc_html( $a['baseline'] ); ?></p>
+			<p class="dnai-intro"><?php echo esc_html( $a['intro'] ); ?></p>
+		</div>
+		<div class="dnai-home-chat"><?php echo do_shortcode( '[dnai_intake]' ); ?></div>
+		<div class="dnai-home-cat">
+			<div class="dnai-home-cat-head">
+				<h2>Our products</h2>
+				<p>Live, in development and on the roadmap.</p>
+			</div>
+			<?php echo do_shortcode( '[dnai_catalog]' ); ?>
+		</div>
+	</section>
+	<?php return ob_get_clean();
+}
+add_shortcode( 'dnai_home', 'dnai_sc_home' );
 
 function dnai_sc_catalog( $atts ) {
 	wp_enqueue_style( 'dnai-portal' );

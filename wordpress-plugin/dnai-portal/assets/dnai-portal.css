@@ -8,6 +8,22 @@
 }
 .dnai-chat *,.dnai-catalog *{box-sizing:border-box}
 
+/* Homepage layout */
+.dnai-home{--g900:#0F3D14;--g800:#1B5E20;--g700:#2E7D32;--g500:#4CAF50;
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:1000px;margin:0 auto}
+.dnai-hero{text-align:center;padding:40px 16px 28px}
+.dnai-eyebrow{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--g700);background:#E8F0E8;padding:6px 14px;border-radius:999px}
+.dnai-wordmark{font-family:'Cinzel','Trajan Pro',Georgia,'Times New Roman',serif;font-weight:700;
+  font-size:clamp(56px,12vw,120px);line-height:1;margin:18px 0 10px;letter-spacing:.04em;
+  background:linear-gradient(160deg,var(--g900),var(--g500));-webkit-background-clip:text;background-clip:text;color:transparent}
+.dnai-baseline{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:clamp(16px,2.4vw,22px);color:var(--g800);margin:0 auto 14px;max-width:640px}
+.dnai-intro{font-size:14.5px;color:#3C4642;line-height:1.6;max-width:600px;margin:0 auto}
+.dnai-home-chat{padding:8px 16px 36px}
+.dnai-home-cat{padding:8px 16px 48px}
+.dnai-home-cat-head{text-align:center;margin-bottom:18px}
+.dnai-home-cat-head h2{font-family:Georgia,serif;font-size:clamp(24px,4vw,34px);color:var(--g900);margin:0 0 4px}
+.dnai-home-cat-head p{color:#73796F;font-size:14px;margin:0}
+
 /* Chatbot */
 .dnai-chat{
   max-width:560px;margin:0 auto;border:1px solid var(--line);border-radius:18px;background:#fff;
