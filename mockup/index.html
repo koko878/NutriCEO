@@ -1,1028 +1,165 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#1B5E20">
 <link rel="icon" type="image/png" href="assets/dnai-icon-512.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="NutriCEO">
-<meta name="mobile-web-app-capable" content="yes">
-<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%231B5E20'/%3E%3Ctext x='90' y='118' text-anchor='middle' font-family='Georgia,serif' font-size='86' font-weight='700' fill='%23E6F4E6'%3ED%C2%B2%3C/text%3E%3C/svg%3E">
-<title>NutriCEO — D²nAI · OCP Nutricrops</title>
+<link rel="apple-touch-icon" href="assets/dnai-icon-180.png">
+<meta name="apple-mobile-web-app-title" content="D²nAI">
+<title>D²nAI — Demo Hub · OCP Nutricrops</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --green-900:#0F3D14;
-  --green-800:#1B5E20;
-  --green-700:#2E7D32;
-  --green-500:#4CAF50;
-  --green-100:#E8F0E8;
-  --green-50:#F2F7F2;
-  --ink:#13191A;
-  --ink-2:#3C4642;
-  --muted:#6B7268;
-  --line:#E6E9E5;
-  --bg:#FAFBFA;
-  --page:#EDEFEA;
-  --warn:#B45309;
-  --warn-bg:#FEF3C7;
-  --ok:#15803D;
-  --ok-bg:#DCFCE7;
-  --bad:#B91C1C;
-  --bad-bg:#FEE2E2;
+  --green-900:#0F3D14; --green-800:#1B5E20; --green-700:#2E7D32; --green-500:#4CAF50;
+  --green-100:#E8F0E8; --green-50:#F4F8F3;
+  --ink:#13191A; --ink-2:#3C4642; --muted:#73796F;
+  --line:#EAECE6; --line-soft:#F1F2EC; --bg:#FCFCFA;
+  --ok:#15803D; --ok-bg:#DCFCE7; --warn:#B45309; --warn-bg:#FEF3C7;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
 body{
   font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:
-    radial-gradient(1200px 600px at 50% -10%, #E2E8DE 0%, transparent 60%),
-    var(--page);
-  color:var(--ink);
-  -webkit-font-smoothing:antialiased;
-  display:grid;
-  place-items:center;
-  min-height:100vh;
-  padding:24px 16px;
+  background:radial-gradient(900px 420px at 50% -120px,#E2E8DE 0%,transparent 70%),var(--bg);
+  color:var(--ink);min-height:100vh;padding:36px 24px 70px;
 }
+.page{max-width:920px;margin:0 auto}
 
-/* Frame around phone */
-.stage{
-  display:flex;flex-direction:column;align-items:center;gap:18px;
-}
-.legend{
-  text-align:center;color:var(--muted);font-size:12px;letter-spacing:.04em;text-transform:uppercase;
-}
-.legend .brand{
-  font-family:'Cormorant Garamond',Georgia,serif;
-  font-style:italic;color:var(--green-800);
-  font-size:14px;text-transform:none;letter-spacing:.02em;
-}
+.head{display:flex;align-items:center;gap:14px;margin-bottom:34px}
+.logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--green-800),var(--green-900));display:grid;place-items:center;position:relative;overflow:hidden;box-shadow:0 8px 20px -8px rgba(27,94,32,.5)}
+.logo::before{content:"";position:absolute;inset:0;opacity:.22;background:repeating-linear-gradient(180deg,rgba(180,255,180,.7) 0 1px,transparent 1px 3px)}
+.logo span{font-family:'Cormorant Garamond',serif;color:#E6F4E6;font-weight:700;font-size:24px;position:relative;letter-spacing:1px}
+.logo sup{font-size:12px;font-weight:600;top:-6px;position:relative}
+.head .t1{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.head .t2{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--green-800);font-weight:700;line-height:1.1}
 
-/* iPhone frame */
-.phone{
-  position:relative;
-  width:390px;height:844px;
-  background:#0a0a0a;
-  border-radius:54px;
-  padding:14px;
-  box-shadow:
-    0 30px 60px -20px rgba(0,0,0,.35),
-    0 0 0 1px rgba(255,255,255,.06) inset,
-    0 0 0 2px #1a1a1a;
-}
-.notch{
-  position:absolute;left:50%;top:18px;transform:translateX(-50%);
-  width:120px;height:32px;background:#000;border-radius:20px;z-index:5;
-}
-.screen{
-  position:relative;
-  width:100%;height:100%;
-  background:var(--bg);
-  border-radius:42px;
-  overflow:hidden;
-  display:flex;flex-direction:column;
-}
+.hero{margin-bottom:34px}
+.kicker{font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--green-800);margin-bottom:12px}
+.hero h1{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:36px;line-height:1.12;color:var(--ink);max-width:660px}
+.hero h1 em{font-style:italic;color:var(--green-800)}
+.hero p{margin-top:12px;font-size:14.5px;color:var(--ink-2);max-width:620px;line-height:1.55}
 
-/* status bar */
-.status{
-  height:48px;display:flex;align-items:flex-end;justify-content:space-between;
-  padding:0 28px 6px;font-size:14px;font-weight:600;color:var(--ink);
+.group-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:30px}
+.card{
+  display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;
+  border:1px solid var(--line);border-radius:14px;padding:16px;background:#fff;transition:.15s;
 }
-.status .icons{display:flex;gap:5px;align-items:center}
-.dot{width:4px;height:4px;background:var(--ink);border-radius:50%}
-.battery{width:22px;height:11px;border:1.2px solid var(--ink);border-radius:3px;position:relative}
-.battery::after{content:"";position:absolute;right:-3px;top:2.5px;width:2px;height:4px;background:var(--ink);border-radius:0 1px 1px 0}
-.battery::before{content:"";position:absolute;left:1px;top:1px;bottom:1px;width:80%;background:var(--ink);border-radius:1px}
+.card:hover{border-color:var(--green-500);transform:translateY(-2px);box-shadow:0 14px 28px -18px rgba(0,0,0,.2)}
+.card .ico{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--green-800),var(--green-900));display:grid;place-items:center;color:#E6F4E6;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:20px;flex:none;position:relative;overflow:hidden}
+.card .ico::before{content:"";position:absolute;inset:0;opacity:.18;background:repeating-linear-gradient(180deg,rgba(180,255,180,.7) 0 1px,transparent 1px 3px)}
+.card .ico.alt{background:linear-gradient(135deg,#5C4A8C,#3C3160)}
+.card .b{flex:1;min-width:0}
+.card h3{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--ink);line-height:1.15;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card .who{font-size:11px;color:var(--green-800);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+.card p{font-size:12px;color:var(--ink-2);line-height:1.45;margin-top:5px}
+.card .tag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:5px;letter-spacing:.04em;text-transform:uppercase}
+.card .tag.live{background:var(--ok-bg);color:var(--ok)}
+.card .tag.proto{background:var(--warn-bg);color:var(--warn)}
+.card .arrow{color:var(--muted);flex:none}
+.card:hover .arrow{color:var(--green-800)}
+.full{grid-column:1 / -1}
 
-/* header */
-.appbar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:6px 20px 14px;
-}
-.brandmark{
-  display:flex;align-items:center;gap:10px;
-}
-.logo{
-  width:34px;height:34px;border-radius:10px;
-  background:
-    linear-gradient(135deg, var(--green-800), var(--green-900));
-  display:grid;place-items:center;
-  position:relative;overflow:hidden;
-  box-shadow:0 4px 10px -4px rgba(27,94,32,.45);
-}
-.logo::before{
-  content:"";position:absolute;inset:0;opacity:.18;
-  background-image:
-    repeating-linear-gradient(180deg, rgba(180,255,180,.6) 0 1px, transparent 1px 3px);
-  mix-blend-mode:screen;
-}
-.logo span{
-  font-family:'Cormorant Garamond',Georgia,serif;
-  color:#E6F4E6;font-weight:700;font-size:16px;line-height:1;
-  position:relative;letter-spacing:.5px;
-}
-.logo sup{font-size:9px;font-weight:600;margin-left:-1px;top:-4px;position:relative}
-.brandtext{display:flex;flex-direction:column;line-height:1.05}
-.brandtext .t1{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
-.brandtext .t2{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--green-800);font-weight:700}
-
-.lang{
-  display:flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px;
-}
-.lang button{
-  border:0;background:transparent;font:600 11px/1 'Inter',sans-serif;
-  padding:6px 10px;border-radius:999px;color:var(--muted);cursor:pointer;
-  transition:.2s;
-}
-.lang button.on{background:var(--green-800);color:#fff}
-
-/* greeting */
-.hello{
-  padding:4px 22px 8px;
-}
-.hello h1{
-  font-family:'Cormorant Garamond',serif;
-  font-weight:600;font-size:30px;color:var(--ink);letter-spacing:-.01em;
-}
-.hello .date{
-  color:var(--muted);font-size:13px;margin-top:2px;
-}
-
-/* daily brief card */
-.scroll{
-  flex:1;overflow-y:auto;padding:8px 16px 12px;
-}
-.scroll::-webkit-scrollbar{width:0}
-
-.brief{
-  margin:8px 6px 14px;background:#fff;border:1px solid var(--line);
-  border-radius:18px;padding:14px 16px;cursor:pointer;
-  display:flex;gap:12px;align-items:center;
-  transition:.2s;
-  box-shadow:0 1px 0 rgba(0,0,0,.02);
-}
-.brief:hover{transform:translateY(-1px);box-shadow:0 6px 18px -10px rgba(0,0,0,.18)}
-.brief .ico{
-  width:38px;height:38px;border-radius:12px;background:var(--green-100);
-  display:grid;place-items:center;color:var(--green-800);flex:none;
-}
-.brief .txt h3{font-size:14px;font-weight:600;color:var(--ink)}
-.brief .txt p{font-size:12.5px;color:var(--muted);margin-top:2px}
-.brief .pill{
-  margin-left:auto;font-size:11px;font-weight:600;color:#fff;background:var(--green-800);
-  padding:4px 8px;border-radius:999px;flex:none;
-}
-
-/* suggestions */
-.suglabel{
-  font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--muted);padding:4px 8px 8px;
-}
-.sugs{display:flex;flex-direction:column;gap:8px;padding:0 6px}
-.sug{
-  background:#fff;border:1px solid var(--line);border-radius:14px;
-  padding:13px 14px;display:flex;align-items:center;gap:10px;
-  cursor:pointer;transition:.18s;
-}
-.sug:hover{border-color:var(--green-500);background:var(--green-50)}
-.sug .q{font-size:13.5px;color:var(--ink-2);font-weight:500;line-height:1.35}
-.sug .arrow{margin-left:auto;color:var(--muted);flex:none}
-
-/* conversation */
-.thread{display:flex;flex-direction:column;gap:14px;padding:8px 4px 6px}
-.bubble-user{
-  align-self:flex-end;max-width:84%;
-  background:var(--green-800);color:#fff;
-  border-radius:18px 18px 4px 18px;padding:10px 14px;
-  font-size:14px;line-height:1.4;
-  box-shadow:0 6px 14px -8px rgba(27,94,32,.45);
-}
-.answer{
-  background:#fff;border:1px solid var(--line);border-radius:18px;
-  padding:14px 16px;
-}
-.answer .head{
-  display:flex;align-items:center;gap:8px;margin-bottom:8px;
-}
-.answer .head .badge{
-  width:22px;height:22px;border-radius:6px;background:var(--green-800);
-  display:grid;place-items:center;color:#fff;font:700 10px 'Cormorant Garamond',serif;
-}
-.answer .head .by{font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
-.answer h4{font-size:14px;font-weight:600;color:var(--ink);margin:8px 0 4px}
-.answer p{font-size:13.5px;color:var(--ink-2);line-height:1.55;margin:6px 0}
-.answer ul{margin:6px 0 6px 4px;padding:0;list-style:none}
-.answer ul li{font-size:13px;color:var(--ink-2);padding:4px 0 4px 22px;position:relative;line-height:1.45}
-.answer ul li .ic{position:absolute;left:0;top:5px;width:16px;height:16px;border-radius:4px;display:grid;place-items:center;font-size:10px;font-weight:700}
-.ic-ok{background:var(--ok-bg);color:var(--ok)}
-.ic-warn{background:var(--warn-bg);color:var(--warn)}
-.ic-bad{background:var(--bad-bg);color:var(--bad)}
-.kpi{
-  display:flex;gap:8px;margin:8px 0 4px;flex-wrap:wrap;
-}
-.kpi .b{
-  background:var(--green-50);border:1px solid var(--green-100);
-  border-radius:10px;padding:8px 10px;flex:1;min-width:90px;
-}
-.kpi .b .v{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--green-800);line-height:1}
-.kpi .b .l{font-size:10.5px;color:var(--muted);margin-top:3px;letter-spacing:.02em}
-.sources{
-  margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);
-  display:flex;flex-wrap:wrap;gap:6px;
-}
-.sources .lab{font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;width:100%;margin-bottom:2px}
-.src{
-  display:inline-flex;align-items:center;gap:6px;
-  background:var(--green-50);border:1px solid var(--green-100);
-  color:var(--green-800);font-size:11.5px;font-weight:500;
-  padding:5px 9px;border-radius:999px;cursor:pointer;
-}
-.src .who{color:var(--muted);font-weight:500}
-
-/* thinking */
-.thinking{
-  display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12.5px;
-  padding:10px 14px;background:#fff;border:1px solid var(--line);border-radius:14px;
-}
-.thinking .matrix{
-  width:18px;height:18px;border-radius:5px;background:var(--green-800);
-  position:relative;overflow:hidden;
-}
-.thinking .matrix::after{
-  content:"01·10·11·00·10·11";position:absolute;inset:0;
-  font:700 7px/1 'Inter',monospace;color:#9ae39a;letter-spacing:1px;white-space:nowrap;
-  animation:rain 1.4s linear infinite;text-align:center;padding-top:2px;
-}
-@keyframes rain{
-  0%{transform:translateY(-50%)}
-  100%{transform:translateY(50%)}
-}
-.dots{display:inline-flex;gap:3px}
-.dots i{width:5px;height:5px;background:var(--green-800);border-radius:50%;opacity:.4;animation:blink 1.1s ease-in-out infinite}
-.dots i:nth-child(2){animation-delay:.18s}
-.dots i:nth-child(3){animation-delay:.36s}
-@keyframes blink{0%,100%{opacity:.25;transform:scale(.85)}50%{opacity:1;transform:scale(1)}}
-
-/* input bar */
-.composer{
-  border-top:1px solid var(--line);background:#fff;
-  padding:10px 14px 18px;display:flex;align-items:center;gap:8px;
-}
-.composer .field{
-  flex:1;display:flex;align-items:center;gap:8px;
-  background:var(--green-50);border:1px solid var(--green-100);border-radius:999px;
-  padding:10px 14px;
-}
-.composer input{
-  flex:1;border:0;background:transparent;outline:none;
-  font:500 14px 'Inter',sans-serif;color:var(--ink);
-}
-.composer input::placeholder{color:var(--muted)}
-.icon-btn{
-  width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
-  border:0;background:var(--green-800);color:#fff;cursor:pointer;flex:none;
-  transition:.2s;
-}
-.icon-btn:hover{background:var(--green-900)}
-.icon-btn.ghost{background:transparent;color:var(--green-800);border:1px solid var(--green-100);background:var(--green-50)}
-
-/* home indicator */
-.handle{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:130px;height:4px;background:#1a1a1a;border-radius:3px;z-index:4}
-
-/* tiny anim on bubbles */
-.fade-in{animation:fade .35s ease both}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-
-/* reset btn */
-.reset{
-  background:transparent;border:0;color:var(--muted);font:600 11px 'Inter',sans-serif;
-  cursor:pointer;padding:4px 8px;border-radius:6px;
-}
-.reset:hover{color:var(--green-800);background:var(--green-50)}
-
-/* helper hint outside phone */
-.hint{
-  max-width:420px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.5;
-}
-.hint b{color:var(--ink-2)}
-
-/* Empty / info state */
-.answer.empty .head .badge{background:#B45309;font-family:'Inter',sans-serif;font-size:13px;font-weight:700}
-.answer.empty .head .by{color:#B45309}
-
-/* CTA action button */
-.cta{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
-.cta-btn{
-  width:100%;display:flex;align-items:center;gap:10px;
-  background:var(--green-800);color:#fff;border:0;border-radius:12px;
-  padding:11px 14px;font:600 12.5px 'Inter',sans-serif;cursor:pointer;
-  box-shadow:0 6px 14px -8px rgba(27,94,32,.45);
-  transition:.2s;text-align:left;
-}
-.cta-btn:hover{background:var(--green-900)}
-.cta-btn span{flex:1;line-height:1.3}
-.cta-btn .arrow{margin-left:auto;flex:none;opacity:.85}
-.cta-btn.sent{
-  background:var(--ok-bg);color:var(--ok);cursor:default;box-shadow:none;
-  animation:sentPulse .35s ease;
-}
-@keyframes sentPulse{0%{transform:scale(.98)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
-.cta-btn.sent svg{flex:none}
-
-/* tap & feel */
-*{-webkit-tap-highlight-color:transparent}
-.sug,.brief,.icon-btn,.lang button,.reset,.src,.bubble-user{
-  touch-action:manipulation;
-  -webkit-user-select:none;user-select:none;
-}
-.composer input{-webkit-user-select:text;user-select:text;font-size:16px}
-
-/* mobile fullscreen — kill the phone frame, become the app */
-@media (max-width: 600px) {
-  body{
-    padding:0;background:var(--bg);
-    display:block;min-height:100dvh;
-    overscroll-behavior:none;
-  }
-  .stage{gap:0}
-  .legend,.hint{display:none}
-  .phone{
-    width:100%;height:100dvh;height:100vh;
-    border-radius:0;padding:0;background:var(--bg);
-    box-shadow:none;
-  }
-  .notch,.handle{display:none}
-  .screen{
-    border-radius:0;
-    padding-top:env(safe-area-inset-top);
-  }
-  .status{display:none}
-  .appbar{padding-top:12px}
-  .composer{
-    padding-bottom:calc(14px + env(safe-area-inset-bottom));
-  }
-  .scroll{padding-bottom:18px}
-}
-
-/* installed PWA (added to home screen) — hide browser-only hints */
-@media (display-mode: standalone), (display-mode: fullscreen) {
-  .status{display:none}
-}
+.foot{margin-top:30px;padding-top:16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);flex-wrap:wrap;gap:8px}
+.foot .mini{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--green-800);font-size:13px}
+@media(max-width:680px){.grid{grid-template-columns:1fr}.hero h1{font-size:30px}}
 </style>
 </head>
 <body>
+<div class="page">
 
-<div class="stage">
-
-  <div class="legend">
-    <div>NutriCEO — prototype de démonstration</div>
-    <div class="brand">Conçu par D²nAI · OCP Nutricrops</div>
-  </div>
-
-  <div class="phone">
-    <div class="notch"></div>
-    <div class="screen">
-
-      <!-- status bar -->
-      <div class="status">
-        <span id="clock">9:41</span>
-        <span class="icons">
-          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-          <span style="margin-left:6px" class="battery"></span>
-        </span>
-      </div>
-
-      <!-- appbar -->
-      <div class="appbar">
-        <div class="brandmark">
-          <div class="logo"><span>D<sup>2</sup>n</span></div>
-          <div class="brandtext">
-            <div class="t1">OCP · Nutricrops</div>
-            <div class="t2">NutriCEO</div>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <button class="reset" id="reset" title="Recommencer">↻</button>
-          <div class="lang">
-            <button data-l="fr" class="on">FR</button>
-            <button data-l="en">EN</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- greeting -->
-      <div class="hello">
-        <h1 data-i18n="greeting">Bonjour</h1>
-        <div class="date" data-i18n="date">Mardi 12 mai 2026</div>
-      </div>
-
-      <!-- scrollable -->
-      <div class="scroll" id="scroll">
-
-        <!-- initial state -->
-        <div id="initial">
-          <div class="brief" data-q="brief">
-            <div class="ico">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>
-            </div>
-            <div class="txt">
-              <h3 data-i18n="briefTitle">Brief du jour</h3>
-              <p data-i18n="briefSub">3 sujets demandent votre attention.</p>
-            </div>
-            <span class="pill">3</span>
-          </div>
-
-          <div class="suglabel" data-i18n="sugLabel">Questions suggérées</div>
-          <div class="sugs" id="sugs"></div>
-        </div>
-
-        <!-- conversation -->
-        <div class="thread" id="thread"></div>
-      </div>
-
-      <!-- composer -->
-      <div class="composer">
-        <div class="field">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7268" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-          <input id="qinput" data-i18n-ph="placeholder" placeholder="Posez votre question…" />
-        </div>
-        <button class="icon-btn ghost" title="Voix">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10a7 7 0 0 1-14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
-        </button>
-        <button class="icon-btn" id="send" title="Envoyer">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4 20-7z"/></svg>
-        </button>
-      </div>
-
+  <div class="head">
+    <div class="logo"><span>D<sup>2</sup>n</span></div>
+    <div>
+      <div class="t1">OCP Nutricrops · Data, Digital &amp; AI</div>
+      <div class="t2">D²nAI — Demo Hub</div>
     </div>
-    <div class="handle"></div>
   </div>
 
-  <div class="hint">
-    <b>Comment utiliser :</b> appuyez sur une question suggérée — ou sur le « Brief du jour » — pour voir l'app composer une réponse à partir des documents des 25 N-1. Toutes les données sont fictives.
+  <div class="hero">
+    <div class="kicker">One place · all our work</div>
+    <h1>The Digital &amp; Data vision, and the <em>co-pilots</em> that bring it to life.</h1>
+    <p>Start with the executive summary, dive into the target architecture, or open any of the executive co-pilot prototypes.</p>
+  </div>
+
+  <div class="group-label">Strategy &amp; architecture</div>
+  <div class="grid">
+    <a class="card full" href="exec-summary.html">
+      <div class="ico">★</div>
+      <div class="b">
+        <h3>Executive Summary</h3>
+        <div class="who">For the CEO · vision, roadmap, decisions</div>
+        <p>3-pillar vision, 18-month roadmap, EA Study, products to scale, the 2 short-term decisions to validate.</p>
+      </div>
+      <svg class="arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </a>
+    <a class="card full" href="architecture.html">
+      <div class="ico alt">⛶</div>
+      <div class="b">
+        <h3>Target Architecture</h3>
+        <div class="who">For the DSI / CTO · high-level design</div>
+        <p>8-layer stack, request lifecycle, hybrid Azure + Atlas + on-prem design, risks, roadmap.</p>
+      </div>
+      <svg class="arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </a>
+  </div>
+
+  <div class="group-label">Executive co-pilots · prototypes</div>
+  <div class="grid">
+    <a class="card" href="nutriceo.html">
+      <div class="ico">N</div>
+      <div class="b">
+        <h3>NutriCEO <span class="tag proto">Proto</span></h3>
+        <div class="who">CEO</div>
+        <p>OPEX, plant roadmap, BU sales, weekly risks.</p>
+      </div>
+      <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </a>
+    <a class="card" href="sentinel.html">
+      <div class="ico">S</div>
+      <div class="b">
+        <h3>Sentinel <span class="tag proto">Proto</span></h3>
+        <div class="who">Performance &amp; Risk</div>
+        <p>Top risks, BU performance, controls, incidents, reports.</p>
+      </div>
+      <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </a>
+    <a class="card" href="helios.html">
+      <div class="ico">H</div>
+      <div class="b">
+        <h3>Helios <span class="tag proto">Proto</span></h3>
+        <div class="who">HR</div>
+        <p>Turnover, hires, social climate, payroll, pipeline.</p>
+      </div>
+      <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </a>
+    <a class="card" href="maestro.html">
+      <div class="ico">M</div>
+      <div class="b">
+        <h3>Maestro <span class="tag proto">Proto</span></h3>
+        <div class="who">Executive Assistant</div>
+        <p>Meeting co-pilot, inbox triage, stakeholder memory, briefs.</p>
+      </div>
+      <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </a>
+    <a class="card full" href="custobot.html">
+      <div class="ico">✦</div>
+      <div class="b">
+        <h3>CustoBot <span class="tag proto">Proto</span></h3>
+        <div class="who">Customization BU · Marketing</div>
+        <p>Multimodal repo (docs, minutes, audio, market data) → analysis, decks, briefs, video scripts.</p>
+      </div>
+      <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </a>
+  </div>
+
+  <div class="foot">
+    <div>D²nAI · OCP Nutricrops · demo prototypes — fictional data</div>
+    <div class="mini">Feed the data to feed the decision.</div>
   </div>
 
 </div>
-
-<script>
-const i18n = {
-  fr: {
-    greeting: "Bonjour, Faris",
-    date: "Mardi 12 mai 2026",
-    briefTitle: "Brief du jour",
-    briefSub: "3 sujets demandent votre attention.",
-    sugLabel: "Questions suggérées",
-    placeholder: "Posez votre question…",
-    thinking: "Consultation des documents de vos 25 N-1…",
-    sourcesLabel: "Sources",
-    hint: "<b>Comment utiliser :</b> appuyez sur une question suggérée — ou sur le « Brief du jour » — pour voir l'app composer une réponse à partir des documents des 25 N-1. Toutes les données sont fictives.",
-    questions: [
-      { id: "opex",     q: "Où en est-on niveau budget OPEX consommé ?" },
-      { id: "usine",    q: "Où en est la roadmap de déploiement de l'usine ?" },
-      { id: "inde",     q: "Comment se passe le lancement de la gamme PK en Inde ?" },
-      { id: "risques",  q: "Quels sont les 3 risques prioritaires cette semaine ?" }
-    ],
-    routes: [
-      { id:"contrats",   kw:["contrat","contrats","légal","legal","juridique"] },
-      { id:"signatures", kw:["signer","signature","signatures","signé","document","documents","valider","approbation","approuver","parapheur"] },
-      { id:"ebitda",     kw:["ebitda","q3","trimestre","marge","résultat","résultats","projection","prévision","attendre","attends"] },
-      { id:"tsp_inde",   kw:["tsp","vente","ventes","volume","volumes","mois","mensuel","mensuelles"] },
-      { id:"opex",       kw:["opex","budget","dépense","dépenses","consommé","consommation","dépensé"] },
-      { id:"usine",      kw:["usine","jorf","roadmap","déploiement","lasfar","plant"] },
-      { id:"inde",       kw:["lancement","pk","premium","inde","lance","démarrage","démarre"] },
-      { id:"risques",    kw:["risque","risques","priorité","priorités","prioritaire"] },
-      { id:"brief",      kw:["brief","synthèse","résumé","semaine","top","jour","hebdo"] }
-    ],
-    answers: {
-      brief: {
-        title: "Synthèse — semaine 19",
-        intro: "Trois sujets ressortent des notes envoyées par vos N-1 depuis vendredi :",
-        list: [
-          { t:"ok",   txt:"<b>Inde — gamme PK premium</b> : premiers volumes signés (12 kT, +18% vs prévision)." },
-          { t:"warn", txt:"<b>Acide phosphorique</b> : prix spot +9% sur 2 semaines. Impact marge Q2 estimé : -1,2 pt." },
-          { t:"ok",   txt:"<b>Pilote Sénégal</b> : +14% rendement vs témoin. Annonce presse prévue 22/05." }
-        ],
-        sources: [
-          { d:"Note commerciale Inde S19.pdf", w:"Sarah M. · Sales India" },
-          { d:"Note sourcing matières.xlsx",   w:"Othmane R. · Sourcing" },
-          { d:"Pilote agronomique SN.docx",    w:"Leïla F. · R&D" }
-        ]
-      },
-      opex: {
-        title: "Budget OPEX — avril 2026",
-        kpis: [
-          { v:"34,7%", l:"OPEX consommé" },
-          { v:"62,4",  l:"M MAD utilisés" },
-          { v:"180",   l:"M MAD budget annuel" }
-        ],
-        intro: "À fin avril, vous êtes à <b>34,7%</b> du budget pour <b>33%</b> de l'année écoulée — globalement aligné.",
-        list: [
-          { t:"warn", txt:"<b>Maintenance industrielle</b> : +18% vs prorata (saisonnalité Q1, attendu)." },
-          { t:"ok",   txt:"<b>Logistique</b> : -8% grâce à la renégociation des contrats transport." },
-          { t:"ok",   txt:"<b>IT & Digital</b> : aligné, projet ERP dans le couloir." }
-        ],
-        sources: [
-          { d:"Budget_OPEX_avril.xlsx", w:"Karim B. · CFO" },
-          { d:"Note maintenance Q1",    w:"Yacine T. · Dir. Industriel" }
-        ]
-      },
-      usine: {
-        title: "Usine Jorf Lasfar — Phase 2",
-        kpis: [
-          { v:"68%",   l:"avancement réel" },
-          { v:"72%",   l:"avancement planifié" },
-          { v:"15/07", l:"mise en service" }
-        ],
-        intro: "Léger retard de <b>4 points</b> sur la planification, concentré sur la ligne C.",
-        list: [
-          { t:"ok",   txt:"<b>Génie civil</b> : livré le 12 avril." },
-          { t:"warn", txt:"<b>Lignes de production</b> : 80% — retard 2 semaines ligne C (livraison équipement)." },
-          { t:"bad",  txt:"<b>Risque EPC commissioning</b> : disponibilité sous-traitant à sécuriser." }
-        ],
-        decision: "Décision attendue : valider le plan d'accélération en Comité du 14/05.",
-        sources: [
-          { d:"Roadmap_Jorf_S19.pdf",  w:"Hassan E. · Dir. Projets" },
-          { d:"CR Comité Industriel",  w:"7 mai 2026" }
-        ]
-      },
-      inde: {
-        title: "Lancement gamme PK premium — Inde",
-        kpis: [
-          { v:"12 kT", l:"volumes signés" },
-          { v:"+18%",  l:"vs prévision" },
-          { v:"4",     l:"distributeurs clés" }
-        ],
-        intro: "Démarrage solide sur le segment cible (canne à sucre & coton, États du Sud).",
-        list: [
-          { t:"ok",   txt:"Premiers retours agronomes positifs sur 2 essais pilotes." },
-          { t:"warn", txt:"<b>Logistique</b> : congestion port de Chennai, prévoir buffer +5 j." },
-          { t:"ok",   txt:"Roadshow distributeurs prévu 20–24 mai." }
-        ],
-        sources: [
-          { d:"Note commerciale Inde S19.pdf", w:"Sarah M. · Sales India" },
-          { d:"Reporting logistique avril",    w:"Rachid A. · Supply Chain" }
-        ]
-      },
-      risques: {
-        title: "Top 3 risques — semaine 19",
-        intro: "Synthèse consolidée à partir des notes risque envoyées par vos directions :",
-        list: [
-          { t:"bad",  txt:"<b>EPC commissioning Jorf</b> — impact mise en service usine (voir roadmap)." },
-          { t:"warn", txt:"<b>Acide phosphorique spot +9%</b> — risque marge Q2 (-1,2 pt estimé)." },
-          { t:"warn", txt:"<b>Congestion port Chennai</b> — risque retard livraisons Inde." }
-        ],
-        sources: [
-          { d:"Note sourcing matières.xlsx", w:"Othmane R. · Sourcing" },
-          { d:"Reporting logistique avril",  w:"Rachid A. · Supply Chain" },
-          { d:"Roadmap_Jorf_S19.pdf",        w:"Hassan E. · Dir. Projets" }
-        ]
-      },
-      signatures: {
-        title: "Documents en attente de signature",
-        kpis: [
-          { v:"4",  l:"docs à signer" },
-          { v:"1",  l:"urgent (aujourd'hui)" },
-          { v:"3",  l:"échéance < 7 j" }
-        ],
-        intro: "Quatre documents sont dans votre parapheur, classés par échéance :",
-        list: [
-          { t:"bad",  txt:"<b>Avenant contrat distributeur Iffco</b> — Sales India · échéance <b>aujourd'hui</b>." },
-          { t:"warn", txt:"<b>Bon de commande Capex maintenance Q2</b> (12,4 M MAD) — Dir. Industriel · 14/05." },
-          { t:"warn", txt:"<b>Convention bancaire CMR — ligne export</b> — CFO · 15/05." },
-          { t:"ok",   txt:"<b>Lettre d'engagement RSE Cap 2030</b> — Dir. RSE · 20/05." }
-        ],
-        decision: "Ouvrez le parapheur pour signer en un geste (Adobe Sign connecté).",
-        sources: [
-          { d:"Avenant_Iffco_v3.pdf",       w:"Sarah M. · Sales India" },
-          { d:"BC_Capex_Maintenance.pdf",   w:"Yacine T. · Dir. Industriel" },
-          { d:"Convention_CMR_export.pdf",  w:"Karim B. · CFO" },
-          { d:"Lettre_RSE_Cap2030.pdf",     w:"Inès K. · Dir. RSE" }
-        ]
-      },
-      ebitda: {
-        title: "EBITDA — projection fin Q3 2026",
-        kpis: [
-          { v:"1 420", l:"M MAD prévus" },
-          { v:"+5,2%", l:"vs budget Q3" },
-          { v:"31,2%", l:"marge EBITDA" }
-        ],
-        intro: "Projection cumulée à fin Q3 : <b>1 420 M MAD</b> vs budget <b>1 350 M MAD</b> — <b>favorable de 70 M</b>.",
-        list: [
-          { t:"ok",   txt:"<b>+ Volumes Inde & Brésil</b> au-dessus du plan (+8% cumulé)." },
-          { t:"ok",   txt:"<b>+ Prix moyen</b> tenu vs Q1 budget (mix premium en hausse)." },
-          { t:"warn", txt:"<b>− Acide phosphorique</b> : tension spot, érosion ~1,2 pt marge Q2/Q3." },
-          { t:"warn", txt:"<b>− Maintenance industrielle</b> : surcoût Q1 (saisonnalité)." }
-        ],
-        decision: "Sensibilité : -50 USD/T sur prix DAP → impact EBITDA Q3 estimé -90 M MAD.",
-        sources: [
-          { d:"Forecast_Q3_v2.xlsx",     w:"Karim B. · CFO" },
-          { d:"Note marché phosphates",  w:"Othmane R. · Sourcing" },
-          { d:"Suivi commercial S19",    w:"Mehdi L. · Sales Global" }
-        ]
-      },
-      tsp_inde: {
-        title: "Ventes TSP — Inde · mai 2026",
-        kpis: [
-          { v:"18 kT", l:"volumes mai" },
-          { v:"95",    l:"M MAD de CA" },
-          { v:"+50%",  l:"vs mai 2025" }
-        ],
-        intro: "Mois solide sur le TSP en Inde : <b>18 kT</b> livrées, dont 70% via Iffco. Prix moyen <b>5 280 MAD/T</b> (cible 5 100, +3,5%).",
-        list: [
-          { t:"ok",   txt:"<b>Iffco</b> : 12,6 kT — pic saisonnier mousson Sud." },
-          { t:"ok",   txt:"<b>Coromandel</b> : 3,8 kT — premier mois sous nouveau contrat." },
-          { t:"ok",   txt:"<b>IPL</b> : 1,6 kT — ré-entrée portefeuille." },
-          { t:"warn", txt:"<b>Stock port Mundra</b> : 4 kT en attente de clearance (effet juin)." }
-        ],
-        decision: "Cumul 5 mois : 71 kT TSP Inde — <b>+34%</b> vs 2025, au-dessus du budget.",
-        sources: [
-          { d:"Ventes_Inde_mai.xlsx",    w:"Sarah M. · Sales India" },
-          { d:"Stock_ports_Inde.pdf",    w:"Rachid A. · Supply Chain" },
-          { d:"Contrat_Coromandel_2026", w:"Mehdi L. · Sales Global" }
-        ]
-      },
-      contrats: {
-        state: "empty",
-        title: "Derniers contrats signés",
-        intro: "Je n'ai trouvé <b>aucun document tagué « contrat signé »</b> dans l'espace partagé de la Direction Légale sur les 30 derniers jours.",
-        list: [
-          { t:"warn", txt:"Les contrats récents n'ont peut-être pas été déposés dans l'espace partagé." },
-          { t:"warn", txt:"Les documents existants ne sont peut-être pas tagués correctement." },
-          { t:"warn", txt:"Ou aucun contrat n'a été signé sur la période — peu probable vu l'activité." }
-        ],
-        cta: {
-          label: "Envoyer un rappel à Aïcha B. · Dir. Légal",
-          sent:  "Rappel envoyé — vous serez notifié dès qu'un contrat est déposé."
-        },
-        sources: [
-          { d:"Espace Légal · OneDrive partagé", w:"Aïcha B. · Dir. Légal" }
-        ]
-      }
-    }
-  },
-  en: {
-    greeting: "Good morning, Faris",
-    date: "Tuesday, May 12, 2026",
-    briefTitle: "Today's brief",
-    briefSub: "3 topics need your attention.",
-    sugLabel: "Suggested questions",
-    placeholder: "Ask anything…",
-    thinking: "Reading documents from your 25 direct reports…",
-    sourcesLabel: "Sources",
-    hint: "<b>How to use:</b> tap a suggested question — or “Today's brief” — to see the app synthesize an answer from your 25 direct reports' documents. All data is fictional.",
-    questions: [
-      { id: "opex",    q: "Where do we stand on OPEX consumption?" },
-      { id: "usine",   q: "How is the plant deployment roadmap progressing?" },
-      { id: "inde",    q: "How is the India PK launch going?" },
-      { id: "risques", q: "What are the top 3 risks this week?" }
-    ],
-    routes: [
-      { id:"contrats",   kw:["contract","contracts","legal","counsel"] },
-      { id:"signatures", kw:["sign","signature","signatures","document","documents","approve","approval","pending","signing"] },
-      { id:"ebitda",     kw:["ebitda","q3","quarter","margin","forecast","projection","expect"] },
-      { id:"tsp_inde",   kw:["tsp","sales","volume","volumes","month","monthly"] },
-      { id:"opex",       kw:["opex","budget","spend","spent","spending","consumed","consumption"] },
-      { id:"usine",      kw:["plant","jorf","roadmap","deployment","lasfar","factory"] },
-      { id:"inde",       kw:["launch","pk","premium","india","launching"] },
-      { id:"risques",    kw:["risk","risks","priority","priorities","top"] },
-      { id:"brief",      kw:["brief","digest","summary","week","weekly"] }
-    ],
-    answers: {
-      brief: {
-        title: "Weekly digest — week 19",
-        intro: "Three topics emerge from your reports' notes since Friday:",
-        list: [
-          { t:"ok",   txt:"<b>India — premium PK range</b>: first volumes signed (12 kT, +18% vs forecast)." },
-          { t:"warn", txt:"<b>Phosphoric acid</b>: spot prices +9% over 2 weeks. Estimated Q2 margin impact: -1.2 pt." },
-          { t:"ok",   txt:"<b>Senegal pilot</b>: +14% yield vs control. Press release scheduled May 22." }
-        ],
-        sources: [
-          { d:"India sales note W19.pdf",  w:"Sarah M. · Sales India" },
-          { d:"Raw materials sourcing.xlsx", w:"Othmane R. · Sourcing" },
-          { d:"Agronomy pilot SN.docx",    w:"Leïla F. · R&D" }
-        ]
-      },
-      opex: {
-        title: "OPEX budget — April 2026",
-        kpis: [
-          { v:"34.7%", l:"OPEX consumed" },
-          { v:"62.4",  l:"MAD M used" },
-          { v:"180",   l:"MAD M annual" }
-        ],
-        intro: "End of April: <b>34.7%</b> spent for <b>33%</b> of year elapsed — broadly on track.",
-        list: [
-          { t:"warn", txt:"<b>Industrial maintenance</b>: +18% vs pro-rata (Q1 seasonality, expected)." },
-          { t:"ok",   txt:"<b>Logistics</b>: -8% thanks to renegotiated transport contracts." },
-          { t:"ok",   txt:"<b>IT & Digital</b>: on track, ERP project on schedule." }
-        ],
-        sources: [
-          { d:"OPEX_budget_April.xlsx", w:"Karim B. · CFO" },
-          { d:"Q1 maintenance note",    w:"Yacine T. · Industrial Dir." }
-        ]
-      },
-      usine: {
-        title: "Jorf Lasfar plant — Phase 2",
-        kpis: [
-          { v:"68%",   l:"actual progress" },
-          { v:"72%",   l:"planned progress" },
-          { v:"07/15", l:"go-live" }
-        ],
-        intro: "Slight <b>4-point</b> delay vs plan, concentrated on line C.",
-        list: [
-          { t:"ok",   txt:"<b>Civil works</b>: delivered April 12." },
-          { t:"warn", txt:"<b>Production lines</b>: 80% — 2-week delay on line C (equipment delivery)." },
-          { t:"bad",  txt:"<b>EPC commissioning risk</b>: subcontractor availability to secure." }
-        ],
-        decision: "Decision needed: validate acceleration plan at May 14 committee.",
-        sources: [
-          { d:"Roadmap_Jorf_W19.pdf",  w:"Hassan E. · Projects Dir." },
-          { d:"Industrial committee minutes", w:"May 7, 2026" }
-        ]
-      },
-      inde: {
-        title: "Premium PK launch — India",
-        kpis: [
-          { v:"12 kT", l:"volumes signed" },
-          { v:"+18%",  l:"vs forecast" },
-          { v:"4",     l:"key distributors" }
-        ],
-        intro: "Strong start on target segment (sugar cane & cotton, southern states).",
-        list: [
-          { t:"ok",   txt:"Early positive agronomist feedback on 2 pilot trials." },
-          { t:"warn", txt:"<b>Logistics</b>: Chennai port congestion, plan +5 day buffer." },
-          { t:"ok",   txt:"Distributor roadshow May 20–24." }
-        ],
-        sources: [
-          { d:"India sales note W19.pdf",   w:"Sarah M. · Sales India" },
-          { d:"April logistics reporting",  w:"Rachid A. · Supply Chain" }
-        ]
-      },
-      risques: {
-        title: "Top 3 risks — week 19",
-        intro: "Consolidated from risk notes sent by your divisions:",
-        list: [
-          { t:"bad",  txt:"<b>Jorf EPC commissioning</b> — impacts plant go-live." },
-          { t:"warn", txt:"<b>Phosphoric acid spot +9%</b> — Q2 margin risk (-1.2 pt est.)." },
-          { t:"warn", txt:"<b>Chennai port congestion</b> — India delivery delay risk." }
-        ],
-        sources: [
-          { d:"Raw materials sourcing.xlsx", w:"Othmane R. · Sourcing" },
-          { d:"April logistics reporting",   w:"Rachid A. · Supply Chain" },
-          { d:"Roadmap_Jorf_W19.pdf",        w:"Hassan E. · Projects Dir." }
-        ]
-      },
-      signatures: {
-        title: "Documents pending your signature",
-        kpis: [
-          { v:"4",  l:"docs to sign" },
-          { v:"1",  l:"urgent (today)" },
-          { v:"3",  l:"due in < 7 d" }
-        ],
-        intro: "Four documents are in your signing queue, sorted by deadline:",
-        list: [
-          { t:"bad",  txt:"<b>Iffco distributor contract amendment</b> — Sales India · due <b>today</b>." },
-          { t:"warn", txt:"<b>Q2 maintenance Capex PO</b> (12.4 MAD M) — Industrial Dir. · May 14." },
-          { t:"warn", txt:"<b>CMR bank agreement — export line</b> — CFO · May 15." },
-          { t:"ok",   txt:"<b>ESG commitment letter Cap 2030</b> — ESG Dir. · May 20." }
-        ],
-        decision: "Open the signing queue to approve in one tap (Adobe Sign connected).",
-        sources: [
-          { d:"Iffco_amendment_v3.pdf",     w:"Sarah M. · Sales India" },
-          { d:"PO_Capex_Maintenance.pdf",   w:"Yacine T. · Industrial Dir." },
-          { d:"CMR_export_agreement.pdf",   w:"Karim B. · CFO" },
-          { d:"ESG_Cap2030_letter.pdf",    w:"Inès K. · ESG Dir." }
-        ]
-      },
-      ebitda: {
-        title: "EBITDA — end of Q3 2026 outlook",
-        kpis: [
-          { v:"1,420", l:"MAD M expected" },
-          { v:"+5.2%", l:"vs Q3 budget" },
-          { v:"31.2%", l:"EBITDA margin" }
-        ],
-        intro: "Cumulative outlook to end of Q3: <b>1,420 MAD M</b> vs <b>1,350 MAD M</b> budget — <b>+70 M favorable</b>.",
-        list: [
-          { t:"ok",   txt:"<b>+ India & Brazil volumes</b> above plan (+8% cumulative)." },
-          { t:"ok",   txt:"<b>+ Average price</b> holding vs Q1 budget (premium mix rising)." },
-          { t:"warn", txt:"<b>− Phosphoric acid</b>: spot tension, ~1.2 pt margin erosion in Q2/Q3." },
-          { t:"warn", txt:"<b>− Industrial maintenance</b>: Q1 overrun (seasonality)." }
-        ],
-        decision: "Sensitivity: -50 USD/T on DAP price → Q3 EBITDA impact ~-90 MAD M.",
-        sources: [
-          { d:"Q3_forecast_v2.xlsx",      w:"Karim B. · CFO" },
-          { d:"Phosphate market note",    w:"Othmane R. · Sourcing" },
-          { d:"Sales tracking W19",       w:"Mehdi L. · Sales Global" }
-        ]
-      },
-      tsp_inde: {
-        title: "TSP sales — India · May 2026",
-        kpis: [
-          { v:"18 kT", l:"May volumes" },
-          { v:"95",    l:"MAD M revenue" },
-          { v:"+50%",  l:"vs May 2025" }
-        ],
-        intro: "Strong month for TSP in India: <b>18 kT</b> shipped, 70% via Iffco. Avg price <b>5,280 MAD/T</b> (target 5,100, +3.5%).",
-        list: [
-          { t:"ok",   txt:"<b>Iffco</b>: 12.6 kT — Southern monsoon seasonal peak." },
-          { t:"ok",   txt:"<b>Coromandel</b>: 3.8 kT — first month under new contract." },
-          { t:"ok",   txt:"<b>IPL</b>: 1.6 kT — portfolio re-entry." },
-          { t:"warn", txt:"<b>Mundra port stock</b>: 4 kT awaiting clearance (June impact)." }
-        ],
-        decision: "5-month cumulative: 71 kT India TSP — <b>+34%</b> vs 2025, above budget.",
-        sources: [
-          { d:"India_sales_May.xlsx",       w:"Sarah M. · Sales India" },
-          { d:"India_ports_stock.pdf",      w:"Rachid A. · Supply Chain" },
-          { d:"Coromandel_contract_2026",   w:"Mehdi L. · Sales Global" }
-        ]
-      },
-      contrats: {
-        state: "empty",
-        title: "Latest signed contracts",
-        intro: "I found <b>no document tagged “signed contract”</b> in the Legal team's shared workspace over the last 30 days.",
-        list: [
-          { t:"warn", txt:"Recent contracts may not have been uploaded to the shared workspace." },
-          { t:"warn", txt:"Existing documents may not be tagged correctly." },
-          { t:"warn", txt:"Or no contract was signed in the period — unlikely given the activity." }
-        ],
-        cta: {
-          label: "Send a reminder to Aïcha B. · Legal Dir.",
-          sent:  "Reminder sent — you'll be notified as soon as a contract is uploaded."
-        },
-        sources: [
-          { d:"Legal workspace · shared OneDrive", w:"Aïcha B. · Legal Dir." }
-        ]
-      }
-    }
-  }
-};
-
-let lang = "fr";
-
-function tEl(){
-  document.querySelectorAll('[data-i18n]').forEach(el=>{
-    const k=el.getAttribute('data-i18n');
-    if(i18n[lang][k]!==undefined) el.textContent=i18n[lang][k];
-  });
-  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
-    el.setAttribute('placeholder', i18n[lang][el.getAttribute('data-i18n-ph')]);
-  });
-  document.querySelector('.hint').innerHTML = i18n[lang].hint;
-  document.documentElement.lang = lang;
-}
-
-function renderSugs(){
-  const root=document.getElementById('sugs'); root.innerHTML="";
-  i18n[lang].questions.forEach(q=>{
-    const el=document.createElement('div');
-    el.className='sug'; el.dataset.q=q.id;
-    el.innerHTML=`
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-      <div class="q">${q.q}</div>
-      <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`;
-    el.addEventListener('click', ()=>ask(q.id, q.q));
-    root.appendChild(el);
-  });
-}
-
-function ask(id, label){
-  // hide initial state, show thread
-  document.getElementById('initial').style.display='none';
-  const thread=document.getElementById('thread');
-
-  // user bubble
-  const u=document.createElement('div');
-  u.className='bubble-user fade-in'; u.textContent=label;
-  thread.appendChild(u);
-
-  // thinking
-  const t=document.createElement('div');
-  t.className='thinking fade-in';
-  t.innerHTML=`<div class="matrix"></div><span>${i18n[lang].thinking}</span><span class="dots"><i></i><i></i><i></i></span>`;
-  thread.appendChild(t);
-  scrollDown();
-
-  setTimeout(()=>{
-    t.remove();
-    const a=renderAnswer(id);
-    thread.appendChild(a);
-    scrollDown();
-  }, 1400);
-}
-
-function renderAnswer(id){
-  const data=i18n[lang].answers[id]; if(!data) return document.createElement('div');
-  const el=document.createElement('div'); el.className='answer fade-in';
-  const isEmpty = data.state==='empty';
-  if(isEmpty) el.classList.add('empty');
-  const icMap = { ok:'✓', warn:'!', bad:'×' };
-  const headerLabel = isEmpty
-    ? (lang==='fr'?"Information non disponible":"Information unavailable")
-    : (lang==='fr'?"Synthèse D²nAI":"D²nAI synthesis");
-  const badgeContent = isEmpty ? "i" : "D²";
-
-  let kpisHTML='';
-  if(data.kpis){
-    kpisHTML=`<div class="kpi">${data.kpis.map(k=>`<div class="b"><div class="v">${k.v}</div><div class="l">${k.l}</div></div>`).join('')}</div>`;
-  }
-  const listHTML = data.list ? `<ul>${data.list.map(it=>`<li><span class="ic ic-${it.t}">${icMap[it.t]||'•'}</span>${it.txt}</li>`).join('')}</ul>` : '';
-  const decisionHTML = data.decision ? `<p style="margin-top:8px;padding:8px 10px;background:var(--green-50);border-left:3px solid var(--green-800);border-radius:6px;font-size:13px;color:var(--green-900)"><b>↳</b> ${data.decision}</p>` : '';
-  const ctaHTML = data.cta ? `
-    <div class="cta">
-      <button class="cta-btn" type="button">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-        <span>${data.cta.label}</span>
-        <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
-    </div>` : '';
-  const sourcesHTML = data.sources ? `
-    <div class="sources">
-      <div class="lab">${i18n[lang].sourcesLabel}</div>
-      ${data.sources.map(s=>`<span class="src">📄 ${s.d} <span class="who">— ${s.w}</span></span>`).join('')}
-    </div>` : '';
-
-  el.innerHTML = `
-    <div class="head">
-      <div class="badge">${badgeContent}</div>
-      <div class="by">${headerLabel}</div>
-    </div>
-    <h4>${data.title}</h4>
-    ${kpisHTML}
-    ${data.intro?`<p>${data.intro}</p>`:''}
-    ${listHTML}
-    ${decisionHTML}
-    ${ctaHTML}
-    ${sourcesHTML}
-  `;
-
-  if(data.cta){
-    const btn=el.querySelector('.cta-btn');
-    btn.addEventListener('click', ()=>{
-      btn.classList.add('sent');
-      btn.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M20 6 9 17l-5-5"/></svg>
-        <span>${data.cta.sent}</span>
-      `;
-      btn.disabled = true;
-    });
-  }
-
-  return el;
-}
-
-function scrollDown(){
-  const s=document.getElementById('scroll');
-  s.scrollTo({ top:s.scrollHeight, behavior:'smooth' });
-}
-
-function reset(){
-  document.getElementById('thread').innerHTML='';
-  document.getElementById('initial').style.display='';
-  document.getElementById('qinput').value='';
-  document.getElementById('scroll').scrollTo({top:0});
-}
-
-document.querySelectorAll('.lang button').forEach(b=>{
-  b.addEventListener('click', ()=>{
-    document.querySelectorAll('.lang button').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on');
-    lang=b.dataset.l;
-    tEl(); renderSugs(); reset();
-  });
-});
-document.getElementById('reset').addEventListener('click', reset);
-document.querySelector('.brief').addEventListener('click', ()=>ask('brief', i18n[lang].briefTitle));
-document.getElementById('send').addEventListener('click', ()=>{
-  const v=document.getElementById('qinput').value.trim();
-  if(!v) return;
-  const t=v.toLowerCase();
-  let id='brief', best=0;
-  (i18n[lang].routes||[]).forEach(r=>{
-    let score=0;
-    r.kw.forEach(k=>{ if(t.includes(k)) score++; });
-    if(score>best){best=score;id=r.id;}
-  });
-  ask(id, v);
-  document.getElementById('qinput').value='';
-});
-document.getElementById('qinput').addEventListener('keydown', e=>{
-  if(e.key==='Enter') document.getElementById('send').click();
-});
-
-// live clock
-function tick(){
-  const d=new Date();
-  document.getElementById('clock').textContent =
-    d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
-}
-tick(); setInterval(tick, 30000);
-
-tEl(); renderSugs();
-</script>
-
 </body>
 </html>
