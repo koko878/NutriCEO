@@ -539,6 +539,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   <div class="acc open">
     <div class="acc-head"><span class="s-num">07</span><h2>Decisions we need now</h2><span class="hint">2 short-term calls</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div>
     <div class="acc-body"><div class="acc-inner">
+      <p style="font-size:11.5px;color:var(--muted);margin:0 0 12px">Tap <b>Approve / Questions / Defer</b> on each decision — your choices appear in the bottom bar (app. · q. · def.), then tap <b>Send via WhatsApp</b>.</p>
       <div class="dec">
         <div class="decision spanwide" data-id="d3">
           <div><h4>1 · Structure the Cybersecurity team — now <span class="tag bad">Asphyxiation felt</span></h4>
@@ -578,7 +579,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   </div>
 
   <footer class="foot">
-    <div>D²nAI · OCP Nutricrops · Executive Summary · <b>v7</b> · 21 May build</div>
+    <div>D²nAI · OCP Nutricrops · Executive Summary · <b>v8</b> · 21 May build</div>
     <div class="brand-mini">Feed the data to feed the decision.</div>
   </footer>
 
@@ -748,6 +749,9 @@ modal.addEventListener('click',e=>{if(e.target===modal){modal.classList.remove('
 
 /* Send → WhatsApp */
 document.getElementById('sendBtn').addEventListener('click',()=>{
+  if(Object.keys(votes).length===0){
+    if(!confirm("No decision selected yet. Tap Approve / Questions / Defer on each decision first.\n\nSend anyway?")) return;
+  }
   const WHATSAPP_NUMBER="212662214011";
   const decisionLabels={d3:"1. Structure the Cybersecurity team (now)",d4:"2. Unblock delivery-force recruitment (17 P0)",d1:"+ Endorse the 3-pillar vision",d5:"+ Sponsor Group outreach + steering"};
   const voteLabels={ok:"Approve",q:"Questions",ko:"Defer"};
