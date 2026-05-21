@@ -230,7 +230,9 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 .dtile.clk.active{box-shadow:0 0 0 2px var(--green-500)}
 .dtile .drill{display:block;font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--green-800);margin-top:8px;opacity:.65}
 .dtile.no .drill{color:var(--muted)}
-.cov-detail{margin-top:14px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px 18px;animation:fade .25s ease}
+.cov-detail{position:fixed;inset:0;z-index:90;background:rgba(15,30,15,.45);display:none;align-items:flex-start;justify-content:center;padding:24px;overflow:auto}
+.cov-detail.open{display:flex}
+.cov-detail .cd-card{background:#fff;border-radius:14px;max-width:760px;width:100%;margin:auto;padding:18px 20px;box-shadow:0 30px 60px -20px rgba(0,0,0,.5);max-height:90vh;overflow:auto;animation:fade .2s ease}
 @keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 .cov-detail .cd-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--line-soft)}
 .cov-detail .cd-head h4{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--ink)}
@@ -406,7 +408,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
           <div class="dtile no clk" data-domain="Pilotage"><div class="ac">26%</div><div class="nm">Pilotage · Steering &amp; Governance</div><span class="st">7 / 27 processes</span><div class="bar"><div class="fill" style="width:26%"></div></div><span class="drill">Drill down →</span></div>
           <div class="dtile no clk" data-domain="Market &amp; Growth"><div class="ac">19%</div><div class="nm">Market &amp; Growth</div><span class="st">4 / 21 processes</span><div class="bar"><div class="fill" style="width:19%"></div></div><span class="drill">Drill down →</span></div>
         </div>
-        <div class="cov-detail" id="covDetail" hidden></div>
+        <div class="cov-detail" id="covDetail"></div>
         <div class="dsource">Source · Digital Coverage Dashboard — 267 processes mapped (Process Cartography, Apr 2026) · tap a domain to drill down</div>
       </div>
     </div></div>
@@ -620,10 +622,11 @@ const COVERAGE = {"Upstream": {"cov": 15, "tot": 16, "groups": [{"l2": "Innovati
   const detail=document.getElementById('covDetail');
   const tiles=document.querySelectorAll('.dtile.clk');
   function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+  function close(){detail.classList.remove('open');tiles.forEach(t=>t.classList.remove('active'));}
   function render(key){
     const d=COVERAGE[key]; if(!d)return;
     const pct=Math.round(100*d.cov/d.tot);
-    let html='<div class="cd-head"><h4>'+esc(key)+'</h4>'
+    let html='<div class="cd-card"><div class="cd-head"><h4>'+esc(key)+'</h4>'
       +'<span class="cd-rate"><b>'+pct+'%</b> · '+d.cov+' / '+d.tot+' covered</span>'
       +'<button class="cd-close" aria-label="Close">✕</button></div>';
     d.groups.forEach(function(g){
@@ -636,21 +639,21 @@ const COVERAGE = {"Upstream": {"cov": 15, "tot": 16, "groups": [{"l2": "Innovati
       });
       html+='</div></div>';
     });
+    html+='</div>';
     detail.innerHTML=html;
-    detail.hidden=false;
-    detail.querySelector('.cd-close').addEventListener('click',function(){detail.hidden=true;tiles.forEach(t=>t.classList.remove('active'));});
-    detail.scrollIntoView({behavior:'smooth',block:'nearest'});
+    detail.classList.add('open');
+    detail.querySelector('.cd-close').addEventListener('click',close);
   }
   tiles.forEach(function(t){
     t.addEventListener('click',function(){
       const key=t.getAttribute('data-domain').replace('&amp;','&');
-      const wasActive=t.classList.contains('active');
       tiles.forEach(x=>x.classList.remove('active'));
-      if(wasActive){detail.hidden=true;return;}
       t.classList.add('active');
       render(key);
     });
   });
+  detail.addEventListener('click',function(e){if(e.target===detail)close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
 })();
 
 /* Roadmap */
