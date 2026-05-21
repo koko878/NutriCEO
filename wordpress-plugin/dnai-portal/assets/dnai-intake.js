@@ -137,8 +137,20 @@
           };
           recorder.start();
           recording = true; mic.classList.add('rec');
-        }).catch(function () {
-          addError(EN ? 'Microphone blocked — allow it in your browser.' : 'Micro bloqué — autorisez-le dans le navigateur.');
+        }).catch(function (err) {
+          var name = err && err.name ? err.name : '';
+          var m;
+          if (name === 'NotAllowedError' || name === 'SecurityError') {
+            m = EN ? 'Mic permission denied — check the site permission AND Windows Privacy → Microphone (allow desktop apps).'
+                   : "Accès micro refusé — vérifiez l'autorisation du site ET Windows : Confidentialité → Microphone (autoriser les applis de bureau).";
+          } else if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+            m = EN ? 'No microphone found on this device.' : 'Aucun micro trouvé sur cet appareil.';
+          } else if (name === 'NotReadableError') {
+            m = EN ? 'Microphone is busy (used by another app).' : 'Micro occupé par une autre application.';
+          } else {
+            m = (EN ? 'Mic error [v1.2.1]: ' : 'Erreur micro [v1.2.1] : ') + (name || 'inconnue');
+          }
+          addError(m);
         });
       });
 
