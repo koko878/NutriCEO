@@ -212,6 +212,29 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 .modal iframe{flex:1;border:0;width:100%}
 .modal-note{display:none}
 
+/* Digitalization map */
+.dmap{margin-top:22px;padding-top:18px;border-top:1px solid var(--line-soft)}
+.dmap-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.dmap-head .lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green-800)}
+.dmap-head .rate{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--muted)}
+.dmap-head .rate b{font-size:22px;color:var(--green-800);font-weight:700}
+.legend2{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:12px;font-size:11px;color:var(--ink-2)}
+.legend2 span{display:inline-flex;align-items:center;gap:5px}
+.legend2 i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.lg-done{background:var(--green-700)}.lg-part{background:var(--warn)}.lg-prog{background:#0078D4}.lg-no{background:#CDD2C9}
+.dgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.dtile{border:1px solid var(--line);border-radius:11px;padding:12px;background:#fff;border-top:3px solid var(--line)}
+.dtile .ac{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--ink);line-height:1}
+.dtile .nm{font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.3;min-height:26px}
+.dtile .st{font-size:9.5px;font-weight:600;margin-top:6px;display:inline-block;padding:2px 7px;border-radius:5px}
+.dtile .bar{height:4px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:8px}
+.dtile .fill{height:100%;border-radius:99px}
+.dtile.done{border-top-color:var(--green-700)}.dtile.done .ac{color:var(--green-800)}.dtile.done .st{background:var(--green-100);color:var(--green-800)}.dtile.done .fill{background:var(--green-700)}
+.dtile.part{border-top-color:var(--warn)}.dtile.part .st{background:var(--warn-bg);color:var(--warn)}.dtile.part .fill{background:var(--warn)}
+.dtile.prog{border-top-color:#0078D4}.dtile.prog .st{background:#E3F2FD;color:#0078D4}.dtile.prog .fill{background:#0078D4}
+.dtile.no{border-top-color:#CDD2C9;background:#FAFBF9}.dtile.no .ac{color:var(--muted)}.dtile.no .nm{color:#9aa096}.dtile.no .st{background:#EEF0EC;color:#9aa096}.dtile.no .fill{background:#CDD2C9}
+@media(max-width:840px){.dgrid{grid-template-columns:1fr 1fr}}
+
 @media print{body{background:#fff;padding:18px}.acc-body{max-height:none!important}.acc-head .chev{display:none}.scorebar,.modal{display:none}}
 </style>
 </head>
@@ -322,6 +345,29 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
             <li>External data products toward distributors &amp; partners</li>
             <li>Target · measurable contribution to margin and new revenue</li>
           </ul></div>
+        </div>
+      </div>
+
+      <div class="dmap">
+        <div class="dmap-head">
+          <div class="lbl">Pillar I focus · digitalization of core value chains</div>
+          <div class="rate"><b>~27%</b> digitalized · 8 value chains</div>
+        </div>
+        <div class="legend2">
+          <span><i class="lg-done"></i> Digitalized</span>
+          <span><i class="lg-part"></i> Partial / revamp</span>
+          <span><i class="lg-prog"></i> In progress</span>
+          <span><i class="lg-no"></i> Not yet</span>
+        </div>
+        <div class="dgrid">
+          <div class="dtile done"><div class="ac">H2R</div><div class="nm">Hire-to-Retire</div><span class="st">Digitalized · Workday revamp</span><div class="bar"><div class="fill" style="width:100%"></div></div></div>
+          <div class="dtile part"><div class="ac">O2C</div><div class="nm">Order-to-Cash</div><span class="st">50% · revamp needed</span><div class="bar"><div class="fill" style="width:50%"></div></div></div>
+          <div class="dtile part"><div class="ac">SRM</div><div class="nm">Supplier Relationship Mgmt</div><span class="st">Partial</span><div class="bar"><div class="fill" style="width:40%"></div></div></div>
+          <div class="dtile prog"><div class="ac">ITAM</div><div class="nm">IT Asset Management</div><span class="st">In progress</span><div class="bar"><div class="fill" style="width:25%"></div></div></div>
+          <div class="dtile no"><div class="ac">S2P</div><div class="nm">Source-to-Pay</div><span class="st">Not yet</span><div class="bar"><div class="fill" style="width:0%"></div></div></div>
+          <div class="dtile no"><div class="ac">S&amp;OP</div><div class="nm">Sales &amp; Operations Planning</div><span class="st">Not yet</span><div class="bar"><div class="fill" style="width:0%"></div></div></div>
+          <div class="dtile no"><div class="ac">DP</div><div class="nm">Demand Planning</div><span class="st">Not yet</span><div class="bar"><div class="fill" style="width:0%"></div></div></div>
+          <div class="dtile no"><div class="ac">PM</div><div class="nm">Pricing Management</div><span class="st">Not yet</span><div class="bar"><div class="fill" style="width:0%"></div></div></div>
         </div>
       </div>
     </div></div>
