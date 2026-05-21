@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NutriCEO — Digital &amp; Data Roadmap</title>
+<style>
+  :root {
+    --bg: #0b1220;
+    --bg-2: #0f1a2e;
+    --panel: #131f38;
+    --panel-2: #18253f;
+    --line: #25344f;
+    --text: #e8eef7;
+    --muted: #93a3bd;
+    --accent: #4fd1a5;
+    --accent-2: #5b8def;
+    --warn: #f0b54a;
+    --flag: #ef6f6f;
+    --ok: #4fd1a5;
+    --chip: #1c2c49;
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: radial-gradient(1200px 800px at 80% -10%, #16284a 0%, var(--bg) 55%) fixed;
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent-2); }
+
+  /* ---------- Layout ---------- */
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 22px 80px; }
+  header.hero {
+    display: flex; flex-wrap: wrap; gap: 22px; align-items: flex-end;
+    justify-content: space-between; padding: 14px 0 26px; border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .logo {
+    width: 46px; height: 46px; border-radius: 12px; flex: none;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    display: grid; place-items: center; font-weight: 800; color: #06111f; font-size: 20px;
+    box-shadow: var(--shadow);
+  }
+  .brand h1 { font-size: 22px; margin: 0; letter-spacing: .2px; }
+  .brand .sub { color: var(--muted); font-size: 13px; }
+  .hero-meta { text-align: right; color: var(--muted); font-size: 13px; }
+  .hero-meta strong { color: var(--text); }
+
+  /* ---------- Vision ---------- */
+  .vision {
+    margin-top: 26px; padding: 26px 26px; border-radius: var(--radius);
+    background: linear-gradient(135deg, rgba(91,141,239,.14), rgba(79,209,165,.10));
+    border: 1px solid var(--line);
+  }
+  .vision .eyebrow { color: var(--accent); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
+  .vision h2 { font-size: 26px; margin: 8px 0 6px; max-width: 920px; line-height: 1.3; }
+  .vision p { color: var(--muted); margin: 0; max-width: 820px; }
+
+  /* ---------- Section titles ---------- */
+  .section-title { display: flex; align-items: baseline; gap: 12px; margin: 40px 0 16px; }
+  .section-title h3 { font-size: 18px; margin: 0; }
+  .section-title .hint { color: var(--muted); font-size: 13px; }
+
+  /* ---------- KPIs ---------- */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .kpi {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 16px 16px 14px;
+  }
+  .kpi .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .6px; }
+  .kpi .now { font-size: 26px; font-weight: 800; margin-top: 6px; }
+  .kpi .target { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .bar { height: 6px; border-radius: 6px; background: var(--chip); margin-top: 12px; overflow: hidden; }
+  .bar > span { display: block; height: 100%; border-radius: 6px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+
+  /* ---------- Pillars ---------- */
+  .pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .pillar {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 18px; position: relative; overflow: hidden;
+  }
+  .pillar::before { content:""; position:absolute; inset:0 0 auto 0; height:4px;
+    background: var(--pc, var(--accent)); opacity:.9; }
+  .pillar .icon { font-size: 22px; }
+  .pillar h4 { margin: 8px 0 6px; font-size: 15px; }
+  .pillar p { margin: 0; color: var(--muted); font-size: 13px; }
+
+  /* ---------- Controls ---------- */
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    margin: 8px 0 18px; padding: 12px; background: var(--panel); border: 1px solid var(--line);
+    border-radius: var(--radius); position: sticky; top: 8px; z-index: 20; backdrop-filter: blur(4px);
+  }
+  .controls .group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .controls .glabel { color: var(--muted); font-size: 12px; margin-right: 4px; }
+  .chip-btn {
+    border: 1px solid var(--line); background: var(--chip); color: var(--text);
+    padding: 6px 12px; border-radius: 999px; font-size: 13px; cursor: pointer; transition: .15s;
+  }
+  .chip-btn:hover { border-color: var(--accent-2); }
+  .chip-btn.active { background: var(--accent-2); border-color: var(--accent-2); color: #08101f; font-weight: 700; }
+  .controls .spacer { flex: 1; }
+  .progress-pill { color: var(--muted); font-size: 12px; }
+  .progress-pill b { color: var(--text); }
+
+  /* ---------- Roadmap ---------- */
+  .horizon { margin-bottom: 26px; }
+  .horizon-head { display: flex; align-items: center; gap: 12px; margin: 18px 0 12px; }
+  .horizon-head .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+  .horizon-head h3 { margin: 0; font-size: 17px; }
+  .horizon-head .range { color: var(--muted); font-size: 13px; }
+
+  .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    overflow: hidden; transition: border-color .15s, transform .15s;
+  }
+  .card:hover { border-color: #36507a; }
+  .card.is-approved { border-color: rgba(79,209,165,.5); }
+  .card.is-discuss  { border-color: rgba(240,181,74,.55); }
+  .card.is-flagged  { border-color: rgba(239,111,111,.55); }
+
+  .card-head { padding: 16px 16px 12px; cursor: pointer; display: flex; gap: 12px; align-items: flex-start; }
+  .card-head .wk-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 6px; flex: none; }
+  .card-head .ct { flex: 1; }
+  .card-head h4 { margin: 0 0 4px; font-size: 15px; }
+  .card-head .meta { color: var(--muted); font-size: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .card-head .meta .tag { background: var(--chip); padding: 2px 8px; border-radius: 6px; }
+  .card-head .chev { color: var(--muted); transition: transform .2s; font-size: 14px; margin-top: 2px; }
+  .card.open .chev { transform: rotate(90deg); }
+  .status-flag { font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 700; white-space: nowrap; }
+  .status-flag.none { display:none; }
+  .status-flag.approved { background: rgba(79,209,165,.18); color: var(--ok); }
+  .status-flag.discuss  { background: rgba(240,181,74,.18); color: var(--warn); }
+  .status-flag.flagged  { background: rgba(239,111,111,.18); color: var(--flag); }
+
+  .card-body { display: none; padding: 0 16px 16px; border-top: 1px solid var(--line); }
+  .card.open .card-body { display: block; }
+  .card-body .lead { color: var(--muted); margin: 14px 0 14px; font-size: 13.5px; }
+
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 12px; }
+  .detail h5 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .6px; color: var(--accent); }
+  .detail ul { margin: 0; padding-left: 18px; color: var(--text); font-size: 13px; }
+  .detail ul li { margin-bottom: 4px; }
+  .detail .kv { font-size: 13px; color: var(--text); }
+  .detail .kv span { color: var(--muted); }
+
+  .metrics { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 4px; }
+  .metric { background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; font-size: 12px; }
+  .metric b { display: block; font-size: 15px; }
+  .metric span { color: var(--muted); }
+
+  /* ---------- Validation ---------- */
+  .validate { margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); }
+  .validate .vrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .validate .glabel { color: var(--muted); font-size: 12px; margin-right: 2px; }
+  .vbtn { border: 1px solid var(--line); background: var(--chip); color: var(--text);
+    padding: 6px 12px; border-radius: 8px; font-size: 13px; cursor: pointer; transition: .15s; }
+  .vbtn:hover { border-color: #4a6494; }
+  .vbtn.sel-approved { background: var(--ok); border-color: var(--ok); color: #06120d; font-weight: 700; }
+  .vbtn.sel-discuss  { background: var(--warn); border-color: var(--warn); color: #1f1503; font-weight: 700; }
+  .vbtn.sel-flagged  { background: var(--flag); border-color: var(--flag); color: #1f0606; font-weight: 700; }
+  .validate textarea {
+    width: 100%; margin-top: 10px; background: var(--bg-2); border: 1px solid var(--line);
+    color: var(--text); border-radius: 10px; padding: 10px 12px; font-family: inherit; font-size: 13px; resize: vertical;
+    min-height: 38px;
+  }
+  .validate textarea:focus { outline: none; border-color: var(--accent-2); }
+  .saved-note { color: var(--muted); font-size: 11px; margin-left: auto; }
+
+  /* ---------- Footer / actions ---------- */
+  .actions-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--line); }
+  .btn { border: 1px solid var(--line); background: var(--panel); color: var(--text); padding: 10px 16px;
+    border-radius: 10px; font-size: 13px; cursor: pointer; transition: .15s; font-weight: 600; }
+  .btn:hover { border-color: var(--accent-2); }
+  .btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #06111f; border: none; }
+  footer.foot { color: var(--muted); font-size: 12px; margin-top: 26px; text-align: center; }
+
+  .hidden { display: none !important; }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(4,8,16,.7); display: none; place-items: center; z-index: 100; padding: 20px; }
+  .modal-overlay.show { display: grid; }
+  .modal { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    max-width: 760px; width: 100%; max-height: 85vh; overflow: auto; box-shadow: var(--shadow); }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--panel); }
+  .modal-head h3 { margin: 0; font-size: 16px; }
+  .modal-body { padding: 18px 20px; }
+  .modal pre { white-space: pre-wrap; word-break: break-word; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12.5px; background: var(--bg-2); padding: 14px; border-radius: 10px; border: 1px solid var(--line); color: var(--text); }
+  .modal .close { cursor: pointer; color: var(--muted); font-size: 22px; line-height: 1; background: none; border: none; }
+  .summary-stat { display: inline-block; margin-right: 16px; }
+  .summary-stat b { font-size: 18px; }
+
+  @media (max-width: 880px) {
+    .kpis, .pillars { grid-template-columns: repeat(2, 1fr); }
+    .cards, .detail-grid { grid-template-columns: 1fr; }
+    .hero-meta { text-align: left; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="brand">
+      <div class="logo">N</div>
+      <div>
+        <h1>NutriCEO</h1>
+        <div class="sub">Digital &amp; Data — Executive Roadmap &amp; Vision</div>
+      </div>
+    </div>
+    <div class="hero-meta">
+      <div>Prepared for: <strong>Office of the CEO</strong></div>
+      <div>Owner: <strong>Digital &amp; Data Leadership</strong></div>
+      <div id="doc-date">Reviewed: —</div>
+    </div>
+  </header>
+
+  <!-- VISION -->
+  <section class="vision">
+    <div class="eyebrow">Our Vision</div>
+    <h2 id="vision-statement"></h2>
+    <p id="vision-sub"></p>
+  </section>
+
+  <!-- KPIs -->
+  <div class="section-title">
+    <h3>Where we are today</h3>
+    <span class="hint">Baseline vs. 3-year ambition</span>
+  </div>
+  <div class="kpis" id="kpis"></div>
+
+  <!-- PILLARS -->
+  <div class="section-title">
+    <h3>Strategic pillars</h3>
+    <span class="hint">The four bets that carry the vision</span>
+  </div>
+  <div class="pillars" id="pillars"></div>
+
+  <!-- ROADMAP -->
+  <div class="section-title">
+    <h3>The roadmap</h3>
+    <span class="hint">Click any initiative to deep-dive. Use the buttons inside to validate, flag, or comment.</span>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div class="group">
+      <span class="glabel">Workstream</span>
+      <div id="wk-filters"></div>
+    </div>
+    <div class="spacer"></div>
+    <div class="progress-pill" id="progress-pill"></div>
+  </div>
+
+  <div id="roadmap"></div>
+
+  <!-- ACTIONS -->
+  <div class="actions-bar">
+    <button class="btn primary" id="btn-summary">Generate decision summary</button>
+    <button class="btn" id="btn-expand">Expand all</button>
+    <button class="btn" id="btn-collapse">Collapse all</button>
+    <button class="btn" id="btn-export">Export my notes (JSON)</button>
+    <button class="btn" id="btn-reset">Reset my feedback</button>
+  </div>
+
+  <footer class="foot">
+    Your validations and comments are saved privately in this browser. Use "Generate decision summary" to capture the review, or "Export" to share.
+  </footer>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modal-title">Decision summary</h3>
+      <button class="close" id="modal-close">&times;</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CONTENT — edit freely. Everything below the data block is generic.
+   ============================================================ */
+const VISION = {
+  statement: "Make NutriCEO the most data-driven nutrition company in our market — where every product decision, customer interaction, and operational process is powered by digital and data by 2028.",
+  sub: "We move from fragmented systems and gut-feel decisions to a connected digital backbone, a trusted data foundation, and AI-led personalization that compounds customer value."
+};
+
+const KPIS = [
+  { label: "Digital revenue share", now: 34, target: 60, unit: "%" },
+  { label: "Data maturity score", now: 2.1, target: 4.0, unit: "/5" },
+  { label: "Personalized customers", now: 12, target: 75, unit: "%" },
+  { label: "Cost-to-serve", now: 100, target: 78, unit: " idx", invert: true }
+];
+
+const PILLARS = [
+  { icon: "🛒", name: "Customer Digital Experience", color: "#5b8def",
+    blurb: "One seamless journey across web, app, and retail — fast, personal, and measurable." },
+  { icon: "🧱", name: "Data & Analytics Foundation", color: "#4fd1a5",
+    blurb: "A single trusted source of truth: governed, real-time, and self-serve for every team." },
+  { icon: "🤖", name: "AI & Personalization", color: "#a78bfa",
+    blurb: "Recommendations, nutrition guidance, and forecasting that learn and improve continuously." },
+  { icon: "⚙️", name: "Digital Operations Backbone", color: "#f0b54a",
+    blurb: "Automated, integrated core systems that scale without adding headcount or risk." }
+];
+
+// Workstreams map to pillars for color/filtering
+const WORKSTREAMS = {
+  cx:   { name: "Customer Experience", color: "#5b8def" },
+  data: { name: "Data Foundation",     color: "#4fd1a5" },
+  ai:   { name: "AI & Personalization",color: "#a78bfa" },
+  ops:  { name: "Digital Operations",  color: "#f0b54a" }
+};
+
+const HORIZONS = [
+  { id: "now",   title: "Now",   range: "0–6 months · Foundations",        color: "#4fd1a5" },
+  { id: "next",  title: "Next",  range: "6–18 months · Scale & connect",   color: "#5b8def" },
+  { id: "later", title: "Later", range: "18 months+ · Differentiate",      color: "#a78bfa" }
+];
+
+const INITIATIVES = [
+  {
+    id: "i1", horizon: "now", wk: "data", title: "Unified data platform (single source of truth)",
+    owner: "Head of Data", invest: "£0.9M", confidence: "High",
+    lead: "Consolidate fragmented sales, web, app, and supply data into one governed cloud platform so every team reports off the same numbers.",
+    activities: ["Stand up cloud data warehouse + ingestion", "Migrate finance, e-commerce, and CRM sources", "Define core metric definitions and ownership"],
+    metrics: [{v:"1", l:"source of truth"}, {v:"−70%", l:"manual reporting"}, {v:"<24h", l:"data freshness"}],
+    deps: "Cloud vendor selection; data governance sign-off",
+    risk: "Source-system data quality; change management across teams"
+  },
+  {
+    id: "i2", horizon: "now", wk: "cx", title: "E-commerce experience refresh",
+    owner: "Head of Digital", invest: "£0.6M", confidence: "High",
+    lead: "Rebuild the storefront for speed, mobile conversion, and a frictionless checkout to lift digital revenue immediately.",
+    activities: ["Mobile-first redesign of PDP & checkout", "Site speed & Core Web Vitals overhaul", "A/B testing framework live"],
+    metrics: [{v:"+15%", l:"conversion"}, {v:"−40%", l:"page load"}, {v:"+8pts", l:"NPS"}],
+    deps: "Analytics tagging; payment provider integration",
+    risk: "Peak-season freeze windows; SEO migration risk"
+  },
+  {
+    id: "i3", horizon: "now", wk: "ops", title: "Core systems integration & automation",
+    owner: "Head of Ops", invest: "£0.5M", confidence: "Medium",
+    lead: "Connect ERP, OMS, and CRM with automated order-to-cash and inventory flows to cut manual handoffs and errors.",
+    activities: ["API integration layer between core systems", "Automate order, returns, and stock sync", "Decommission legacy spreadsheets"],
+    metrics: [{v:"−60%", l:"manual tasks"}, {v:"−30%", l:"order errors"}, {v:"2x", l:"throughput"}],
+    deps: "Data platform (i1); vendor API access",
+    risk: "Legacy ERP constraints; integration complexity"
+  },
+  {
+    id: "i4", horizon: "now", wk: "data", title: "Data governance & privacy baseline",
+    owner: "DPO / Head of Data", invest: "£0.2M", confidence: "High",
+    lead: "Establish governance, access controls, and GDPR-compliant consent so we can use customer data safely and build trust.",
+    activities: ["Data catalog & ownership model", "Consent management & retention policy", "Role-based access controls"],
+    metrics: [{v:"100%", l:"PII mapped"}, {v:"0", l:"open audit gaps"}],
+    deps: "Legal & compliance alignment",
+    risk: "Regulatory change; cross-border data rules"
+  },
+  {
+    id: "i5", horizon: "next", wk: "ai", title: "Personalized nutrition recommendations",
+    owner: "Head of AI", invest: "£1.1M", confidence: "Medium",
+    lead: "Use purchase and profile data to recommend products and nutrition plans tailored to each customer's goals.",
+    activities: ["Recommendation engine MVP", "Goal-based nutrition profiles", "Closed-loop measurement of uplift"],
+    metrics: [{v:"+22%", l:"basket size"}, {v:"+18%", l:"repeat rate"}, {v:"75%", l:"coverage"}],
+    deps: "Data platform (i1); consent baseline (i4)",
+    risk: "Cold-start data; model trust & explainability"
+  },
+  {
+    id: "i6", horizon: "next", wk: "cx", title: "Mobile app & loyalty program",
+    owner: "Head of Digital", invest: "£1.3M", confidence: "Medium",
+    lead: "Launch a companion app with subscriptions, loyalty, and habit tracking to deepen engagement and recurring revenue.",
+    activities: ["App MVP (iOS/Android)", "Subscription & loyalty mechanics", "Push & lifecycle messaging"],
+    metrics: [{v:"+25%", l:"LTV"}, {v:"30%", l:"on subscription"}, {v:"4.6★", l:"app rating"}],
+    deps: "Personalization (i5); CRM integration",
+    risk: "App adoption; ongoing content cost"
+  },
+  {
+    id: "i7", horizon: "next", wk: "data", title: "Self-serve analytics & decision dashboards",
+    owner: "Head of Data", invest: "£0.4M", confidence: "High",
+    lead: "Give every function governed dashboards and the ability to answer their own questions without waiting on analysts.",
+    activities: ["Executive & function-level dashboards", "Self-serve BI rollout + training", "Automated daily KPI digests"],
+    metrics: [{v:"80%", l:"self-serve"}, {v:"−50%", l:"ad-hoc requests"}],
+    deps: "Data platform (i1); metric definitions",
+    risk: "Adoption & data literacy"
+  },
+  {
+    id: "i8", horizon: "next", wk: "ops", title: "Demand forecasting & inventory optimization",
+    owner: "Head of Ops", invest: "£0.7M", confidence: "Medium",
+    lead: "Forecast demand with ML to cut stockouts and overstock across products and channels.",
+    activities: ["Forecasting model by SKU/channel", "Auto-replenishment signals", "Scenario planning tooling"],
+    metrics: [{v:"−25%", l:"stockouts"}, {v:"−20%", l:"excess stock"}, {v:"+3pts", l:"margin"}],
+    deps: "Data platform (i1); supplier data feeds",
+    risk: "Demand volatility; supplier lead-time accuracy"
+  },
+  {
+    id: "i9", horizon: "later", wk: "ai", title: "AI nutrition assistant",
+    owner: "Head of AI", invest: "£1.5M", confidence: "Low",
+    lead: "A conversational assistant that answers nutrition questions, builds plans, and guides product choices — a category differentiator.",
+    activities: ["Conversational assistant on app & web", "Grounded on verified nutrition knowledge base", "Human-in-the-loop safety review"],
+    metrics: [{v:"40%", l:"engaged users"}, {v:"+30%", l:"attach rate"}],
+    deps: "Personalization (i5); app (i6); governance (i4)",
+    risk: "Accuracy & health-claim compliance; cost per interaction"
+  },
+  {
+    id: "i10", horizon: "later", wk: "data", title: "Real-time data & event-driven activation",
+    owner: "Head of Data", invest: "£0.8M", confidence: "Low",
+    lead: "Move from daily batch to real-time events so we can act on customer behavior in the moment across channels.",
+    activities: ["Streaming event pipeline", "Real-time customer data platform (CDP)", "Triggered cross-channel activation"],
+    metrics: [{v:"<1min", l:"latency"}, {v:"+15%", l:"campaign ROI"}],
+    deps: "Data platform (i1); self-serve analytics (i7)",
+    risk: "Infrastructure cost; team capability"
+  },
+  {
+    id: "i11", horizon: "later", wk: "ops", title: "Intelligent automation across the back office",
+    owner: "Head of Ops", invest: "£0.6M", confidence: "Medium",
+    lead: "Apply automation and AI to finance, customer service, and supply ops to scale the business without scaling cost.",
+    activities: ["AI-assisted customer support", "Automated finance reconciliation", "Process mining to target automation"],
+    metrics: [{v:"−35%", l:"cost-to-serve"}, {v:"+50%", l:"first-contact resolution"}],
+    deps: "Core integration (i3); data platform (i1)",
+    risk: "Workforce change; automation governance"
+  },
+  {
+    id: "i12", horizon: "later", wk: "cx", title: "Connected omnichannel & retail media",
+    owner: "Head of Digital", invest: "£0.9M", confidence: "Low",
+    lead: "Unify online, app, and retail into one customer view and open a retail-media revenue stream from our first-party data.",
+    activities: ["Single customer view across channels", "Retail-media / partner monetization", "Unified loyalty across touchpoints"],
+    metrics: [{v:"+20%", l:"cross-channel LTV"}, {v:"New", l:"revenue stream"}],
+    deps: "CDP (i10); loyalty (i6)",
+    risk: "Channel data integration; partner readiness"
+  }
+];
+
+/* ============================================================
+   APP — generic rendering & interaction logic
+   ============================================================ */
+const STORAGE_KEY = "nutriceo-roadmap-feedback-v1";
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const esc = (s) => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let state = loadState();
+let activeWk = "all";
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch { return {}; }
+}
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  updateProgress();
+}
+function itemState(id) {
+  return state[id] || { status: "", note: "" };
+}
+
+/* ---- Render vision + meta ---- */
+$("#vision-statement").textContent = VISION.statement;
+$("#vision-sub").textContent = VISION.sub;
+$("#doc-date").textContent = "Reviewed: " + new Date().toLocaleDateString(undefined, {year:'numeric', month:'long', day:'numeric'});
+
+/* ---- KPIs ---- */
+$("#kpis").innerHTML = KPIS.map(k => {
+  // For normal KPIs the bar shows current toward target; for inverted
+  // (lower-is-better) it shows how close current already is to the goal.
+  const progress = k.invert
+    ? Math.max(4, Math.min(100, (k.target / k.now) * 100))
+    : Math.max(4, Math.min(100, (k.now / k.target) * 100));
+  return `
+    <div class="kpi">
+      <div class="label">${esc(k.label)}</div>
+      <div class="now">${k.now}${esc(k.unit)}</div>
+      <div class="target">Target: ${k.target}${esc(k.unit)}</div>
+      <div class="bar"><span style="width:${progress.toFixed(0)}%"></span></div>
+    </div>`;
+}).join("");
+
+/* ---- Pillars ---- */
+$("#pillars").innerHTML = PILLARS.map(p => `
+  <div class="pillar" style="--pc:${p.color}">
+    <div class="icon">${p.icon}</div>
+    <h4>${esc(p.name)}</h4>
+    <p>${esc(p.blurb)}</p>
+  </div>`).join("");
+
+/* ---- Workstream filters ---- */
+function renderFilters() {
+  const all = `<button class="chip-btn ${activeWk==='all'?'active':''}" data-wk="all">All</button>`;
+  const rest = Object.entries(WORKSTREAMS).map(([id, w]) =>
+    `<button class="chip-btn ${activeWk===id?'active':''}" data-wk="${id}">
+       <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${w.color};margin-right:6px;vertical-align:middle"></span>${esc(w.name)}
+     </button>`).join("");
+  $("#wk-filters").innerHTML = all + rest;
+  $$("#wk-filters .chip-btn").forEach(b => b.onclick = () => { activeWk = b.dataset.wk; renderFilters(); applyFilter(); });
+}
+
+/* ---- Roadmap ---- */
+function statusClass(s){ return s==='approved'?'is-approved':s==='discuss'?'is-discuss':s==='flagged'?'is-flagged':''; }
+function statusLabel(s){ return s==='approved'?'Approved':s==='discuss'?'Needs discussion':s==='flagged'?'Flagged':''; }
+
+function renderRoadmap() {
+  $("#roadmap").innerHTML = HORIZONS.map(h => {
+    const items = INITIATIVES.filter(i => i.horizon === h.id);
+    const cards = items.map(renderCard).join("");
+    return `
+      <div class="horizon" data-horizon="${h.id}">
+        <div class="horizon-head">
+          <span class="dot" style="background:${h.color}"></span>
+          <h3>${esc(h.title)}</h3>
+          <span class="range">${esc(h.range)}</span>
+        </div>
+        <div class="cards">${cards}</div>
+      </div>`;
+  }).join("");
+  bindCards();
+  applyFilter();
+}
+
+function renderCard(i) {
+  const wk = WORKSTREAMS[i.wk];
+  const st = itemState(i.id);
+  const metrics = i.metrics.map(m => `<div class="metric"><b>${esc(m.v)}</b><span>${esc(m.l)}</span></div>`).join("");
+  const acts = i.activities.map(a => `<li>${esc(a)}</li>`).join("");
+  return `
+  <div class="card ${statusClass(st.status)}" data-id="${i.id}" data-wk="${i.wk}">
+    <div class="card-head" data-toggle>
+      <span class="wk-dot" style="background:${wk.color}"></span>
+      <div class="ct">
+        <h4>${esc(i.title)}</h4>
+        <div class="meta">
+          <span class="tag">${esc(wk.name)}</span>
+          <span class="tag">${esc(i.invest)}</span>
+          <span class="tag">Confidence: ${esc(i.confidence)}</span>
+        </div>
+      </div>
+      <span class="status-flag ${st.status||'none'}">${statusLabel(st.status)}</span>
+      <span class="chev">▶</span>
+    </div>
+    <div class="card-body">
+      <p class="lead">${esc(i.lead)}</p>
+      <div class="metrics">${metrics}</div>
+      <div class="detail-grid" style="margin-top:12px">
+        <div class="detail">
+          <h5>Key activities</h5>
+          <ul>${acts}</ul>
+        </div>
+        <div class="detail">
+          <h5>Ownership & investment</h5>
+          <div class="kv"><span>Owner:</span> ${esc(i.owner)}</div>
+          <div class="kv"><span>Investment:</span> ${esc(i.invest)}</div>
+          <div class="kv"><span>Confidence:</span> ${esc(i.confidence)}</div>
+          <h5 style="margin-top:12px">Dependencies</h5>
+          <div class="kv">${esc(i.deps)}</div>
+          <h5 style="margin-top:12px">Key risk</h5>
+          <div class="kv">${esc(i.risk)}</div>
+        </div>
+      </div>
+
+      <div class="validate" data-validate="${i.id}">
+        <div class="vrow">
+          <span class="glabel">Your call:</span>
+          <button class="vbtn ${st.status==='approved'?'sel-approved':''}" data-status="approved">✓ Approve</button>
+          <button class="vbtn ${st.status==='discuss'?'sel-discuss':''}" data-status="discuss">◷ Discuss</button>
+          <button class="vbtn ${st.status==='flagged'?'sel-flagged':''}" data-status="flagged">⚑ Flag</button>
+          <span class="saved-note" data-saved></span>
+        </div>
+        <textarea placeholder="Add a comment, question, or condition for the CEO review…" data-note>${esc(st.note||"")}</textarea>
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindCards() {
+  $$(".card").forEach(card => {
+    const id = card.dataset.id;
+    $("[data-toggle]", card).addEventListener("click", (e) => {
+      if (e.target.closest(".validate")) return;
+      card.classList.toggle("open");
+    });
+    // status buttons
+    $$("[data-validate] .vbtn", card).forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const s = btn.dataset.status;
+        const cur = itemState(id);
+        const next = cur.status === s ? "" : s; // toggle off if same
+        state[id] = { status: next, note: cur.note || "" };
+        saveState();
+        refreshCard(id);
+        flashSaved(id);
+      });
+    });
+    // note
+    const ta = $("[data-note]", card);
+    ta.addEventListener("input", () => {
+      const cur = itemState(id);
+      state[id] = { status: cur.status || "", note: ta.value };
+      saveState();
+      flashSaved(id);
+    });
+    ta.addEventListener("click", e => e.stopPropagation());
+  });
+}
+
+function refreshCard(id) {
+  const card = $(`.card[data-id="${id}"]`);
+  if (!card) return;
+  const wasOpen = card.classList.contains("open");
+  const i = INITIATIVES.find(x => x.id === id);
+  const tmp = document.createElement("div");
+  tmp.innerHTML = renderCard(i);
+  const fresh = tmp.firstElementChild;
+  if (wasOpen) fresh.classList.add("open");
+  card.replaceWith(fresh);
+  rebindCard(fresh);
+  applyFilter();
+}
+
+function rebindCard(card) {
+  const id = card.dataset.id;
+  $("[data-toggle]", card).addEventListener("click", (e) => {
+    if (e.target.closest(".validate")) return;
+    card.classList.toggle("open");
+  });
+  $$("[data-validate] .vbtn", card).forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const s = btn.dataset.status;
+      const cur = itemState(id);
+      const next = cur.status === s ? "" : s;
+      state[id] = { status: next, note: cur.note || "" };
+      saveState();
+      refreshCard(id);
+      flashSaved(id);
+    });
+  });
+  const ta = $("[data-note]", card);
+  ta.addEventListener("input", () => {
+    const cur = itemState(id);
+    state[id] = { status: cur.status || "", note: ta.value };
+    saveState();
+    flashSaved(id);
+  });
+  ta.addEventListener("click", e => e.stopPropagation());
+}
+
+let flashTimers = {};
+function flashSaved(id) {
+  const el = $(`.card[data-id="${id}"] [data-saved]`);
+  if (!el) return;
+  el.textContent = "Saved ✓";
+  clearTimeout(flashTimers[id]);
+  flashTimers[id] = setTimeout(() => { el.textContent = ""; }, 1400);
+}
+
+/* ---- Filter ---- */
+function applyFilter() {
+  $$(".card").forEach(c => {
+    c.classList.toggle("hidden", !(activeWk === "all" || c.dataset.wk === activeWk));
+  });
+  // hide empty horizons
+  $$(".horizon").forEach(h => {
+    const anyVisible = $$(".card", h).some(c => !c.classList.contains("hidden"));
+    h.classList.toggle("hidden", !anyVisible);
+  });
+}
+
+/* ---- Progress ---- */
+function updateProgress() {
+  const total = INITIATIVES.length;
+  let approved=0, discuss=0, flagged=0, touched=0;
+  INITIATIVES.forEach(i => {
+    const s = itemState(i.id).status;
+    if (s) touched++;
+    if (s==='approved') approved++;
+    else if (s==='discuss') discuss++;
+    else if (s==='flagged') flagged++;
+  });
+  $("#progress-pill").innerHTML =
+    `Reviewed <b>${touched}/${total}</b> · ✓ ${approved} · ◷ ${discuss} · ⚑ ${flagged}`;
+}
+
+/* ---- Actions ---- */
+$("#btn-expand").onclick = () => $$(".card:not(.hidden)").forEach(c => c.classList.add("open"));
+$("#btn-collapse").onclick = () => $$(".card").forEach(c => c.classList.remove("open"));
+
+$("#btn-reset").onclick = () => {
+  if (confirm("Clear all your validations and comments on this device?")) {
+    state = {}; saveState(); renderRoadmap();
+  }
+};
+
+$("#btn-export").onclick = () => {
+  const payload = {
+    document: "NutriCEO Digital & Data Roadmap",
+    exportedAt: new Date().toISOString(),
+    feedback: INITIATIVES.map(i => ({
+      id: i.id, title: i.title, horizon: i.horizon, workstream: WORKSTREAMS[i.wk].name,
+      status: itemState(i.id).status || "not reviewed",
+      note: itemState(i.id).note || ""
+    }))
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type: "application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "nutriceo-roadmap-feedback.json"; a.click();
+  URL.revokeObjectURL(url);
+};
+
+$("#btn-summary").onclick = () => {
+  const groups = { approved: [], discuss: [], flagged: [], pending: [] };
+  INITIATIVES.forEach(i => {
+    const st = itemState(i.id);
+    const entry = { title: i.title, horizon: i.horizon, wk: WORKSTREAMS[i.wk].name, note: st.note };
+    if (st.status === 'approved') groups.approved.push(entry);
+    else if (st.status === 'discuss') groups.discuss.push(entry);
+    else if (st.status === 'flagged') groups.flagged.push(entry);
+    else groups.pending.push(entry);
+  });
+  const line = e => `• ${e.title}  [${e.horizon} · ${e.wk}]` + (e.note ? `\n     ↳ ${e.note}` : "");
+  const sect = (t, arr) => arr.length ? `\n${t} (${arr.length})\n${arr.map(line).join("\n")}\n` : "";
+  const text =
+`NUTRICEO — DIGITAL & DATA ROADMAP
+CEO Review Summary · ${new Date().toLocaleString()}
+
+Reviewed ${INITIATIVES.length - groups.pending.length} of ${INITIATIVES.length} initiatives.
+` +
+    sect("✓ APPROVED", groups.approved) +
+    sect("◷ NEEDS DISCUSSION", groups.discuss) +
+    sect("⚑ FLAGGED", groups.flagged) +
+    sect("○ NOT YET REVIEWED", groups.pending);
+
+  $("#modal-title").textContent = "CEO review summary";
+  $("#modal-body").innerHTML = `
+    <div style="margin-bottom:14px">
+      <span class="summary-stat" style="color:var(--ok)"><b>${groups.approved.length}</b> approved</span>
+      <span class="summary-stat" style="color:var(--warn)"><b>${groups.discuss.length}</b> to discuss</span>
+      <span class="summary-stat" style="color:var(--flag)"><b>${groups.flagged.length}</b> flagged</span>
+      <span class="summary-stat" style="color:var(--muted)"><b>${groups.pending.length}</b> pending</span>
+    </div>
+    <pre id="summary-text">${esc(text)}</pre>
+    <div style="margin-top:14px; display:flex; gap:10px;">
+      <button class="btn primary" id="copy-summary">Copy to clipboard</button>
+    </div>`;
+  $("#modal-overlay").classList.add("show");
+  $("#copy-summary").onclick = () => {
+    navigator.clipboard.writeText(text).then(() => {
+      $("#copy-summary").textContent = "Copied ✓";
+      setTimeout(() => $("#copy-summary").textContent = "Copy to clipboard", 1500);
+    });
+  };
+};
+
+$("#modal-close").onclick = () => $("#modal-overlay").classList.remove("show");
+$("#modal-overlay").addEventListener("click", e => { if (e.target === $("#modal-overlay")) $("#modal-overlay").classList.remove("show"); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("#modal-overlay").classList.remove("show"); });
+
+/* ---- Init ---- */
+renderFilters();
+renderRoadmap();
+updateProgress();
+</script>
+</body>
+</html>
