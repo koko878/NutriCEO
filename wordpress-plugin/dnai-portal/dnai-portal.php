@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI Portal — Intake Genie & Product Catalog
  * Description:       Homepage chatbot that challenges, categorizes and structures Data/Digital/AI needs (powered by the AI Lab LLM, OpenAI-compatible / Open WebUI), plus a product catalog of live and in-development products.
- * Version:           1.2.2
+ * Version:           1.2.3
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-portal
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_PORTAL_VER', '1.2.2' );
+define( 'DNAI_PORTAL_VER', '1.2.3' );
 define( 'DNAI_PORTAL_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_PORTAL_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -400,12 +400,15 @@ function dnai_rest_need( WP_REST_Request $request ) {
 
 /* Explicitly allow the first-party microphone (voice intake).
    Some security plugins / CDNs send a Permissions-Policy that disables it,
-   which makes getUserMedia fail instantly with no prompt. */
-add_action( 'send_headers', function () {
+   which makes getUserMedia fail instantly with no prompt. Run as late as
+   possible so we REPLACE (not just add to) a header set by another plugin. */
+function dnai_allow_microphone_header() {
 	if ( is_admin() || headers_sent() ) return;
-	header( 'Permissions-Policy: microphone=(self)' );
-	header( 'Feature-Policy: microphone *' );
-} );
+	header( 'Permissions-Policy: microphone=(self), camera=(self)', true );
+	header( 'Feature-Policy: microphone *; camera *', true );
+}
+add_action( 'send_headers', 'dnai_allow_microphone_header', PHP_INT_MAX );
+add_action( 'template_redirect', 'dnai_allow_microphone_header', PHP_INT_MAX );
 
 /* -------------------------------------------------------------------------
  * 4. Assets
