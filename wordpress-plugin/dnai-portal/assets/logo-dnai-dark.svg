@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 150" width="560" height="150" role="img" aria-label="OCP Nutricrops — D2nAI">
+  <defs>
+    <linearGradient id="leafd" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2E7D32"/>
+      <stop offset="1" stop-color="#66BB6A"/>
+    </linearGradient>
+    <linearGradient id="wordd" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#A5D6A7"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(8,27)">
+    <path d="M48 6 C72 22 82 54 48 90 C14 54 24 22 48 6 Z" fill="url(#leafd)"/>
+    <path d="M48 14 L48 84" stroke="#0F3D14" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>
+    <g stroke="#1B5E20" stroke-width="1.5" opacity=".5" fill="none">
+      <path d="M48 30 L34 24"/><path d="M48 44 L31 40"/><path d="M48 58 L33 58"/><path d="M48 70 L37 72"/>
+      <path d="M48 30 L62 24"/><path d="M48 44 L65 40"/><path d="M48 58 L63 58"/><path d="M48 70 L59 72"/>
+    </g>
+    <g fill="#E8F5E9">
+      <circle cx="34" cy="24" r="3"/><circle cx="31" cy="40" r="3"/><circle cx="33" cy="58" r="3"/><circle cx="37" cy="72" r="2.6"/>
+      <circle cx="62" cy="24" r="3"/><circle cx="65" cy="40" r="3"/><circle cx="63" cy="58" r="3"/><circle cx="59" cy="72" r="2.6"/>
+    </g>
+  </g>
+  <text x="140" y="58" font-family="Georgia,'Times New Roman',serif" font-size="15" letter-spacing="5" font-weight="600" fill="#81C784">OCP · NUTRICROPS</text>
+  <line x1="141" y1="68" x2="430" y2="68" stroke="#2E7D32" stroke-width="1.5"/>
+  <text x="137" y="124" font-family="Georgia,'Times New Roman',serif" font-size="66" font-weight="700" fill="url(#wordd)">D<tspan font-size="38" dy="-22">2</tspan><tspan dy="22">nAI</tspan></text>
+</svg>
