@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI Portal — Intake Genie & Product Catalog
  * Description:       Homepage chatbot that challenges, categorizes and structures Data/Digital/AI needs (powered by the AI Lab LLM, OpenAI-compatible / Open WebUI), plus a product catalog of live and in-development products.
- * Version:           1.2.3
+ * Version:           1.3.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-portal
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_PORTAL_VER', '1.2.3' );
+define( 'DNAI_PORTAL_VER', '1.3.0' );
 define( 'DNAI_PORTAL_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_PORTAL_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -249,6 +249,11 @@ add_action( 'rest_api_init', function () {
 		'callback'            => 'dnai_rest_transcribe',
 		'permission_callback' => 'dnai_rest_permission',
 	) );
+	register_rest_route( 'dnai/v1', '/upload', array(
+		'methods'             => 'POST',
+		'callback'            => 'dnai_rest_upload',
+		'permission_callback' => 'dnai_rest_permission',
+	) );
 } );
 
 function dnai_rest_permission( $request ) {
@@ -270,6 +275,13 @@ function dnai_rest_chat( WP_REST_Request $request ) {
 
 	/* sanitize incoming messages, cap length & count */
 	$clean = array( array( 'role' => 'system', 'content' => dnai_get_opt( 'system_prompt', dnai_default_system_prompt() ) ) );
+
+	$context = $request->get_param( 'context' );
+	if ( is_string( $context ) && trim( $context ) !== '' ) {
+		$ctx = mb_substr( wp_strip_all_tags( $context ), 0, 16000 );
+		$clean[] = array( 'role' => 'system', 'content' => "Reference material the user shared (files). Use it to understand and frame the need:\n\n" . $ctx );
+	}
+
 	$messages = array_slice( $messages, -24 );
 	foreach ( $messages as $m ) {
 		$role = isset( $m['role'] ) && in_array( $m['role'], array( 'user', 'assistant' ), true ) ? $m['role'] : 'user';
@@ -363,6 +375,69 @@ function dnai_rest_transcribe( WP_REST_Request $request ) {
 	return new WP_REST_Response( array( 'text' => (string) $text ), 200 );
 }
 
+function dnai_rest_upload( WP_REST_Request $request ) {
+	$files = $request->get_file_params();
+	if ( empty( $files['file']['tmp_name'] ) || ! is_uploaded_file( $files['file']['tmp_name'] ) ) {
+		return new WP_REST_Response( array( 'error' => 'No file received.' ), 400 );
+	}
+	if ( ! empty( $files['file']['size'] ) && $files['file']['size'] > 10 * 1024 * 1024 ) {
+		return new WP_REST_Response( array( 'error' => 'File too large (max 10 MB).' ), 400 );
+	}
+
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+
+	$mimes = array(
+		'txt'      => 'text/plain',
+		'log'      => 'text/plain',
+		'md'       => 'text/plain',
+		'csv'      => 'text/csv',
+		'json'     => 'application/json',
+		'pdf'      => 'application/pdf',
+		'png'      => 'image/png',
+		'jpg|jpeg' => 'image/jpeg',
+		'gif'      => 'image/gif',
+		'webp'     => 'image/webp',
+		'doc'      => 'application/msword',
+		'docx'     => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+		'xls'      => 'application/vnd.ms-excel',
+		'xlsx'     => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+		'ppt'      => 'application/vnd.ms-powerpoint',
+		'pptx'     => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+	);
+
+	$upload = wp_handle_upload( $files['file'], array( 'test_form' => false, 'mimes' => $mimes ) );
+	if ( isset( $upload['error'] ) ) {
+		return new WP_REST_Response( array( 'error' => $upload['error'] ), 400 );
+	}
+
+	$filename  = basename( $upload['file'] );
+	$type      = $upload['type'];
+	$attach_id = wp_insert_attachment( array(
+		'post_mime_type' => $type,
+		'post_title'     => sanitize_file_name( $filename ),
+		'post_status'    => 'private',
+	), $upload['file'] );
+	if ( ! is_wp_error( $attach_id ) ) {
+		wp_update_attachment_metadata( $attach_id, wp_generate_attachment_metadata( $attach_id, $upload['file'] ) );
+	}
+
+	/* extract text from text-like files so the LLM can use it as knowledge */
+	$text = '';
+	if ( strpos( $type, 'text/' ) === 0 || in_array( $type, array( 'application/json', 'text/csv' ), true ) ) {
+		$raw = file_get_contents( $upload['file'] );
+		if ( $raw !== false ) $text = mb_substr( wp_strip_all_tags( $raw ), 0, 8000 );
+	}
+
+	return new WP_REST_Response( array(
+		'id'   => is_wp_error( $attach_id ) ? 0 : $attach_id,
+		'url'  => $upload['url'],
+		'name' => $filename,
+		'type' => $type,
+		'text' => $text,
+	), 200 );
+}
+
 function dnai_rest_need( WP_REST_Request $request ) {
 	$brief = $request->get_param( 'brief' );
 	if ( ! is_array( $brief ) ) return new WP_REST_Response( array( 'error' => 'invalid brief' ), 400 );
@@ -377,6 +452,21 @@ function dnai_rest_need( WP_REST_Request $request ) {
 	}
 	$body = implode( "\n", $lines );
 
+	$attachments = $request->get_param( 'attachments' );
+	$att_clean   = array();
+	if ( is_array( $attachments ) ) {
+		$body .= "\n\nAttachments:";
+		foreach ( $attachments as $att ) {
+			$name = isset( $att['name'] ) ? sanitize_text_field( wp_strip_all_tags( (string) $att['name'] ) ) : '';
+			$url  = isset( $att['url'] ) ? esc_url_raw( (string) $att['url'] ) : '';
+			$id   = isset( $att['id'] ) ? absint( $att['id'] ) : 0;
+			if ( $name || $url ) {
+				$body        .= "\n- " . $name . ( $url ? ' — ' . $url : '' );
+				$att_clean[]  = array( 'id' => $id, 'name' => $name, 'url' => $url );
+			}
+		}
+	}
+
 	$post_id = wp_insert_post( array(
 		'post_type'    => 'dnai_need',
 		'post_status'  => 'private',
@@ -387,7 +477,14 @@ function dnai_rest_need( WP_REST_Request $request ) {
 	if ( is_wp_error( $post_id ) ) return new WP_REST_Response( array( 'error' => 'save failed' ), 500 );
 
 	foreach ( $brief as $k => $v ) {
+		if ( $k === 'attachments' ) continue;
 		update_post_meta( $post_id, 'dnai_' . sanitize_key( $k ), sanitize_text_field( wp_strip_all_tags( (string) $v ) ) );
+	}
+	if ( $att_clean ) {
+		update_post_meta( $post_id, 'dnai_attachments', wp_json_encode( $att_clean ) );
+		foreach ( $att_clean as $att ) {
+			if ( $att['id'] ) wp_update_post( array( 'ID' => $att['id'], 'post_parent' => $post_id ) );
+		}
 	}
 
 	$to = dnai_get_opt( 'notify_email', get_option( 'admin_email' ) );
@@ -442,7 +539,12 @@ function dnai_sc_intake( $atts ) {
 			<div class="dnai-chat-sub">D²nAI Intake Genie · powered by the AI Lab</div></div>
 		</div>
 		<div class="dnai-thread" id="dnai-thread"></div>
+		<div class="dnai-atts" id="dnai-atts"></div>
 		<div class="dnai-compose">
+			<input type="file" id="dnai-file" multiple style="display:none" accept=".txt,.md,.csv,.json,.log,.pdf,.png,.jpg,.jpeg,.gif,.webp,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+			<button type="button" id="dnai-attach" class="dnai-attach" aria-label="Attach file" title="Joindre un fichier / Attach a file">
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+			</button>
 			<textarea id="dnai-input" rows="1" placeholder="Votre besoin… / Your need…"></textarea>
 			<button type="button" id="dnai-mic" class="dnai-mic" aria-label="Voice input" title="Parler / Speak">
 				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>

@@ -50,6 +50,16 @@
 .dnai-compose button:disabled{opacity:.5;cursor:default}
 .dnai-compose button.dnai-mic{background:var(--g50);color:var(--g800);border:1px solid var(--line)}
 .dnai-compose button.dnai-mic:hover{background:var(--g100)}
+.dnai-compose button.dnai-attach{background:var(--g50);color:var(--g800);border:1px solid var(--line)}
+.dnai-compose button.dnai-attach:hover{background:var(--g100)}
+.dnai-atts{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px}
+.dnai-atts:not(:empty){padding:8px 12px 0}
+.dnai-chip{display:inline-flex;align-items:center;gap:6px;max-width:220px;background:var(--g100);color:var(--g900);font-size:12px;font-weight:500;padding:5px 6px 5px 10px;border-radius:999px}
+.dnai-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dnai-chip.uploading{opacity:.6}
+.dnai-chip.uploading::before{content:"";width:11px;height:11px;border:2px solid var(--g500);border-top-color:transparent;border-radius:50%;animation:dnaispin .8s linear infinite;flex:none}
+.dnai-chip-x{border:0;background:rgba(0,0,0,.08);color:var(--g900);width:18px;height:18px;border-radius:50%;cursor:pointer;font-size:14px;line-height:1;display:grid;place-items:center;flex:none;padding:0}
+.dnai-chip-x:hover{background:rgba(0,0,0,.18)}
 .dnai-compose button.dnai-mic.rec{background:#DC2626;color:#fff;border-color:#DC2626;animation:dnaipulse 1.2s infinite}
 .dnai-compose button.dnai-mic.busy{color:var(--g700)}
 .dnai-compose button.dnai-mic.busy svg{animation:dnaispin 0.9s linear infinite}

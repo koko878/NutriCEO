@@ -8,7 +8,15 @@
   var input  = root.querySelector('#dnai-input');
   var send   = root.querySelector('#dnai-send');
   var history = []; // [{role, content}]
+  var atts = [];    // [{id,url,name,type,text}]
   var busy = false;
+
+  function buildContext() {
+    if (!atts.length) return '';
+    return atts.map(function (a) {
+      return 'FILE: ' + a.name + (a.text ? '\n' + a.text : ' (binary file — not text-extracted)');
+    }).join('\n\n---\n\n');
+  }
 
   function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
   function scroll() { thread.scrollTop = thread.scrollHeight; }
@@ -60,7 +68,7 @@
     fetch(DNAI.rest + '/need', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': DNAI.nonce },
-      body: JSON.stringify({ brief: brief })
+      body: JSON.stringify({ brief: brief, attachments: atts.map(function (a) { return { id: a.id, name: a.name, url: a.url }; }) })
     }).then(function (r) { return r.json(); }).then(function (res) {
       var s = card.querySelector('.dnai-sent span');
       s.textContent = res && res.ok
@@ -82,7 +90,7 @@
     fetch(DNAI.rest + '/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': DNAI.nonce },
-      body: JSON.stringify({ messages: history })
+      body: JSON.stringify({ messages: history, context: buildContext() })
     }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (res) {
         typing.remove();
@@ -182,5 +190,57 @@
           .finally(function () { mic.classList.remove('busy'); mic.disabled = false; });
       }
     }
+  }
+
+  /* File attachments → upload server-side, feed text as knowledge to the LLM */
+  var attachBtn = root.querySelector('#dnai-attach');
+  var fileInput = root.querySelector('#dnai-file');
+  var attsBox   = root.querySelector('#dnai-atts');
+  if (attachBtn && fileInput && attsBox) {
+    var EN2 = (navigator.language || '').toLowerCase().indexOf('en') === 0;
+
+    function renderChip(att) {
+      var chip = el('div', 'dnai-chip');
+      var label = el('span', null, att.name);
+      var x = el('button', 'dnai-chip-x', '×');
+      x.type = 'button';
+      x.setAttribute('aria-label', 'Remove');
+      x.addEventListener('click', function () {
+        var i = atts.indexOf(att);
+        if (i > -1) atts.splice(i, 1);
+        chip.remove();
+      });
+      chip.appendChild(label);
+      chip.appendChild(x);
+      attsBox.appendChild(chip);
+      return chip;
+    }
+
+    function uploadOne(file) {
+      var chip = el('div', 'dnai-chip uploading');
+      chip.appendChild(el('span', null, file.name));
+      attsBox.appendChild(chip);
+      var fd = new FormData();
+      fd.append('file', file, file.name);
+      fetch(DNAI.rest + '/upload', { method: 'POST', headers: { 'X-WP-Nonce': DNAI.nonce }, body: fd })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+        .then(function (res) {
+          chip.remove();
+          if (!res.ok || !res.j || !res.j.url) {
+            addError((res.j && res.j.error) ? res.j.error : (EN2 ? 'Upload failed.' : "Échec de l'envoi du fichier."));
+            return;
+          }
+          atts.push(res.j);
+          renderChip(res.j);
+        })
+        .catch(function () { chip.remove(); addError(EN2 ? 'Upload network error.' : "Erreur réseau (envoi)."); });
+    }
+
+    attachBtn.addEventListener('click', function () { if (!busy) fileInput.click(); });
+    fileInput.addEventListener('change', function () {
+      var list = Array.prototype.slice.call(fileInput.files || []);
+      list.forEach(uploadOne);
+      fileInput.value = '';
+    });
   }
 })();
