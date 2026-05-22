@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI Portal — Intake Genie & Product Catalog
  * Description:       Homepage chatbot that challenges, categorizes and structures Data/Digital/AI needs (powered by the AI Lab LLM, OpenAI-compatible / Open WebUI), plus a product catalog of live and in-development products.
- * Version:           1.3.0
+ * Version:           1.3.1
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-portal
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_PORTAL_VER', '1.3.0' );
+define( 'DNAI_PORTAL_VER', '1.3.1' );
 define( 'DNAI_PORTAL_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_PORTAL_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -291,7 +291,7 @@ function dnai_rest_chat( WP_REST_Request $request ) {
 	}
 
 	$resp = wp_remote_post( rtrim( $base, '/' ) . $path, array(
-		'timeout' => 45,
+		'timeout' => 60,
 		'headers' => array(
 			'Authorization' => 'Bearer ' . $key,
 			'Content-Type'  => 'application/json',

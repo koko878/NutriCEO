@@ -77,6 +77,8 @@
 .dnai-brief .dnai-sent{margin-top:10px;font-size:12px;font-weight:600;color:var(--ok);display:flex;align-items:center;gap:6px}
 
 .dnai-err{align-self:center;font-size:12px;color:var(--warn);background:var(--warnbg);padding:6px 10px;border-radius:8px}
+.dnai-wait{align-self:flex-start;font-size:12px;color:var(--g600);font-style:italic;padding:2px 6px}
+.dnai-wait:empty{display:none}
 
 /* Catalog */
 .dnai-catalog{max-width:1000px;margin:0 auto}

@@ -10,6 +10,7 @@
   var history = []; // [{role, content}]
   var atts = [];    // [{id,url,name,type,text}]
   var busy = false;
+  var EN = (navigator.language || '').toLowerCase().indexOf('en') === 0;
 
   function buildContext() {
     if (!atts.length) return '';
@@ -79,33 +80,67 @@
     });
   }
 
+  var MAX_TRIES = 3;          // total attempts before giving up
+  var ATTEMPT_TIMEOUT = 75000; // abort a single hung request (ms)
+
   function ask(text) {
     if (busy || !text.trim()) return;
     busy = true; send.disabled = true;
     addMsg('user', text);
     history.push({ role: 'user', content: text });
     input.value = ''; autosize();
-    var typing = addTyping();
 
-    fetch(DNAI.rest + '/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': DNAI.nonce },
-      body: JSON.stringify({ messages: history, context: buildContext() })
-    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
-      .then(function (res) {
-        typing.remove();
-        if (!res.ok || !res.j || !res.j.reply) {
-          addError((res.j && res.j.error) ? res.j.error : 'AI Lab error.');
-          return;
-        }
-        var reply = res.j.reply;
-        history.push({ role: 'assistant', content: reply });
-        var parsed = extractBrief(reply);
-        if (parsed.clean) addMsg('bot', parsed.clean);
-        if (parsed.brief) { var card = renderBrief(parsed.brief); saveBrief(parsed.brief, card); }
-      })
-      .catch(function () { typing.remove(); addError('Network error.'); })
-      .finally(function () { busy = false; send.disabled = false; input.focus(); });
+    var typing = addTyping();
+    var note = el('div', 'dnai-wait');
+    thread.appendChild(note);
+    var waitTimer = setTimeout(function () {
+      note.textContent = EN ? "We're thinking, please wait…" : 'On réfléchit, merci de patienter…';
+      scroll();
+    }, 4000);
+
+    function cleanup() { clearTimeout(waitTimer); typing.remove(); note.remove(); }
+    function done() { busy = false; send.disabled = false; input.focus(); }
+
+    function handleReply(reply) {
+      history.push({ role: 'assistant', content: reply });
+      var parsed = extractBrief(reply);
+      if (parsed.clean) addMsg('bot', parsed.clean);
+      if (parsed.brief) { var card = renderBrief(parsed.brief); saveBrief(parsed.brief, card); }
+    }
+
+    function fail(msg) { cleanup(); addError(msg); done(); }
+
+    function retry(n) {
+      note.textContent = EN ? 'Still working on it, one moment…' : 'Toujours en cours, un instant…';
+      scroll();
+      setTimeout(function () { attempt(n + 1); }, 1200 * n);
+    }
+
+    function attempt(n) {
+      var ctrl = window.AbortController ? new AbortController() : null;
+      var to = ctrl ? setTimeout(function () { ctrl.abort(); }, ATTEMPT_TIMEOUT) : null;
+
+      fetch(DNAI.rest + '/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': DNAI.nonce },
+        body: JSON.stringify({ messages: history, context: buildContext() }),
+        signal: ctrl ? ctrl.signal : undefined
+      }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
+        .then(function (res) {
+          if (to) clearTimeout(to);
+          if (res.ok && res.j && res.j.reply) { cleanup(); handleReply(res.j.reply); done(); return; }
+          if (n < MAX_TRIES && (res.status === 429 || res.status >= 500)) { retry(n); return; }
+          fail((res.j && res.j.error) ? res.j.error : (EN ? 'AI Lab error.' : 'Erreur du AI Lab.'));
+        })
+        .catch(function () {
+          if (to) clearTimeout(to);
+          if (n < MAX_TRIES) { retry(n); return; }
+          fail(EN ? 'The AI Lab is slow to respond. Please send your message again.'
+                  : "Le AI Lab tarde à répondre. Merci de renvoyer votre message.");
+        });
+    }
+
+    attempt(1);
   }
 
   function autosize() { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 120) + 'px'; }
