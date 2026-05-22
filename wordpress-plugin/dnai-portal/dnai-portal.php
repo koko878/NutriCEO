@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI Portal — Intake Genie & Product Catalog
  * Description:       Homepage chatbot that challenges, categorizes and structures Data/Digital/AI needs (powered by the AI Lab LLM, OpenAI-compatible / Open WebUI), plus a product catalog of live and in-development products.
- * Version:           1.2.1
+ * Version:           1.2.2
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-portal
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_PORTAL_VER', '1.2.1' );
+define( 'DNAI_PORTAL_VER', '1.2.2' );
 define( 'DNAI_PORTAL_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_PORTAL_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -397,6 +397,15 @@ function dnai_rest_need( WP_REST_Request $request ) {
 
 	return new WP_REST_Response( array( 'ok' => true, 'id' => $post_id ), 200 );
 }
+
+/* Explicitly allow the first-party microphone (voice intake).
+   Some security plugins / CDNs send a Permissions-Policy that disables it,
+   which makes getUserMedia fail instantly with no prompt. */
+add_action( 'send_headers', function () {
+	if ( is_admin() || headers_sent() ) return;
+	header( 'Permissions-Policy: microphone=(self)' );
+	header( 'Feature-Policy: microphone *' );
+} );
 
 /* -------------------------------------------------------------------------
  * 4. Assets

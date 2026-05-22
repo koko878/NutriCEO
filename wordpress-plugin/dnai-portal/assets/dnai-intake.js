@@ -140,7 +140,14 @@
         }).catch(function (err) {
           var name = err && err.name ? err.name : '';
           var m;
-          if (name === 'NotAllowedError' || name === 'SecurityError') {
+          var policyBlocked = false;
+          try {
+            if (document.featurePolicy && document.featurePolicy.allowsFeature && !document.featurePolicy.allowsFeature('microphone')) policyBlocked = true;
+          } catch (e) {}
+          if (policyBlocked) {
+            m = EN ? 'Microphone disabled by the site security policy (Permissions-Policy header) — ask IT/hosting to allow microphone=(self).'
+                   : "Micro désactivé par la politique de sécurité du site (en-tête Permissions-Policy) — demandez à l'IT/hébergeur d'autoriser microphone=(self).";
+          } else if (name === 'NotAllowedError' || name === 'SecurityError') {
             m = EN ? 'Mic permission denied — check the site permission AND Windows Privacy → Microphone (allow desktop apps).'
                    : "Accès micro refusé — vérifiez l'autorisation du site ET Windows : Confidentialité → Microphone (autoriser les applis de bureau).";
           } else if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
@@ -148,7 +155,7 @@
           } else if (name === 'NotReadableError') {
             m = EN ? 'Microphone is busy (used by another app).' : 'Micro occupé par une autre application.';
           } else {
-            m = (EN ? 'Mic error [v1.2.1]: ' : 'Erreur micro [v1.2.1] : ') + (name || 'inconnue');
+            m = (EN ? 'Mic error [v1.2.2]: ' : 'Erreur micro [v1.2.2] : ') + (name || 'inconnue');
           }
           addError(m);
         });
