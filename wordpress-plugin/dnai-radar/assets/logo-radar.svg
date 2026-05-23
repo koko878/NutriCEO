@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Radar Soufre — D²nAI">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1B5E20"/>
+      <stop offset="1" stop-color="#0F3D14"/>
+    </linearGradient>
+    <radialGradient id="sweep" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#9AE39A" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#9AE39A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="blipGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#C8FFC8" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#66BB6A" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="rain" width="14" height="22" patternUnits="userSpaceOnUse">
+      <rect width="2" height="9" x="0" y="0" fill="#9AE39A" opacity=".5"/>
+    </pattern>
+    <clipPath id="round"><rect x="0" y="0" width="512" height="512" rx="112"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#round)">
+    <rect width="512" height="512" fill="url(#bg)"/>
+    <!-- subtle matrix rain texture -->
+    <rect width="512" height="512" fill="url(#rain)" opacity=".10"/>
+
+    <!-- radar rings -->
+    <g fill="none" stroke="#7CF08A" stroke-opacity=".35" stroke-width="3">
+      <circle cx="256" cy="256" r="62"/>
+      <circle cx="256" cy="256" r="120"/>
+      <circle cx="256" cy="256" r="178"/>
+      <circle cx="256" cy="256" r="232"/>
+    </g>
+    <!-- cross hairs -->
+    <g stroke="#7CF08A" stroke-opacity=".22" stroke-width="3">
+      <line x1="256" y1="24" x2="256" y2="488"/>
+      <line x1="24" y1="256" x2="488" y2="256"/>
+    </g>
+
+    <!-- sweep wedge -->
+    <path d="M256 256 L256 26 A230 230 0 0 1 472 177 Z" fill="url(#sweep)"/>
+    <!-- leading edge -->
+    <line x1="256" y1="256" x2="256" y2="26" stroke="#C8FFC8" stroke-width="4" stroke-opacity=".9"/>
+
+    <!-- blip -->
+    <circle cx="342" cy="133" r="30" fill="url(#blipGlow)"/>
+    <circle cx="342" cy="133" r="9" fill="#EAFFEA"/>
+
+    <!-- center hub -->
+    <circle cx="256" cy="256" r="11" fill="#9AE39A"/>
+  </g>
+</svg>
