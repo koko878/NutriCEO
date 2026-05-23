@@ -1,41 +1,17 @@
 /* D²nAI Radar Intrants — raw-material price event-radar.
-   Watchlist (view + feed) is kept in the browser (localStorage). The signal is
-   generated server-side via the WP REST proxy (/dnai-radar/v1/signal), which
-   calls the AI Lab — so no CORS and the API key never reaches the browser. */
+   The watchlist is SHARED: stored server-side (WP option) and edited on the page
+   via the REST proxy (/dnai-radar/v1/watchlist). The signal (/dnai-radar/v1/signal)
+   is built server-side from that same shared list, so any update impacts the search.
+   The API key never reaches the browser and there is no CORS. */
 (function () {
   var root = document.querySelector('.dnai-radar');
   if (!root || typeof DNAI_RADAR === 'undefined') return;
 
   var MATERIAL = root.getAttribute('data-material') || 'Soufre';
-  var LS_WL = 'dnai_radar_watchlist_v1', LS_HIST = 'dnai_radar_history_v1';
+  var LS_HIST = 'dnai_radar_history_v1';
+  var CATEGORIES = DNAI_RADAR.categories || [];
 
-  var CATEGORIES = [
-    'Producteurs & exportateurs',
-    'Logistique & routes',
-    'Demande',
-    'Marché & prix',
-    'Événements à surveiller'
-  ];
-
-  var SEED = [
-    ['Producteurs & exportateurs', 'Arabie Saoudite'], ['Producteurs & exportateurs', 'Émirats (ADNOC)'],
-    ['Producteurs & exportateurs', 'Qatar'], ['Producteurs & exportateurs', 'Iran'],
-    ['Producteurs & exportateurs', 'Russie'], ['Producteurs & exportateurs', 'Kazakhstan (Tengiz)'],
-    ['Producteurs & exportateurs', 'Canada'], ['Producteurs & exportateurs', 'États-Unis'],
-    ['Producteurs & exportateurs', 'Chine'],
-    ['Logistique & routes', "Détroit d'Ormuz"], ['Logistique & routes', 'Mer Rouge / Bab-el-Mandeb'],
-    ['Logistique & routes', 'Mer Noire'], ['Logistique & routes', 'Port de Vancouver'],
-    ['Logistique & routes', 'Taux de fret maritime'],
-    ['Demande', 'Engrais phosphatés (acide sulfurique)'], ['Demande', 'Lixiviation des métaux'],
-    ['Demande', 'Activité raffinage / gaz acide'],
-    ['Marché & prix', 'Prix pétrole / gaz'], ['Marché & prix', 'World Bank Pink Sheet'],
-    ['Marché & prix', 'Soufre CFR Chine / FOB Moyen-Orient'],
-    ['Événements à surveiller', 'Sanctions Russie / Iran'], ['Événements à surveiller', 'Restrictions export Chine'],
-    ['Événements à surveiller', 'Conflits au Moyen-Orient'], ['Événements à surveiller', 'Ouragans Golfe du Mexique'],
-    ['Événements à surveiller', 'Arrêts de raffineries']
-  ].map(function (x, i) { return { id: 's' + i, cat: x[0], label: x[1] }; });
-
-  var watchlist = [], history = [], lastSignalText = '', busy = false;
+  var watchlist = [], history = [], lastSignalText = '', busy = false, wlBusy = false;
 
   function $(id) { return root.querySelector('#' + id); }
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
@@ -43,15 +19,36 @@
   function field(text, re) { var m = text.match(re); return m ? m[1].trim() : ''; }
   function dirClass(s) { if (/hausse|↑/i.test(s)) return ['up', '↑']; if (/baisse|↓/i.test(s)) return ['down', '↓']; return ['flat', '→']; }
 
-  /* ---------- storage ---------- */
-  function load() {
-    try { watchlist = JSON.parse(localStorage.getItem(LS_WL)) || SEED.slice(); } catch (e) { watchlist = SEED.slice(); }
-    try { history = JSON.parse(localStorage.getItem(LS_HIST)) || []; } catch (e) { history = []; }
+  function api(path, opts) {
+    opts = opts || {};
+    opts.headers = opts.headers || {};
+    opts.headers['X-WP-Nonce'] = DNAI_RADAR.nonce;
+    if (opts.body) opts.headers['Content-Type'] = 'application/json';
+    return fetch(DNAI_RADAR.rest + path, opts).then(function (r) {
+      return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; });
+    });
   }
-  function saveWL() { localStorage.setItem(LS_WL, JSON.stringify(watchlist)); }
-  function saveHist() { localStorage.setItem(LS_HIST, JSON.stringify(history)); }
 
-  /* ---------- watchlist ---------- */
+  /* ---------- shared watchlist (server) ---------- */
+  function loadWatchlist() {
+    api('/watchlist', { method: 'GET' }).then(function (res) {
+      if (res.ok && res.j && res.j.items) {
+        if (res.j.categories && res.j.categories.length) CATEGORIES = res.j.categories;
+        watchlist = res.j.items;
+      }
+      renderWatchlist();
+    }).catch(function () { renderWatchlist(); });
+  }
+  function mutateWatchlist(payload) {
+    if (wlBusy) return;
+    wlBusy = true;
+    api('/watchlist', { method: 'POST', body: JSON.stringify(payload) }).then(function (res) {
+      if (res.ok && res.j && res.j.items) { watchlist = res.j.items; renderWatchlist(); }
+      else alert((res.j && (res.j.message || res.j.error)) || 'Échec de la mise à jour de la watchlist.');
+    }).catch(function () {
+      alert('Erreur réseau — la watchlist n\'a pas pu être mise à jour.');
+    }).finally(function () { wlBusy = false; });
+  }
   function renderWatchlist() {
     var wrap = $('dnai-radar-watchlist'); wrap.innerHTML = '';
     CATEGORIES.forEach(function (cat) {
@@ -63,25 +60,19 @@
       items.forEach(function (it) {
         var c = document.createElement('span'); c.className = 'dnai-radar-chip';
         c.innerHTML = esc(it.label) + ' <span class="x" title="Retirer">×</span>';
-        c.querySelector('.x').addEventListener('click', function () {
-          watchlist = watchlist.filter(function (w) { return w.id !== it.id; }); saveWL(); renderWatchlist();
-        });
+        c.querySelector('.x').addEventListener('click', function () { mutateWatchlist({ action: 'remove', id: it.id }); });
         chips.appendChild(c);
       });
       div.appendChild(chips); wrap.appendChild(div);
     });
     if (!watchlist.length) wrap.innerHTML = '<div class="dnai-radar-wlempty">Watchlist vide — ajoutez des éléments à surveiller ci-dessous.</div>';
   }
-  function watchlistText() {
-    var s = '';
-    CATEGORIES.forEach(function (cat) {
-      var items = watchlist.filter(function (w) { return w.cat === cat; });
-      if (items.length) s += '\n[' + cat + '] ' + items.map(function (i) { return i.label; }).join(', ');
-    });
-    return s.replace(/^\n/, '');
-  }
 
-  /* ---------- generate ---------- */
+  /* ---------- history (per browser) ---------- */
+  function loadHistory() { try { history = JSON.parse(localStorage.getItem(LS_HIST)) || []; } catch (e) { history = []; } }
+  function saveHist() { localStorage.setItem(LS_HIST, JSON.stringify(history)); }
+
+  /* ---------- generate (server reads the shared watchlist) ---------- */
   function generate() {
     if (busy) return;
     busy = true;
@@ -90,24 +81,18 @@
 
     function done() { busy = false; btn.disabled = false; think.classList.remove('show'); }
 
-    fetch(DNAI_RADAR.rest + '/signal', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': DNAI_RADAR.nonce },
-      body: JSON.stringify({ watchlist: watchlistText() })
-    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
-      .then(function (res) {
-        if (res.ok && res.j && res.j.reply) { renderSignal(res.j.reply); pushHistory(res.j.reply); done(); return; }
-        if (res.status === 503 || (res.j && res.j.error === 'not_configured')) {
-          renderSignal(DEMO_SIGNAL()); done(); return; // demo fallback until admin configures the model
-        }
-        renderSignal('⚠️ Échec de la génération.\n\n' + ((res.j && (res.j.message || res.j.error)) || ('HTTP ' + res.status)) +
-          '\n\nVérifiez le modèle radar et la clé API dans Réglages → D²nAI Radar.');
-        done();
-      })
-      .catch(function () {
-        renderSignal('⚠️ Erreur réseau — le AI Lab tarde à répondre. Réessayez dans un instant.');
-        done();
-      });
+    api('/signal', { method: 'POST', body: JSON.stringify({}) }).then(function (res) {
+      if (res.ok && res.j && res.j.reply) { renderSignal(res.j.reply); pushHistory(res.j.reply); done(); return; }
+      if (res.status === 503 || (res.j && res.j.error === 'not_configured')) {
+        renderSignal(DEMO_SIGNAL()); done(); return; // demo fallback until admin configures the model
+      }
+      renderSignal('⚠️ Échec de la génération.\n\n' + ((res.j && (res.j.message || res.j.error)) || ('HTTP ' + res.status)) +
+        '\n\nVérifiez le modèle radar et la clé API dans Réglages → D²nAI Radar.');
+      done();
+    }).catch(function () {
+      renderSignal('⚠️ Erreur réseau — le AI Lab tarde à répondre. Réessayez dans un instant.');
+      done();
+    });
   }
 
   /* ---------- render ---------- */
@@ -129,7 +114,7 @@
     sig.classList.add('show');
   }
 
-  /* ---------- history ---------- */
+  /* ---------- history list ---------- */
   function pushHistory(text) {
     history.unshift({ ts: Date.now(), dir: field(text, /Signal\s*:\s*(.+)/i), conf: field(text, /Confiance\s*:\s*(Faible|Moyenne|Élevée|Elevee|Elevée)/i), text: text });
     history = history.slice(0, 30); saveHist(); renderHistory();
@@ -171,7 +156,7 @@
   }
 
   /* ---------- init ---------- */
-  load();
+  loadHistory();
   var sel = $('dnai-radar-addcat');
   CATEGORIES.forEach(function (c) { var o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
 
@@ -179,11 +164,11 @@
     e.preventDefault();
     var label = $('dnai-radar-addlabel').value.trim();
     if (!label) return;
-    watchlist.push({ id: 'u' + Date.now(), cat: $('dnai-radar-addcat').value, label: label });
-    saveWL(); renderWatchlist(); $('dnai-radar-addlabel').value = '';
+    mutateWatchlist({ action: 'add', cat: $('dnai-radar-addcat').value, label: label });
+    $('dnai-radar-addlabel').value = '';
   });
   $('dnai-radar-reset').addEventListener('click', function () {
-    if (confirm('Réinitialiser la watchlist avec la liste de départ ?')) { watchlist = SEED.slice(); saveWL(); renderWatchlist(); }
+    if (confirm('Réinitialiser la watchlist partagée avec la liste de départ ? (visible par tous)')) mutateWatchlist({ action: 'reset' });
   });
   $('dnai-radar-gen').addEventListener('click', generate);
   $('dnai-radar-regen').addEventListener('click', generate);
@@ -192,6 +177,6 @@
     if (confirm("Effacer tout l'historique des signaux ?")) { history = []; saveHist(); renderHistory(); }
   });
 
-  renderWatchlist();
+  loadWatchlist();
   renderHistory();
 })();

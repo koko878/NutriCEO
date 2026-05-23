@@ -3,7 +3,7 @@ Contributors: D²nAI · OCP Nutricrops
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 
 An AI event-radar on raw-material prices (sulfur first), for procurement teams.
@@ -27,10 +27,19 @@ not depend on the D²nAI Portal plugin.
 == Use ==
 - Add the shortcode  [dnai_radar]  to any page.
 - Optional attributes: [dnai_radar title="Radar Intrants" material="Soufre"]
-- The watchlist is editable in the page and stored in the visitor's browser
-  (localStorage). The signal history (track record) is stored the same way.
+- The watchlist is SHARED across all users: it is stored server-side (WP option),
+  viewed and edited directly on the page (add / remove / reset), and the radar
+  builds every signal from that same shared list — so any update immediately
+  impacts the search. Admins can see the current shared list under
+  Settings → D²nAI Radar. The signal history (track record) is per-browser.
 - Until the model is configured, the radar shows a clearly-labelled demo signal
   so the page is presentable.
+
+== Note on watchlist editing ==
+Watchlist updates go through the nonce-protected REST route
+/wp-json/dnai-radar/v1/watchlist. On an internal site this lets any visitor on
+the page edit the shared list; restrict the page to logged-in users (or behind
+your SSO) if you need to limit who can change it.
 
 == How the radar works ==
 The system prompt (editable in settings) makes the model:
