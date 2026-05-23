@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#1B5E20">
+<link rel="icon" type="image/png" href="assets/dnai-icon-512.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Radar">
+<title>Radar Intrants — D²nAI · OCP Nutricrops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-900:#0F3D14;--green-800:#1B5E20;--green-700:#2E7D32;--green-500:#4CAF50;
+  --green-100:#E8F0E8;--green-50:#F4F8F3;
+  --ink:#13191A;--ink-2:#3C4642;--muted:#73796F;
+  --line:#EAECE6;--line-soft:#F1F2EC;--bg:#FCFCFA;
+  --ok:#15803D;--ok-bg:#DCFCE7;--warn:#B45309;--warn-bg:#FEF3C7;--bad:#B91C1C;--bad-bg:#FEE2E2;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:radial-gradient(900px 420px at 50% -120px,#E2E8DE 0%,transparent 70%),var(--bg);
+  color:var(--ink);min-height:100vh;padding:30px 22px 70px;
+}
+.page{max-width:1080px;margin:0 auto}
+
+/* header */
+.head{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+.logo{width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,var(--green-800),var(--green-900));display:grid;place-items:center;position:relative;overflow:hidden;box-shadow:0 8px 20px -8px rgba(27,94,32,.5);flex:none}
+.logo::before{content:"";position:absolute;inset:0;opacity:.22;background:repeating-linear-gradient(180deg,rgba(180,255,180,.7) 0 1px,transparent 1px 3px)}
+.logo span{font-family:'Cormorant Garamond',serif;color:#E6F4E6;font-weight:700;font-size:22px;position:relative;letter-spacing:1px}
+.logo sup{font-size:11px;font-weight:600;top:-6px;position:relative}
+.head .t1{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.head .t2{font-family:'Cormorant Garamond',serif;font-size:23px;color:var(--green-800);font-weight:700;line-height:1.1}
+.head .spacer{flex:1}
+.statuschip{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;color:var(--ink-2);background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer}
+.statuschip:hover{border-color:var(--green-500)}
+.statuschip .led{width:8px;height:8px;border-radius:50%;background:var(--warn);flex:none}
+.statuschip.live .led{background:var(--ok)}
+
+.hero{margin:14px 0 22px}
+.kicker{font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--green-800);margin-bottom:9px}
+.hero h1{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:32px;line-height:1.13;color:var(--ink);max-width:720px}
+.hero h1 em{font-style:italic;color:var(--green-800)}
+.hero p{margin-top:10px;font-size:14px;color:var(--ink-2);max-width:680px;line-height:1.55}
+
+/* layout */
+.layout{display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 18px 20px}
+.panel h2{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:9px}
+.panel .sub{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.45}
+.aside{position:sticky;top:18px;display:flex;flex-direction:column;gap:18px}
+
+/* generate */
+.material-row{display:flex;align-items:center;gap:10px;margin:14px 0 4px;flex-wrap:wrap}
+.material-row .lab{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.material{display:inline-flex;align-items:center;gap:8px;background:var(--green-50);border:1px solid var(--green-100);border-radius:999px;padding:7px 13px;font-weight:600;font-size:13px;color:var(--green-800)}
+.material .mi{width:20px;height:20px;border-radius:6px;background:var(--green-800);display:grid;place-items:center;color:#E6F4E6;font:700 11px 'Cormorant Garamond',serif}
+
+.gen-btn{
+  margin-top:14px;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+  background:var(--green-800);color:#fff;border:0;border-radius:13px;padding:14px 16px;
+  font:600 14px 'Inter',sans-serif;cursor:pointer;box-shadow:0 8px 18px -10px rgba(27,94,32,.55);transition:.18s;
+}
+.gen-btn:hover{background:var(--green-900)}
+.gen-btn:disabled{opacity:.6;cursor:default}
+.demo-note{margin-top:8px;font-size:11.5px;color:var(--warn);display:flex;align-items:center;gap:6px}
+.demo-note.hide{display:none}
+
+/* thinking */
+.thinking{display:none;align-items:center;gap:10px;color:var(--muted);font-size:13px;margin-top:16px;padding:13px 15px;background:var(--green-50);border:1px solid var(--green-100);border-radius:12px}
+.thinking.show{display:flex}
+.thinking .matrix{width:20px;height:20px;border-radius:6px;background:var(--green-800);position:relative;overflow:hidden;flex:none}
+.thinking .matrix::after{content:"01·10·11·00·10·11";position:absolute;inset:0;font:700 7px/1 monospace;color:#9ae39a;letter-spacing:1px;white-space:nowrap;animation:rain 1.4s linear infinite;text-align:center;padding-top:3px}
+@keyframes rain{0%{transform:translateY(-50%)}100%{transform:translateY(50%)}}
+
+/* signal card */
+.signal{margin-top:16px;border:1px solid var(--green-100);border-radius:14px;overflow:hidden;display:none}
+.signal.show{display:block;animation:fade .3s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.signal .top{display:flex;align-items:center;gap:12px;padding:13px 16px;background:linear-gradient(180deg,#fff,var(--green-50));border-bottom:1px solid var(--green-100)}
+.dir{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:20px;font-weight:700;flex:none}
+.dir.up{background:var(--bad-bg);color:var(--bad)}
+.dir.down{background:var(--ok-bg);color:var(--ok)}
+.dir.flat{background:var(--warn-bg);color:var(--warn)}
+.signal .top .meta{flex:1;min-width:0}
+.signal .top .meta .l1{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.signal .top .meta .l2{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--ink);line-height:1.15}
+.conf{font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;flex:none}
+.conf.high{background:var(--ok-bg);color:var(--ok)}
+.conf.mid{background:var(--warn-bg);color:var(--warn)}
+.conf.low{background:var(--line-soft);color:var(--muted)}
+.signal .body{padding:14px 16px;font-size:13.5px;line-height:1.62;color:var(--ink-2);white-space:pre-wrap;word-wrap:break-word}
+.signal .body a{color:var(--green-800);font-weight:600;text-decoration:none;border-bottom:1px solid var(--green-100)}
+.signal .body a:hover{border-color:var(--green-500)}
+.signal .actions{display:flex;gap:8px;padding:0 16px 16px;flex-wrap:wrap}
+.mini-btn{display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--green-800);border:1px solid var(--green-100);border-radius:9px;padding:8px 12px;font:600 12px 'Inter',sans-serif;cursor:pointer}
+.mini-btn:hover{background:var(--green-50)}
+.disclaimer{margin-top:12px;font-size:11px;color:var(--muted);line-height:1.5;border-top:1px dashed var(--line);padding-top:10px}
+
+/* history */
+.hist{margin-top:22px}
+.hist .lab{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.hist .lab .clear{font-size:11px;color:var(--muted);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:600}
+.hist .lab .clear:hover{color:var(--bad)}
+.hrow{display:flex;align-items:center;gap:11px;padding:11px 12px;border:1px solid var(--line);border-radius:11px;margin-bottom:8px;cursor:pointer;transition:.15s}
+.hrow:hover{border-color:var(--green-500);background:var(--green-50)}
+.hrow .hd{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-size:15px;font-weight:700;flex:none}
+.hrow .ht{flex:1;min-width:0}
+.hrow .ht .a{font-size:13px;font-weight:600;color:var(--ink)}
+.hrow .ht .b{font-size:11.5px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist .empty{font-size:12.5px;color:var(--muted);padding:14px;text-align:center;border:1px dashed var(--line);border-radius:11px}
+
+/* watchlist */
+.wl-cat{margin-bottom:14px}
+.wl-cat h4{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--green-800);margin-bottom:7px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--green-50);border:1px solid var(--green-100);color:var(--ink-2);font-size:12px;font-weight:500;padding:5px 8px 5px 10px;border-radius:999px}
+.chip .x{cursor:pointer;color:var(--muted);font-weight:700;line-height:1;font-size:14px;width:14px;text-align:center}
+.chip .x:hover{color:var(--bad)}
+.wl-empty{font-size:12px;color:var(--muted);font-style:italic}
+
+.addform{margin-top:6px;border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:8px}
+.addform select,.addform input{
+  width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 11px;
+  font:500 13px 'Inter',sans-serif;color:var(--ink);background:#fff;outline:none;
+}
+.addform select:focus,.addform input:focus{border-color:var(--green-500)}
+.addform .add-btn{background:var(--green-800);color:#fff;border:0;border-radius:9px;padding:10px;font:600 13px 'Inter',sans-serif;cursor:pointer}
+.addform .add-btn:hover{background:var(--green-900)}
+.wl-foot{margin-top:12px;display:flex;gap:10px;font-size:11px}
+.wl-foot a{color:var(--muted);cursor:pointer;font-weight:600}
+.wl-foot a:hover{color:var(--green-800)}
+
+/* settings modal */
+.modal{position:fixed;inset:0;background:rgba(15,30,16,.45);display:none;place-items:center;z-index:50;padding:20px}
+.modal.show{display:grid}
+.modal .box{background:#fff;border-radius:18px;max-width:440px;width:100%;padding:22px;box-shadow:0 30px 60px -20px rgba(0,0,0,.4)}
+.modal h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--ink)}
+.modal .mexp{font-size:12.5px;color:var(--muted);margin:5px 0 16px;line-height:1.5}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2);margin-bottom:5px}
+.field input{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font:500 13px 'Inter',sans-serif;color:var(--ink);outline:none}
+.field input:focus{border-color:var(--green-500)}
+.field .hint{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-top:1px solid var(--line)}
+.toggle-row .tt{font-size:13px;font-weight:600;color:var(--ink)}
+.toggle-row .td{font-size:11.5px;color:var(--muted);margin-top:1px}
+.switch{position:relative;width:42px;height:24px;flex:none}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:var(--line);border-radius:999px;cursor:pointer;transition:.2s}
+.slider::before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.switch input:checked+.slider{background:var(--green-700)}
+.switch input:checked+.slider::before{transform:translateX(18px)}
+.modal .mrow{display:flex;gap:9px;margin-top:18px}
+.btn-primary{flex:1;background:var(--green-800);color:#fff;border:0;border-radius:10px;padding:12px;font:600 13.5px 'Inter',sans-serif;cursor:pointer}
+.btn-primary:hover{background:var(--green-900)}
+.btn-ghost{background:#fff;color:var(--ink-2);border:1px solid var(--line);border-radius:10px;padding:12px 16px;font:600 13.5px 'Inter',sans-serif;cursor:pointer}
+.btn-ghost:hover{background:var(--green-50)}
+.testline{font-size:12px;margin-top:10px;min-height:16px}
+.testline.ok{color:var(--ok)}
+.testline.err{color:var(--bad)}
+
+.foot{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);flex-wrap:wrap;gap:8px}
+.foot .mini{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--green-800);font-size:13px}
+
+@media(max-width:860px){
+  .layout{grid-template-columns:1fr}
+  .aside{position:static}
+  .hero h1{font-size:27px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="head">
+    <div class="logo"><span>D<sup>2</sup>n</span></div>
+    <div>
+      <div class="t1">OCP Nutricrops · Data, Digital &amp; AI</div>
+      <div class="t2">Radar Intrants</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="statuschip" id="statusChip" onclick="openSettings()">
+      <span class="led"></span><span id="statusText">Mode démo</span>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="kicker">Veille marché matières premières · D²nAI</div>
+    <h1>Quand le soufre s'envole, <em>anticipez</em> au lieu de subir.</h1>
+    <p>Un radar d'événements qui surveille en continu l'actualité géopolitique, logistique et marché, puis émet un signal directionnel argumenté et sourcé sur le prix de vos intrants. Vous alimentez la watchlist, l'IA fait la veille.</p>
+  </div>
+
+  <div class="layout">
+
+    <!-- MAIN -->
+    <div class="panel">
+      <h2>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green-800)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20"/><path d="M12 12 16 8"/></svg>
+        Signal de la semaine
+      </h2>
+      <div class="sub">L'IA balaie la watchlist sur les sources d'actualité récentes et produit un signal directionnel sur le prix.</div>
+
+      <div class="material-row">
+        <span class="lab">Matière suivie</span>
+        <span class="material"><span class="mi">S</span> Soufre</span>
+      </div>
+
+      <button class="gen-btn" id="genBtn" onclick="generate()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>
+        Générer le radar de la semaine
+      </button>
+      <div class="demo-note" id="demoNote">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        Mode démo — exemple statique. <a href="#" onclick="openSettings();return false;" style="color:var(--green-800);font-weight:700">Connecter votre OpenWebUI</a> pour de vrais signaux.
+      </div>
+
+      <div class="thinking" id="thinking">
+        <div class="matrix"></div>
+        <span id="thinkingText">Balayage des sources d'actualité &amp; analyse de la watchlist…</span>
+      </div>
+
+      <div class="signal" id="signal">
+        <div class="top">
+          <div class="dir" id="sigDir">→</div>
+          <div class="meta">
+            <div class="l1" id="sigDate">—</div>
+            <div class="l2" id="sigTitle">Soufre</div>
+          </div>
+          <span class="conf" id="sigConf">—</span>
+        </div>
+        <div class="body" id="sigBody"></div>
+        <div class="actions">
+          <button class="mini-btn" onclick="copySignal()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copier</button>
+          <button class="mini-btn" onclick="generate()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M8 16H3v5"/></svg> Régénérer</button>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        Signal indicatif d'aide à la décision, fondé sur un avis d'analyste IA raisonné — ce n'est pas une prévision de prix garantie. Le niveau de confiance reflète la qualité des sources, pas une probabilité statistique. Vérifiez toujours les sources citées.
+      </div>
+
+      <div class="hist">
+        <div class="lab">Historique des signaux · track record <span class="clear" id="clearHist" onclick="clearHistory()">Effacer</span></div>
+        <div id="histList"></div>
+      </div>
+    </div>
+
+    <!-- ASIDE -->
+    <div class="aside">
+      <div class="panel">
+        <h2>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--green-800)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          Watchlist
+        </h2>
+        <div class="sub">Ce que l'IA surveille en priorité. Ajoutez vos fournisseurs, ports, événements à suivre.</div>
+        <div id="watchlist" style="margin-top:16px"></div>
+
+        <form class="addform" id="addForm" onsubmit="addItem(event)">
+          <select id="addCat"></select>
+          <input id="addLabel" placeholder="Ex. Détroit d'Ormuz, Tengiz, embargo…" maxlength="80" required>
+          <button class="add-btn" type="submit">+ Ajouter à la watchlist</button>
+        </form>
+        <div class="wl-foot">
+          <a onclick="resetWatchlist()">↺ Réinitialiser la liste de départ</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    <div>D²nAI · OCP Nutricrops · POC veille intrants — démo</div>
+    <div class="mini">Feed the data to feed the decision.</div>
+  </div>
+
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal" id="modal">
+  <div class="box">
+    <h3>Connexion OpenWebUI</h3>
+    <div class="mexp">Le radar interroge votre instance OpenWebUI privée. Rien ne sort de votre infrastructure. La clé est stockée uniquement dans ce navigateur.</div>
+    <div class="field">
+      <label>URL de l'instance</label>
+      <input id="cfgUrl" placeholder="https://lab.ocpnutricrops.ai">
+    </div>
+    <div class="field">
+      <label>Clé API</label>
+      <input id="cfgKey" type="password" placeholder="sk-…">
+      <div class="hint">OpenWebUI → Paramètres → Compte → Clés API.</div>
+    </div>
+    <div class="field">
+      <label>Identifiant du modèle</label>
+      <input id="cfgModel" placeholder="radar-soufre">
+      <div class="hint">Le modèle « Radar Soufre » que vous avez créé (avec recherche web + Perplexity), ou GPT-OSS.</div>
+    </div>
+    <div class="toggle-row">
+      <div><div class="tt">Recherche web</div><div class="td">Forcer la recherche web sur la requête</div></div>
+      <label class="switch"><input type="checkbox" id="cfgWeb" checked><span class="slider"></span></label>
+    </div>
+    <div class="testline" id="testLine"></div>
+    <div class="mrow">
+      <button class="btn-ghost" onclick="testConn()">Tester</button>
+      <button class="btn-primary" onclick="saveSettings()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const LS_WL='radar_watchlist_v1', LS_CFG='radar_cfg_v1', LS_HIST='radar_history_v1';
+
+const CATEGORIES=[
+  "Producteurs & exportateurs",
+  "Logistique & routes",
+  "Demande",
+  "Marché & prix",
+  "Événements à surveiller"
+];
+
+const SEED=[
+  ["Producteurs & exportateurs","Arabie Saoudite"],["Producteurs & exportateurs","Émirats (ADNOC)"],
+  ["Producteurs & exportateurs","Qatar"],["Producteurs & exportateurs","Iran"],
+  ["Producteurs & exportateurs","Russie"],["Producteurs & exportateurs","Kazakhstan (Tengiz)"],
+  ["Producteurs & exportateurs","Canada"],["Producteurs & exportateurs","États-Unis"],
+  ["Producteurs & exportateurs","Chine"],
+  ["Logistique & routes","Détroit d'Ormuz"],["Logistique & routes","Mer Rouge / Bab-el-Mandeb"],
+  ["Logistique & routes","Mer Noire"],["Logistique & routes","Port de Vancouver"],
+  ["Logistique & routes","Taux de fret maritime"],
+  ["Demande","Engrais phosphatés (acide sulfurique)"],["Demande","Lixiviation des métaux"],
+  ["Demande","Activité raffinage / gaz acide"],
+  ["Marché & prix","Prix pétrole / gaz"],["Marché & prix","World Bank Pink Sheet"],
+  ["Marché & prix","Soufre CFR Chine / FOB Moyen-Orient"],
+  ["Événements à surveiller","Sanctions Russie / Iran"],["Événements à surveiller","Restrictions export Chine"],
+  ["Événements à surveiller","Conflits au Moyen-Orient"],["Événements à surveiller","Ouragans Golfe du Mexique"],
+  ["Événements à surveiller","Arrêts de raffineries"]
+].map((x,i)=>({id:'s'+i,cat:x[0],label:x[1]}));
+
+let watchlist=[], cfg={}, history=[], lastSignalText='';
+
+/* ---------- storage ---------- */
+function load(){
+  try{watchlist=JSON.parse(localStorage.getItem(LS_WL))||SEED.slice();}catch(e){watchlist=SEED.slice();}
+  try{cfg=JSON.parse(localStorage.getItem(LS_CFG))||{};}catch(e){cfg={};}
+  try{history=JSON.parse(localStorage.getItem(LS_HIST))||[];}catch(e){history=[];}
+  if(cfg.web===undefined)cfg.web=true;
+}
+function saveWL(){localStorage.setItem(LS_WL,JSON.stringify(watchlist));}
+function saveHist(){localStorage.setItem(LS_HIST,JSON.stringify(history));}
+
+/* ---------- watchlist UI ---------- */
+function renderWatchlist(){
+  const wrap=document.getElementById('watchlist');wrap.innerHTML='';
+  CATEGORIES.forEach(cat=>{
+    const items=watchlist.filter(w=>w.cat===cat);
+    if(!items.length)return;
+    const div=document.createElement('div');div.className='wl-cat';
+    div.innerHTML='<h4>'+esc(cat)+'</h4>';
+    const chips=document.createElement('div');chips.className='chips';
+    items.forEach(it=>{
+      const c=document.createElement('span');c.className='chip';
+      c.innerHTML=esc(it.label)+' <span class="x" title="Retirer">×</span>';
+      c.querySelector('.x').onclick=()=>{watchlist=watchlist.filter(w=>w.id!==it.id);saveWL();renderWatchlist();};
+      chips.appendChild(c);
+    });
+    div.appendChild(chips);wrap.appendChild(div);
+  });
+  if(!watchlist.length)wrap.innerHTML='<div class="wl-empty">Watchlist vide — ajoutez des éléments à surveiller ci-dessous.</div>';
+}
+function addItem(e){
+  e.preventDefault();
+  const cat=document.getElementById('addCat').value;
+  const label=document.getElementById('addLabel').value.trim();
+  if(!label)return;
+  watchlist.push({id:'u'+Date.now(),cat,label});
+  saveWL();renderWatchlist();
+  document.getElementById('addLabel').value='';
+}
+function resetWatchlist(){
+  if(confirm('Réinitialiser la watchlist avec la liste de départ ?')){watchlist=SEED.slice();saveWL();renderWatchlist();}
+}
+
+/* ---------- settings ---------- */
+function openSettings(){
+  document.getElementById('cfgUrl').value=cfg.url||'';
+  document.getElementById('cfgKey').value=cfg.key||'';
+  document.getElementById('cfgModel').value=cfg.model||'';
+  document.getElementById('cfgWeb').checked=cfg.web!==false;
+  document.getElementById('testLine').textContent='';
+  document.getElementById('testLine').className='testline';
+  document.getElementById('modal').classList.add('show');
+}
+function closeSettings(){document.getElementById('modal').classList.remove('show');}
+function readForm(){
+  return {
+    url:document.getElementById('cfgUrl').value.trim().replace(/\/+$/,''),
+    key:document.getElementById('cfgKey').value.trim(),
+    model:document.getElementById('cfgModel').value.trim(),
+    web:document.getElementById('cfgWeb').checked
+  };
+}
+function saveSettings(){
+  cfg=readForm();
+  localStorage.setItem(LS_CFG,JSON.stringify(cfg));
+  closeSettings();updateStatus();
+}
+function isLive(){return !!(cfg.url&&cfg.key&&cfg.model);}
+function updateStatus(){
+  const chip=document.getElementById('statusChip'),txt=document.getElementById('statusText'),note=document.getElementById('demoNote');
+  if(isLive()){chip.classList.add('live');txt.textContent='Connecté · '+cfg.model;note.classList.add('hide');}
+  else{chip.classList.remove('live');txt.textContent='Mode démo';note.classList.remove('hide');}
+}
+async function testConn(){
+  const c=readForm();const line=document.getElementById('testLine');
+  if(!c.url||!c.key||!c.model){line.className='testline err';line.textContent='Renseignez URL, clé et modèle.';return;}
+  line.className='testline';line.textContent='Test en cours…';
+  try{
+    const r=await callOpenWebUI(c,[{role:'user',content:'Réponds uniquement par: OK'}],false);
+    line.className='testline ok';line.textContent='✓ Connexion réussie — modèle joignable.';
+  }catch(err){line.className='testline err';line.textContent='✗ '+err.message;}
+}
+
+/* ---------- prompt ---------- */
+function watchlistText(){
+  let s='';
+  CATEGORIES.forEach(cat=>{
+    const items=watchlist.filter(w=>w.cat===cat);
+    if(items.length)s+='\n['+cat+'] '+items.map(i=>i.label).join(', ');
+  });
+  return s.trim();
+}
+const SYSTEM_PROMPT=`RÔLE
+Tu es "Radar Soufre", analyste de veille marché pour OCP Nutricrops (équipe D²nAI). Tu surveilles le marché mondial du SOUFRE et émets un signal directionnel argumenté sur le risque d'évolution de son prix, pour les acheteurs et la direction.
+
+MÉTHODE (IMPÉRATIVE)
+1. Utilise la recherche web pour récupérer des informations RÉCENTES (priorité aux 14 derniers jours). N'utilise jamais un prix ou un fait de mémoire : tout chiffre et toute affirmation doivent venir d'une source récupérée et CITÉE.
+2. Distingue le FAIT (sourcé) de ton INTERPRÉTATION (analyse).
+3. Le "niveau de confiance" est un avis d'analyste raisonné, PAS une probabilité statistique. Si l'info est mince, dis confiance Faible.
+4. Si tu ne trouves pas d'info fiable, dis-le plutôt que d'inventer.
+
+FORMAT DE SORTIE (toujours respecter, exactement ces lignes)
+📅 Date : <date>
+🧪 Matière : Soufre
+📈 Signal : <↑ Hausse | ↓ Baisse | → Stable>
+⏳ Horizon : court terme (0–3 mois)
+🎚️ Confiance : <Faible | Moyenne | Élevée>
+💲 Prix de référence connu : <valeur + date + source>
+
+🔑 Facteurs clés (3 à 5, chacun avec sa source) :
+- …
+
+🧭 Lecture analyste :
+<2–4 phrases : pourquoi ce signal, ce qui pourrait l'invalider>
+
+🛒 Implication achat :
+<fenêtre d'achat / temporiser / constituer du stock — prudent et argumenté>
+
+🔗 Sources :
+<liste des liens cités>`;
+
+function buildUserMessage(){
+  return 'Watchlist actuelle à surveiller en priorité :'+'\n'+watchlistText()+
+    '\n\nNous sommes le '+todayFr()+'. Génère le radar soufre de cette semaine en respectant exactement le format demandé.';
+}
+
+/* ---------- OpenWebUI call ---------- */
+async function callOpenWebUI(c,messages,useWeb){
+  const body={model:c.model,messages:messages,stream:false};
+  if(useWeb)body.features={web_search:true};
+  const r=await fetch(c.url+'/api/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+c.key},
+    body:JSON.stringify(body)
+  });
+  if(!r.ok){let t='HTTP '+r.status;try{const j=await r.json();if(j.detail)t+=' · '+(typeof j.detail==='string'?j.detail:JSON.stringify(j.detail));}catch(e){}throw new Error(t);}
+  const j=await r.json();
+  const msg=j.choices&&j.choices[0]&&j.choices[0].message;
+  if(!msg||!msg.content)throw new Error('Réponse vide du modèle.');
+  return msg.content;
+}
+
+/* ---------- generate ---------- */
+async function generate(){
+  const btn=document.getElementById('genBtn'),think=document.getElementById('thinking'),sig=document.getElementById('signal');
+  btn.disabled=true;sig.classList.remove('show');think.classList.add('show');
+  let text;
+  try{
+    if(isLive()){
+      text=await callOpenWebUI(cfg,[{role:'system',content:SYSTEM_PROMPT},{role:'user',content:buildUserMessage()}],cfg.web!==false);
+    }else{
+      await new Promise(r=>setTimeout(r,1400));
+      text=DEMO_SIGNAL();
+    }
+    renderSignal(text);
+    pushHistory(text);
+  }catch(err){
+    renderSignal('⚠️ Échec de la génération.\n\n'+err.message+'\n\nVérifiez la connexion OpenWebUI (URL, clé, modèle) et que la recherche web / CORS sont autorisés.');
+  }finally{
+    btn.disabled=false;think.classList.remove('show');
+  }
+}
+
+/* ---------- render ---------- */
+function parseField(text,re){const m=text.match(re);return m?m[1].trim():'';}
+function renderSignal(text){
+  lastSignalText=text;
+  const sig=document.getElementById('signal');
+  const dirRaw=parseField(text,/Signal\s*:\s*(.+)/i);
+  const conf=parseField(text,/Confiance\s*:\s*(Faible|Moyenne|Élevée|Elevee|Elevée)/i);
+  const date=parseField(text,/Date\s*:\s*(.+)/i)||todayFr();
+  const d=document.getElementById('sigDir');
+  let cls='flat',sym='→';
+  if(/hausse|↑/i.test(dirRaw)){cls='up';sym='↑';}
+  else if(/baisse|↓/i.test(dirRaw)){cls='down';sym='↓';}
+  d.className='dir '+cls;d.textContent=sym;
+  document.getElementById('sigDate').textContent=date;
+  document.getElementById('sigTitle').textContent=dirRaw?('Soufre · '+dirRaw.replace(/[↑↓→]/g,'').trim()):'Soufre';
+  const cf=document.getElementById('sigConf');
+  if(conf){const lc=conf.toLowerCase();cf.textContent='Confiance '+conf;cf.className='conf '+(/élev|elev/.test(lc)?'high':/moy/.test(lc)?'mid':'low');}
+  else{cf.textContent='—';cf.className='conf low';}
+  document.getElementById('sigBody').innerHTML=linkify(text);
+  sig.classList.add('show');
+  sig.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function linkify(t){
+  return esc(t).replace(/(https?:\/\/[^\s<)]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+}
+function copySignal(){if(lastSignalText)navigator.clipboard.writeText(lastSignalText);}
+
+/* ---------- history ---------- */
+function pushHistory(text){
+  const dir=parseField(text,/Signal\s*:\s*(.+)/i);
+  const conf=parseField(text,/Confiance\s*:\s*(Faible|Moyenne|Élevée|Elevee|Elevée)/i);
+  history.unshift({ts:Date.now(),dir:dir,conf:conf,text:text});
+  history=history.slice(0,30);saveHist();renderHistory();
+}
+function renderHistory(){
+  const list=document.getElementById('histList');list.innerHTML='';
+  document.getElementById('clearHist').style.display=history.length?'inline':'none';
+  if(!history.length){list.innerHTML='<div class="empty">Aucun signal encore. Générez le premier radar pour démarrer le track record.</div>';return;}
+  history.forEach((h,idx)=>{
+    let cls='flat',sym='→';
+    if(/hausse|↑/i.test(h.dir)){cls='up';sym='↑';}
+    else if(/baisse|↓/i.test(h.dir)){cls='down';sym='↓';}
+    const row=document.createElement('div');row.className='hrow';
+    const dt=new Date(h.ts);
+    row.innerHTML='<div class="hd dir '+cls+'" style="font-size:14px">'+sym+'</div>'+
+      '<div class="ht"><div class="a">'+esc((h.dir||'Signal').replace(/[↑↓→]/g,'').trim()||'Signal')+(h.conf?(' · '+esc(h.conf)):'')+'</div>'+
+      '<div class="b">'+dt.toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})+'</div></div>';
+    row.onclick=()=>{renderSignal(h.text);};
+    list.appendChild(row);
+  });
+}
+function clearHistory(){if(confirm('Effacer tout l\'historique des signaux ?')){history=[];saveHist();renderHistory();}}
+
+/* ---------- demo ---------- */
+function DEMO_SIGNAL(){
+  return `📅 Date : `+todayFr()+`
+🧪 Matière : Soufre
+📈 Signal : ↑ Hausse
+⏳ Horizon : court terme (0–3 mois)
+🎚️ Confiance : Moyenne
+💲 Prix de référence connu : ~145 $/t CFR Chine (avr. 2026, World Bank Pink Sheet) — exemple
+
+🔑 Facteurs clés (exemple de démonstration) :
+- Tensions logistiques en mer Rouge qui rallongent les routes depuis le Moyen-Orient et renchérissent le fret. (source : presse maritime)
+- Maintenance programmée sur plusieurs unités de récupération de soufre dans le Golfe → offre resserrée à court terme. (source : presse spécialisée engrais)
+- Demande d'acide sulfurique soutenue côté engrais phosphatés à l'approche de la saison. (source : note marché)
+
+🧭 Lecture analyste :
+Le contexte penche vers une pression haussière de court terme, surtout d'origine logistique et d'offre. Le signal serait invalidé par une détente rapide du fret ou un redémarrage anticipé des unités en maintenance.
+
+🛒 Implication achat :
+Envisager de sécuriser une partie des besoins T+1 maintenant plutôt que d'attendre ; éviter de constituer un stock massif tant que la tendance n'est pas confirmée sur 2–3 semaines.
+
+🔗 Sources :
+Données fictives — ceci est un exemple de démonstration. Connectez votre OpenWebUI pour des signaux réels et sourcés.`;
+}
+
+/* ---------- utils ---------- */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function todayFr(){return new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
+
+/* ---------- init ---------- */
+function init(){
+  load();
+  const sel=document.getElementById('addCat');
+  CATEGORIES.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o);});
+  renderWatchlist();renderHistory();updateStatus();
+  document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeSettings();});
+}
+init();
+</script>
+</body>
+</html>
