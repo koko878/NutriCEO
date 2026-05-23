@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_PORTAL_VER', '1.3.1' );
+define( 'DNAI_PORTAL_VER', '1.4.0' );
 define( 'DNAI_PORTAL_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_PORTAL_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -107,6 +107,39 @@ function dnai_default_system_prompt() {
 	"- The JSON must be valid and on a single line. Keep keys exactly as given; field values in the user's language.";
 }
 
+function dnai_radar_system_prompt() {
+	return <<<'EOT'
+RÔLE
+Tu es "Radar Soufre", analyste de veille marché pour OCP Nutricrops (équipe D²nAI). Tu surveilles le marché mondial du SOUFRE et émets un signal directionnel argumenté sur le risque d'évolution de son prix, pour les acheteurs et la direction.
+
+MÉTHODE (IMPÉRATIVE)
+1. Utilise la recherche web pour récupérer des informations RÉCENTES (priorité aux 14 derniers jours). N'utilise jamais un prix ou un fait de mémoire : tout chiffre et toute affirmation doivent venir d'une source récupérée et CITÉE.
+2. Distingue le FAIT (sourcé) de ton INTERPRÉTATION (analyse).
+3. Le "niveau de confiance" est un avis d'analyste raisonné, PAS une probabilité statistique. Si l'info est mince, dis confiance Faible.
+4. Si tu ne trouves pas d'info fiable, dis-le plutôt que d'inventer.
+
+FORMAT DE SORTIE (toujours respecter, exactement ces lignes)
+📅 Date : <date>
+🧪 Matière : Soufre
+📈 Signal : <↑ Hausse | ↓ Baisse | → Stable>
+⏳ Horizon : court terme (0–3 mois)
+🎚️ Confiance : <Faible | Moyenne | Élevée>
+💲 Prix de référence connu : <valeur + date + source>
+
+🔑 Facteurs clés (3 à 5, chacun avec sa source) :
+- …
+
+🧭 Lecture analyste :
+<2–4 phrases : pourquoi ce signal, ce qui pourrait l'invalider>
+
+🛒 Implication achat :
+<fenêtre d'achat / temporiser / constituer du stock — prudent et argumenté>
+
+🔗 Sources :
+<liste des liens cités>
+EOT;
+}
+
 function dnai_get_opt( $key, $default = '' ) {
 	$o = get_option( 'dnai_portal_settings', array() );
 	return isset( $o[ $key ] ) && $o[ $key ] !== '' ? $o[ $key ] : $default;
@@ -130,6 +163,8 @@ function dnai_sanitize_settings( $in ) {
 		'stt_model'     => isset( $in['stt_model'] ) ? sanitize_text_field( $in['stt_model'] ) : 'whisper-1',
 		'system_prompt' => isset( $in['system_prompt'] ) ? wp_kses_post( $in['system_prompt'] ) : '',
 		'notify_email'  => isset( $in['notify_email'] ) ? sanitize_email( $in['notify_email'] ) : '',
+		'radar_model'   => isset( $in['radar_model'] ) ? sanitize_text_field( $in['radar_model'] ) : 'radar-soufre',
+		'radar_web'     => ! empty( $in['radar_web'] ) ? '1' : '',
 	);
 }
 
@@ -142,10 +177,12 @@ function dnai_settings_page() {
 	$sttm   = dnai_get_opt( 'stt_model', 'whisper-1' );
 	$prompt = dnai_get_opt( 'system_prompt', dnai_default_system_prompt() );
 	$email  = dnai_get_opt( 'notify_email', get_option( 'admin_email' ) );
+	$rmodel = dnai_get_opt( 'radar_model', 'radar-soufre' );
+	$rweb   = dnai_get_opt( 'radar_web', '1' );
 	?>
 	<div class="wrap">
 		<h1>D²nAI Portal — settings</h1>
-		<p>Plug the AI Lab LLM (Open WebUI / OpenAI-compatible). Shortcodes: <code>[dnai_home]</code> (full homepage), <code>[dnai_intake]</code> (chatbot) and <code>[dnai_catalog]</code> (product catalog).</p>
+		<p>Plug the AI Lab LLM (Open WebUI / OpenAI-compatible). Shortcodes: <code>[dnai_home]</code> (full homepage), <code>[dnai_intake]</code> (chatbot), <code>[dnai_catalog]</code> (product catalog) and <code>[dnai_radar]</code> (raw-material price radar).</p>
 		<?php if ( isset( $_GET['seeded'] ) ) : ?>
 			<div class="notice notice-success is-dismissible"><p><?php echo (int) $_GET['seeded']; ?> sample product(s) added under <strong>D²nAI Products</strong>.</p></div>
 		<?php endif; ?>
@@ -175,6 +212,13 @@ function dnai_settings_page() {
 				<tr><th><label>System prompt</label></th>
 					<td><textarea name="dnai_portal_settings[system_prompt]" rows="14" class="large-text code"><?php echo esc_textarea( $prompt ); ?></textarea>
 					<p class="description">Drives how the bot challenges/categorizes and emits the structured <code>[[BRIEF]]…[[/BRIEF]]</code> block.</p></td></tr>
+				<tr><th colspan="2"><h2 style="margin:.6em 0 0">Radar Intrants <span style="font-weight:400;color:#666">— shortcode <code>[dnai_radar]</code></span></h2></th></tr>
+				<tr><th><label>Radar model</label></th>
+					<td><input type="text" name="dnai_portal_settings[radar_model]" value="<?php echo esc_attr( $rmodel ); ?>" class="regular-text" placeholder="radar-soufre">
+					<p class="description">Model used for the raw-material radar (e.g. your <code>radar-soufre</code> model with web search + Perplexity, or <code>GPT-OSS</code>). Uses the same base URL &amp; API key above.</p></td></tr>
+				<tr><th><label>Radar web search</label></th>
+					<td><label><input type="checkbox" name="dnai_portal_settings[radar_web]" value="1" <?php checked( $rweb, '1' ); ?>> Force web search on the radar request</label>
+					<p class="description">Sends <code>features.web_search=true</code> so the model browses live sources. Disable if your model already searches by default.</p></td></tr>
 			</table>
 			<?php submit_button(); ?>
 		</form>
@@ -244,6 +288,11 @@ add_action( 'rest_api_init', function () {
 		'callback'            => 'dnai_rest_need',
 		'permission_callback' => 'dnai_rest_permission',
 	) );
+	register_rest_route( 'dnai/v1', '/radar', array(
+		'methods'             => 'POST',
+		'callback'            => 'dnai_rest_radar',
+		'permission_callback' => 'dnai_rest_permission',
+	) );
 	register_rest_route( 'dnai/v1', '/transcribe', array(
 		'methods'             => 'POST',
 		'callback'            => 'dnai_rest_transcribe',
@@ -301,6 +350,57 @@ function dnai_rest_chat( WP_REST_Request $request ) {
 			'messages' => $clean,
 			'stream'   => false,
 		) ),
+	) );
+
+	if ( is_wp_error( $resp ) ) {
+		return new WP_REST_Response( array( 'error' => 'AI Lab unreachable: ' . $resp->get_error_message() ), 502 );
+	}
+	$code = wp_remote_retrieve_response_code( $resp );
+	$body = json_decode( wp_remote_retrieve_body( $resp ), true );
+	if ( $code >= 400 || empty( $body['choices'][0]['message']['content'] ) ) {
+		$msg = isset( $body['error']['message'] ) ? $body['error']['message'] : ( 'AI Lab error (HTTP ' . $code . ')' );
+		return new WP_REST_Response( array( 'error' => $msg ), 502 );
+	}
+
+	return new WP_REST_Response( array( 'reply' => $body['choices'][0]['message']['content'] ), 200 );
+}
+
+function dnai_rest_radar( WP_REST_Request $request ) {
+	$base  = dnai_get_opt( 'base_url' );
+	$path  = dnai_get_opt( 'api_path', '/api/chat/completions' );
+	$key   = dnai_get_opt( 'api_key' );
+	$model = dnai_get_opt( 'radar_model', 'radar-soufre' );
+	$web   = dnai_get_opt( 'radar_web', '1' ) === '1';
+	if ( ! $base || ! $key ) {
+		return new WP_REST_Response( array( 'error' => 'not_configured', 'message' => 'Radar not configured. Set base URL, API key and radar model in D²nAI Portal settings.' ), 503 );
+	}
+
+	$watchlist = $request->get_param( 'watchlist' );
+	$watchlist = is_string( $watchlist ) ? mb_substr( wp_strip_all_tags( $watchlist ), 0, 4000 ) : '';
+
+	$today = date_i18n( 'l j F Y' );
+	$user  = "Watchlist actuelle à surveiller en priorité :\n" . $watchlist .
+		"\n\nNous sommes le " . $today . ". Génère le radar soufre de cette semaine en respectant exactement le format demandé.";
+
+	$payload = array(
+		'model'    => $model,
+		'messages' => array(
+			array( 'role' => 'system', 'content' => dnai_radar_system_prompt() ),
+			array( 'role' => 'user',   'content' => $user ),
+		),
+		'stream'   => false,
+	);
+	if ( $web ) {
+		$payload['features'] = array( 'web_search' => true );
+	}
+
+	$resp = wp_remote_post( rtrim( $base, '/' ) . $path, array(
+		'timeout' => 90,
+		'headers' => array(
+			'Authorization' => 'Bearer ' . $key,
+			'Content-Type'  => 'application/json',
+		),
+		'body'    => wp_json_encode( $payload ),
 	) );
 
 	if ( is_wp_error( $resp ) ) {
@@ -514,10 +614,13 @@ function dnai_enqueue() {
 	wp_register_style( 'dnai-portal', DNAI_PORTAL_URL . 'assets/dnai-portal.css', array(), DNAI_PORTAL_VER );
 	wp_register_script( 'dnai-intake', DNAI_PORTAL_URL . 'assets/dnai-intake.js', array(), DNAI_PORTAL_VER, true );
 	wp_register_script( 'dnai-catalog', DNAI_PORTAL_URL . 'assets/dnai-catalog.js', array(), DNAI_PORTAL_VER, true );
-	wp_localize_script( 'dnai-intake', 'DNAI', array(
+	wp_register_script( 'dnai-radar', DNAI_PORTAL_URL . 'assets/dnai-radar.js', array(), DNAI_PORTAL_VER, true );
+	$api = array(
 		'rest'  => esc_url_raw( rest_url( 'dnai/v1' ) ),
 		'nonce' => wp_create_nonce( 'wp_rest' ),
-	) );
+	);
+	wp_localize_script( 'dnai-intake', 'DNAI', $api );
+	wp_localize_script( 'dnai-radar', 'DNAI_RADAR', $api );
 }
 add_action( 'wp_enqueue_scripts', 'dnai_enqueue' );
 
@@ -627,6 +730,83 @@ function dnai_sc_catalog( $atts ) {
 	return ob_get_clean();
 }
 add_shortcode( 'dnai_catalog', 'dnai_sc_catalog' );
+
+function dnai_sc_radar( $atts ) {
+	wp_enqueue_style( 'dnai-portal' );
+	wp_enqueue_script( 'dnai-radar' );
+	$a = shortcode_atts( array(
+		'title'    => 'Radar Intrants',
+		'material' => 'Soufre',
+	), $atts );
+	ob_start(); ?>
+	<div class="dnai-radar" data-material="<?php echo esc_attr( $a['material'] ); ?>">
+		<div class="dnai-radar-head">
+			<div class="dnai-radar-kicker">Veille marché matières premières · D²nAI</div>
+			<h2 class="dnai-radar-title"><?php echo esc_html( $a['title'] ); ?></h2>
+			<p class="dnai-radar-intro">L'IA surveille l'actualité géopolitique, logistique et marché, puis émet un signal directionnel argumenté et sourcé sur le prix de vos intrants. Vous alimentez la watchlist, l'IA fait la veille.</p>
+		</div>
+
+		<div class="dnai-radar-grid">
+			<!-- MAIN -->
+			<div class="dnai-radar-panel">
+				<div class="dnai-radar-matrow">
+					<span class="dnai-radar-lab">Matière suivie</span>
+					<span class="dnai-radar-mat"><span class="dnai-radar-mi"><?php echo esc_html( mb_substr( $a['material'], 0, 1 ) ); ?></span> <?php echo esc_html( $a['material'] ); ?></span>
+				</div>
+
+				<button type="button" class="dnai-radar-gen" id="dnai-radar-gen">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>
+					Générer le radar de la semaine
+				</button>
+
+				<div class="dnai-radar-think" id="dnai-radar-think">
+					<span class="dnai-radar-matrix"></span>
+					<span>Balayage des sources d'actualité &amp; analyse de la watchlist…</span>
+				</div>
+
+				<div class="dnai-radar-signal" id="dnai-radar-signal">
+					<div class="dnai-radar-sigtop">
+						<div class="dnai-radar-dir" id="dnai-radar-dir">→</div>
+						<div class="dnai-radar-sigmeta">
+							<div class="dnai-radar-l1" id="dnai-radar-date">—</div>
+							<div class="dnai-radar-l2" id="dnai-radar-sigtitle"><?php echo esc_html( $a['material'] ); ?></div>
+						</div>
+						<span class="dnai-radar-conf" id="dnai-radar-conf">—</span>
+					</div>
+					<div class="dnai-radar-body" id="dnai-radar-bodytext"></div>
+					<div class="dnai-radar-actions">
+						<button type="button" class="dnai-radar-mini" id="dnai-radar-copy">Copier</button>
+						<button type="button" class="dnai-radar-mini" id="dnai-radar-regen">Régénérer</button>
+					</div>
+				</div>
+
+				<div class="dnai-radar-disc">
+					Signal indicatif d'aide à la décision, fondé sur un avis d'analyste IA raisonné — ce n'est pas une prévision de prix garantie. Le niveau de confiance reflète la qualité des sources, pas une probabilité statistique. Vérifiez toujours les sources citées.
+				</div>
+
+				<div class="dnai-radar-hist">
+					<div class="dnai-radar-histlab">Historique des signaux · track record <span class="dnai-radar-clear" id="dnai-radar-clear">Effacer</span></div>
+					<div id="dnai-radar-histlist"></div>
+				</div>
+			</div>
+
+			<!-- ASIDE -->
+			<div class="dnai-radar-panel dnai-radar-aside">
+				<h3 class="dnai-radar-wltitle">Watchlist</h3>
+				<p class="dnai-radar-wlsub">Ce que l'IA surveille en priorité. Ajoutez vos fournisseurs, ports, événements à suivre.</p>
+				<div id="dnai-radar-watchlist"></div>
+				<form class="dnai-radar-addform" id="dnai-radar-addform">
+					<select id="dnai-radar-addcat"></select>
+					<input id="dnai-radar-addlabel" placeholder="Ex. Détroit d'Ormuz, Tengiz, embargo…" maxlength="80" required>
+					<button type="submit">+ Ajouter à la watchlist</button>
+				</form>
+				<div class="dnai-radar-wlfoot"><a id="dnai-radar-reset">↺ Réinitialiser la liste de départ</a></div>
+			</div>
+		</div>
+	</div>
+	<?php return ob_get_clean();
+}
+add_shortcode( 'dnai_radar', 'dnai_sc_radar' );
 
 /* -------------------------------------------------------------------------
  * 6. Activation — flush rewrite rules

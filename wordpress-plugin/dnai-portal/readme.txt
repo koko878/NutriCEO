@@ -3,7 +3,7 @@ Contributors: D²nAI · OCP Nutricrops
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.4.0
 License: GPLv2 or later
 
 A homepage chatbot that challenges, categorizes and structures internal
@@ -25,9 +25,19 @@ OpenAI-compatible) — plus a product catalog of live and in-development product
 == Use ==
 - Homepage chatbot:  add the shortcode  [dnai_intake]
 - Product catalog:   add the shortcode  [dnai_catalog]
+- Raw-material radar: add the shortcode  [dnai_radar]
 - Add products under "D²nAI Products" in wp-admin; set each product's
   Status (Live / In development / Idea) and Category (Data / Digital / AI).
 - Submitted needs are saved under "D²nAI Needs" and emailed to the notify address.
+
+== Radar Intrants ([dnai_radar]) ==
+An AI event-radar on raw-material prices (sulfur first). Buyers maintain an
+editable watchlist (producers, shipping routes, demand, market, events — stored
+in their browser) and get a one-click directional buy/price signal, generated
+server-side via the WP REST proxy /wp-json/dnai/v1/radar (so no CORS and the API
+key stays server-side). Set the radar model and web-search toggle in
+Settings → D²nAI Portal. Until configured, the radar shows a clearly-labelled
+demo signal so the page is presentable.
 
 == How the bot frames a need ==
 The system prompt (editable in settings) makes the bot:

@@ -100,3 +100,94 @@
 .dnai-card p{margin:0;font-size:12.5px;color:var(--ink2);line-height:1.5}
 .dnai-empty{color:var(--muted);font-size:13px}
 .dnai-card.dnai-hide{display:none}
+
+/* ---------------------------------------------------------------------------
+ * Radar Intrants — raw-material price event-radar ([dnai_radar])
+ * ------------------------------------------------------------------------- */
+.dnai-radar{
+  --g900:#0F3D14;--g800:#1B5E20;--g700:#2E7D32;--g500:#4CAF50;--g100:#E8F0E8;--g50:#F4F8F3;
+  --ink:#13191A;--ink2:#3C4642;--muted:#73796F;--line:#E6E9E5;--linesoft:#F1F2EC;
+  --ok:#15803D;--okbg:#DCFCE7;--warn:#B45309;--warnbg:#FEF3C7;--bad:#B91C1C;--badbg:#FEE2E2;
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);
+  max-width:1080px;margin:0 auto;box-sizing:border-box;
+}
+.dnai-radar *{box-sizing:border-box}
+.dnai-radar-head{margin-bottom:18px}
+.dnai-radar-kicker{font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--g800);margin-bottom:8px}
+.dnai-radar-title{font-family:Georgia,'Times New Roman',serif;font-weight:600;font-size:clamp(24px,4vw,32px);line-height:1.13;color:var(--ink);margin:0}
+.dnai-radar-intro{margin-top:9px;font-size:14px;color:var(--ink2);max-width:680px;line-height:1.55}
+
+.dnai-radar-grid{display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start}
+.dnai-radar-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px}
+.dnai-radar-aside{position:sticky;top:18px}
+
+.dnai-radar-matrow{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+.dnai-radar-lab{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.dnai-radar-mat{display:inline-flex;align-items:center;gap:8px;background:var(--g50);border:1px solid var(--g100);border-radius:999px;padding:7px 13px;font-weight:600;font-size:13px;color:var(--g800)}
+.dnai-radar-mi{width:20px;height:20px;border-radius:6px;background:var(--g800);display:grid;place-items:center;color:#E6F4E6;font:700 11px Georgia,serif}
+
+.dnai-radar-gen{margin-top:14px;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--g800);color:#fff;border:0;border-radius:13px;padding:14px 16px;font:600 14px 'Inter',sans-serif;cursor:pointer;box-shadow:0 8px 18px -10px rgba(27,94,32,.55);transition:.18s}
+.dnai-radar-gen:hover{background:var(--g900)}
+.dnai-radar-gen:disabled{opacity:.6;cursor:default}
+
+.dnai-radar-think{display:none;align-items:center;gap:10px;color:var(--muted);font-size:13px;margin-top:16px;padding:13px 15px;background:var(--g50);border:1px solid var(--g100);border-radius:12px}
+.dnai-radar-think.show{display:flex}
+.dnai-radar-matrix{width:20px;height:20px;border-radius:6px;background:var(--g800);position:relative;overflow:hidden;flex:none}
+.dnai-radar-matrix::after{content:"01·10·11·00·10";position:absolute;inset:0;font:700 7px/1 monospace;color:#9ae39a;letter-spacing:1px;white-space:nowrap;animation:dnairain 1.4s linear infinite;text-align:center;padding-top:3px}
+@keyframes dnairain{0%{transform:translateY(-50%)}100%{transform:translateY(50%)}}
+
+.dnai-radar-signal{display:none;margin-top:16px;border:1px solid var(--g100);border-radius:14px;overflow:hidden}
+.dnai-radar-signal.show{display:block}
+.dnai-radar-sigtop{display:flex;align-items:center;gap:12px;padding:13px 16px;background:linear-gradient(180deg,#fff,var(--g50));border-bottom:1px solid var(--g100)}
+.dnai-radar-dir{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:20px;font-weight:700;flex:none}
+.dnai-radar-dir.up{background:var(--badbg);color:var(--bad)}
+.dnai-radar-dir.down{background:var(--okbg);color:var(--ok)}
+.dnai-radar-dir.flat{background:var(--warnbg);color:var(--warn)}
+.dnai-radar-sigmeta{flex:1;min-width:0}
+.dnai-radar-l1{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.dnai-radar-l2{font-family:Georgia,serif;font-size:19px;font-weight:600;color:var(--ink);line-height:1.15}
+.dnai-radar-conf{font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;flex:none}
+.dnai-radar-conf.high{background:var(--okbg);color:var(--ok)}
+.dnai-radar-conf.mid{background:var(--warnbg);color:var(--warn)}
+.dnai-radar-conf.low{background:var(--linesoft);color:var(--muted)}
+.dnai-radar-body{padding:14px 16px;font-size:13.5px;line-height:1.62;color:var(--ink2);white-space:pre-wrap;word-wrap:break-word}
+.dnai-radar-body a{color:var(--g800);font-weight:600;text-decoration:none;border-bottom:1px solid var(--g100)}
+.dnai-radar-body a:hover{border-color:var(--g500)}
+.dnai-radar-actions{display:flex;gap:8px;padding:0 16px 16px;flex-wrap:wrap}
+.dnai-radar-mini{display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--g800);border:1px solid var(--g100);border-radius:9px;padding:8px 12px;font:600 12px 'Inter',sans-serif;cursor:pointer}
+.dnai-radar-mini:hover{background:var(--g50)}
+.dnai-radar-disc{margin-top:12px;font-size:11px;color:var(--muted);line-height:1.5;border-top:1px dashed var(--line);padding-top:10px}
+
+.dnai-radar-hist{margin-top:22px}
+.dnai-radar-histlab{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.dnai-radar-clear{font-size:11px;color:var(--muted);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:600}
+.dnai-radar-clear:hover{color:var(--bad)}
+.dnai-radar-hrow{display:flex;align-items:center;gap:11px;padding:11px 12px;border:1px solid var(--line);border-radius:11px;margin-bottom:8px;cursor:pointer;transition:.15s}
+.dnai-radar-hrow:hover{border-color:var(--g500);background:var(--g50)}
+.dnai-radar-ht{flex:1;min-width:0}
+.dnai-radar-ht .a{font-size:13px;font-weight:600;color:var(--ink)}
+.dnai-radar-ht .b{font-size:11.5px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dnai-radar-histempty{font-size:12.5px;color:var(--muted);padding:14px;text-align:center;border:1px dashed var(--line);border-radius:11px}
+
+.dnai-radar-wltitle{font-family:Georgia,serif;font-size:20px;font-weight:600;color:var(--ink);margin:0}
+.dnai-radar-wlsub{font-size:12.5px;color:var(--muted);margin:3px 0 16px;line-height:1.45}
+.dnai-radar-wlcat{margin-bottom:14px}
+.dnai-radar-wlcat h4{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--g800);margin:0 0 7px}
+.dnai-radar-chips{display:flex;flex-wrap:wrap;gap:6px}
+.dnai-radar-chip{display:inline-flex;align-items:center;gap:6px;background:var(--g50);border:1px solid var(--g100);color:var(--ink2);font-size:12px;font-weight:500;padding:5px 8px 5px 10px;border-radius:999px}
+.dnai-radar-chip .x{cursor:pointer;color:var(--muted);font-weight:700;line-height:1;font-size:14px}
+.dnai-radar-chip .x:hover{color:var(--bad)}
+.dnai-radar-wlempty{font-size:12px;color:var(--muted);font-style:italic}
+.dnai-radar-addform{margin-top:6px;border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:8px}
+.dnai-radar-addform select,.dnai-radar-addform input{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font:500 13px 'Inter',sans-serif;color:var(--ink);background:#fff;outline:none}
+.dnai-radar-addform select:focus,.dnai-radar-addform input:focus{border-color:var(--g500)}
+.dnai-radar-addform button{background:var(--g800);color:#fff;border:0;border-radius:9px;padding:10px;font:600 13px 'Inter',sans-serif;cursor:pointer}
+.dnai-radar-addform button:hover{background:var(--g900)}
+.dnai-radar-wlfoot{margin-top:12px;font-size:11px}
+.dnai-radar-wlfoot a{color:var(--muted);cursor:pointer;font-weight:600}
+.dnai-radar-wlfoot a:hover{color:var(--g800)}
+
+@media(max-width:860px){
+  .dnai-radar-grid{grid-template-columns:1fr}
+  .dnai-radar-aside{position:static}
+}
