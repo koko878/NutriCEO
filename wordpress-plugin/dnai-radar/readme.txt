@@ -3,7 +3,7 @@ Contributors: D²nAI · OCP Nutricrops
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.3.0
+Stable tag: 1.4.0
 License: GPLv2 or later
 
 An AI event-radar on raw-material prices (sulfur first), for procurement teams.
