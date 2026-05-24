@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI CGM Simulator
  * Description:       Sales margin pricing-scenario simulator (CGM equivalent DAP/TSP, floor price, nutrient-value price, MCV) with an AI copilot. The copilot (an Open WebUI / OpenAI-compatible model — Qwen recommended) only returns a strict JSON action; every number shown comes from the verified in-browser engine, so the model can never hallucinate a margin. Calls go through a server-side proxy, so the API key never reaches the browser and there is no CORS.
- * Version:           1.2.0
+ * Version:           1.3.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-cgm
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_CGM_VER', '1.2.0' );
+define( 'DNAI_CGM_VER', '1.3.0' );
 define( 'DNAI_CGM_URL', plugin_dir_url( __FILE__ ) );
 
 /* -------------------------------------------------------------------------
@@ -271,6 +271,12 @@ function dnai_cgm_shortcode( $atts ) {
 	wp_enqueue_script( 'dnai-cgm' );
 	ob_start(); ?>
 	<div class="dnai-cgm-app">
+	<div class="cgm-viewbar">
+	  <button type="button" class="cgm-vbtn on" data-view="sales">Vue commerciale</button>
+	  <button type="button" class="cgm-vbtn" data-view="exec">Vue direction</button>
+	</div>
+
+	<div id="cgmSales" class="cgm-view">
 	<div class="page">
 
 	  <div class="head">
@@ -351,6 +357,14 @@ function dnai_cgm_shortcode( $atts ) {
 	    </div>
 	  </div>
 
+	  <div class="cgm-tabnav">
+	    <button type="button" class="cgm-tabbtn on" data-tab="scen">Scénarios</button>
+	    <button type="button" class="cgm-tabbtn" data-tab="sensi">Sensibilité</button>
+	    <button type="button" class="cgm-tabbtn" data-tab="cmp">Comparaison</button>
+	    <button type="button" class="cgm-tabbtn" data-tab="hist">Historique</button>
+	  </div>
+
+	  <div class="cgm-tab" data-tab="scen">
 	  <!-- SCENARIOS -->
 	  <div class="panel">
 	    <h2 id="scenTitle">Scénarios de pricing</h2>
@@ -359,6 +373,9 @@ function dnai_cgm_shortcode( $atts ) {
 	    <div class="verdict" id="verdict"></div>
 	  </div>
 
+	  </div><!-- /tab scen -->
+
+	  <div class="cgm-tab" data-tab="sensi" hidden>
 	  <!-- SENSITIVITY -->
 	  <div class="panel">
 	    <h2>Sensibilité aux prix matières premières</h2>
@@ -372,6 +389,9 @@ function dnai_cgm_shortcode( $atts ) {
 	    </div>
 	  </div>
 
+	  </div><!-- /tab sensi -->
+
+	  <div class="cgm-tab" data-tab="cmp" hidden>
 	  <!-- COMPARISON -->
 	  <div class="panel">
 	    <h2>Comparaison des formules</h2>
@@ -384,6 +404,9 @@ function dnai_cgm_shortcode( $atts ) {
 	    </div></div>
 	  </div>
 
+	  </div><!-- /tab cmp -->
+
+	  <div class="cgm-tab" data-tab="hist" hidden>
 	  <!-- HISTORY -->
 	  <div class="panel">
 	    <div class="hist-head">
@@ -397,12 +420,96 @@ function dnai_cgm_shortcode( $atts ) {
 	    <div id="histList"></div>
 	  </div>
 
+	  </div><!-- /tab hist -->
+
 	  <div class="foot">
 	    <div>D²nAI · OCP Nutricrops · CGM Simulator — prix matières premières modifiables</div>
 	    <div class="mini">Feed the data to feed the decision.</div>
 	  </div>
 
 	</div>
+	</div><!-- /#cgmSales -->
+
+	<div id="cgmExec" class="cgm-view" hidden>
+	<div class="page">
+
+	  <div class="head">
+	    <div class="logo"><span>D<sup>2</sup>n</span></div>
+	    <div>
+	      <div class="t1">OCP Nutricrops · Data, Digital &amp; AI</div>
+	      <div class="t2">CGM · Vision exécutive</div>
+	    </div>
+	    <div class="spacer"></div>
+	    <div class="badge-real">Vue direction · synthèse décision</div>
+	  </div>
+
+	  <div class="pick">
+	    <label>Produit</label>
+	    <select id="xprod"></select>
+	    <span class="refpill" id="xrefpill" title="Basculer la référence">Réf. —</span>
+	  </div>
+
+	  <!-- HERO VERDICT -->
+	  <div class="hero"><div class="inner">
+	    <div class="status ok" id="xstatus">—</div>
+	    <div class="big" id="xbigval">—<span class="u">$/t</span></div>
+	    <div class="cap" id="xbigcap">marge commerciale équivalente</div>
+	    <div class="say" id="xsay"></div>
+	  </div></div>
+
+	  <!-- PRICE TILES -->
+	  <div class="tiles">
+	    <div class="tile">
+	      <div class="rl">Prix plancher</div>
+	      <div class="rv" id="xtFloor">—<span class="u">$/t</span></div>
+	      <div class="rd">Ne jamais vendre en-dessous : en-deçà, on détruit la marge de référence.</div>
+	    </div>
+	    <div class="tile reco">
+	      <div class="pin">Recommandé</div>
+	      <div class="rl">Prix « juste valeur »</div>
+	      <div class="rv" id="xtNutri">—<span class="u">$/t</span></div>
+	      <div class="rd">Prix équivalent à la valeur nutritive (N+P+K+S) vs la référence.</div>
+	    </div>
+	    <div class="tile">
+	      <div class="rl">Votre prix cible</div>
+	      <input id="xtTarget" type="number" step="1">
+	      <div class="rd" id="xtargetNote">Testez un prix de marché.</div>
+	    </div>
+	  </div>
+
+	  <!-- VALUE POSITION -->
+	  <div class="panel">
+	    <h3>Positionnement de la marge</h3>
+	    <div class="ps" id="xgaugeSub">Marge de cette formule au prix cible, comparée à la marge de référence.</div>
+	    <div id="xgauge"></div>
+	  </div>
+
+	  <!-- TOP OPPORTUNITIES -->
+	  <div class="panel">
+	    <h3>Où se crée le plus de valeur</h3>
+	    <div class="ps">Top des formules à la « juste valeur », classées par marge équivalente — les leviers de mix produit les plus rentables.</div>
+	    <div id="xopps"></div>
+	  </div>
+
+	  <!-- HYPOTHESES -->
+	  <details class="hyp">
+	    <summary>⚙︎ Hypothèses prix matières premières</summary>
+	    <div class="row">
+	      <div class="fld"><label>Roche ($/t)</label><input data-xrm="rock" type="number"></div>
+	      <div class="fld"><label>NH3 ($/t)</label><input data-xrm="nh3" type="number"></div>
+	      <div class="fld"><label>Soufre ($/t)</label><input data-xrm="sulphur" type="number"></div>
+	      <div class="fld"><label>Réf. DAP ($/t)</label><input data-xref="dap" type="number"></div>
+	      <div class="fld"><label>Réf. TSP ($/t)</label><input data-xref="tsp" type="number"></div>
+	    </div>
+	  </details>
+
+	  <div class="foot">
+	    <div>D²nAI · OCP Nutricrops · CGM · Vision exécutive</div>
+	    <div class="mini">Feed the data to feed the decision.</div>
+	  </div>
+
+	</div>
+	</div><!-- /#cgmExec -->
 	</div>
 	<?php return ob_get_clean();
 }

@@ -3,7 +3,7 @@ Contributors: D²nAI · OCP Nutricrops
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 
 A sales margin pricing-scenario simulator for OCP Nutricrops, with an AI copilot.
@@ -45,6 +45,10 @@ simulator stay in sync.
 
 == Use ==
 - Add the shortcode  [dnai_cgm]  to any page.
+- Two views via the top toggle: "Vue commerciale" (detailed Sales tool, with the
+  copilot and tabbed Scénarios / Sensibilité / Comparaison / Historique to keep
+  scrolling short) and "Vue direction" (a clean executive summary). Both share the
+  same engine and state, so switching keeps the current product and prices.
 - Type a question in the copilot box, e.g.:
   - "Analyse le 00-18-10 à 720 $/t"
   - "Quel est le prix plancher pour préserver la marge DAP ?"

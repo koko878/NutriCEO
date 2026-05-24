@@ -5477,6 +5477,7 @@ function applyAction(act){
   }
   if(typeof act.price==='number') state.price=act.price;
   syncInputs(); render();
+  if(document.getElementById('xprod')){ syncExec(); renderExec(); }
 }
 
 /* Build the factual answer from compute() — never from the model. */
@@ -5567,5 +5568,103 @@ function initChat(){
   document.querySelectorAll('.cgm-chip').forEach(c=>c.addEventListener('click',()=>{ chatSend(c.textContent.trim()); }));
 }
 
-function boot(){ if(!document.getElementById('prod')) return; init(); initChat(); }
+/* ============================================================
+   Vue direction (exec) — réutilise le moteur et l'état partagés.
+   IDs préfixés "x" pour cohabiter avec la vue commerciale.
+   ============================================================ */
+function execRP(){ return state.ref==='TSP'?state.refprice.tsp:state.refprice.dap; }
+function buildExecSelect(){
+  const sel=document.getElementById('xprod'); if(!sel) return;
+  const fams={}; PRODUCTS.forEach((p,i)=>{(fams[p.family]=fams[p.family]||[]).push(i);});
+  let h=''; Object.keys(fams).forEach(fm=>{ h+=`<optgroup label="${fm}">`; fams[fm].forEach(i=>h+=`<option value="${i}">${PRODUCTS[i].product} — ${PRODUCTS[i].line}</option>`); h+='</optgroup>'; });
+  sel.innerHTML=h;
+}
+function syncExec(){
+  if(!document.getElementById('xprod')) return;
+  document.getElementById('xprod').value=state.idx;
+  document.getElementById('xtTarget').value=Math.round(state.price);
+  document.querySelectorAll('[data-xrm]').forEach(i=>i.value=state.rm[i.dataset.xrm]);
+  const d=document.querySelector('[data-xref="dap"]'), t=document.querySelector('[data-xref="tsp"]');
+  if(d) d.value=state.refprice.dap; if(t) t.value=state.refprice.tsp;
+}
+function renderExec(){
+  if(!document.getElementById('cgmExec')) return;
+  const p=PRODUCTS[state.idx], RM=state.rm, ref=state.ref, rp=execRP();
+  const rmc=rmCost(p,RM), cgmRef=refMargin(ref,RM,rp);
+  const floor=floorPrice(p,rmc,ref,RM,rp), nutri=nutrientPrice(p,ref,rp);
+  const target=state.price, cgmT=cgmEq(p,target,rmc,ref);
+  const ok=cgmT>=cgmRef-1e-6;
+  document.getElementById('xrefpill').textContent='Réf. '+ref;
+  const stEl=document.getElementById('xstatus'); stEl.className='status '+(ok?'ok':'bad');
+  stEl.textContent=ok?'✓ Crée de la valeur':'⚠ Marge sous la référence';
+  document.getElementById('xbigval').innerHTML=f(cgmT,0)+'<span class="u">$/t</span>';
+  document.getElementById('xbigcap').textContent='marge commerciale équivalente '+ref+' · à '+f(target,0)+' $/t';
+  const delta=cgmT-cgmRef;
+  document.getElementById('xsay').innerHTML = ok
+    ? `À <b>${f(target,0)} $/t</b>, <b>${p.product}</b> dégage <b>${f(delta,0)} $/t de marge en plus</b> que la référence ${ref}. Tant qu'on reste au-dessus du plancher de <b>${f(floor,0)} $/t</b>, la formule est rentable. Visez le prix « juste valeur » de <b>${f(nutri,0)} $/t</b>.`
+    : `À <b>${f(target,0)} $/t</b>, <b>${p.product}</b> est <b>${f(-delta,0)} $/t sous</b> la marge de référence ${ref}. Il faut viser au moins le <b>plancher de ${f(floor,0)} $/t</b>, idéalement le prix « juste valeur » de <b>${f(nutri,0)} $/t</b>.`;
+  document.getElementById('xtFloor').innerHTML=f(floor,0)+'<span class="u">$/t</span>';
+  document.getElementById('xtNutri').innerHTML=f(nutri,0)+'<span class="u">$/t</span>';
+  document.getElementById('xtargetNote').innerHTML = ok
+    ? `<span style="color:var(--ok);font-weight:600">✓ au-dessus de la référence</span>`
+    : `<span style="color:var(--bad);font-weight:600">⚠ sous la référence — remonter le prix</span>`;
+  renderGaugeExec(p,rmc,ref,cgmRef,cgmT,floor,nutri,target,rp);
+  renderOppsExec(ref,RM,rp,cgmRef,p);
+}
+function renderGaugeExec(p,rmc,ref,cgmRef,cgmT,floor,nutri,target,rp){
+  const cgmNutri=cgmEq(p,nutri,rmc,ref);
+  const max=Math.max(cgmRef,cgmT,cgmNutri)*1.15||1;
+  const W=860,H=70,padL=10,padR=10,bw=W-padL-padR,y=26,bh=16;
+  const xRef=padL+cgmRef/max*bw, xT=padL+Math.max(0,cgmT)/max*bw;
+  const col=cgmT>=cgmRef?'#2E7D32':'#B91C1C';
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">`;
+  s+=`<rect x="${padL}" y="${y}" width="${bw}" height="${bh}" rx="8" fill="#F1F2EC"/>`;
+  s+=`<rect x="${padL}" y="${y}" width="${Math.max(0,xT-padL)}" height="${bh}" rx="8" fill="${col}" opacity=".9"/>`;
+  s+=`<line x1="${xRef}" y1="${y-8}" x2="${xRef}" y2="${y+bh+8}" stroke="#13191A" stroke-width="2" stroke-dasharray="4 3" opacity=".6"/>`;
+  s+=`<text x="${xRef}" y="${y-12}" text-anchor="middle" font-size="11" font-weight="700" fill="#13191A">réf. ${ref} ${f(cgmRef,0)}</text>`;
+  s+=`<text x="${padL}" y="${y+bh+22}" font-size="11" fill="#73796F">0</text>`;
+  s+=`<text x="${xT}" y="${y+bh+22}" text-anchor="middle" font-size="11.5" font-weight="700" fill="${col}">votre prix → ${f(cgmT,0)}</text>`;
+  s+=`</svg>`;
+  document.getElementById('xgauge').innerHTML=s;
+}
+function renderOppsExec(ref,RM,rp,cgmRef,selected){
+  const rows=PRODUCTS.map(p=>{ const rmc=rmCost(p,RM), nutri=nutrientPrice(p,ref,rp); return {p,cgm:cgmEq(p,nutri,rmc,ref)}; }).filter(x=>isFinite(x.cgm)).sort((a,b)=>b.cgm-a.cgm).slice(0,6);
+  const max=rows.length?rows[0].cgm:1;
+  document.getElementById('xopps').innerHTML=rows.map((x,i)=>{
+    const w=Math.max(3,x.cgm/max*100); const isSel=x.p.row===selected.row;
+    return `<div class="opp"><div class="rank">${i+1}</div>
+      <div class="nm"><div class="a">${x.p.product}${isSel?' ◂':''}</div><div class="b">${x.p.family} · ${x.p.line}</div></div>
+      <div class="bar"><i style="width:${w}%"></i></div>
+      <div class="val">${f(x.cgm,0)}</div></div>`;
+  }).join('');
+}
+function initExec(){
+  if(!document.getElementById('xprod')) return;
+  buildExecSelect(); syncExec(); renderExec();
+  document.getElementById('xprod').addEventListener('change',e=>{ selectProduct(+e.target.value,true); syncExec(); renderExec(); });
+  document.getElementById('xrefpill').addEventListener('click',()=>{ state.ref=state.ref==='DAP'?'TSP':'DAP'; state.price=Math.round(nutrientPrice(PRODUCTS[state.idx],state.ref,execRP())); syncInputs(); render(); syncExec(); renderExec(); });
+  document.getElementById('xtTarget').addEventListener('input',e=>{ state.price=+e.target.value||0; render(); renderExec(); });
+  document.querySelectorAll('[data-xrm]').forEach(inp=>inp.addEventListener('input',()=>{ state.rm[inp.dataset.xrm]=+inp.value||0; render(); renderExec(); }));
+  document.querySelectorAll('[data-xref]').forEach(inp=>inp.addEventListener('input',()=>{ state.refprice[inp.dataset.xref]=+inp.value||0; render(); renderExec(); }));
+}
+
+/* view toggle + tabs */
+function showView(v){
+  const s=document.getElementById('cgmSales'), x=document.getElementById('cgmExec');
+  if(s) s.hidden = v!=='sales';
+  if(x) x.hidden = v!=='exec';
+  document.querySelectorAll('.cgm-vbtn').forEach(b=>b.classList.toggle('on', b.dataset.view===v));
+  if(v==='exec'){ syncExec(); renderExec(); } else { syncInputs(); render(); }
+}
+function showTab(t){
+  document.querySelectorAll('#cgmSales .cgm-tab').forEach(el=>{ el.hidden = el.dataset.tab!==t; });
+  document.querySelectorAll('.cgm-tabbtn').forEach(b=>b.classList.toggle('on', b.dataset.tab===t));
+}
+function initViews(){
+  document.querySelectorAll('.cgm-vbtn').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+  document.querySelectorAll('.cgm-tabbtn').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+  showTab('scen'); showView('sales');
+}
+
+function boot(){ if(!document.getElementById('prod')) return; init(); initChat(); initExec(); initViews(); }
 if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', boot); } else { boot(); }
