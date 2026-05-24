@@ -160,7 +160,7 @@ function dnai_cgm_rest_chat( WP_REST_Request $request ) {
 
 	// Replay recent conversation turns (user / assistant only).
 	if ( is_array( $history ) ) {
-		foreach ( array_slice( $history, -8 ) as $turn ) {
+		foreach ( array_slice( $history, -4 ) as $turn ) {
 			if ( ! is_array( $turn ) ) { continue; }
 			$role = isset( $turn['role'] ) && 'assistant' === $turn['role'] ? 'assistant' : 'user';
 			$content = isset( $turn['content'] ) ? (string) $turn['content'] : '';
@@ -180,7 +180,7 @@ function dnai_cgm_rest_chat( WP_REST_Request $request ) {
 		'messages'    => $messages,
 		'stream'      => false,
 		'temperature' => 0.1,
-		'max_tokens'  => 500,
+		'max_tokens'  => 350,
 	);
 	if ( $json ) {
 		$payload['response_format'] = array( 'type' => 'json_object' );

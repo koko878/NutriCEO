@@ -5418,8 +5418,25 @@ function exportCSV(){
    ============================================================ */
 const RM_KEYS = ['rock','nh3','sulphur','kcl','sam','acs','borax','zno','cuso4','caso4','caco3','gypse'];
 
-function chatCatalog(){
-  return PRODUCTS.map((p,i)=>`#${i} ${p.product} — ${p.line} [${p.family}]`).join('\n');
+function cgmNorm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
+function cgmTokens(s){ return cgmNorm(s).match(/[a-z0-9\-]+/g) || []; }
+
+/* Resolve the product locally so we only send a few candidates (not the 141
+   products) to the model — critical for prefill speed on CPU. */
+function chatCandidates(message){
+  const toks = cgmTokens(message).filter(t=>t.length>=2 && !['les','des','que','est','pour','avec','quel','quelle','prix','marge','le','la'].includes(t));
+  if(!toks.length) return [];
+  const scored = PRODUCTS.map((p,i)=>{
+    const hay = cgmNorm(p.product+' '+p.line+' '+p.family);
+    let s=0; toks.forEach(t=>{ if(hay.indexOf(t)>=0) s += (t.length>=4?2:1); });
+    return {i,p,s};
+  }).filter(x=>x.s>0).sort((a,b)=>b.s-a.s);
+  return scored.slice(0,12);
+}
+function chatCatalog(message){
+  const c = chatCandidates(message);
+  if(!c.length) return '(aucun produit identifié dans la demande — mets product_index=null, ou garde le produit courant si la demande porte sur lui)';
+  return c.map(x=>`#${x.i} ${x.p.product} — ${x.p.line} [${x.p.family}]`).join('\n');
 }
 function chatStateSummary(){
   const p=PRODUCTS[state.idx];
@@ -5519,7 +5536,7 @@ async function chatSend(text){
     const res=await fetch(DNAI_CGM.rest+'/chat',{
       method:'POST',
       headers:{'Content-Type':'application/json','X-WP-Nonce':DNAI_CGM.nonce},
-      body:JSON.stringify({ message:text, history:chatHist.slice(-8), catalog:chatCatalog(), state:chatStateSummary() })
+      body:JSON.stringify({ message:text, history:chatHist.slice(-4), catalog:chatCatalog(text), state:chatStateSummary() })
     });
     const data=await res.json();
     if(!res.ok || data.error){ thinking.innerHTML='⚠️ '+((data&&data.error)||('Erreur '+res.status)); return; }
