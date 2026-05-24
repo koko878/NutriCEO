@@ -1,0 +1,59 @@
+=== D²nAI CGM Simulator ===
+Contributors: D²nAI · OCP Nutricrops
+Requires at least: 6.0
+Tested up to: 6.5
+Requires PHP: 7.4
+Stable tag: 1.0.0
+License: GPLv2 or later
+
+A sales margin pricing-scenario simulator for OCP Nutricrops, with an AI copilot.
+Pick a product × line, adjust raw-material prices, and compare the 3 pricing
+methods in real time: fixed price, iso-margin floor price, and nutrient-value
+price — showing RM cost, CGM equivalent (DAP/TSP) and MCV per tonne of P₂O₅
+acid. The copilot (DeepSeek via Open WebUI / OpenAI-compatible) lets a salesperson
+drive the simulator in plain language. Standalone — does not depend on the
+D²nAI Portal plugin.
+
+== Why it is safe ==
+The copilot NEVER produces numbers. It returns only a strict JSON "action"
+(which product, which prices, which scenario). The verified in-browser engine —
+the exact same formulas as the CGM Excel — does every calculation, and the answer
+is built from those computed numbers. So even a mid-size local model cannot
+hallucinate a margin: at worst it misreads the request, which you can see and
+correct. The model also drives the on-page dashboard, so the conversation and the
+simulator stay in sync.
+
+== Install ==
+1. Zip the `dnai-cgm` folder and upload it under Plugins → Add New → Upload,
+   or copy `dnai-cgm/` into wp-content/plugins/. Activate it.
+2. Go to Settings → D²nAI CGM and fill:
+   - AI Lab base URL : https://lab.ocpnutricrops.ai
+   - API path        : /api/chat/completions   (Open WebUI default)
+   - API key         : an Open WebUI API key (Settings → Account → API Keys)
+   - Copilot model   : your DeepSeek model (e.g. deepseek / deepseek-chat); GPT-OSS works as a fallback
+   - JSON mode       : on (sends response_format=json_object for reliable JSON)
+   The API key stays server-side; the browser calls the WP REST proxy
+   /wp-json/dnai-cgm/v1/chat, which then calls the AI Lab (no CORS, key hidden).
+
+== Use ==
+- Add the shortcode  [dnai_cgm]  to any page.
+- Type a question in the copilot box, e.g.:
+  - "Analyse le 00-18-10 à 720 $/t"
+  - "Quel est le prix plancher pour préserver la marge DAP ?"
+  - "Si le soufre passe à 150, qu'arrive-t-il à la marge ?"
+  - "Quelles formules créent le plus de valeur ?"
+- The copilot sets the simulator (product, reference, prices, sensitivity) and
+  answers with the engine's numbers. You can still drive everything by hand.
+- The simulation history (per-browser) supports save / CSV export / clear.
+
+== How the copilot works ==
+1. The model receives the product catalog + the current simulator state and the
+   user's request, and returns ONLY a JSON action (intent, product_index, ref,
+   price, rm overrides, refprice, sens, plus a short number-free "preface").
+2. The front-end validates the JSON, applies it to the engine state, runs
+   compute(), and renders the factual answer from the computed values.
+3. If the request is ambiguous, the model returns a "clarify" question instead.
+
+== Plug-n-play ==
+Any OpenAI-compatible /chat/completions endpoint works (Open WebUI, vLLM,
+Azure OpenAI via gateway…). Only base URL + path + key + model change.

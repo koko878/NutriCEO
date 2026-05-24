@@ -1,0 +1,121 @@
+.dnai-cgm-app{
+  --green-900:#0F3D14;--green-800:#1B5E20;--green-700:#2E7D32;--green-500:#4CAF50;
+  --green-100:#E8F0E8;--green-50:#F4F8F3;
+  --ink:#13191A;--ink-2:#3C4642;--muted:#73796F;
+  --line:#EAECE6;--line-soft:#F1F2EC;--bg:#FCFCFA;
+  --ok:#15803D;--ok-bg:#DCFCE7;--warn:#B45309;--warn-bg:#FEF3C7;--bad:#B91C1C;--bad-bg:#FEE2E2;
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--ink);
+}
+.dnai-cgm-app *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+.dnai-cgm-app .page{max-width:1180px;margin:0 auto}
+
+.dnai-cgm-app .head{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.dnai-cgm-app .logo{width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,var(--green-800),var(--green-900));display:grid;place-items:center;position:relative;overflow:hidden;box-shadow:0 8px 20px -8px rgba(27,94,32,.5);flex:none}
+.dnai-cgm-app .logo::before{content:"";position:absolute;inset:0;opacity:.22;background:repeating-linear-gradient(180deg,rgba(180,255,180,.7) 0 1px,transparent 1px 3px)}
+.dnai-cgm-app .logo span{font-family:'Cormorant Garamond',serif;color:#E6F4E6;font-weight:700;font-size:22px;letter-spacing:1px;position:relative}
+.dnai-cgm-app .logo sup{font-size:11px;font-weight:600;top:-6px;position:relative}
+.dnai-cgm-app .head .t1{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.dnai-cgm-app .head .t2{font-family:'Cormorant Garamond',serif;font-size:23px;color:var(--green-800);font-weight:700;line-height:1.1}
+.dnai-cgm-app .head .spacer{flex:1}
+.dnai-cgm-app .badge-real{font-size:10.5px;font-weight:700;letter-spacing:.04em;color:var(--ok);background:var(--ok-bg);border-radius:999px;padding:6px 11px}
+
+.dnai-cgm-app .hero{margin:12px 0 20px}
+.dnai-cgm-app .kicker{font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--green-800);margin-bottom:8px}
+.dnai-cgm-app .hero h1{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:30px;line-height:1.13;color:var(--ink);max-width:760px}
+.dnai-cgm-app .hero h1 em{font-style:italic;color:var(--green-800)}
+.dnai-cgm-app .hero p{margin-top:9px;font-size:13.5px;color:var(--ink-2);max-width:720px;line-height:1.55}
+
+.dnai-cgm-app .panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.dnai-cgm-app .panel h2{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:9px;margin-bottom:4px}
+.dnai-cgm-app .panel .sub{font-size:12px;color:var(--muted);margin-bottom:14px}
+
+/* inputs */
+.dnai-cgm-app .inputs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.dnai-cgm-app .fld{display:flex;flex-direction:column;gap:4px}
+.dnai-cgm-app .fld label{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.dnai-cgm-app .fld input,.dnai-cgm-app .fld select{border:1px solid var(--line);border-radius:9px;padding:9px 10px;font:500 13px 'Inter',sans-serif;color:var(--ink);background:#fff;outline:none;width:100%}
+.dnai-cgm-app .fld input:focus,.dnai-cgm-app .fld select:focus{border-color:var(--green-500)}
+.dnai-cgm-app .fld.wide{grid-column:span 2}
+.dnai-cgm-app .seg{display:flex;background:var(--green-50);border:1px solid var(--green-100);border-radius:9px;padding:3px;gap:3px}
+.dnai-cgm-app .seg button{flex:1;border:0;background:transparent;font:600 12px 'Inter',sans-serif;padding:7px;border-radius:7px;color:var(--muted);cursor:pointer}
+.dnai-cgm-app .seg button.on{background:var(--green-800);color:#fff}
+.dnai-cgm-app .rm-toggle{margin-top:12px;font-size:12px;font-weight:600;color:var(--green-800);cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.dnai-cgm-app .rm-grid{display:none;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.dnai-cgm-app .rm-grid.show{display:grid}
+.dnai-cgm-app .rm-grid .fld label{font-size:10px}
+@media(max-width:900px){.dnai-cgm-app .inputs{grid-template-columns:repeat(2,1fr)}.dnai-cgm-app .rm-grid{grid-template-columns:repeat(3,1fr)}}
+
+/* scenarios */
+.dnai-cgm-app .scen-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.dnai-cgm-app .scen{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.dnai-cgm-app .scen .top{padding:11px 14px;background:linear-gradient(180deg,#fff,var(--green-50));border-bottom:1px solid var(--green-100);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dnai-cgm-app .scen .top .nm{font-weight:700;font-size:12.5px;color:var(--green-800)}
+.dnai-cgm-app .scen .top .tag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--line-soft);color:var(--muted)}
+.dnai-cgm-app .scen .top .tag.ok{background:var(--ok-bg);color:var(--ok)}
+.dnai-cgm-app .scen .top .tag.bad{background:var(--bad-bg);color:var(--bad)}
+.dnai-cgm-app .scen .price{padding:12px 14px 4px}
+.dnai-cgm-app .scen .price .v{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:var(--ink);line-height:1}
+.dnai-cgm-app .scen .price .l{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
+.dnai-cgm-app .scen .rows{padding:6px 14px 14px}
+.dnai-cgm-app .scen .row{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-top:1px dashed var(--line);font-size:13px}
+.dnai-cgm-app .scen .row:first-child{border-top:0}
+.dnai-cgm-app .scen .row .k{color:var(--muted)}
+.dnai-cgm-app .scen .row .vv{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+@media(max-width:900px){.dnai-cgm-app .scen-grid{grid-template-columns:1fr}}
+
+.dnai-cgm-app .verdict{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--green-50);border:1px solid var(--green-100);font-size:13.5px;color:var(--ink-2);line-height:1.5}
+.dnai-cgm-app .verdict b{color:var(--green-800)}
+
+/* sensitivity */
+.dnai-cgm-app .sensi-wrap{display:grid;grid-template-columns:1fr 1.2fr;gap:18px;align-items:center}
+@media(max-width:900px){.dnai-cgm-app .sensi-wrap{grid-template-columns:1fr}}
+.dnai-cgm-app .sensi-kpis{display:flex;flex-direction:column;gap:10px}
+.dnai-cgm-app .skpi{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border:1px solid var(--line);border-radius:11px}
+.dnai-cgm-app .skpi .l{font-size:12px;color:var(--muted)}
+.dnai-cgm-app .skpi .v{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700}
+.dnai-cgm-app .skpi .v.up{color:var(--bad)} .dnai-cgm-app .skpi .v.down{color:var(--ok)}
+.dnai-cgm-app .driver{font-size:12.5px;color:var(--ink-2);margin-top:4px}
+.dnai-cgm-app .driver b{color:var(--bad)}
+
+/* table */
+.dnai-cgm-app .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+.dnai-cgm-app table{width:100%;border-collapse:collapse;font-size:12.5px}
+.dnai-cgm-app th,.dnai-cgm-app td{padding:9px 12px;text-align:right;white-space:nowrap}
+.dnai-cgm-app th{background:var(--green-50);color:var(--muted);font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;position:sticky;top:0}
+.dnai-cgm-app th:first-child,.dnai-cgm-app td:first-child{text-align:left}
+.dnai-cgm-app td{border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.dnai-cgm-app tr.sel td{background:var(--green-50)}
+.dnai-cgm-app .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.dnai-cgm-app .fam{font-size:10px;color:var(--muted);font-weight:600}
+.dnai-cgm-app .tbl-scroll{max-height:380px;overflow-y:auto}
+
+/* history */
+.dnai-cgm-app .hist-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap}
+.dnai-cgm-app .btn{display:inline-flex;align-items:center;gap:7px;background:var(--green-800);color:#fff;border:0;border-radius:10px;padding:10px 15px;font:600 13px 'Inter',sans-serif;cursor:pointer}
+.dnai-cgm-app .btn:hover{background:var(--green-900)}
+.dnai-cgm-app .btn.ghost{background:#fff;color:var(--green-800);border:1px solid var(--green-100)}
+.dnai-cgm-app .btn.ghost:hover{background:var(--green-50)}
+.dnai-cgm-app .hist-empty{font-size:12.5px;color:var(--muted);padding:16px;text-align:center;border:1px dashed var(--line);border-radius:11px}
+.dnai-cgm-app .foot{margin-top:24px;padding-top:16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;font-size:11px;color:var(--muted);flex-wrap:wrap;gap:8px}
+.dnai-cgm-app .foot .mini{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--green-800);font-size:13px}
+.dnai-cgm-app .chart text{font-family:'Inter',sans-serif}
+
+/* ---------- chat copilote ---------- */
+.dnai-cgm-app .cgm-chat{display:flex;flex-direction:column;gap:12px}
+.dnai-cgm-app .cgm-chat-intro{font-size:12.5px;color:var(--ink-2);line-height:1.5}
+.dnai-cgm-app .cgm-chips{display:flex;flex-wrap:wrap;gap:7px}
+.dnai-cgm-app .cgm-chip{font-size:11.5px;font-weight:600;color:var(--green-800);background:var(--green-50);border:1px solid var(--green-100);border-radius:999px;padding:6px 11px;cursor:pointer}
+.dnai-cgm-app .cgm-chip:hover{background:var(--green-100)}
+.dnai-cgm-app .cgm-log{display:flex;flex-direction:column;gap:10px;max-height:420px;overflow-y:auto;padding:4px 2px}
+.dnai-cgm-app .cgm-msg{max-width:88%;padding:10px 13px;border-radius:13px;font-size:13px;line-height:1.5}
+.dnai-cgm-app .cgm-msg.user{align-self:flex-end;background:var(--green-800);color:#fff;border-bottom-right-radius:4px}
+.dnai-cgm-app .cgm-msg.bot{align-self:flex-start;background:var(--green-50);border:1px solid var(--green-100);color:var(--ink-2);border-bottom-left-radius:4px}
+.dnai-cgm-app .cgm-msg.bot b{color:var(--green-800)}
+.dnai-cgm-app .cgm-pre{margin-bottom:7px;color:var(--ink);font-weight:500}
+.dnai-cgm-app .cgm-typing{color:var(--muted);font-style:italic}
+.dnai-cgm-app .cgm-form{display:flex;gap:8px}
+.dnai-cgm-app .cgm-form input{flex:1;border:1px solid var(--line);border-radius:10px;padding:11px 13px;font:500 13px 'Inter',sans-serif;color:var(--ink);background:#fff;outline:none}
+.dnai-cgm-app .cgm-form input:focus{border-color:var(--green-500)}
+.dnai-cgm-app .cgm-form button{flex:none;background:var(--green-800);color:#fff;border:0;border-radius:10px;padding:0 18px;font:600 13px 'Inter',sans-serif;cursor:pointer}
+.dnai-cgm-app .cgm-form button:hover{background:var(--green-900)}
