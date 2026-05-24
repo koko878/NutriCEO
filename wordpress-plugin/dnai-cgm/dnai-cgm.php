@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       D²nAI CGM Simulator
- * Description:       Sales margin pricing-scenario simulator (CGM equivalent DAP/TSP, floor price, nutrient-value price, MCV) with an AI copilot. The copilot (DeepSeek via Open WebUI / OpenAI-compatible) only returns a strict JSON action; every number shown comes from the verified in-browser engine, so the model can never hallucinate a margin. Calls go through a server-side proxy, so the API key never reaches the browser and there is no CORS.
+ * Description:       Sales margin pricing-scenario simulator (CGM equivalent DAP/TSP, floor price, nutrient-value price, MCV) with an AI copilot. The copilot (an Open WebUI / OpenAI-compatible model — Qwen recommended) only returns a strict JSON action; every number shown comes from the verified in-browser engine, so the model can never hallucinate a margin. Calls go through a server-side proxy, so the API key never reaches the browser and there is no CORS.
  * Version:           1.0.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
@@ -65,7 +65,7 @@ function dnai_cgm_sanitize( $in ) {
 		'base_url'      => isset( $in['base_url'] ) ? esc_url_raw( trim( $in['base_url'] ) ) : '',
 		'api_path'      => isset( $in['api_path'] ) ? sanitize_text_field( $in['api_path'] ) : '/api/chat/completions',
 		'api_key'       => isset( $in['api_key'] ) ? trim( $in['api_key'] ) : '',
-		'model'         => isset( $in['model'] ) ? sanitize_text_field( $in['model'] ) : 'deepseek',
+		'model'         => isset( $in['model'] ) ? sanitize_text_field( $in['model'] ) : 'cgm-copilote',
 		'json_mode'     => ! empty( $in['json_mode'] ) ? '1' : '',
 		'timeout'       => isset( $in['timeout'] ) ? max( 15, min( 300, (int) $in['timeout'] ) ) : 60,
 		'system_prompt' => isset( $in['system_prompt'] ) ? sanitize_textarea_field( $in['system_prompt'] ) : '',
@@ -76,7 +76,7 @@ function dnai_cgm_settings_page() {
 	$base  = dnai_cgm_opt( 'base_url', 'https://lab.ocpnutricrops.ai' );
 	$path  = dnai_cgm_opt( 'api_path', '/api/chat/completions' );
 	$key   = dnai_cgm_opt( 'api_key', '' );
-	$model = dnai_cgm_opt( 'model', 'deepseek' );
+	$model = dnai_cgm_opt( 'model', 'cgm-copilote' );
 	$json  = dnai_cgm_opt( 'json_mode', '1' );
 	$tmout = (int) dnai_cgm_opt( 'timeout', 60 );
 	$saved = get_option( 'dnai_cgm_settings', null );
@@ -84,7 +84,7 @@ function dnai_cgm_settings_page() {
 	?>
 	<div class="wrap">
 		<h1>D²nAI CGM Simulator — settings</h1>
-		<p>Connect the AI Lab LLM (Open WebUI / OpenAI-compatible — <strong>DeepSeek</strong> recommended). Add the tool to any page with the shortcode <code>[dnai_cgm]</code>. The copilot only returns a JSON action; the margin numbers are always computed by the in-browser engine. The API key stays server-side (the browser calls the WP REST proxy <code>/wp-json/dnai-cgm/v1/chat</code>).</p>
+		<p>Connect the AI Lab LLM (Open WebUI / OpenAI-compatible — <strong>Qwen</strong> recommended; Mistral works too). Add the tool to any page with the shortcode <code>[dnai_cgm]</code>. The copilot only returns a JSON action; the margin numbers are always computed by the in-browser engine. The API key stays server-side (the browser calls the WP REST proxy <code>/wp-json/dnai-cgm/v1/chat</code>).</p>
 		<form method="post" action="options.php">
 			<?php settings_fields( 'dnai_cgm' ); ?>
 			<table class="form-table" role="presentation">
@@ -98,8 +98,8 @@ function dnai_cgm_settings_page() {
 					<td><input type="password" name="dnai_cgm_settings[api_key]" value="<?php echo esc_attr( $key ); ?>" class="regular-text" autocomplete="off">
 					<p class="description">Open WebUI → Settings → Account → API Keys. Stored server-side, never exposed to the browser.</p></td></tr>
 				<tr><th><label>Copilot model</label></th>
-					<td><input type="text" name="dnai_cgm_settings[model]" value="<?php echo esc_attr( $model ); ?>" class="regular-text" placeholder="deepseek">
-					<p class="description">Your DeepSeek model name in Open WebUI (e.g. <code>deepseek</code>, <code>deepseek-chat</code>). GPT-OSS also works as a fallback.</p></td></tr>
+					<td><input type="text" name="dnai_cgm_settings[model]" value="<?php echo esc_attr( $model ); ?>" class="regular-text" placeholder="cgm-copilote">
+					<p class="description">The id of your Open WebUI model. <strong>Qwen</strong> is the best base for this JSON-action task; Mistral works too. Use a custom model id (e.g. <code>cgm-copilote</code>) or a base model id.</p></td></tr>
 				<tr><th><label>JSON mode</label></th>
 					<td><label><input type="checkbox" name="dnai_cgm_settings[json_mode]" value="1" <?php checked( $json, '1' ); ?>> Force a strict JSON response (<code>response_format=json_object</code>)</label>
 					<p class="description">Improves reliability with DeepSeek. Disable if your backend rejects the parameter — the proxy also tolerates plain / fenced JSON.</p></td></tr>
@@ -108,7 +108,7 @@ function dnai_cgm_settings_page() {
 					<p class="description">The copilot only emits a small JSON action, so it is fast (usually &lt; 15&nbsp;s).</p></td></tr>
 				<tr><th><label>System prompt</label></th>
 					<td><textarea name="dnai_cgm_settings[system_prompt]" rows="16" class="large-text code"><?php echo esc_textarea( $prompt ); ?></textarea>
-					<p class="description">Drives the action-JSON contract. Edit with care: the front-end relies on this exact schema.</p></td></tr>
+					<p class="description">Drives the action-JSON contract. Edit with care: the front-end relies on this exact schema. <strong>Leave empty</strong> if the role already lives in your Open WebUI custom model (Option B) — the plugin will then send no system message.</p></td></tr>
 			</table>
 			<?php submit_button(); ?>
 		</form>
@@ -135,7 +135,7 @@ function dnai_cgm_rest_chat( WP_REST_Request $request ) {
 	$base  = dnai_cgm_opt( 'base_url' );
 	$path  = dnai_cgm_opt( 'api_path', '/api/chat/completions' );
 	$key   = dnai_cgm_opt( 'api_key' );
-	$model = dnai_cgm_opt( 'model', 'deepseek' );
+	$model = dnai_cgm_opt( 'model', 'cgm-copilote' );
 	$json  = dnai_cgm_opt( 'json_mode', '1' ) === '1';
 	if ( ! $base || ! $key ) {
 		return new WP_REST_Response( array( 'error' => 'Copilote non configuré. Renseignez l\'URL, la clé API et le modèle dans Réglages → D²nAI CGM.' ), 503 );
@@ -149,8 +149,14 @@ function dnai_cgm_rest_chat( WP_REST_Request $request ) {
 		return new WP_REST_Response( array( 'error' => 'Message vide.' ), 400 );
 	}
 
+	// System prompt is optional: if the field is left empty, send no system
+	// message and let the custom Open WebUI model carry the role (Option B).
 	$messages = array();
-	$messages[] = array( 'role' => 'system', 'content' => dnai_cgm_opt( 'system_prompt', dnai_cgm_default_prompt() ) );
+	$saved = get_option( 'dnai_cgm_settings', null );
+	$sys   = is_array( $saved ) && array_key_exists( 'system_prompt', $saved ) ? (string) $saved['system_prompt'] : dnai_cgm_default_prompt();
+	if ( '' !== trim( $sys ) ) {
+		$messages[] = array( 'role' => 'system', 'content' => $sys );
+	}
 
 	// Replay recent conversation turns (user / assistant only).
 	if ( is_array( $history ) ) {
@@ -284,7 +290,7 @@ function dnai_cgm_shortcode( $atts ) {
 
 	  <!-- COPILOT -->
 	  <div class="panel">
-	    <h2>Copilote CGM <span class="badge-real" style="margin-left:4px">DeepSeek</span></h2>
+	    <h2>Copilote CGM <span class="badge-real" style="margin-left:4px">IA</span></h2>
 	    <div class="sub">Posez votre question en langage naturel — l'IA règle le simulateur et répond avec les chiffres calculés par le moteur.</div>
 	    <div class="cgm-chat">
 	      <div class="cgm-chips">

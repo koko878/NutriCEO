@@ -10,9 +10,9 @@ A sales margin pricing-scenario simulator for OCP Nutricrops, with an AI copilot
 Pick a product × line, adjust raw-material prices, and compare the 3 pricing
 methods in real time: fixed price, iso-margin floor price, and nutrient-value
 price — showing RM cost, CGM equivalent (DAP/TSP) and MCV per tonne of P₂O₅
-acid. The copilot (DeepSeek via Open WebUI / OpenAI-compatible) lets a salesperson
-drive the simulator in plain language. Standalone — does not depend on the
-D²nAI Portal plugin.
+acid. The copilot (an Open WebUI / OpenAI-compatible model — Qwen recommended)
+lets a salesperson drive the simulator in plain language. Standalone — does not
+depend on the D²nAI Portal plugin.
 
 == Why it is safe ==
 The copilot NEVER produces numbers. It returns only a strict JSON "action"
@@ -30,10 +30,18 @@ simulator stay in sync.
    - AI Lab base URL : https://lab.ocpnutricrops.ai
    - API path        : /api/chat/completions   (Open WebUI default)
    - API key         : an Open WebUI API key (Settings → Account → API Keys)
-   - Copilot model   : your DeepSeek model (e.g. deepseek / deepseek-chat); GPT-OSS works as a fallback
-   - JSON mode       : on (sends response_format=json_object for reliable JSON)
+   - Copilot model   : your Open WebUI model id (Qwen recommended; Mistral works;
+                       GPT-OSS as a fallback). You can point it at a custom model
+                       that already carries the role (e.g. cgm-copilote).
+   - JSON mode       : on (sends response_format=json_object for reliable JSON;
+                       harmless if your backend ignores it — the proxy also
+                       tolerates plain / fenced JSON)
    The API key stays server-side; the browser calls the WP REST proxy
    /wp-json/dnai-cgm/v1/chat, which then calls the AI Lab (no CORS, key hidden).
+
+   Option B (role in the model): if you embed the system prompt in your Open WebUI
+   custom model, you can leave the plugin's "System prompt" field empty — the
+   plugin then sends no system message and your model carries the contract.
 
 == Use ==
 - Add the shortcode  [dnai_cgm]  to any page.
