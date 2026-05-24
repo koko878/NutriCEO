@@ -8,7 +8,7 @@ import json, base64, pathlib
 BASE = pathlib.Path(__file__).parent
 OUT = BASE / "nutricrops-demo.html"
 
-DOCS = ["exec-summary", "nutriceo", "sentinel", "helios", "maestro", "custobot", "radar", "cgm"]
+DOCS = ["exec-summary", "nutriceo", "sentinel", "helios", "maestro", "custobot", "radar", "cgm-exec", "cgm"]
 TITLES = {
     "exec-summary": "Executive Summary",
     "nutriceo": "NutriCEO · CEO",
@@ -17,6 +17,7 @@ TITLES = {
     "maestro": "Maestro · Executive Assistant",
     "custobot": "CustoBot · Customization Marketing",
     "radar": "Radar Intrants · Procurement",
+    "cgm-exec": "CGM · Vision CEO",
     "cgm": "CGM Simulator · Sales",
 }
 
@@ -135,7 +136,8 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
     <div class="card" onclick="loadDoc('maestro')"><div class="ico">M</div><div class="b"><h3>Maestro <span class="tag">Proto</span></h3><div class="who">Executive Assistant</div><p>Meeting co-pilot, inbox triage, stakeholder memory, briefs.</p></div><svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
     <div class="card full" onclick="loadDoc('custobot')"><div class="ico">✦</div><div class="b"><h3>CustoBot <span class="tag">Proto</span></h3><div class="who">Customization BU · Marketing</div><p>Multimodal repo (docs, minutes, audio, market data) → analysis, decks, briefs, video scripts.</p></div><svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
     <div class="card full" onclick="loadDoc('radar')"><div class="ico">◎</div><div class="b"><h3>Radar Intrants <span class="tag">Proto</span></h3><div class="who">Procurement · Raw materials</div><p>AI event-radar on raw-material prices (sulfur…): editable watchlist + sourced directional buy/price signal, wired to your OpenWebUI.</p></div><svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
-    <div class="card full" onclick="loadDoc('cgm')"><div class="ico">∑</div><div class="b"><h3>CGM Simulator <span class="tag">Proto</span></h3><div class="who">Sales · Commercial margin</div><p>Fertilizer pricing-scenario simulator (fixed / floor / nutrient-based): RM cost, DAP/TSP-equivalent margin, MCV/t P₂O₅, sensitivity &amp; history. Engine faithfully reproduced from the Excel.</p></div><svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
+    <div class="card full" onclick="loadDoc('cgm-exec')"><div class="ico">◆</div><div class="b"><h3>CGM · Vision CEO <span class="tag">Proto</span></h3><div class="who">Executive · one-screen decision</div><p>Épuré executive view: one product, the margin verdict, the floor &amp; fair-value price, and where the most value is created. Same engine, zero clutter.</p></div><svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
+    <div class="card full" onclick="loadDoc('cgm')"><div class="ico">∑</div><div class="b"><h3>CGM Simulator · Sales <span class="tag">Proto</span></h3><div class="who">Sales · full detail</div><p>Detailed pricing-scenario tool: RM cost, DAP/TSP-equivalent margin, MCV/t P₂O₅, sensitivity &amp; cross-formula comparison with history. Engine reproduced from the Excel.</p></div><svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
   </div>
 
   <div class="foot"><div>D²nAI · OCP Nutricrops · demo prototypes — fictional data</div><div class="mini">Feed the data to feed the decision.</div></div>
