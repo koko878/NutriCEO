@@ -3,7 +3,7 @@ Contributors: D²nAI · OCP Nutricrops
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.3.0
+Stable tag: 1.4.0
 License: GPLv2 or later
 
 A sales margin pricing-scenario simulator for OCP Nutricrops, with an AI copilot.
@@ -56,6 +56,11 @@ simulator stay in sync.
   - "Quelles formules créent le plus de valeur ?"
 - The copilot sets the simulator (product, reference, prices, sensitivity) and
   answers with the engine's numbers. You can still drive everything by hand.
+- Data & formulas: anyone on the page can download the current dataset (CSV for
+  Excel, or JSON) from the "Comparaison" tab. Admins replace the dataset in
+  Settings → D²nAI CGM by uploading a JSON file in the export format (validated
+  before it takes effect; a reset restores the built-in default). The bundled
+  data is placeholder/dev data — upload the real values to go live.
 - The simulation history (per-browser) supports save / CSV export / clear.
 
 == How the copilot works ==

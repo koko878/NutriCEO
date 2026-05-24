@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI CGM Simulator
  * Description:       Sales margin pricing-scenario simulator (CGM equivalent DAP/TSP, floor price, nutrient-value price, MCV) with an AI copilot. The copilot (an Open WebUI / OpenAI-compatible model — Qwen recommended) only returns a strict JSON action; every number shown comes from the verified in-browser engine, so the model can never hallucinate a margin. Calls go through a server-side proxy, so the API key never reaches the browser and there is no CORS.
- * Version:           1.3.0
+ * Version:           1.4.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-cgm
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_CGM_VER', '1.3.0' );
+define( 'DNAI_CGM_VER', '1.4.0' );
 define( 'DNAI_CGM_URL', plugin_dir_url( __FILE__ ) );
 
 /* -------------------------------------------------------------------------
@@ -50,6 +50,54 @@ EOT;
 function dnai_cgm_opt( $key, $default = '' ) {
 	$o = get_option( 'dnai_cgm_settings', array() );
 	return isset( $o[ $key ] ) && $o[ $key ] !== '' ? $o[ $key ] : $default;
+}
+
+/* -------------------------------------------------------------------------
+ * Dataset (formulas / coefficients). The business can replace the built-in
+ * data with their real values. An uploaded dataset (option) overrides the
+ * default bundled JSON; the front-end falls back to its embedded copy.
+ * ---------------------------------------------------------------------- */
+function dnai_cgm_default_dataset() {
+	$f   = plugin_dir_path( __FILE__ ) . 'data/cgm_data.json';
+	$raw = is_readable( $f ) ? file_get_contents( $f ) : '';
+	$d   = json_decode( $raw, true );
+	return is_array( $d ) ? $d : null;
+}
+
+/* The admin override, or null when none is uploaded (front-end uses default). */
+function dnai_cgm_override() {
+	$opt = get_option( 'dnai_cgm_dataset', null );
+	return ( is_array( $opt ) && ! empty( $opt['products'] ) ) ? $opt : null;
+}
+
+/* The dataset currently in effect (override if present, else the default). */
+function dnai_cgm_current_dataset() {
+	$o = dnai_cgm_override();
+	return $o ? $o : dnai_cgm_default_dataset();
+}
+
+/* Validate an uploaded dataset against the engine's contract. */
+function dnai_cgm_validate_dataset( $d ) {
+	if ( ! is_array( $d ) ) {
+		return 'Fichier illisible (JSON invalide).';
+	}
+	if ( empty( $d['products'] ) || ! is_array( $d['products'] ) ) {
+		return 'Clé « products » manquante ou vide.';
+	}
+	if ( empty( $d['constants'] ) || empty( $d['defaults'] ) || empty( $d['references'] ) ) {
+		return 'Sections « constants », « defaults » ou « references » manquantes.';
+	}
+	$need = array( 'product', 'line', 'family', 'row', 'cs_rock', 'cs_nh3', 's_total', 'cs_acp', 'nutrient_total', 'variable_cost_total' );
+	$p    = $d['products'][0];
+	if ( ! is_array( $p ) ) {
+		return 'Le premier produit est invalide.';
+	}
+	foreach ( $need as $k ) {
+		if ( ! array_key_exists( $k, $p ) ) {
+			return 'Colonne produit manquante : « ' . $k . ' ».';
+		}
+	}
+	return true;
 }
 
 add_action( 'admin_menu', function () {
@@ -112,8 +160,119 @@ function dnai_cgm_settings_page() {
 			</table>
 			<?php submit_button(); ?>
 		</form>
+
+		<hr>
+		<h2>Données &amp; formules</h2>
+		<?php
+		$ov     = dnai_cgm_override();
+		$cur    = dnai_cgm_current_dataset();
+		$count  = is_array( $cur ) && ! empty( $cur['products'] ) ? count( $cur['products'] ) : 0;
+		$msg    = isset( $_GET['dnai_cgm_msg'] ) ? sanitize_text_field( wp_unslash( $_GET['dnai_cgm_msg'] ) ) : '';
+		if ( 'ok' === $msg ) {
+			echo '<div class="notice notice-success inline"><p>Jeu de données importé. Le simulateur utilise désormais ces formules.</p></div>';
+		} elseif ( 'reset' === $msg ) {
+			echo '<div class="notice notice-success inline"><p>Données réinitialisées aux valeurs par défaut.</p></div>';
+		} elseif ( 'nofile' === $msg ) {
+			echo '<div class="notice notice-error inline"><p>Aucun fichier reçu.</p></div>';
+		} elseif ( 'invalid' === $msg ) {
+			$detail = isset( $_GET['dnai_cgm_detail'] ) ? sanitize_text_field( wp_unslash( $_GET['dnai_cgm_detail'] ) ) : '';
+			echo '<div class="notice notice-error inline"><p>Import refusé : ' . esc_html( $detail ) . ' Les données précédentes sont conservées.</p></div>';
+		}
+		?>
+		<p>Le simulateur utilise actuellement <strong><?php echo (int) $count; ?> formules</strong> —
+		<strong><?php echo $ov ? 'jeu de données importé' : 'données par défaut (factices, pour le développement)'; ?></strong>.
+		Les utilisateurs peuvent aussi télécharger les données depuis la page (boutons dans l'onglet « Comparaison »).</p>
+
+		<p>
+			<a class="button" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=dnai_cgm_export&fmt=csv' ), 'dnai_cgm_data' ) ); ?>">⤓ Télécharger les données (CSV / Excel)</a>
+			<a class="button" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=dnai_cgm_export&fmt=json' ), 'dnai_cgm_data' ) ); ?>">⤓ Télécharger (JSON)</a>
+		</p>
+
+		<h3>Remplacer les données</h3>
+		<p class="description">Téléversez un fichier <strong>JSON</strong> au même format que l'export ci-dessus (constantes, références et formules). Le format est validé avant remplacement ; en cas d'erreur, les données en place sont conservées. <em>L'import direct du fichier Excel sera ajouté ensuite.</em></p>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" enctype="multipart/form-data" style="margin:.6em 0">
+			<input type="hidden" name="action" value="dnai_cgm_import">
+			<?php wp_nonce_field( 'dnai_cgm_data' ); ?>
+			<input type="file" name="datafile" accept=".json,application/json" required>
+			<?php submit_button( 'Importer et remplacer', 'primary', 'submit', false ); ?>
+		</form>
+
+		<?php if ( $ov ) : ?>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="return confirm('Réinitialiser aux données par défaut ?');" style="margin:.4em 0">
+			<input type="hidden" name="action" value="dnai_cgm_reset">
+			<?php wp_nonce_field( 'dnai_cgm_data' ); ?>
+			<?php submit_button( '↺ Réinitialiser aux données par défaut', 'secondary', 'submit', false ); ?>
+		</form>
+		<?php endif; ?>
 	</div>
 	<?php
+}
+
+/* -------------------------------------------------------------------------
+ * 2b. Dataset import / export / reset (admin only)
+ * ---------------------------------------------------------------------- */
+add_action( 'admin_post_dnai_cgm_export', 'dnai_cgm_admin_export' );
+add_action( 'admin_post_dnai_cgm_import', 'dnai_cgm_admin_import' );
+add_action( 'admin_post_dnai_cgm_reset', 'dnai_cgm_admin_reset' );
+
+function dnai_cgm_admin_export() {
+	if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'forbidden' ); }
+	check_admin_referer( 'dnai_cgm_data' );
+	$d = dnai_cgm_current_dataset();
+	if ( ! is_array( $d ) || empty( $d['products'] ) ) { wp_die( 'No dataset available.' ); }
+	$fmt = isset( $_GET['fmt'] ) ? sanitize_text_field( wp_unslash( $_GET['fmt'] ) ) : 'json';
+
+	if ( 'csv' === $fmt ) {
+		nocache_headers();
+		header( 'Content-Type: text/csv; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename=cgm_formules.csv' );
+		echo "\xEF\xBB\xBF"; // BOM for Excel
+		$cols = array_keys( $d['products'][0] );
+		$out  = fopen( 'php://output', 'w' );
+		fputcsv( $out, $cols, ';' );
+		foreach ( $d['products'] as $p ) {
+			$row = array();
+			foreach ( $cols as $c ) { $row[] = isset( $p[ $c ] ) ? $p[ $c ] : ''; }
+			fputcsv( $out, $row, ';' );
+		}
+		fclose( $out );
+		exit;
+	}
+
+	nocache_headers();
+	header( 'Content-Type: application/json; charset=utf-8' );
+	header( 'Content-Disposition: attachment; filename=cgm_data.json' );
+	echo wp_json_encode( $d, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+	exit;
+}
+
+function dnai_cgm_admin_import() {
+	if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'forbidden' ); }
+	check_admin_referer( 'dnai_cgm_data' );
+	$back = admin_url( 'options-general.php?page=dnai-cgm' );
+
+	if ( empty( $_FILES['datafile']['tmp_name'] ) || ! is_uploaded_file( $_FILES['datafile']['tmp_name'] ) ) {
+		wp_safe_redirect( add_query_arg( 'dnai_cgm_msg', 'nofile', $back ) );
+		exit;
+	}
+	$raw = file_get_contents( $_FILES['datafile']['tmp_name'] );
+	$d   = json_decode( $raw, true );
+	$err = dnai_cgm_validate_dataset( $d );
+	if ( true !== $err ) {
+		wp_safe_redirect( add_query_arg( array( 'dnai_cgm_msg' => 'invalid', 'dnai_cgm_detail' => rawurlencode( $err ) ), $back ) );
+		exit;
+	}
+	update_option( 'dnai_cgm_dataset', $d );
+	wp_safe_redirect( add_query_arg( 'dnai_cgm_msg', 'ok', $back ) );
+	exit;
+}
+
+function dnai_cgm_admin_reset() {
+	if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'forbidden' ); }
+	check_admin_referer( 'dnai_cgm_data' );
+	delete_option( 'dnai_cgm_dataset' );
+	wp_safe_redirect( add_query_arg( 'dnai_cgm_msg', 'reset', admin_url( 'options-general.php?page=dnai-cgm' ) ) );
+	exit;
 }
 
 /* -------------------------------------------------------------------------
@@ -260,6 +419,7 @@ add_action( 'wp_enqueue_scripts', function () {
 	wp_localize_script( 'dnai-cgm', 'DNAI_CGM', array(
 		'rest'  => esc_url_raw( rest_url( 'dnai-cgm/v1' ) ),
 		'nonce' => wp_create_nonce( 'wp_rest' ),
+		'data'  => dnai_cgm_override(),
 	) );
 } );
 
@@ -396,6 +556,10 @@ function dnai_cgm_shortcode( $atts ) {
 	  <div class="panel">
 	    <h2>Comparaison des formules</h2>
 	    <div class="sub">Toutes les formules au prix valeur-nutriments (Sc2), classées par CGM équivalent — <span style="color:var(--ok);font-weight:600">vert = créateur de valeur</span>, <span style="color:var(--bad);font-weight:600">rouge = sous-pricé</span> vs la marge de référence.</div>
+	    <div style="display:flex;gap:8px;margin:4px 0 14px;flex-wrap:wrap">
+	      <button type="button" class="btn ghost" id="cgmDlCsv">⤓ Télécharger les données (CSV / Excel)</button>
+	      <button type="button" class="btn ghost" id="cgmDlJson">⤓ Télécharger (JSON)</button>
+	    </div>
 	    <div id="bars" style="margin-bottom:14px"></div>
 	    <div class="tbl-wrap"><div class="tbl-scroll">
 	      <table id="cmpTbl"><thead><tr>
