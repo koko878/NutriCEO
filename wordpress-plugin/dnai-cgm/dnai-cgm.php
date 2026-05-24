@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI CGM Simulator
  * Description:       Sales margin pricing-scenario simulator (CGM equivalent DAP/TSP, floor price, nutrient-value price, MCV) with an AI copilot. The copilot (an Open WebUI / OpenAI-compatible model — Qwen recommended) only returns a strict JSON action; every number shown comes from the verified in-browser engine, so the model can never hallucinate a margin. Calls go through a server-side proxy, so the API key never reaches the browser and there is no CORS.
- * Version:           1.5.0
+ * Version:           1.5.1
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-cgm
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_CGM_VER', '1.5.0' );
+define( 'DNAI_CGM_VER', '1.5.1' );
 define( 'DNAI_CGM_URL', plugin_dir_url( __FILE__ ) );
 
 /* -------------------------------------------------------------------------
@@ -639,8 +639,8 @@ function dnai_cgm_shortcode( $atts ) {
 	  </div>
 
 	  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
-	    <button type="button" class="btn ghost" id="cgmDlCsv">⤓ Télécharger les données (CSV / Excel)</button>
-	    <button type="button" class="btn ghost" id="cgmDlJson">⤓ JSON</button>
+	    <button type="button" class="btn ghost" id="cgmDlCsv">⤓ Exporter les données (CSV / Excel)</button>
+	    <button type="button" class="btn ghost" id="cgmDlJson">⤓ Exporter (JSON)</button>
 	  </div>
 
 	  <!-- COPILOT -->
