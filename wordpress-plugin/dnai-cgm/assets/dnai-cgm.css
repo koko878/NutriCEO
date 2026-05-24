@@ -66,6 +66,8 @@
 
 .dnai-cgm-app .verdict{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--green-50);border:1px solid var(--green-100);font-size:13.5px;color:var(--ink-2);line-height:1.5}
 .dnai-cgm-app .verdict b{color:var(--green-800)}
+.dnai-cgm-app .verdict.bad{background:var(--bad-bg);border-color:#f3c0c0;color:#7f1d1d}
+.dnai-cgm-app .verdict.bad b{color:var(--bad)}
 
 /* sensitivity */
 .dnai-cgm-app .sensi-wrap{display:grid;grid-template-columns:1fr 1.2fr;gap:18px;align-items:center}
@@ -112,6 +114,8 @@
 .dnai-cgm-app .cgm-msg.user{align-self:flex-end;background:var(--green-800);color:#fff;border-bottom-right-radius:4px}
 .dnai-cgm-app .cgm-msg.bot{align-self:flex-start;background:var(--green-50);border:1px solid var(--green-100);color:var(--ink-2);border-bottom-left-radius:4px}
 .dnai-cgm-app .cgm-msg.bot b{color:var(--green-800)}
+.dnai-cgm-app .cgm-msg.bot.warn{background:var(--bad-bg);border-color:#f3c0c0;color:#7f1d1d}
+.dnai-cgm-app .cgm-msg.bot.warn b{color:var(--bad)}
 .dnai-cgm-app .cgm-pre{margin-bottom:7px;color:var(--ink);font-weight:500}
 .dnai-cgm-app .cgm-typing{color:var(--muted);font-style:italic}
 .dnai-cgm-app .cgm-form{display:flex;gap:8px}

@@ -5217,6 +5217,7 @@ function render(){
   // verdict
   const sc0ok = r.sc0.cgm >= r.cgmRef;
   const gap = r.sc0.price - r.sc1.price;
+  document.getElementById('verdict').classList.toggle('bad', !sc0ok);
   document.getElementById('verdict').innerHTML =
     `À <b>${f(r.sc0.price,0)} $/t</b>, ce produit dégage une CGM ${r.ref} Eq de <b>${f(r.sc0.cgm,0)} $/t</b> ` +
     (sc0ok
@@ -5545,6 +5546,10 @@ async function chatSend(text){
     if(act.clarify){ thinking.innerHTML='❓ '+String(act.clarify).replace(/</g,'&lt;'); chatHist.push({role:'assistant',content:act.clarify}); return; }
     if(act.intent==='smalltalk'){ thinking.innerHTML=(act.preface||'Je suis le copilote CGM : demandez-moi un produit, un prix, une comparaison ou une sensibilité.').replace(/</g,'&lt;'); return; }
     applyAction(act);
+    if(['compute','set','explain'].includes(act.intent)){
+      const rr=compute();
+      thinking.classList.toggle('warn', rr.sc0.cgm < rr.cgmRef-1e-6);
+    }
     const pre=act.preface?('<div class="cgm-pre">'+String(act.preface).replace(/</g,'&lt;')+'</div>'):'';
     const ans=chatAnswer(act);
     thinking.innerHTML=pre+ans;
