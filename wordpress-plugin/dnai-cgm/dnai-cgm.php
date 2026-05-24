@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI CGM Simulator
  * Description:       Sales margin pricing-scenario simulator (CGM equivalent DAP/TSP, floor price, nutrient-value price, MCV) with an AI copilot. The copilot (an Open WebUI / OpenAI-compatible model — Qwen recommended) only returns a strict JSON action; every number shown comes from the verified in-browser engine, so the model can never hallucinate a margin. Calls go through a server-side proxy, so the API key never reaches the browser and there is no CORS.
- * Version:           1.4.0
+ * Version:           1.5.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-cgm
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_CGM_VER', '1.4.0' );
+define( 'DNAI_CGM_VER', '1.5.0' );
 define( 'DNAI_CGM_URL', plugin_dir_url( __FILE__ ) );
 
 /* -------------------------------------------------------------------------
@@ -98,6 +98,176 @@ function dnai_cgm_validate_dataset( $d ) {
 		}
 	}
 	return true;
+}
+
+/* -------------------------------------------------------------------------
+ * XLSX import — reads the original CGM_Simulator workbook (no dependency).
+ * Only the BDD_LIGNES and "CGM SIMULATOR" sheets are read (the pricing grid
+ * sheet can be huge), using cached cell values written by Excel.
+ * ---------------------------------------------------------------------- */
+function dnai_cgm_num( $v ) {
+	if ( is_int( $v ) || is_float( $v ) ) { return (float) $v; }
+	if ( is_string( $v ) && is_numeric( $v ) ) { return (float) $v; }
+	return 0.0;
+}
+
+function dnai_cgm_xlsx_shared( $xml ) {
+	$out = array();
+	if ( ! is_string( $xml ) || '' === $xml ) { return $out; }
+	$r = new XMLReader();
+	$r->XML( $xml );
+	$cur = ''; $in = false;
+	while ( @$r->read() ) {
+		if ( XMLReader::ELEMENT === $r->nodeType ) {
+			if ( 'si' === $r->localName ) { $cur = ''; $in = true; }
+			elseif ( 't' === $r->localName && $in ) { $cur .= $r->readString(); }
+		} elseif ( XMLReader::END_ELEMENT === $r->nodeType && 'si' === $r->localName ) {
+			$out[] = $cur; $in = false;
+		}
+	}
+	$r->close();
+	return $out;
+}
+
+function dnai_cgm_xlsx_cells( $xml, $shared ) {
+	$cells = array();
+	if ( ! is_string( $xml ) || '' === $xml ) { return $cells; }
+	$r = new XMLReader();
+	$r->XML( $xml );
+	$ref = null; $type = null;
+	while ( @$r->read() ) {
+		if ( XMLReader::ELEMENT === $r->nodeType ) {
+			$ln = $r->localName;
+			if ( 'c' === $ln ) {
+				$ref  = $r->getAttribute( 'r' );
+				$type = $r->getAttribute( 't' );
+			} elseif ( 'v' === $ln && null !== $ref ) {
+				$v = $r->readString();
+				$cells[ $ref ] = ( 's' === $type ) ? ( isset( $shared[ (int) $v ] ) ? $shared[ (int) $v ] : '' ) : $v;
+			} elseif ( 't' === $ln && 'inlineStr' === $type && null !== $ref ) {
+				$cells[ $ref ] = $r->readString();
+			}
+		}
+	}
+	$r->close();
+	return $cells;
+}
+
+/* Returns a dataset array on success, or a string error message. */
+function dnai_cgm_xlsx_to_dataset( $file ) {
+	if ( ! class_exists( 'ZipArchive' ) ) {
+		return 'Extension PHP « zip » indisponible sur le serveur (requise pour lire .xlsx).';
+	}
+	$zip = new ZipArchive();
+	if ( true !== $zip->open( $file ) ) {
+		return 'Fichier .xlsx illisible.';
+	}
+	$wb   = $zip->getFromName( 'xl/workbook.xml' );
+	$rels = $zip->getFromName( 'xl/_rels/workbook.xml.rels' );
+	if ( ! $wb || ! $rels ) { $zip->close(); return 'Structure .xlsx inattendue.'; }
+
+	$name2rid = array();
+	if ( preg_match_all( '/<sheet[^>]*\bname="([^"]*)"[^>]*\br:id="([^"]*)"/', $wb, $m, PREG_SET_ORDER ) ) {
+		foreach ( $m as $mm ) { $name2rid[ html_entity_decode( $mm[1], ENT_QUOTES ) ] = $mm[2]; }
+	}
+	$rid2tgt = array();
+	if ( preg_match_all( '/<Relationship[^>]*\bId="([^"]*)"[^>]*\bTarget="([^"]*)"/', $rels, $m2, PREG_SET_ORDER ) ) {
+		foreach ( $m2 as $mm ) { $rid2tgt[ $mm[1] ] = $mm[2]; }
+	}
+	$path = function ( $sheet ) use ( $name2rid, $rid2tgt ) {
+		if ( ! isset( $name2rid[ $sheet ] ) ) { return null; }
+		$t = isset( $rid2tgt[ $name2rid[ $sheet ] ] ) ? $rid2tgt[ $name2rid[ $sheet ] ] : null;
+		if ( ! $t ) { return null; }
+		$t = preg_replace( '#^/?xl/#', '', $t );
+		return 'xl/' . ltrim( $t, '/' );
+	};
+	$bddPath = $path( 'BDD_LIGNES' );
+	$simPath = $path( 'CGM SIMULATOR' );
+	if ( ! $bddPath || ! $simPath ) { $zip->close(); return 'Onglets « BDD_LIGNES » / « CGM SIMULATOR » introuvables dans le classeur.'; }
+
+	$sharedXml = $zip->getFromName( 'xl/sharedStrings.xml' );
+	$shared    = $sharedXml ? dnai_cgm_xlsx_shared( $sharedXml ) : array();
+	$bdd       = dnai_cgm_xlsx_cells( $zip->getFromName( $bddPath ), $shared );
+	$sim       = dnai_cgm_xlsx_cells( $zip->getFromName( $simPath ), $shared );
+	$zip->close();
+
+	$get = function ( $cells, $col, $row ) {
+		$k = $col . $row;
+		return isset( $cells[ $k ] ) ? $cells[ $k ] : null;
+	};
+
+	$cols = array(
+		'priority' => 'A', 'family' => 'B', 'product' => 'C', 'line' => 'D',
+		'cs_rock' => 'E', 'cs_acp' => 'F', 'cs_nh3' => 'G', 'cs_acs' => 'H', 'cs_sulfur' => 'I',
+		'cs_borax' => 'J', 'cs_zno' => 'K', 'cs_cuso4' => 'L', 'cs_kcl' => 'M', 'cs_sam' => 'N',
+		'cs_caso4' => 'O', 'cs_caco3' => 'P', 'cs_gypse' => 'Q', 's_from_acp' => 'R',
+		's_from_h2so4' => 'S', 's_direct' => 'T', 's_total' => 'U', 'n' => 'V', 'p' => 'W',
+		'k' => 'X', 's' => 'Y', 'nutrient_total' => 'Z', 'rock_from_acp_cost' => 'AA',
+		'prod_maux' => 'AB', 'prod_om' => 'AC', 'prod_ee' => 'AD', 'prod_vap' => 'AE',
+		'prod_tolling_fees' => 'AF', 'variable_cost_total' => 'AG',
+	);
+	$text_keys = array( 'priority', 'family', 'product', 'line' );
+
+	$products = array();
+	$empty    = 0;
+	for ( $row = 4; $row <= 250; $row++ ) {
+		$name = $get( $bdd, 'C', $row );
+		if ( null === $name || '' === trim( (string) $name ) ) {
+			if ( ++$empty >= 3 ) { break; }
+			continue;
+		}
+		$empty = 0;
+		$o = array( 'row' => $row );
+		foreach ( $cols as $key => $col ) {
+			$v = $get( $bdd, $col, $row );
+			$o[ $key ] = in_array( $key, $text_keys, true ) ? ( null === $v ? '' : (string) $v ) : dnai_cgm_num( $v );
+		}
+		$products[] = $o;
+	}
+	if ( count( $products ) < 2 ) {
+		return 'Aucune formule lue dans « BDD_LIGNES » (vérifiez que l\'onglet contient les données).';
+	}
+
+	// Start from the bundled default to keep labels / notes / sensitivity defaults.
+	$ds = dnai_cgm_default_dataset();
+	if ( ! is_array( $ds ) ) {
+		$ds = array( 'constants' => array(), 'defaults' => array(), 'references' => array(), 'products' => array() );
+	}
+	$ds['products'] = $products;
+
+	$ds['constants']['sulfur_index']       = dnai_cgm_num( $get( $bdd, 'AK', 2 ) );
+	$ds['constants']['sulfur_index_h2so4'] = dnai_cgm_num( $get( $bdd, 'AK', 3 ) );
+	$ds['constants']['rock_index']         = dnai_cgm_num( $get( $bdd, 'AM', 2 ) );
+
+	$rm_rows = array( 'rock' => 15, 'nh3' => 16, 'sulphur' => 17, 'borax' => 18, 'zno' => 19, 'cuso4' => 20, 'kcl' => 21, 'sam' => 22, 'caso4' => 23, 'caco3' => 24, 'gypse' => 25, 'acs' => 26 );
+	foreach ( $rm_rows as $k => $rr ) {
+		$ds['defaults']['rm_prices'][ $k ] = dnai_cgm_num( $get( $sim, 'C', $rr ) );
+	}
+	$ds['defaults']['reference_prices']['dap'] = dnai_cgm_num( $get( $sim, 'C', 28 ) );
+	$ds['defaults']['reference_prices']['tsp'] = dnai_cgm_num( $get( $sim, 'C', 29 ) );
+
+	foreach ( $products as $p ) {
+		if ( 'Ref' !== trim( (string) $p['priority'] ) ) { continue; }
+		$fam = strtoupper( $p['family'] );
+		$slot = ( 0 === strpos( $fam, 'DAP' ) ) ? 'dap' : ( ( 0 === strpos( $fam, 'TSP' ) ) ? 'tsp' : null );
+		if ( $slot && empty( $ds['references'][ $slot ]['_set'] ) ) {
+			$ds['references'][ $slot ] = array(
+				'product'        => $p['product'],
+				'line'           => $p['line'],
+				'row'            => $p['row'],
+				'cs_acp'         => $p['cs_acp'],
+				'nutrient_total' => $p['nutrient_total'],
+				'_set'           => true,
+			);
+		}
+	}
+	foreach ( array( 'dap', 'tsp' ) as $slot ) {
+		if ( isset( $ds['references'][ $slot ]['_set'] ) ) { unset( $ds['references'][ $slot ]['_set'] ); }
+	}
+
+	$err = dnai_cgm_validate_dataset( $ds );
+	if ( true !== $err ) { return 'Conversion Excel invalide : ' . $err; }
+	return $ds;
 }
 
 add_action( 'admin_menu', function () {
@@ -189,11 +359,11 @@ function dnai_cgm_settings_page() {
 		</p>
 
 		<h3>Remplacer les données</h3>
-		<p class="description">Téléversez un fichier <strong>JSON</strong> au même format que l'export ci-dessus (constantes, références et formules). Le format est validé avant remplacement ; en cas d'erreur, les données en place sont conservées. <em>L'import direct du fichier Excel sera ajouté ensuite.</em></p>
+		<p class="description">Téléversez le classeur <strong>Excel <code>.xlsx</code></strong> (même structure que <code>CGM_Simulator_MVP.xlsx</code> : onglets <code>BDD_LIGNES</code> et <code>CGM SIMULATOR</code>), avec les vraies valeurs — il est converti automatiquement. Un fichier <strong>JSON</strong> au format de l'export ci-dessus est aussi accepté. Le contenu est validé avant remplacement ; en cas d'erreur, les données en place sont conservées.</p>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" enctype="multipart/form-data" style="margin:.6em 0">
 			<input type="hidden" name="action" value="dnai_cgm_import">
 			<?php wp_nonce_field( 'dnai_cgm_data' ); ?>
-			<input type="file" name="datafile" accept=".json,application/json" required>
+			<input type="file" name="datafile" accept=".xlsx,.json,application/json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required>
 			<?php submit_button( 'Importer et remplacer', 'primary', 'submit', false ); ?>
 		</form>
 
@@ -255,8 +425,21 @@ function dnai_cgm_admin_import() {
 		wp_safe_redirect( add_query_arg( 'dnai_cgm_msg', 'nofile', $back ) );
 		exit;
 	}
-	$raw = file_get_contents( $_FILES['datafile']['tmp_name'] );
-	$d   = json_decode( $raw, true );
+	$tmp   = $_FILES['datafile']['tmp_name'];
+	$fname = isset( $_FILES['datafile']['name'] ) ? strtolower( (string) $_FILES['datafile']['name'] ) : '';
+	$head  = (string) file_get_contents( $tmp, false, null, 0, 2 );
+	$is_xlsx = ( '.xlsx' === substr( $fname, -5 ) ) || ( 'PK' === $head );
+
+	if ( $is_xlsx ) {
+		$d = dnai_cgm_xlsx_to_dataset( $tmp );
+		if ( is_string( $d ) ) {
+			wp_safe_redirect( add_query_arg( array( 'dnai_cgm_msg' => 'invalid', 'dnai_cgm_detail' => rawurlencode( $d ) ), $back ) );
+			exit;
+		}
+	} else {
+		$d = json_decode( (string) file_get_contents( $tmp ), true );
+	}
+
 	$err = dnai_cgm_validate_dataset( $d );
 	if ( true !== $err ) {
 		wp_safe_redirect( add_query_arg( array( 'dnai_cgm_msg' => 'invalid', 'dnai_cgm_detail' => rawurlencode( $err ) ), $back ) );
@@ -455,6 +638,11 @@ function dnai_cgm_shortcode( $atts ) {
 	    <p>Choisissez un produit et une ligne, ajustez les prix matières premières, et comparez en direct les 3 méthodes de pricing (prix fixe, prix plancher iso-marge, prix valeur-nutriments) — coût MP, CGM équivalent DAP/TSP et MCV par tonne d'acide P₂O₅. Le copilote IA pilote le simulateur ; tous les chiffres viennent du moteur.</p>
 	  </div>
 
+	  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+	    <button type="button" class="btn ghost" id="cgmDlCsv">⤓ Télécharger les données (CSV / Excel)</button>
+	    <button type="button" class="btn ghost" id="cgmDlJson">⤓ JSON</button>
+	  </div>
+
 	  <!-- COPILOT -->
 	  <div class="panel">
 	    <h2>Copilote CGM <span class="badge-real" style="margin-left:4px">IA</span></h2>
@@ -556,10 +744,6 @@ function dnai_cgm_shortcode( $atts ) {
 	  <div class="panel">
 	    <h2>Comparaison des formules</h2>
 	    <div class="sub">Toutes les formules au prix valeur-nutriments (Sc2), classées par CGM équivalent — <span style="color:var(--ok);font-weight:600">vert = créateur de valeur</span>, <span style="color:var(--bad);font-weight:600">rouge = sous-pricé</span> vs la marge de référence.</div>
-	    <div style="display:flex;gap:8px;margin:4px 0 14px;flex-wrap:wrap">
-	      <button type="button" class="btn ghost" id="cgmDlCsv">⤓ Télécharger les données (CSV / Excel)</button>
-	      <button type="button" class="btn ghost" id="cgmDlJson">⤓ Télécharger (JSON)</button>
-	    </div>
 	    <div id="bars" style="margin-bottom:14px"></div>
 	    <div class="tbl-wrap"><div class="tbl-scroll">
 	      <table id="cmpTbl"><thead><tr>
