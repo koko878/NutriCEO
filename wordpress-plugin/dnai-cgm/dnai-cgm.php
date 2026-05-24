@@ -180,6 +180,7 @@ function dnai_cgm_rest_chat( WP_REST_Request $request ) {
 		'messages'    => $messages,
 		'stream'      => false,
 		'temperature' => 0.1,
+		'max_tokens'  => 500,
 	);
 	if ( $json ) {
 		$payload['response_format'] = array( 'type' => 'json_object' );
