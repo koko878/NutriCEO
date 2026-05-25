@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NutrientOS — Exec Why/What/How · OCP Nutricrops · D²nAI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-900:#103d17;--green-800:#1B5E20;--green-700:#2E7D32;--green-600:#2f8a39;--green-500:#4CAF50;
+  --green-300:#66BB6A;--green-50:#EAF4EC;--green-100:#D6EADb;--ink:#10231a;--muted:#5c6b62;--line:#e6ede7;--dark:#07140c;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',sans-serif;color:var(--ink);background:#e9eee9;line-height:1.45}
+h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:.01em}
+.page{max-width:900px;margin:24px auto;background:#fff;box-shadow:0 18px 50px -30px rgba(16,35,26,.5)}
+
+/* header */
+.hd{background:var(--dark);color:#eaf4ec;padding:26px 44px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.brand{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:26px;color:#fff}
+.brand b{font-weight:800}.brand .by{display:block;font-family:'Inter';font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--green-300);margin-top:4px}
+.hd .tag{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--green-300);text-align:right}
+.hd .tag span{display:block;color:#88a690;font-size:10px;margin-top:4px;letter-spacing:.08em}
+.lede{padding:22px 44px;border-bottom:1px solid var(--line)}
+.lede h1{margin:0;font-size:30px;font-weight:700;line-height:1.08}
+.lede h1 em{font-style:italic;color:var(--green-700)}
+
+/* bands */
+.band{display:grid;grid-template-columns:128px 1fr;border-bottom:1px solid var(--line)}
+.band:last-of-type{border-bottom:0}
+.lab{padding:24px 0 24px 44px}
+.lab .l{font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:700;color:var(--green-500);line-height:.9}
+.lab .w{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--green-800);margin-top:4px}
+.bd{padding:24px 44px 24px 12px}
+.bd .claim{font-size:16px;font-weight:600;margin:0 0 14px;max-width:64ch}
+.bd .claim em{font-style:italic;color:var(--green-700)}
+.row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.cell{background:var(--green-50);border-radius:11px;padding:13px 15px}
+.cell h3{margin:0 0 5px;font-size:14px;font-weight:700;color:var(--green-800)}
+.cell p{margin:0;font-size:12.5px;color:var(--muted)}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.lay{border-radius:11px;padding:15px}
+.lay.open{background:#fff;border:1px dashed var(--green-300)}
+.lay.core{background:linear-gradient(160deg,#0f3d18,#1B5E20);color:#eaf4ec}
+.lay .t{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.lay.open .t{color:var(--green-700)}.lay.core .t{color:var(--green-300)}
+.lay h3{margin:3px 0 8px;font-size:17px;font-weight:700}.lay.core h3{color:#fff}
+.lay ul{margin:0;padding-left:15px;font-size:12.5px}.lay.open li{color:var(--muted)}.lay.core li{color:#cfe3d4}
+.lay li{margin-bottom:3px}
+.flag{margin-top:12px;font-size:12.5px;font-weight:600;color:var(--green-800);background:var(--green-50);border-radius:9px;padding:10px 13px}
+.flag b{color:var(--green-900)}
+.tl{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px}
+.step{border:1px solid var(--line);border-radius:11px;padding:13px}
+.step .p{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--green-600)}
+.step .bar{height:3px;background:linear-gradient(90deg,var(--green-500),rgba(76,175,80,.2));border-radius:3px;margin:7px 0 8px}
+.step h3{margin:0 0 4px;font-size:15px;font-weight:700}.step p{margin:0;font-size:12px;color:var(--muted)}
+.gov{margin-top:12px;font-size:12.5px;color:var(--muted)}.gov b{color:var(--ink)}
+.now{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#05230f;background:var(--green-500);padding:2px 7px;border-radius:5px;margin-left:6px}
+
+/* ask */
+.ask{background:var(--dark);color:#eaf4ec;padding:22px 44px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.ask .x h2{margin:0 0 5px;font-size:21px;color:#fff}
+.ask .x p{margin:0;font-size:13px;color:#cfe3d4;max-width:58ch}.ask .x p b{color:var(--green-300)}
+.ask .pill{flex:none;border:1px solid rgba(102,187,106,.5);border-radius:12px;padding:13px 18px;text-align:center}
+.ask .pill .big{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;color:var(--green-300);line-height:1}
+.ask .pill .s{font-size:11px;color:#9fc6a8;margin-top:2px}
+.foot{padding:14px 44px;font-size:10.5px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+@media print{body{background:#fff}.page{box-shadow:none;margin:0;max-width:none}.band,.step,.lay,.cell{break-inside:avoid}}
+@media(max-width:680px){.row,.tl{grid-template-columns:1fr}.split{grid-template-columns:1fr}.band{grid-template-columns:84px 1fr}.lab,.bd{padding-left:18px}.bd{padding-right:18px}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hd">
+    <div class="brand">Nutrient<b>OS</b><span class="by">OCP Nutricrops · équipe D²nAI</span></div>
+    <div class="tag">Executive — Pourquoi / Quoi / Comment<span>Confidentiel · board OCP Nutricrops</span></div>
+  </div>
+
+  <div class="lede">
+    <h1>Posséder le standard ouvert de la <em>nutrition des plantes</em>.</h1>
+  </div>
+
+  <!-- WHY -->
+  <div class="band">
+    <div class="lab"><div class="l">01</div><div class="w">Pourquoi</div></div>
+    <div class="bd">
+      <p class="claim">La valeur en agriculture se déplace de l'engrais vendu vers <em>la donnée et la décision agronomique</em>. Qui détient le standard de la nutrition détiendra la relation agriculteur et la marge de demain.</p>
+      <div class="row">
+        <div class="cell"><h3>La donnée devient l'actif</h3><p>Sol × culture × terrain : OCP Nutricrops est le mieux placé pour la structurer à l'échelle.</p></div>
+        <div class="cell"><h3>L'IA rend la reco scalable</h3><p>La recommandation personnalisée devient un avantage défendable — si on en garde le moteur.</p></div>
+        <div class="cell"><h3>Le standard se joue maintenant</h3><p>Si OCP Nutricrops ne le pose pas, un acteur neutre ou un concurrent le posera à sa place.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT -->
+  <div class="band">
+    <div class="lab"><div class="l">02</div><div class="w">Quoi</div></div>
+    <div class="bd">
+      <p class="claim"><b>NutrientOS</b> : la plateforme ouverte de la nutrition des plantes, pilotée par OCP Nutricrops, en modèle <em>open-core</em> — on ouvre ce qui attire, on garde ce qui crée la valeur.</p>
+      <div class="split">
+        <div class="lay open">
+          <span class="t">Couche ouverte — la gravité</span>
+          <h3>Ouvert</h3>
+          <ul>
+            <li>Nutrient Value Standard publié par OCP Nutricrops</li>
+            <li>Datasets sol &amp; agro de base + implémentation de référence</li>
+            <li>APIs &amp; SDK pour l'écosystème</li>
+          </ul>
+        </div>
+        <div class="lay core">
+          <span class="t">Cœur OCP Nutricrops — la valeur</span>
+          <h3>Possédé</h3>
+          <ul>
+            <li>Moteur de recommandation propriétaire</li>
+            <li>Digital twin des sols + réseau d'agriculteurs</li>
+            <li>Orchestration commerciale &amp; marketplace</li>
+          </ul>
+        </div>
+      </div>
+      <div class="flag">App phare : la <b>Console NutrientOS</b> — recommandation nutrition personnalisée (sol × culture × objectif), <b>déjà démontrable</b> dans le prototype.</div>
+    </div>
+  </div>
+
+  <!-- HOW -->
+  <div class="band">
+    <div class="lab"><div class="l">03</div><div class="w">Comment</div></div>
+    <div class="bd">
+      <p class="claim">Publier le standard <em>d'abord</em>, sur un périmètre étroit et légitime — la <em>nutrition phosphatée</em> — et bâtir la gouvernance autour, ensuite.</p>
+      <div class="tl">
+        <div class="step"><div class="p">Semaines 1-4</div><div class="bar"></div><h3>Prototype &amp; spec<span class="now">fait</span></h3><p>Plateforme + Console vivantes, v0 du standard.</p></div>
+        <div class="step"><div class="p">Semaines 5-8</div><div class="bar"></div><h3>Publication open</h3><p>Standard + implémentation de référence ; 3 partenaires pilotes.</p></div>
+        <div class="step"><div class="p">Semaines 9-12</div><div class="bar"></div><h3>Boucle terrain</h3><p>1ères données agriculteurs, effet de réseau, dossier gouvernance.</p></div>
+      </div>
+      <div class="gov"><b>Gouvernance :</b> OCP Nutricrops garde le cœur et la marque du standard ; une fondation neutre n'arrive qu'ensuite, pour entériner — pas pour diriger (modèle Android / Linux Foundation).</div>
+    </div>
+  </div>
+
+  <!-- ASK -->
+  <div class="ask">
+    <div class="x">
+      <h2>La demande au board</h2>
+      <p>Un <b>mandat de 90 jours</b> et une <b>petite équipe D²nAI</b> pour transformer le prototype en standard ouvert v1 + cœur OCP Nutricrops. Décision sur <b>un produit qui tourne déjà</b> — voir le prototype joint.</p>
+    </div>
+    <div class="pill"><div class="big">90 j</div><div class="s">jusqu'au standard publié</div></div>
+  </div>
+
+  <div class="foot">
+    <span>NutrientOS · OCP Nutricrops · équipe D²nAI (Data, Digital &amp; AI)</span>
+    <span>« Feed the soil to feed the world »</span>
+  </div>
+
+</div>
+</body>
+</html>
