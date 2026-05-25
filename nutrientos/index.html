@@ -55,7 +55,7 @@ button{font-family:inherit}
 .hflip{margin-top:32px;display:inline-flex;align-items:center;gap:12px;font-size:13.5px;color:#9fc6a8;flex-wrap:wrap}
 .hflip s{color:#7f9686}.hflip b{color:#fff}
 
-/* hero feature row = mirrors OS-ag explore/contribute/collaborate */
+/* hero feature row */
 .feat{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:46px}
 .feat .f{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:18px}
 .feat .f .i{font-size:20px}
@@ -219,7 +219,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
       <button class="navlink" data-v="explore" onclick="go('explore')">Explorer</button>
       <button class="navlink" data-v="impact" onclick="go('impact')">Impact</button>
       <button class="navlink" data-v="community" onclick="go('community')">Communauté</button>
-      <button class="navlink" data-v="console" onclick="go('console')">Console ★</button>
+      <button class="navlink" data-v="console" onclick="go('console')">Console</button>
     </div>
     <div class="right">
       <div class="legend"><span class="lay open">OPEN</span><span class="lay core">OCP CORE</span></div>
@@ -233,20 +233,16 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
   <section class="hero" style="padding:0">
     <canvas id="matrix"></canvas>
     <div class="wrap">
-      <span class="kicker">● La réponse d'OCP à « OS-ag »</span>
-      <h1>La plateforme ouverte de la <em>nutrition des plantes</em> — mais c'est OCP qui la mène.</h1>
-      <p class="lead">Comme OS-ag : explorer, contribuer, collaborer, tracer son impact sur des datasets, modèles et standards ouverts. <strong>Contrairement à OS-ag</strong> : OCP publie le standard, en garde le cœur (open-core), et la plateforme <strong>tourne déjà</strong> — au lieu d'un commun neutre lancé mi-2026.</p>
+      <span class="kicker">● OCP Nutricrops × D²nAI</span>
+      <h1>La plateforme ouverte de la <em>nutrition des plantes</em>.</h1>
+      <p class="lead">Explorer, contribuer, collaborer et tracer l'impact sur des datasets, modèles et standards ouverts — autour du <strong>Nutrient Value Standard</strong> publié par OCP. Une infrastructure commune dont OCP garde le cœur.</p>
       <div class="hbtns">
-        <a class="btn primary" onclick="go('explore')">▶ Explorer le catalogue</a>
-        <a class="btn ghost" onclick="go('console')">Voir l'app phare (Console)</a>
-      </div>
-      <div class="hflip">
-        <span><s>OS-ag : commun neutre, OCP = sponsor, mi-2026</s></span><span>→</span>
-        <b>NutrientOS : OCP publie &amp; orchestre, live aujourd'hui</b>
+        <a class="btn primary" onclick="go('explore')">Explorer le catalogue</a>
+        <a class="btn ghost" onclick="go('console')">Voir la Console</a>
       </div>
       <div class="feat">
         <div class="f"><div class="i">🔍</div><h4>Explorer</h4><p>Datasets, modèles, pipelines &amp; standards de nutrition, ouverts et documentés.</p></div>
-        <div class="f"><div class="i">⬆️</div><h4>Contribuer</h4><p>L'écosystème publie et améliore ses travaux autour du standard d'OCP.</p></div>
+        <div class="f"><div class="i">⬆️</div><h4>Contribuer</h4><p>L'écosystème publie et améliore ses travaux autour d'un standard commun.</p></div>
         <div class="f"><div class="i">👥</div><h4>Collaborer</h4><p>Review, validation par les pairs, groupes de travail thématiques.</p></div>
         <div class="f"><div class="i">📈</div><h4>Tracer l'impact</h4><p>Chaque asset trace ses réutilisations — reconnaissance &amp; visibilité.</p></div>
       </div>
@@ -255,11 +251,11 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
 
   <section class="dark">
     <div class="wrap">
-      <span class="eyebrow">La même app qu'OS-ag — sauf que…</span>
-      <h2 class="big" style="color:#fff">OCP ne sponsorise pas le commun. OCP <em style="color:var(--green-300);font-style:italic">est</em> le commun.</h2>
-      <p class="sub">OS-ag verse les données d'OCP dans une fondation neutre à accès égal pour Yara, Mosaic, Nutrien. NutrientOS reprend la même expérience produit — mais OCP publie le <b style="color:#fff">Nutrient Value Standard</b>, garde le moteur de recommandation et le digital twin, et fixe ainsi le standard de fait <b style="color:#fff">avant</b> qu'un commun neutre n'existe.</p>
+      <span class="eyebrow">Le modèle</span>
+      <h2 class="big" style="color:#fff">Ouvert par design. <em style="color:var(--green-300);font-style:italic">Possédé</em> par OCP.</h2>
+      <p class="sub">La couche ouverte — <b style="color:#fff">Nutrient Value Standard</b>, datasets, implémentations de référence — crée la gravité : l'écosystème vient construire dessus. Le cœur — moteur de recommandation et digital twin des sols — reste propriétaire d'OCP. La plateforme attire ; le cœur capte la valeur.</p>
       <div class="hbtns" style="margin-top:24px">
-        <a class="btn primary" onclick="go('explore')">Voir comment c'est possédé &amp; ouvert</a>
+        <a class="btn primary" onclick="go('explore')">Voir le catalogue ouvert &amp; cœur</a>
       </div>
     </div>
   </section>
@@ -295,7 +291,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
   <div class="phead"><div class="wrap">
     <span class="eyebrow">Tableau d'impact — reconnaissance &amp; visibilité</span>
     <h1>L'impact se trace. Et il revient à OCP.</h1>
-    <p>Là où OS-ag promet de « tracer l'impact » mi-2026, NutrientOS le mesure déjà. Plus l'écosystème réutilise les assets, plus le standard d'OCP s'impose.</p>
+    <p>Chaque réutilisation est mesurée. Plus l'écosystème construit sur les assets, plus le standard d'OCP s'impose.</p>
   </div></div>
   <div class="wrap" style="padding-bottom:50px">
     <div class="kpis" id="kpis"></div>
@@ -304,7 +300,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
       <div class="panel"><h3>Top assets réutilisés</h3><div class="toplist" id="top"></div></div>
     </div>
     <h2 class="big" style="margin-top:46px">La valeur, par audience</h2>
-    <p class="sub">Repris de la proposition de valeur OS-ag (slide 11) — mais ici chaque audience construit <b>sur le standard d'OCP</b>.</p>
+    <p class="sub">Chaque audience de l'écosystème construit <b>sur le standard d'OCP</b> — et y trouve sa valeur.</p>
     <div class="audience" id="aud"></div>
   </div>
 </div>
@@ -314,7 +310,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
   <div class="phead"><div class="wrap">
     <span class="eyebrow">Communauté — contribuer &amp; collaborer</span>
     <h1>Une plateforme déjà vivante.</h1>
-    <p>Le « community-driven dès le jour 1 » de BCG, mais réel : des contributions, des reviews, des groupes de travail actifs autour du standard d'OCP.</p>
+    <p>Des contributions, des reviews et des groupes de travail actifs autour du standard d'OCP.</p>
   </div></div>
   <div class="wrap" style="padding:30px 24px 60px">
     <div class="feed" id="feed"></div>
@@ -326,9 +322,9 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
 <!-- ============ CONSOLE (flagship app) ============ -->
 <div class="view" id="view-console">
   <div class="phead"><div class="wrap">
-    <span class="eyebrow">App phare — ce qu'OS-ag n'a pas</span>
+    <span class="eyebrow">Application phare</span>
     <h1>NutrientOS Console — le produit OCP au-dessus du commun.</h1>
-    <p>Voici le différenciateur : une app propriétaire d'OCP qui <b>consomme les assets ouverts</b> de la plateforme pour produire une décision de valeur — la recommandation nutrition personnalisée. Le commun crée la gravité ; cette app capte la valeur.</p>
+    <p>Une application propriétaire d'OCP qui <b>consomme les assets ouverts</b> de la plateforme pour produire une décision de valeur : la recommandation nutrition personnalisée. La plateforme crée la gravité ; cette app capte la valeur.</p>
   </div></div>
   <div class="wrap" style="padding-bottom:56px">
     <div class="console">
@@ -362,15 +358,15 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
 <!-- shared CTA + footer -->
 <section class="cta-band">
   <div class="wrap">
-    <h2>BCG montre une plateforme pour mi-2026. Celle-ci tourne déjà.</h2>
-    <p>Même expérience qu'OS-ag — <b>explorer, contribuer, tracer l'impact</b> — mais OCP <b>publie le standard, garde le cœur</b>, et prend l'avance maintenant.</p>
+    <h2>Une plateforme qui tourne déjà.</h2>
+    <p>Explorer, contribuer, tracer l'impact — autour d'un standard qu'OCP <b>publie</b> et d'un cœur qu'OCP <b>garde</b>.</p>
     <div class="hbtns" style="justify-content:center">
       <a class="btn primary" onclick="go('explore')">Explorer le catalogue</a>
       <a class="btn ghost" onclick="go('console')">Lancer la Console</a>
     </div>
   </div>
   <footer><div class="wrap">
-    <span>NutrientOS — contre-proposition à OS-ag · OCP Nutricrops · équipe D²nAI</span>
+    <span>NutrientOS · OCP Nutricrops · équipe D²nAI</span>
     <span>« Feed the soil to feed the world »</span>
   </div></footer>
 </section>
@@ -476,7 +472,7 @@ function openAsset(id){
         <div class="scard"><h4>Contributeurs</h4>
           ${a.contributors.map(c=>`<div class="contrib"><span class="av">${c.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</span>${c}</div>`).join('')}
         </div>
-        ${a.id==='reco-engine'||a.id==='nvs'?`<div class="scard" style="background:var(--green-50);border-color:var(--green-100)"><h4>App qui l'utilise</h4><p style="margin:0 0 10px;font-size:13px;color:var(--green-800)">La <b>NutrientOS Console</b> consomme cet asset en direct.</p><button class="cta-mini" style="width:100%" onclick="go('console')">Ouvrir la Console ★</button></div>`:''}
+        ${a.id==='reco-engine'||a.id==='nvs'?`<div class="scard" style="background:var(--green-50);border-color:var(--green-100)"><h4>App qui l'utilise</h4><p style="margin:0 0 10px;font-size:13px;color:var(--green-800)">La <b>NutrientOS Console</b> consomme cet asset en direct.</p><button class="cta-mini" style="width:100%" onclick="go('console')">Ouvrir la Console</button></div>`:''}
       </div>
     </div>`;
   go('asset');
