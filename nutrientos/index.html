@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NutrientOS — by OCP Nutricrops · D²nAI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-900:#103d17; --green-800:#1B5E20; --green-700:#2E7D32; --green-500:#4CAF50;
+  --green-300:#66BB6A; --green-50:#EAF4EC; --green-100:#D6EADb;
+  --ink:#10231a; --muted:#5c6b62; --line:#e3ebe5; --bad:#B91C1C; --warn:#B45309;
+  --bg:#ffffff; --soft:#f5f9f6;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',sans-serif;color:var(--ink);background:var(--bg);line-height:1.55}
+h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:.01em}
+.wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+a{color:inherit}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:18px;height:62px}
+.brand{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px;color:var(--green-800);display:flex;align-items:baseline;gap:9px}
+.brand b{font-weight:800}
+.brand sup{font-size:.6em}
+.brand .by{font-family:'Inter',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.nav nav{margin-left:auto;display:flex;gap:22px;font-size:13px;font-weight:600}
+.nav nav a{color:var(--muted);text-decoration:none}
+.nav nav a:hover{color:var(--green-800)}
+.nav .cta{background:var(--green-800);color:#fff;padding:9px 15px;border-radius:9px}
+
+/* hero */
+.hero{position:relative;background:#07140c;color:#eaf4ec;overflow:hidden}
+#matrix{position:absolute;inset:0;width:100%;height:100%;opacity:.34}
+.hero .wrap{position:relative;z-index:2;padding:96px 24px 104px}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green-300);border:1px solid rgba(102,187,106,.4);padding:6px 13px;border-radius:999px;background:rgba(76,175,80,.08)}
+.hero h1{font-size:clamp(40px,6.4vw,76px);line-height:1.02;margin:22px 0 18px;font-weight:700;color:#fff;max-width:16ch}
+.hero h1 em{font-style:italic;color:var(--green-300)}
+.hero p.lead{font-size:clamp(16px,2vw,20px);max-width:60ch;color:#cfe3d4;margin:0 0 30px}
+.hbtns{display:flex;gap:13px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:14px;padding:13px 22px;border-radius:11px;text-decoration:none;cursor:pointer;border:0}
+.btn.primary{background:var(--green-500);color:#05230f}
+.btn.primary:hover{background:var(--green-300)}
+.btn.ghost{background:transparent;color:#eaf4ec;border:1px solid rgba(234,244,236,.35)}
+.btn.ghost:hover{border-color:var(--green-300);color:#fff}
+.hflip{margin-top:34px;display:inline-flex;align-items:center;gap:12px;font-size:13.5px;color:#9fc6a8}
+.hflip s{color:#7f9686}
+.hflip b{color:#fff}
+
+/* sections */
+section{padding:84px 0}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--green-700)}
+h2.big{font-size:clamp(30px,4.2vw,48px);line-height:1.06;margin:12px 0 14px;font-weight:700}
+.sub{font-size:17px;color:var(--muted);max-width:66ch}
+.soft{background:var(--soft)}
+.dark{background:#07140c;color:#eaf4ec}
+.dark .sub{color:#bcd4c2}
+.dark .eyebrow{color:var(--green-300)}
+
+/* trap cards */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:0 1px 2px rgba(16,35,26,.03)}
+.card .n{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:var(--green-500)}
+.card h3{font-size:23px;margin:6px 0 8px;font-weight:700}
+.card p{margin:0;font-size:14.5px;color:var(--muted)}
+.card .quote{margin-top:12px;font-size:12.5px;color:var(--bad);font-style:italic;border-left:2px solid var(--bad);padding-left:10px}
+
+/* open core */
+.oc{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:42px}
+.oc .col{border-radius:18px;padding:28px}
+.oc .open{background:#fff;border:1px dashed var(--green-300)}
+.oc .core{background:linear-gradient(160deg,#0f3d18,#1B5E20);color:#eaf4ec}
+.oc h3{font-size:25px;margin:0 0 4px;font-weight:700}
+.oc .tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.oc .open .tag{color:var(--green-700)}
+.oc .core .tag{color:var(--green-300)}
+.oc ul{list-style:none;padding:0;margin:18px 0 0}
+.oc li{display:flex;gap:11px;padding:9px 0;font-size:14.5px;border-top:1px solid rgba(0,0,0,.06)}
+.oc .core li{border-top:1px solid rgba(255,255,255,.12)}
+.oc li .ic{flex:none;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:12px;font-weight:800}
+.oc .open li .ic{background:var(--green-50);color:var(--green-700)}
+.oc .core li .ic{background:rgba(102,187,106,.2);color:var(--green-300)}
+.oc .moat{margin-top:18px;font-size:13px;font-weight:600;padding:11px 14px;border-radius:10px}
+.oc .open .moat{background:var(--green-50);color:var(--green-800)}
+.oc .core .moat{background:rgba(102,187,106,.14);color:#fff}
+
+/* demo */
+.demo{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;margin-top:40px;box-shadow:0 18px 50px -28px rgba(16,35,26,.35)}
+.demo .bar{display:flex;align-items:center;gap:9px;padding:13px 20px;background:#07140c;color:#cfe3d4;font-size:12.5px}
+.demo .bar .dot{width:11px;height:11px;border-radius:50%;background:#2a4a32}
+.demo .bar .dot.g{background:var(--green-500)}
+.demo .bar .lbl{margin-left:8px;font-weight:600;letter-spacing:.04em}
+.demo .bar .live{margin-left:auto;font-size:11px;font-weight:700;color:var(--green-300);display:flex;align-items:center;gap:6px}
+.demo .bar .live i{width:7px;height:7px;border-radius:50%;background:var(--green-500);animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.demo .body{display:grid;grid-template-columns:300px 1fr;gap:0}
+.demo .controls{padding:26px;border-right:1px solid var(--line);background:var(--soft)}
+.demo .controls label{display:block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.demo select,.demo input[type=range]{width:100%}
+.demo select{padding:10px;border:1px solid var(--line);border-radius:9px;font:600 13px 'Inter';background:#fff;color:var(--ink);margin-bottom:18px}
+.demo .slab{margin-bottom:16px}
+.demo .slab .row{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px}
+.demo .slab .row b{color:var(--green-800)}
+input[type=range]{-webkit-appearance:none;height:5px;border-radius:4px;background:var(--green-100);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--green-600,#2E7D32);cursor:pointer;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.demo .out{padding:26px}
+.demo .out h4{margin:0 0 3px;font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700}
+.demo .out .pmeta{font-size:13px;color:var(--muted);margin-bottom:20px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.kpi{border:1px solid var(--line);border-radius:13px;padding:15px}
+.kpi .k{font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
+.kpi .v{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;line-height:1.1;color:var(--green-800)}
+.kpi .u{font-size:11px;color:var(--muted)}
+.kpi.hl{background:var(--green-50);border-color:var(--green-100)}
+.verdict{margin-top:18px;padding:13px 16px;border-radius:11px;font-size:13.5px;font-weight:600}
+.verdict.ok{background:var(--green-50);color:var(--green-800)}
+.verdict.bad{background:#fdecec;color:var(--bad)}
+.disclaimer{font-size:11.5px;color:var(--muted);margin-top:14px;font-style:italic}
+
+/* compare table */
+.cmp{margin-top:40px;border:1px solid rgba(255,255,255,.14);border-radius:18px;overflow:hidden}
+.cmp table{width:100%;border-collapse:collapse;font-size:14.5px}
+.cmp th,.cmp td{padding:16px 20px;text-align:left;vertical-align:top}
+.cmp thead th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;background:rgba(255,255,255,.04)}
+.cmp thead th:nth-child(3){color:var(--green-300)}
+.cmp tbody tr{border-top:1px solid rgba(255,255,255,.1)}
+.cmp td:first-child{font-weight:600;color:#bcd4c2;width:24%}
+.cmp .os{color:#9fb3a5}
+.cmp .no{color:#e79a9a}
+.cmp .yes{color:#fff;font-weight:600}
+.cmp .yes::before{content:"✓ ";color:var(--green-300);font-weight:800}
+
+/* value / steps */
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:40px}
+.vbox{padding:22px;border:1px solid var(--line);border-radius:15px;background:#fff}
+.vbox .ic{font-size:24px}
+.vbox h3{font-size:21px;margin:10px 0 6px;font-weight:700}
+.vbox p{margin:0;font-size:13.5px;color:var(--muted)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:44px;counter-reset:s}
+.step{position:relative;padding:24px 22px 24px 0}
+.step .ph{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--green-300)}
+.step h3{font-size:22px;margin:7px 0 6px;font-weight:700;color:#fff}
+.step p{margin:0;font-size:13.5px;color:#bcd4c2}
+.step::before{counter-increment:s;content:counter(s);position:absolute;top:0;left:0;transform:translateY(-50%);display:none}
+.tl{height:3px;background:linear-gradient(90deg,var(--green-500),rgba(76,175,80,.15));border-radius:3px;margin-bottom:4px}
+.now{display:inline-block;margin-top:10px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#05230f;background:var(--green-500);padding:4px 9px;border-radius:6px}
+
+/* final cta */
+.final{text-align:center}
+.final h2{font-size:clamp(32px,5vw,56px);max-width:18ch;margin:0 auto 18px}
+.final .punch{max-width:60ch;margin:0 auto 30px;font-size:18px;color:#cfe3d4}
+.final .punch b{color:#fff}
+footer{padding:34px 0;border-top:1px solid rgba(255,255,255,.12);font-size:12.5px;color:#8fae97}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
+@media(max-width:920px){
+  .grid3,.grid4,.steps{grid-template-columns:1fr 1fr}
+  .oc,.demo .body{grid-template-columns:1fr}
+  .demo .controls{border-right:0;border-bottom:1px solid var(--line)}
+  .nav nav{display:none}
+}
+@media(max-width:560px){.grid3,.grid4,.steps,.kpis{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <span class="brand">Nutrient<b>OS</b><span class="by">par OCP Nutricrops · D²nAI</span></span>
+    <nav>
+      <a href="#trap">Le piège</a>
+      <a href="#model">Open-core</a>
+      <a href="#demo">Démo live</a>
+      <a href="#vs">vs OS-ag</a>
+      <a class="cta" href="#cta">Présenter au board</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" style="padding:0">
+  <canvas id="matrix"></canvas>
+  <div class="wrap">
+    <span class="kicker">● Contre-proposition à « OS-ag »</span>
+    <h1>Le système d'exploitation de la <em>nutrition des plantes</em>.</h1>
+    <p class="lead">BCG propose un commun neutre où OCP <strong>finance</strong> l'écosystème et donne ses données à ses concurrents. NutrientOS inverse le rapport de force : un modèle <strong>open-core piloté par OCP</strong>, où l'on ouvre ce qui crée la gravité et où l'on garde ce qui crée la valeur.</p>
+    <div class="hbtns">
+      <a class="btn primary" href="#demo">▶ Voir le moteur tourner</a>
+      <a class="btn ghost" href="#model">Comprendre l'open-core</a>
+    </div>
+    <div class="hflip">
+      <span><s>OS-ag : OCP = sponsor, lancement mi-2026</s></span>
+      <span>→</span>
+      <b>NutrientOS : OCP = propriétaire, prototype dès ce trimestre</b>
+    </div>
+  </div>
+</section>
+
+<section id="trap" class="wrap">
+  <span class="eyebrow">Lecture des slides BCG</span>
+  <h2 class="big">Joliment emballé. Stratégiquement, un cadeau à la concurrence.</h2>
+  <p class="sub">Le pitch « open / science / impact » est séduisant. Mais quand on lit les diapositives de valeur, le marché est clair : OCP paie, tout le monde encaisse pareil.</p>
+  <div class="grid3">
+    <div class="card">
+      <div class="n">01</div>
+      <h3>OCP paie pour ses rivaux</h3>
+      <p>Tes données agro et la science UM6P versées dans un commun neutre, accessibles à égalité par Yara, Mosaic, Nutrien.</p>
+      <div class="quote">« raises the baseline for everyone » · « competitive focus shift upward » — slide 14</div>
+    </div>
+    <div class="card">
+      <div class="n">02</div>
+      <h3>OCP n'a pas le volant</h3>
+      <p>Une fondation « neutre, community-led », avec le cabinet en founding member. OCP devient un logo sur le mur des sponsors.</p>
+      <div class="quote">Gouvernance par comités, pas par OCP — slides 2 &amp; 7</div>
+    </div>
+    <div class="card">
+      <div class="n">03</div>
+      <h3>Retour mou &amp; lent</h3>
+      <p>Ce qu'OCP « gagne » : credibility &amp; visibility. Zéro capture de valeur business. Pas de produit avant mi-2026, scale &gt; 3 ans.</p>
+      <div class="quote">Un centre de coût déguisé en mécénat — slides 8 &amp; 11</div>
+    </div>
+  </div>
+</section>
+
+<section id="model" class="soft">
+  <div class="wrap">
+    <span class="eyebrow">Le contre-pied</span>
+    <h2 class="big">Ouvrir sans se faire déposséder : l'open-core.</h2>
+    <p class="sub">On ouvre la couche qui <strong>attire</strong> l'écosystème. On garde la couche qui <strong>capture</strong> la valeur. BCG fait « large et dilué » ; NutrientOS fait « profond et possédé » — sur la nutrition des plantes, là où OCP domine déjà.</p>
+    <div class="oc">
+      <div class="col open">
+        <span class="tag">Couche ouverte — le puits de gravité</span>
+        <h3>Open par design</h3>
+        <ul>
+          <li><span class="ic">↧</span> Datasets sol &amp; agro standardisés, librement réutilisables</li>
+          <li><span class="ic">≡</span> Standard ouvert de « valeur nutritive » (le moteur CGM comme référence de fait)</li>
+          <li><span class="ic">{}</span> APIs &amp; SDK pour startups, chercheurs, dev orgs</li>
+          <li><span class="ic">◎</span> Documentation, benchmarks, reproductibilité</li>
+        </ul>
+        <div class="moat">But : devenir l'infrastructure que tout le monde adopte → l'écosystème vient à OCP.</div>
+      </div>
+      <div class="col core">
+        <span class="tag">Cœur OCP — le moat &amp; la valeur</span>
+        <h3>Contrôlé par OCP</h3>
+        <ul>
+          <li><span class="ic">★</span> Moteur de recommandation propriétaire (fertilisant × sol × culture)</li>
+          <li><span class="ic">⚇</span> Réseau d'agriculteurs &amp; données terrain → effet de réseau</li>
+          <li><span class="ic">$</span> Matching commercial : le CGM Simulator productisé</li>
+          <li><span class="ic">⚖</span> Gouvernance, standards &amp; marketplace de partenaires</li>
+        </ul>
+        <div class="moat">But : OCP fixe les standards et capte la valeur que la couche ouverte fait grandir.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="demo" class="wrap">
+  <span class="eyebrow">La preuve, pas les bulles</span>
+  <h2 class="big">Le moteur tourne déjà. En live.</h2>
+  <p class="sub">Pendant que le cabinet montre des cercles concentriques, D²nAI montre un moteur de pricing nutritif qui calcule en temps réel. Bougez les curseurs : tout se recalcule instantanément.</p>
+
+  <div class="demo">
+    <div class="bar">
+      <span class="dot"></span><span class="dot"></span><span class="dot g"></span>
+      <span class="lbl">NutrientOS · Nutrient-Value Engine</span>
+      <span class="live"><i></i> LIVE</span>
+    </div>
+    <div class="body">
+      <div class="controls">
+        <label>Produit (formule)</label>
+        <select id="prod"></select>
+        <label>Référence marché</label>
+        <select id="ref"><option value="dap">DAP</option><option value="tsp">TSP</option></select>
+        <div class="slab">
+          <div class="row"><span>Prix de la référence</span><b id="refpv">— $/t</b></div>
+          <input type="range" id="refp" min="300" max="900" step="5">
+        </div>
+        <div class="slab">
+          <div class="row"><span>Ammoniac (NH₃)</span><b id="nh3v">— $/t</b></div>
+          <input type="range" id="nh3" min="200" max="900" step="10">
+        </div>
+        <div class="slab">
+          <div class="row"><span>Soufre</span><b id="sv">— $/t</b></div>
+          <input type="range" id="sulf" min="40" max="320" step="5">
+        </div>
+        <div class="slab">
+          <div class="row"><span>Prix de vente visé</span><b id="pricev">— $/t</b></div>
+          <input type="range" id="price" min="250" max="1000" step="5">
+        </div>
+      </div>
+      <div class="out">
+        <h4 id="pname">—</h4>
+        <div class="pmeta" id="pmeta">—</div>
+        <div class="kpis">
+          <div class="kpi"><div class="k">Coût matières</div><div class="v" id="kRm">—</div><div class="u">$/t produit</div></div>
+          <div class="kpi hl"><div class="k">CGM équiv. <span id="kRefName">DAP</span></div><div class="v" id="kCgm">—</div><div class="u">$/t · marge réf. <span id="kRefMargin">—</span></div></div>
+          <div class="kpi"><div class="k">Prix valeur-nutriments</div><div class="v" id="kNut">—</div><div class="u">$/t produit</div></div>
+        </div>
+        <div class="verdict ok" id="verdict">—</div>
+        <div class="disclaimer">Moteur de démonstration — coefficients illustratifs. En production, NutrientOS est calibré sur les vraies données OCP / UM6P (le simulateur CGM existant fait déjà tourner les 141 formules réelles).</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="vs" class="dark">
+  <div class="wrap">
+    <span class="eyebrow">Le face-à-face</span>
+    <h2 class="big" style="color:#fff">OS-ag vs NutrientOS</h2>
+    <p class="sub">Même ambition — débloquer l'innovation data/IA en agriculture. Position d'OCP radicalement différente.</p>
+    <div class="cmp">
+      <table>
+        <thead><tr><th>Dimension</th><th>OS-ag (BCG)</th><th>NutrientOS (OCP · D²nAI)</th></tr></thead>
+        <tbody>
+          <tr><td>Position d'OCP</td><td class="os">Sponsor / membre fondateur parmi d'autres</td><td class="yes">Propriétaire &amp; chef d'orchestre</td></tr>
+          <tr><td>Données stratégiques</td><td class="no">Versées dans un commun neutre, accès égal aux concurrents</td><td class="yes">Open-core : on ouvre la base, on garde le cœur</td></tr>
+          <tr><td>Capture de valeur</td><td class="no">Credibility &amp; visibility (soft)</td><td class="yes">Effet de réseau agriculteurs + marketplace + pricing</td></tr>
+          <tr><td>Gouvernance</td><td class="os">Fondation + comités neutres</td><td class="yes">OCP fixe les standards de la couche nutrition</td></tr>
+          <tr><td>Time-to-value</td><td class="no">Lancement mi-2026, scale &gt; 3 ans</td><td class="yes">Prototype vivant ce trimestre</td></tr>
+          <tr><td>Différenciation</td><td class="os">Plateforme ag générique &amp; large</td><td class="yes">Profondeur sur la nutrition — le terrain d'OCP</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <span class="eyebrow">Pourquoi OCP gagne avec ce modèle</span>
+  <h2 class="big">Ouvrir devient une arme, pas un don.</h2>
+  <div class="grid4">
+    <div class="vbox"><div class="ic">🧲</div><h3>Gravité</h3><p>La couche ouverte fait venir startups, chercheurs et dev orgs autour des standards d'OCP.</p></div>
+    <div class="vbox"><div class="ic">🛡️</div><h3>Moat</h3><p>Le réseau d'agriculteurs et la donnée terrain se renforcent à chaque usage — incopiables.</p></div>
+    <div class="vbox"><div class="ic">⚡</div><h3>Vitesse</h3><p>D²nAI livre. Le moteur CGM est déjà en production : on part avec 18 mois d'avance.</p></div>
+    <div class="vbox"><div class="ic">👑</div><h3>Souveraineté</h3><p>OCP fixe les standards de la nutrition au lieu de s'adapter à ceux d'un tiers.</p></div>
+  </div>
+</section>
+
+<section class="dark">
+  <div class="wrap">
+    <span class="eyebrow">Feuille de route</span>
+    <h2 class="big" style="color:#fff">Pendant que BCG cadre, nous livrons.</h2>
+    <div class="steps">
+      <div class="step"><div class="tl"></div><div class="ph">Ce trimestre</div><h3>Prototype vivant</h3><p>NutrientOS + moteur CGM intégré, branding D²nAI. Démontrable au board.<span class="now">Déjà commencé</span></p></div>
+      <div class="step"><div class="tl"></div><div class="ph">+3 mois</div><h3>Couche ouverte v1</h3><p>Standard « valeur nutritive » + API + premiers datasets sol publiés.</p></div>
+      <div class="step"><div class="tl"></div><div class="ph">+6 mois</div><h3>Pilotes agriculteurs</h3><p>Premiers partenaires sur la marketplace, boucle de données terrain active.</p></div>
+      <div class="step"><div class="tl"></div><div class="ph">+12 mois</div><h3>Effet de réseau</h3><p>OCP est le standard de fait de la nutrition data-driven. OS-ag, s'il existe, gravite autour.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="cta" class="dark final" style="padding-top:30px">
+  <div class="wrap">
+    <h2>BCG t'a envoyé un concept. Nous te montrons une plateforme.</h2>
+    <p class="punch">Ne réponds pas à 25 slides par 25 slides. Montre au board <b>un produit qui tourne</b>, où OCP est <b>propriétaire et souverain</b> — pas sponsor d'une ONG qui arme tes concurrents.</p>
+    <div class="hbtns" style="justify-content:center">
+      <a class="btn primary" href="#demo">▶ Relancer la démo</a>
+      <a class="btn ghost" href="#model">Revoir l'open-core</a>
+    </div>
+  </div>
+  <footer><div class="wrap">
+    <span>NutrientOS — concept de contre-proposition · OCP Nutricrops · équipe D²nAI (Data, Digital &amp; AI)</span>
+    <span>« Feed the soil to feed the world »</span>
+  </div></footer>
+</section>
+
+<script>
+/* ---- matrix rain (hero) ---- */
+(function(){
+  const c=document.getElementById('matrix'), x=c.getContext('2d');
+  let cols, drops, fs=15;
+  const chars='01ATGCNPK①②③④NH₃SO₄P₂O₅·+=<>{}';
+  function size(){ const h=c.parentElement.offsetHeight, w=c.parentElement.offsetWidth; c.width=w; c.height=h; cols=Math.floor(w/fs); drops=Array(cols).fill(0).map(()=>Math.random()*-50); }
+  function draw(){
+    x.fillStyle='rgba(7,20,12,0.08)'; x.fillRect(0,0,c.width,c.height);
+    x.font=fs+'px monospace';
+    for(let i=0;i<cols;i++){
+      const ch=chars[Math.floor(Math.random()*chars.length)];
+      const y=drops[i]*fs;
+      const g=Math.random();
+      x.fillStyle = g>0.94 ? '#a5f3b0' : (g>0.5?'#4CAF50':'#1f7a2e');
+      x.fillText(ch, i*fs, y);
+      if(y>c.height && Math.random()>0.975) drops[i]=0;
+      drops[i]++;
+    }
+  }
+  size(); let t=setInterval(draw,55);
+  window.addEventListener('resize',size);
+})();
+
+/* ---- nutrient-value engine (illustrative demo) ---- */
+const PRODUCTS=[
+  {name:'00-18-10', line:'Steam blending — OFAS', nuP:18, nuK:10, nuN:0, nuS:6, csRock:0.42, csNh3:0.00, csSulf:0.12},
+  {name:'DAP Black', line:'Slurry — premium', nuP:46, nuK:0, nuN:18, nuS:2, csRock:0.55, csNh3:0.22, csSulf:0.05},
+  {name:'NPS 20-20-0+13S', line:'Granulé — multi', nuP:20, nuK:0, nuN:20, nuS:13, csRock:0.40, csNh3:0.24, csSulf:0.30},
+  {name:'TSP 0-46-0', line:'Standard', nuP:46, nuK:0, nuN:0, nuS:0, csRock:0.60, csNh3:0.00, csSulf:0.04},
+  {name:'PK 0-25-25', line:'Sans azote', nuP:25, nuK:25, nuN:0, nuS:3, csRock:0.50, csNh3:0.00, csSulf:0.08}
+];
+/* nutrient unit values ($ per % point per tonne) — illustrative */
+const UV={N:7.2, P:9.5, K:5.0, S:3.1};
+const S={prod:0, ref:'dap', refp:640, nh3:560, sulf:150, price:720};
+
+function $(id){return document.getElementById(id)}
+function fmt(n){return Math.round(n).toLocaleString('fr-FR')}
+
+function rmCost(p){ return 120 + p.csRock*S.refp*0.35 + p.csNh3*S.nh3 + p.csSulf*S.sulf; }
+function nutrientPrice(p){ return p.nuN*UV.N + p.nuP*UV.P + p.nuK*UV.K + p.nuS*UV.S; }
+function refNutrient(){ // reference product nutrient value to normalise margin
+  const r = S.ref==='dap' ? {N:18,P:46,K:0,S:2} : {N:0,P:46,K:0,S:0};
+  return r.N*UV.N + r.P*UV.P + r.K*UV.K + r.S*UV.S;
+}
+function compute(){
+  const p=PRODUCTS[S.prod];
+  const rmc=rmCost(p);
+  const refMargin = S.refp - (S.ref==='dap'?260:230);            // illustrative ref margin
+  const cgmEq = S.price - rmc;                                    // this formula's margin
+  const nut = nutrientPrice(p);
+  const floor = rmc + refMargin*(nutrientPrice(p)/refNutrient()); // iso-margin floor (normalised)
+  return {p,rmc,refMargin,cgmEq,nut,floor};
+}
+function render(){
+  const r=compute();
+  $('prod').value=S.prod; $('ref').value=S.ref;
+  $('refp').value=S.refp; $('nh3').value=S.nh3; $('sulf').value=S.sulf; $('price').value=S.price;
+  $('refpv').textContent=fmt(S.refp)+' $/t'; $('nh3v').textContent=fmt(S.nh3)+' $/t';
+  $('sv').textContent=fmt(S.sulf)+' $/t'; $('pricev').textContent=fmt(S.price)+' $/t';
+  $('pname').textContent=r.p.name;
+  $('pmeta').textContent=r.p.line+'  ·  N '+r.p.nuN+' · P '+r.p.nuP+' · K '+r.p.nuK+' · S '+r.p.nuS;
+  $('kRm').textContent=fmt(r.rmc);
+  $('kCgm').textContent=fmt(r.cgmEq);
+  $('kNut').textContent=fmt(r.nut);
+  $('kRefName').textContent=S.ref.toUpperCase();
+  $('kRefMargin').textContent=fmt(r.refMargin)+' $/t';
+  const ok=r.cgmEq>=r.refMargin;
+  const v=$('verdict'); v.className='verdict '+(ok?'ok':'bad');
+  v.innerHTML = ok
+    ? '✅ Marge préservée — cette formule tient la marge de référence '+S.ref.toUpperCase()+'. Prix plancher iso-marge ≈ <b>'+fmt(r.floor)+' $/t</b>.'
+    : '⚠️ Sous-pricé — viser au moins le prix plancher iso-marge ≈ <b>'+fmt(r.floor)+' $/t</b> pour ne pas détruire la marge.';
+}
+(function init(){
+  const sel=$('prod');
+  PRODUCTS.forEach((p,i)=>{const o=document.createElement('option');o.value=i;o.textContent=p.name+' — '+p.line;sel.appendChild(o);});
+  sel.addEventListener('change',e=>{S.prod=+e.target.value;render();});
+  $('ref').addEventListener('change',e=>{S.ref=e.target.value;render();});
+  $('refp').addEventListener('input',e=>{S.refp=+e.target.value;render();});
+  $('nh3').addEventListener('input',e=>{S.nh3=+e.target.value;render();});
+  $('sulf').addEventListener('input',e=>{S.sulf=+e.target.value;render();});
+  $('price').addEventListener('input',e=>{S.price=+e.target.value;render();});
+  render();
+})();
+</script>
+</body>
+</html>
