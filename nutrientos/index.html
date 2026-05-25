@@ -207,8 +207,25 @@ h2.big{font-size:clamp(28px,4vw,44px);line-height:1.07;margin:12px 0 12px;font-w
 footer{padding:30px 0;border-top:1px solid rgba(255,255,255,.12);font-size:12.5px;color:#8fae97}
 footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
 
+/* mobile bottom nav */
+.botnav{display:none}
 @media(max-width:980px){.grid,.audience{grid-template-columns:repeat(2,1fr)}.feat{grid-template-columns:1fr 1fr}.dgrid,.twocol,.console .body{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.nav .links{display:none}.legend{display:none}}
-@media(max-width:560px){.grid,.audience,.wgroups,.prog,.scores{grid-template-columns:1fr}.feat{grid-template-columns:1fr}}
+@media(max-width:820px){
+  body{padding-bottom:66px}
+  .nav .right .cta-mini,.brand .by{display:none}
+  .nav .wrap{gap:10px}
+  .hero .wrap{padding:62px 22px 66px}
+  section{padding:46px 0}
+  .phead{padding:26px 0 22px}
+  .console .inp,.console .out{padding:18px}
+  .chip,.fchip{padding:9px 13px;font-size:13px}
+  .botnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:80;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:6px 4px;padding-bottom:calc(6px + env(safe-area-inset-bottom))}
+  .botnav button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;font:600 10px 'Inter';color:var(--muted);padding:6px 2px;cursor:pointer;border-radius:9px}
+  .botnav button .bi{font-size:19px;line-height:1}
+  .botnav button.on{color:var(--green-700)}
+  .botnav button.on .bi{transform:translateY(-1px)}
+}
+@media(max-width:560px){.grid,.audience,.wgroups,.prog,.scores{grid-template-columns:1fr}.feat{grid-template-columns:1fr}.hero h1{font-size:34px}.acard h3{font-size:18px}}
 </style>
 </head>
 <body>
@@ -377,6 +394,15 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
   </div></footer>
 </section>
 
+<!-- mobile bottom navigation -->
+<nav class="botnav">
+  <button data-v="home" onclick="go('home')"><span class="bi">🏠</span><span data-k="nav.home">Accueil</span></button>
+  <button data-v="explore" onclick="go('explore')"><span class="bi">🔍</span><span data-k="nav.explore">Explorer</span></button>
+  <button data-v="impact" onclick="go('impact')"><span class="bi">📈</span><span data-k="nav.impact">Impact</span></button>
+  <button data-v="community" onclick="go('community')"><span class="bi">👥</span><span data-k="nav.community">Communauté</span></button>
+  <button data-v="console" onclick="go('console')"><span class="bi">🧪</span><span data-k="nav.console">Console</span></button>
+</nav>
+
 <script>
 /* ====================== i18n ====================== */
 let LANG='fr';
@@ -385,7 +411,7 @@ function fill(s,o){return s.replace(/\{(\w+)\}/g,(m,k)=>o[k])}
 
 const T={
  fr:{
-  'nav.explore':`Explorer`,'nav.impact':`Impact`,'nav.community':`Communauté`,'nav.console':`Console`,'nav.enter':`Entrer dans la plateforme`,
+  'nav.home':`Accueil`,'nav.explore':`Explorer`,'nav.impact':`Impact`,'nav.community':`Communauté`,'nav.console':`Console`,'nav.enter':`Entrer dans la plateforme`,
   'home.h1':`La plateforme ouverte de la <em>nutrition des plantes</em>.`,
   'home.lead':`Explorer, contribuer, collaborer et tracer l'impact sur des datasets, modèles et standards ouverts — autour du <strong>Nutrient Value Standard</strong> publié par OCP Nutricrops. Une infrastructure commune dont OCP Nutricrops garde le cœur.`,
   'home.btnExplore':`Explorer le catalogue`,'home.btnConsole':`Voir la Console`,
@@ -418,7 +444,7 @@ const T={
   'foot.left':`NutrientOS · OCP Nutricrops · équipe D²nAI`
  },
  en:{
-  'nav.explore':`Explore`,'nav.impact':`Impact`,'nav.community':`Community`,'nav.console':`Console`,'nav.enter':`Enter the platform`,
+  'nav.home':`Home`,'nav.explore':`Explore`,'nav.impact':`Impact`,'nav.community':`Community`,'nav.console':`Console`,'nav.enter':`Enter the platform`,
   'home.h1':`The open platform for <em>plant nutrition</em>.`,
   'home.lead':`Explore, contribute, collaborate and trace impact on open datasets, models and standards — around the <strong>Nutrient Value Standard</strong> published by OCP Nutricrops. A shared infrastructure whose core OCP Nutricrops keeps.`,
   'home.btnExplore':`Explore the catalogue`,'home.btnConsole':`View the Console`,
@@ -451,7 +477,7 @@ const T={
   'foot.left':`NutrientOS · OCP Nutricrops · D²nAI team`
  },
  pt:{
-  'nav.explore':`Explorar`,'nav.impact':`Impacto`,'nav.community':`Comunidade`,'nav.console':`Console`,'nav.enter':`Entrar na plataforma`,
+  'nav.home':`Início`,'nav.explore':`Explorar`,'nav.impact':`Impacto`,'nav.community':`Comunidade`,'nav.console':`Console`,'nav.enter':`Entrar na plataforma`,
   'home.h1':`A plataforma aberta para a <em>nutrição das plantas</em>.`,
   'home.lead':`Explorar, contribuir, colaborar e rastrear o impacto em datasets, modelos e padrões abertos — em torno do <strong>Nutrient Value Standard</strong> publicado pela OCP Nutricrops. Uma infraestrutura comum cujo core a OCP Nutricrops mantém.`,
   'home.btnExplore':`Explorar o catálogo`,'home.btnConsole':`Ver a Console`,
@@ -536,7 +562,7 @@ let curAsset=null;
 function go(v){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('on'));
   document.getElementById('view-'+v).classList.add('on');
-  document.querySelectorAll('.navlink').forEach(n=>n.classList.toggle('on',n.dataset.v===v));
+  document.querySelectorAll('.navlink,.botnav button').forEach(n=>n.classList.toggle('on',n.dataset.v===v));
   window.scrollTo({top:0,behavior:'instant'});
 }
 
