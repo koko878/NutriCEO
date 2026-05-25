@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutrientOS
  * Description:       Hosts the NutrientOS prototype, the executive one-pager and the executive summary, exposed as shortcodes and as direct URLs (mobile-friendly, fully interactive). Shortcodes: [nutrientos], [nutrientos_exec], [nutrientos_execsum].
- * Version:           1.0.0
+ * Version:           1.1.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutrientos
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NOS_VER', '1.0.0' );
+define( 'DNAI_NOS_VER', '1.1.0' );
 define( 'DNAI_NOS_URL', plugin_dir_url( __FILE__ ) );
 
 /**
