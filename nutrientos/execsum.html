@@ -58,8 +58,14 @@ p{font-size:14px;margin:0 0 12px}
 .kpis{display:flex;gap:22px;margin:10px 0 0;flex-wrap:wrap}
 .kpi b{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--green-700);display:block;line-height:1}
 .kpi span{font-size:11px;color:var(--muted)}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:8px 0 4px}
+.pc{border:1px solid var(--line);border-radius:11px;padding:13px;background:#fff}
+.pc.um6p{border-color:var(--green-300);background:var(--green-50)}
+.pc b{display:block;font-size:14px;color:var(--green-800)}
+.pc span{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+.tagp{font-size:9px;font-weight:800;text-transform:uppercase;color:#05230f;background:var(--green-300);border-radius:4px;padding:1px 5px;margin-left:5px;vertical-align:middle}
 @media print{body{background:#fff}.page{box-shadow:none;margin:0;max-width:none;padding:32px 38px}.axis,.tl,.flip .b{break-inside:avoid}.ask{break-inside:avoid}}
-@media(max-width:680px){.flip,.timeline{grid-template-columns:1fr}.page{padding:32px 24px}}
+@media(max-width:680px){.flip,.timeline,.pgrid{grid-template-columns:1fr}.page{padding:32px 24px}}
 </style>
 </head>
 <body>
@@ -97,6 +103,15 @@ p{font-size:14px;margin:0 0 12px}
         <li>But : capter la valeur que la couche ouverte fait grandir</li>
       </ul>
     </div>
+  </div>
+
+  <h2 class="sec">L'écosystème du backbone</h2>
+  <p>La couche ouverte ne se construit pas seule : un réseau de partenaires l'alimente et la déploie. <b>UM6P</b> n'y est pas une simple source de données, mais l'<b>ambassadeur académique</b> qui fédère les universités du monde entier autour du standard.</p>
+  <div class="pgrid">
+    <div class="pc um6p"><b>UM6P <span class="tagp">ambassadeur</span></b><span>Fédère les universités du monde entier autour du standard.</span></div>
+    <div class="pc"><b>Al Moutmir</b><span>Programme d'accompagnement des agriculteurs &amp; agronomie terrain.</span></div>
+    <div class="pc"><b>AgriEdge</b><span>Agriculture de précision &amp; agronomie digitale.</span></div>
+    <div class="pc"><b>Ground Truth Analytics</b><span>Données terrain &amp; analytics.</span></div>
   </div>
 
   <h2 class="sec">Les trois décisions</h2>

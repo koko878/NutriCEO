@@ -60,6 +60,15 @@ h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:.01em}
 .lay li{margin-bottom:4px}
 .flag{margin-top:13px;font-size:12.5px;font-weight:600;color:var(--green-800);background:var(--green-50);border-left:3px solid var(--green-500);border-radius:0 10px 10px 0;padding:11px 14px}
 .flag b{color:var(--green-900)}
+.partners{margin-top:14px}
+.partners .pt{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--green-700)}
+.partners .lead2{font-size:12.5px;color:var(--muted);margin:4px 0 10px}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.pc{border:1px solid var(--line);border-radius:11px;padding:11px 12px;background:#fff}
+.pc.um6p{border-color:var(--green-300);background:var(--green-50);grid-column:span 1}
+.pc b{display:block;font-size:13px;color:var(--green-800)}
+.pc .star{font-size:9px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#05230f;background:var(--green-300);border-radius:4px;padding:1px 5px;margin-left:5px;vertical-align:middle}
+.pc span.r{display:block;font-size:11px;color:var(--muted);margin-top:3px}
 .tl{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .step{border:1px solid var(--line);border-radius:13px;padding:14px;background:#fff;transition:.15s}
 .step:hover{border-color:var(--green-100);box-shadow:0 10px 24px -18px rgba(16,35,26,.4)}
@@ -83,7 +92,7 @@ h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:.01em}
   .page{box-shadow:none;margin:0;max-width:none;border-radius:0}
   .band,.step,.lay,.cell{break-inside:avoid}.langsel{display:none}
 }
-@media(max-width:680px){.row,.tl{grid-template-columns:1fr}.split{grid-template-columns:1fr}.band{grid-template-columns:96px 1fr}.lab,.bd{padding-left:18px}.bd{padding-right:18px}.hd,.ask,.foot{padding-left:22px;padding-right:22px}}
+@media(max-width:680px){.row,.tl,.pgrid{grid-template-columns:1fr 1fr}.split{grid-template-columns:1fr}.band{grid-template-columns:96px 1fr}.lab,.bd{padding-left:18px}.bd{padding-right:18px}.hd,.ask,.foot{padding-left:22px;padding-right:22px}}
 </style>
 </head>
 <body>
@@ -142,6 +151,16 @@ h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:.01em}
         </div>
       </div>
       <div class="flag" data-k="what.flag">App phare : la <b>Console NutrientOS</b> — recommandation nutrition personnalisée (sol × culture × objectif), <b>déjà démontrable</b> dans le prototype.</div>
+      <div class="partners">
+        <div class="pt" data-k="what.partT">Partenaires du backbone</div>
+        <div class="lead2" data-k="what.partLead">Le backbone ouvert se bâtit avec un écosystème de partenaires :</div>
+        <div class="pgrid">
+          <div class="pc um6p"><b>UM6P <span class="star" data-k="what.pUM6Ptag">ambassadeur</span></b><span class="r" data-k="what.pUM6P">fédère les universités du monde entier autour du standard</span></div>
+          <div class="pc"><b>Al Moutmir</b><span class="r" data-k="what.pAlM">programme agriculteurs &amp; agronomie terrain</span></div>
+          <div class="pc"><b>AgriEdge</b><span class="r" data-k="what.pAE">agriculture de précision &amp; agronomie digitale</span></div>
+          <div class="pc"><b>Ground Truth Analytics</b><span class="r" data-k="what.pGT">données terrain &amp; analytics</span></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -192,6 +211,9 @@ const T={
   'what.coreT':`Cœur OCP Nutricrops — la valeur`,'what.coreH':`Possédé`,
   'what.k1':`Moteur de recommandation propriétaire`,'what.k2':`Digital twin des sols + réseau d'agriculteurs`,'what.k3':`Orchestration commerciale &amp; marketplace`,
   'what.flag':`App phare : la <b>Console NutrientOS</b> — recommandation nutrition personnalisée (sol × culture × objectif), <b>déjà démontrable</b> dans le prototype.`,
+  'what.partT':`Partenaires du backbone`,'what.partLead':`Le backbone ouvert se bâtit avec un écosystème de partenaires :`,
+  'what.pUM6Ptag':`ambassadeur`,'what.pUM6P':`fédère les universités du monde entier autour du standard`,
+  'what.pAlM':`programme agriculteurs &amp; agronomie terrain`,'what.pAE':`agriculture de précision &amp; agronomie digitale`,'what.pGT':`données terrain &amp; analytics`,
   'how.claim':`Publier le standard <em>d'abord</em>, sur un périmètre étroit et légitime — la <em>nutrition phosphatée</em> — et bâtir la gouvernance autour, ensuite.`,
   'how.s1p':`Semaines 1-4`,'how.s1h':`Prototype &amp; spec`,'how.now':`fait`,'how.s1d':`Plateforme + Console vivantes, v0 du standard.`,
   'how.s2p':`Semaines 5-8`,'how.s2h':`Publication open`,'how.s2d':`Standard + implémentation de référence ; 3 partenaires pilotes.`,
@@ -216,6 +238,9 @@ const T={
   'what.coreT':`OCP Nutricrops core — the value`,'what.coreH':`Owned`,
   'what.k1':`Proprietary recommendation engine`,'what.k2':`Soil digital twin + farmer network`,'what.k3':`Commercial orchestration &amp; marketplace`,
   'what.flag':`Flagship app: the <b>NutrientOS Console</b> — personalised nutrition recommendation (soil × crop × objective), <b>already demonstrable</b> in the prototype.`,
+  'what.partT':`Backbone partners`,'what.partLead':`The open backbone is built with an ecosystem of partners:`,
+  'what.pUM6Ptag':`ambassador`,'what.pUM6P':`federates universities worldwide around the standard`,
+  'what.pAlM':`farmer outreach &amp; field agronomy`,'what.pAE':`precision ag &amp; digital agronomy`,'what.pGT':`ground-truth data &amp; analytics`,
   'how.claim':`Publish the standard <em>first</em>, on a narrow, legitimate scope — <em>phosphate nutrition</em> — and build governance around it, later.`,
   'how.s1p':`Weeks 1-4`,'how.s1h':`Prototype &amp; spec`,'how.now':`done`,'how.s1d':`Live platform + Console, v0 of the standard.`,
   'how.s2p':`Weeks 5-8`,'how.s2h':`Open release`,'how.s2d':`Standard + reference implementation; 3 pilot partners.`,
@@ -240,6 +265,9 @@ const T={
   'what.coreT':`Core OCP Nutricrops — o valor`,'what.coreH':`Possuído`,
   'what.k1':`Motor de recomendação proprietário`,'what.k2':`Gêmeo digital dos solos + rede de agricultores`,'what.k3':`Orquestração comercial &amp; marketplace`,
   'what.flag':`App principal: a <b>Console NutrientOS</b> — recomendação de nutrição personalizada (solo × cultura × objetivo), <b>já demonstrável</b> no protótipo.`,
+  'what.partT':`Parceiros do backbone`,'what.partLead':`O backbone aberto é construído com um ecossistema de parceiros:`,
+  'what.pUM6Ptag':`embaixador`,'what.pUM6P':`federa universidades do mundo todo em torno do padrão`,
+  'what.pAlM':`alcance a agricultores &amp; agronomia de campo`,'what.pAE':`agricultura de precisão &amp; agronomia digital`,'what.pGT':`dados de campo &amp; analytics`,
   'how.claim':`Publicar o padrão <em>primeiro</em>, num escopo estreito e legítimo — a <em>nutrição fosfatada</em> — e construir a governança em torno, depois.`,
   'how.s1p':`Semanas 1-4`,'how.s1h':`Protótipo &amp; spec`,'how.now':`feito`,'how.s1d':`Plataforma + Console vivas, v0 do padrão.`,
   'how.s2p':`Semanas 5-8`,'how.s2h':`Publicação open`,'how.s2d':`Padrão + implementação de referência; 3 parceiros piloto.`,
