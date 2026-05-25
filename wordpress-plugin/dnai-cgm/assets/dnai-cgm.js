@@ -5685,7 +5685,47 @@ function initViews(){
   document.querySelectorAll('.cgm-tabbtn').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
   const dlCsv=document.getElementById('cgmDlCsv'); if(dlCsv) dlCsv.addEventListener('click',exportDataCSV);
   const dlJson=document.getElementById('cgmDlJson'); if(dlJson) dlJson.addEventListener('click',exportDataJSON);
+  wireUpload();
   showTab('scen'); showView('sales');
+}
+
+/* Front-end dataset import / reset (only rendered for authorised users). The
+   REST endpoint re-checks both the nonce and the upload permission. */
+function upMsg(text, kind){
+  const m=document.getElementById('cgmUpMsg'); if(!m) return;
+  m.hidden=false; m.className='cgm-upmsg '+(kind||'');
+  m.textContent=text;
+}
+function wireUpload(){
+  const form=document.getElementById('cgmUpForm');
+  if(!form || !window.DNAI_CGM || !DNAI_CGM.rest) return;
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    const file=document.getElementById('cgmUpFile').files[0];
+    if(!file){ upMsg('Sélectionnez un fichier (.xlsx ou .json).','err'); return; }
+    const btn=document.getElementById('cgmUpBtn'); btn.disabled=true;
+    upMsg('Import en cours…','');
+    try{
+      const fd=new FormData(); fd.append('datafile', file);
+      const res=await fetch(DNAI_CGM.rest+'/dataset',{method:'POST',headers:{'X-WP-Nonce':DNAI_CGM.nonce},body:fd});
+      const data=await res.json().catch(()=>({}));
+      if(!res.ok || data.error){ upMsg((data&&data.error)||('Erreur '+res.status),'err'); btn.disabled=false; return; }
+      upMsg('✅ '+(data.count||'')+' formules importées. Rechargement…','ok');
+      setTimeout(()=>location.reload(), 900);
+    }catch(err){ upMsg('Échec réseau : '+err.message,'err'); btn.disabled=false; }
+  });
+  const reset=document.getElementById('cgmUpReset');
+  if(reset) reset.addEventListener('click', async function(){
+    if(!confirm('Réinitialiser aux données par défaut ?')) return;
+    reset.disabled=true; upMsg('Réinitialisation…','');
+    try{
+      const res=await fetch(DNAI_CGM.rest+'/dataset',{method:'DELETE',headers:{'X-WP-Nonce':DNAI_CGM.nonce}});
+      const data=await res.json().catch(()=>({}));
+      if(!res.ok || data.error){ upMsg((data&&data.error)||('Erreur '+res.status),'err'); reset.disabled=false; return; }
+      upMsg('✅ Données réinitialisées. Rechargement…','ok');
+      setTimeout(()=>location.reload(), 900);
+    }catch(err){ upMsg('Échec réseau : '+err.message,'err'); reset.disabled=false; }
+  });
 }
 
 /* Download the current dataset (formulas + coefficients) from what is loaded. */

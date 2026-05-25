@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI CGM Simulator
  * Description:       Sales margin pricing-scenario simulator (CGM equivalent DAP/TSP, floor price, nutrient-value price, MCV) with an AI copilot. The copilot (an Open WebUI / OpenAI-compatible model — Qwen recommended) only returns a strict JSON action; every number shown comes from the verified in-browser engine, so the model can never hallucinate a margin. Calls go through a server-side proxy, so the API key never reaches the browser and there is no CORS.
- * Version:           1.6.0
+ * Version:           1.7.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-cgm
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_CGM_VER', '1.6.0' );
+define( 'DNAI_CGM_VER', '1.7.0' );
 define( 'DNAI_CGM_URL', plugin_dir_url( __FILE__ ) );
 
 /* -------------------------------------------------------------------------
@@ -99,6 +99,34 @@ function dnai_cgm_validate_dataset( $d ) {
 		}
 	}
 	return true;
+}
+
+/* -------------------------------------------------------------------------
+ * Upload permissions. Admins (manage_options) can always import; other users
+ * must be on the allow-list managed in Réglages → D²nAI CGM.
+ * ---------------------------------------------------------------------- */
+function dnai_cgm_can_upload( $user_id = 0 ) {
+	$user_id = $user_id ? (int) $user_id : get_current_user_id();
+	if ( ! $user_id ) { return false; }
+	if ( user_can( $user_id, 'manage_options' ) ) { return true; }
+	$list = get_option( 'dnai_cgm_uploaders', array() );
+	return is_array( $list ) && in_array( $user_id, array_map( 'intval', $list ), true );
+}
+
+/* Read an uploaded file (xlsx or json) and return a validated dataset array,
+   or a string error message. Shared by the admin form and the REST endpoint. */
+function dnai_cgm_ingest_file( $tmp, $fname ) {
+	$head    = (string) file_get_contents( $tmp, false, null, 0, 2 );
+	$is_xlsx = ( '.xlsx' === substr( strtolower( (string) $fname ), -5 ) ) || ( 'PK' === $head );
+	if ( $is_xlsx ) {
+		$d = dnai_cgm_xlsx_to_dataset( $tmp );
+		if ( is_string( $d ) ) { return $d; }
+	} else {
+		$d = json_decode( (string) file_get_contents( $tmp ), true );
+	}
+	$err = dnai_cgm_validate_dataset( $d );
+	if ( true !== $err ) { return $err; }
+	return $d;
 }
 
 /* -------------------------------------------------------------------------
@@ -375,6 +403,36 @@ function dnai_cgm_settings_page() {
 			<?php submit_button( '↺ Réinitialiser aux données par défaut', 'secondary', 'submit', false ); ?>
 		</form>
 		<?php endif; ?>
+
+		<hr>
+		<h2>Qui peut importer les données</h2>
+		<p class="description">Les administrateurs peuvent toujours importer. Cochez ci-dessous les autres utilisateurs autorisés à remplacer les données <strong>depuis la page du simulateur</strong> (le bloc d'import n'apparaît que pour eux).</p>
+		<?php
+		if ( isset( $_GET['dnai_cgm_msg'] ) && 'uploaders' === $_GET['dnai_cgm_msg'] ) {
+			echo '<div class="notice notice-success inline"><p>Accès enregistrés.</p></div>';
+		}
+		$allowed = get_option( 'dnai_cgm_uploaders', array() );
+		$allowed = is_array( $allowed ) ? array_map( 'intval', $allowed ) : array();
+		$users   = get_users( array( 'orderby' => 'display_name', 'number' => 500 ) );
+		?>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin:.6em 0">
+			<input type="hidden" name="action" value="dnai_cgm_uploaders">
+			<?php wp_nonce_field( 'dnai_cgm_uploaders' ); ?>
+			<table class="widefat striped" style="max-width:640px">
+				<thead><tr><th style="width:40px"></th><th>Utilisateur</th><th>Rôle</th></tr></thead>
+				<tbody>
+				<?php foreach ( $users as $u ) :
+					$is_admin = user_can( $u->ID, 'manage_options' ); ?>
+					<tr>
+						<td><input type="checkbox" name="uploaders[]" value="<?php echo (int) $u->ID; ?>" <?php checked( $is_admin || in_array( (int) $u->ID, $allowed, true ) ); disabled( $is_admin ); ?>></td>
+						<td><?php echo esc_html( $u->display_name ); ?> <span class="description">(<?php echo esc_html( $u->user_email ); ?>)</span></td>
+						<td><?php echo esc_html( implode( ', ', $u->roles ) ); ?><?php echo $is_admin ? ' — <em>admin (toujours autorisé)</em>' : ''; ?></td>
+					</tr>
+				<?php endforeach; ?>
+				</tbody>
+			</table>
+			<?php submit_button( 'Enregistrer les accès', 'primary', 'submit', false ); ?>
+		</form>
 	</div>
 	<?php
 }
@@ -427,23 +485,10 @@ function dnai_cgm_admin_import() {
 		exit;
 	}
 	$tmp   = $_FILES['datafile']['tmp_name'];
-	$fname = isset( $_FILES['datafile']['name'] ) ? strtolower( (string) $_FILES['datafile']['name'] ) : '';
-	$head  = (string) file_get_contents( $tmp, false, null, 0, 2 );
-	$is_xlsx = ( '.xlsx' === substr( $fname, -5 ) ) || ( 'PK' === $head );
-
-	if ( $is_xlsx ) {
-		$d = dnai_cgm_xlsx_to_dataset( $tmp );
-		if ( is_string( $d ) ) {
-			wp_safe_redirect( add_query_arg( array( 'dnai_cgm_msg' => 'invalid', 'dnai_cgm_detail' => rawurlencode( $d ) ), $back ) );
-			exit;
-		}
-	} else {
-		$d = json_decode( (string) file_get_contents( $tmp ), true );
-	}
-
-	$err = dnai_cgm_validate_dataset( $d );
-	if ( true !== $err ) {
-		wp_safe_redirect( add_query_arg( array( 'dnai_cgm_msg' => 'invalid', 'dnai_cgm_detail' => rawurlencode( $err ) ), $back ) );
+	$fname = isset( $_FILES['datafile']['name'] ) ? (string) $_FILES['datafile']['name'] : '';
+	$d     = dnai_cgm_ingest_file( $tmp, $fname );
+	if ( is_string( $d ) ) {
+		wp_safe_redirect( add_query_arg( array( 'dnai_cgm_msg' => 'invalid', 'dnai_cgm_detail' => rawurlencode( $d ) ), $back ) );
 		exit;
 	}
 	update_option( 'dnai_cgm_dataset', $d );
@@ -459,11 +504,29 @@ function dnai_cgm_admin_reset() {
 	exit;
 }
 
+add_action( 'admin_post_dnai_cgm_uploaders', 'dnai_cgm_admin_uploaders' );
+function dnai_cgm_admin_uploaders() {
+	if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'forbidden' ); }
+	check_admin_referer( 'dnai_cgm_uploaders' );
+	$ids = isset( $_POST['uploaders'] ) && is_array( $_POST['uploaders'] ) ? array_map( 'intval', $_POST['uploaders'] ) : array();
+	// Keep only real users; admins are implicitly allowed so we don't store them.
+	$ids = array_values( array_unique( array_filter( $ids, function ( $id ) {
+		return $id > 0 && get_userdata( $id ) && ! user_can( $id, 'manage_options' );
+	} ) ) );
+	update_option( 'dnai_cgm_uploaders', $ids );
+	wp_safe_redirect( add_query_arg( 'dnai_cgm_msg', 'uploaders', admin_url( 'options-general.php?page=dnai-cgm' ) ) );
+	exit;
+}
+
 /* -------------------------------------------------------------------------
  * 3. REST proxy — keeps the API key server-side, avoids CORS
  * ---------------------------------------------------------------------- */
 function dnai_cgm_rest_nonce_ok( $request ) {
 	return (bool) wp_verify_nonce( $request->get_header( 'X-WP-Nonce' ), 'wp_rest' );
+}
+
+function dnai_cgm_rest_can_upload( $request ) {
+	return dnai_cgm_rest_nonce_ok( $request ) && dnai_cgm_can_upload();
 }
 
 add_action( 'rest_api_init', function () {
@@ -472,7 +535,38 @@ add_action( 'rest_api_init', function () {
 		'callback'            => 'dnai_cgm_rest_chat',
 		'permission_callback' => 'dnai_cgm_rest_nonce_ok',
 	) );
+	register_rest_route( 'dnai-cgm/v1', '/dataset', array(
+		array(
+			'methods'             => 'POST',
+			'callback'            => 'dnai_cgm_rest_import',
+			'permission_callback' => 'dnai_cgm_rest_can_upload',
+		),
+		array(
+			'methods'             => 'DELETE',
+			'callback'            => 'dnai_cgm_rest_reset',
+			'permission_callback' => 'dnai_cgm_rest_can_upload',
+		),
+	) );
 } );
+
+function dnai_cgm_rest_import( WP_REST_Request $request ) {
+	$files = $request->get_file_params();
+	$f     = isset( $files['datafile'] ) ? $files['datafile'] : null;
+	if ( ! $f || empty( $f['tmp_name'] ) || ! is_uploaded_file( $f['tmp_name'] ) ) {
+		return new WP_REST_Response( array( 'error' => 'Aucun fichier reçu.' ), 400 );
+	}
+	$d = dnai_cgm_ingest_file( $f['tmp_name'], isset( $f['name'] ) ? $f['name'] : '' );
+	if ( is_string( $d ) ) {
+		return new WP_REST_Response( array( 'error' => 'Import refusé : ' . $d . ' Les données précédentes sont conservées.' ), 422 );
+	}
+	update_option( 'dnai_cgm_dataset', $d );
+	return new WP_REST_Response( array( 'ok' => true, 'count' => count( $d['products'] ) ), 200 );
+}
+
+function dnai_cgm_rest_reset( WP_REST_Request $request ) {
+	delete_option( 'dnai_cgm_dataset' );
+	return new WP_REST_Response( array( 'ok' => true ), 200 );
+}
 
 function dnai_cgm_rest_chat( WP_REST_Request $request ) {
 	$base  = dnai_cgm_opt( 'base_url' );
@@ -601,9 +695,10 @@ add_action( 'wp_enqueue_scripts', function () {
 	wp_register_style( 'dnai-cgm', DNAI_CGM_URL . 'assets/dnai-cgm.css', array( 'dnai-cgm-fonts' ), DNAI_CGM_VER );
 	wp_register_script( 'dnai-cgm', DNAI_CGM_URL . 'assets/dnai-cgm.js', array(), DNAI_CGM_VER, true );
 	wp_localize_script( 'dnai-cgm', 'DNAI_CGM', array(
-		'rest'  => esc_url_raw( rest_url( 'dnai-cgm/v1' ) ),
-		'nonce' => wp_create_nonce( 'wp_rest' ),
-		'data'  => dnai_cgm_override(),
+		'rest'      => esc_url_raw( rest_url( 'dnai-cgm/v1' ) ),
+		'nonce'     => wp_create_nonce( 'wp_rest' ),
+		'data'      => dnai_cgm_override(),
+		'canUpload' => dnai_cgm_can_upload(),
 	) );
 } );
 
@@ -643,6 +738,21 @@ function dnai_cgm_shortcode( $atts ) {
 	    <button type="button" class="btn ghost" id="cgmDlCsv">⤓ Exporter les données (CSV / Excel)</button>
 	    <button type="button" class="btn ghost" id="cgmDlJson">⤓ Exporter (JSON)</button>
 	  </div>
+
+	  <?php if ( dnai_cgm_can_upload() ) : ?>
+	  <div class="panel cgm-upload" id="cgmUpload">
+	    <h2>Importer les données réelles <span class="badge-real" style="margin-left:4px">accès restreint</span></h2>
+	    <div class="sub">Téléversez le classeur Excel <code>.xlsx</code> (mêmes onglets que <code>CGM_Simulator_MVP.xlsx</code>) ou un fichier JSON au format d'export. Le contenu est validé avant remplacement ; en cas d'erreur, les données en place sont conservées.</div>
+	    <form id="cgmUpForm" class="cgm-upform">
+	      <input type="file" id="cgmUpFile" accept=".xlsx,.json,application/json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required>
+	      <button type="submit" class="btn" id="cgmUpBtn">Importer et remplacer</button>
+	      <?php if ( dnai_cgm_override() ) : ?>
+	      <button type="button" class="btn ghost" id="cgmUpReset">↺ Réinitialiser</button>
+	      <?php endif; ?>
+	    </form>
+	    <div class="cgm-upmsg" id="cgmUpMsg" hidden></div>
+	  </div>
+	  <?php endif; ?>
 
 	  <!-- COPILOT -->
 	  <div class="panel">
