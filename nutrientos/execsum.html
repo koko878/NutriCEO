@@ -21,6 +21,10 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif}
 .brand .by{display:block;font-family:'Inter';font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:5px}
 .head .meta{text-align:right;font-size:11px;color:var(--muted);line-height:1.7}
 .head .meta b{color:var(--green-800);font-size:12px}
+.langsel{display:flex;gap:3px;justify-content:flex-end;margin-bottom:9px}
+.lng{border:1px solid var(--line);background:#fff;font-size:16px;line-height:1;padding:4px 6px;border-radius:7px;cursor:pointer;filter:grayscale(.6) opacity(.6);transition:.15s}
+.lng:hover{filter:none}
+.lng.on{filter:none;border-color:var(--green-300);background:var(--green-50)}
 .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green-700)}
 h1.title{font-size:34px;line-height:1.08;margin:6px 0 10px;font-weight:700}
 h1.title em{font-style:italic;color:var(--green-700)}
@@ -30,10 +34,9 @@ h2.sec{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:upperc
 p{font-size:14px;margin:0 0 12px}
 .flip{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:8px 0 4px}
 .flip .b{border-radius:11px;padding:16px}
-.flip .bcg{background:#faf6f6;border:1px solid #f0dede}
 .flip .nos{background:var(--green-50);border:1px solid var(--green-100)}
 .flip h4{margin:0 0 8px;font-size:16px}
-.flip .bcg h4{color:var(--bad)}.flip .nos h4{color:var(--green-800)}
+.flip .nos h4{color:var(--green-800)}
 .flip ul{margin:0;padding-left:16px;font-size:13px;color:var(--muted)}
 .flip li{margin-bottom:5px}
 .axis{display:flex;gap:18px;margin:18px 0;padding:18px;border:1px solid var(--line);border-radius:14px}
@@ -64,7 +67,7 @@ p{font-size:14px;margin:0 0 12px}
 .pc b{display:block;font-size:14px;color:var(--green-800)}
 .pc span{display:block;font-size:12px;color:var(--muted);margin-top:4px}
 .tagp{font-size:9px;font-weight:800;text-transform:uppercase;color:#05230f;background:var(--green-300);border-radius:4px;padding:1px 5px;margin-left:5px;vertical-align:middle}
-@media print{body{background:#fff}.page{box-shadow:none;margin:0;max-width:none;padding:32px 38px}.axis,.tl,.flip .b{break-inside:avoid}.ask{break-inside:avoid}}
+@media print{body{background:#fff}.page{box-shadow:none;margin:0;max-width:none;padding:32px 38px}.axis,.tl,.flip .b{break-inside:avoid}.ask{break-inside:avoid}.langsel{display:none}}
 @media(max-width:680px){.flip,.timeline,.pgrid{grid-template-columns:1fr}.page{padding:32px 24px}}
 </style>
 </head>
@@ -73,59 +76,66 @@ p{font-size:14px;margin:0 0 12px}
 
   <div class="head">
     <div class="brand">Nutrient<b>OS</b><span class="by">OCP Nutricrops · équipe D²nAI</span></div>
-    <div class="meta"><b>NOTE STRATÉGIQUE</b><br>Plateforme NutrientOS<br>Confidentiel · board OCP Nutricrops</div>
+    <div class="meta">
+      <div class="langsel">
+        <button class="lng on" data-l="fr" title="Français" onclick="setLang('fr')">🇫🇷</button>
+        <button class="lng" data-l="en" title="English" onclick="setLang('en')">🇬🇧</button>
+        <button class="lng" data-l="pt" title="Português (Brasil)" onclick="setLang('pt')">🇧🇷</button>
+      </div>
+      <b data-k="m1">NOTE STRATÉGIQUE</b><br><span data-k="m2">Plateforme NutrientOS</span><br><span data-k="m3">Confidentiel · board OCP Nutricrops</span>
+    </div>
   </div>
 
-  <span class="tag">● Vision &amp; plan</span>
-  <h1 class="title">Mener le standard ouvert de la <em>nutrition des plantes</em>.</h1>
+  <span class="tag" data-k="tag">● Vision &amp; plan</span>
+  <h1 class="title" data-k="title">Mener le standard ouvert de la <em>nutrition des plantes</em>.</h1>
 
-  <div class="tldr">
+  <div class="tldr" data-k="tldr">
     <b>En une phrase :</b> la valeur en agriculture se déplace vers la donnée et la décision. NutrientOS prend cette vague avec une posture gagnante pour OCP Nutricrops : <b>une plateforme ouverte dont OCP Nutricrops publie le standard et garde le cœur de valeur</b> (open-core), livrée en 90 jours. Ouvrir devient un levier de domination, pas un don.
   </div>
 
-  <h2 class="sec">Le modèle : open-core</h2>
+  <h2 class="sec" data-k="sModel">Le modèle : open-core</h2>
   <div class="flip">
     <div class="b nos" style="background:#fff;border:1px dashed var(--green-300)">
-      <h4>Couche ouverte — la gravité</h4>
+      <h4 data-k="openH">Couche ouverte — la gravité</h4>
       <ul>
-        <li>Nutrient Value Standard publié par OCP Nutricrops, librement réutilisable</li>
-        <li>Datasets sol &amp; agro de base + implémentation de référence</li>
-        <li>APIs &amp; SDK : l'écosystème vient construire dessus</li>
-        <li>But : devenir l'infrastructure que tout le monde adopte</li>
+        <li data-k="o1">Nutrient Value Standard publié par OCP Nutricrops, librement réutilisable</li>
+        <li data-k="o2">Datasets sol &amp; agro de base + implémentation de référence</li>
+        <li data-k="o3">APIs &amp; SDK : l'écosystème vient construire dessus</li>
+        <li data-k="o4">But : devenir l'infrastructure que tout le monde adopte</li>
       </ul>
     </div>
     <div class="b nos">
-      <h4>Cœur OCP Nutricrops — la valeur</h4>
+      <h4 data-k="coreH">Cœur OCP Nutricrops — la valeur</h4>
       <ul>
-        <li>Moteur de recommandation propriétaire (sol × culture → produit)</li>
-        <li>Digital twin des sols + réseau d'agriculteurs → effet de réseau</li>
-        <li>Orchestration commerciale &amp; marketplace de partenaires</li>
-        <li>But : capter la valeur que la couche ouverte fait grandir</li>
+        <li data-k="k1">Moteur de recommandation propriétaire (sol × culture → produit)</li>
+        <li data-k="k2">Digital twin des sols + réseau d'agriculteurs → effet de réseau</li>
+        <li data-k="k3">Orchestration commerciale &amp; marketplace de partenaires</li>
+        <li data-k="k4">But : capter la valeur que la couche ouverte fait grandir</li>
       </ul>
     </div>
   </div>
 
-  <h2 class="sec">L'écosystème du backbone</h2>
-  <p>La couche ouverte ne se construit pas seule : un réseau de partenaires l'alimente et la déploie. <b>UM6P</b> n'y est pas une simple source de données, mais l'<b>ambassadeur académique</b> qui fédère les universités du monde entier autour du standard.</p>
+  <h2 class="sec" data-k="sBackbone">L'écosystème du backbone</h2>
+  <p data-k="bbP">La couche ouverte ne se construit pas seule : un réseau de partenaires l'alimente et la déploie. <b>UM6P</b> n'y est pas une simple source de données, mais l'<b>ambassadeur académique</b> qui fédère les universités du monde entier autour du standard.</p>
   <div class="pgrid">
-    <div class="pc um6p"><b>UM6P <span class="tagp">ambassadeur</span></b><span>Fédère les universités du monde entier autour du standard.</span></div>
-    <div class="pc"><b>Al Moutmir</b><span>Programme d'accompagnement des agriculteurs &amp; agronomie terrain.</span></div>
-    <div class="pc"><b>AgriEdge</b><span>Agriculture de précision &amp; agronomie digitale.</span></div>
-    <div class="pc"><b>Ground Truth Analytics</b><span>Données terrain &amp; analytics.</span></div>
+    <div class="pc um6p"><b>UM6P <span class="tagp" data-k="pTag">ambassadeur</span></b><span data-k="pUM6P">Fédère les universités du monde entier autour du standard.</span></div>
+    <div class="pc"><b>Al Moutmir</b><span data-k="pAlM">Programme d'accompagnement des agriculteurs &amp; agronomie terrain.</span></div>
+    <div class="pc"><b>AgriEdge</b><span data-k="pAE">Agriculture de précision &amp; agronomie digitale.</span></div>
+    <div class="pc"><b>Ground Truth Analytics</b><span data-k="pGT">Données terrain &amp; analytics.</span></div>
   </div>
 
-  <h2 class="sec">Les trois décisions</h2>
+  <h2 class="sec" data-k="sDecisions">Les trois décisions</h2>
 
   <div class="axis">
     <div class="num">1</div>
     <div>
-      <h3>Gouvernance — ouvrir sans perdre le contrôle</h3>
-      <p class="one">Principe : on ouvre la périphérie, on garde le centre.</p>
-      <p>Le piège d'une fondation « neutre dès le jour 1 » est de diluer l'avantage d'OCP Nutricrops avant même qu'il ne se matérialise. On applique le modèle <b>Android / Linux Foundation</b> : l'industriel sème le standard et l'implémentation de référence ; l'institution neutre n'arrive qu'<b>ensuite</b>, pour entériner et rassurer l'écosystème — pas pour diriger.</p>
+      <h3 data-k="a1h">Gouvernance — ouvrir sans perdre le contrôle</h3>
+      <p class="one" data-k="a1one">Principe : on ouvre la périphérie, on garde le centre.</p>
+      <p data-k="a1p">Le piège d'une fondation « neutre dès le jour 1 » est de diluer l'avantage d'OCP Nutricrops avant même qu'il ne se matérialise. On applique le modèle <b>Android / Linux Foundation</b> : l'industriel sème le standard et l'implémentation de référence ; l'institution neutre n'arrive qu'<b>ensuite</b>, pour entériner et rassurer l'écosystème — pas pour diriger.</p>
       <ul>
-        <li><b>Ouvert :</b> spécification du standard, datasets de base, SDK, implémentation de référence.</li>
-        <li><b>Gardé par OCP Nutricrops :</b> moteur de recommandation, données terrain agriculteurs, orchestration commerciale, marque du standard.</li>
-        <li><b>Levier :</b> OCP Nutricrops préside le comité technique en tant que premier contributeur ; le contrôle vient de la légitimité, pas d'un veto juridique.</li>
+        <li data-k="a1l1"><b>Ouvert :</b> spécification du standard, datasets de base, SDK, implémentation de référence.</li>
+        <li data-k="a1l2"><b>Gardé par OCP Nutricrops :</b> moteur de recommandation, données terrain agriculteurs, orchestration commerciale, marque du standard.</li>
+        <li data-k="a1l3"><b>Levier :</b> OCP Nutricrops préside le comité technique en tant que premier contributeur ; le contrôle vient de la légitimité, pas d'un veto juridique.</li>
       </ul>
     </div>
   </div>
@@ -133,13 +143,13 @@ p{font-size:14px;margin:0 0 12px}
   <div class="axis">
     <div class="num">2</div>
     <div>
-      <h3>Standard d'abord — pas l'institution</h3>
-      <p class="one">Le premier qui publie le standard que les autres adoptent a gagné.</p>
-      <p>Construire d'abord une institution large est lent. On inverse : on publie d'abord un <b>standard ouvert + une implémentation de référence</b> sur <b>un seul périmètre étroit et légitime</b> — la <b>nutrition phosphatée</b>, là où OCP Nutricrops domine déjà. La gouvernance se construit <em>après</em>, autour d'un standard déjà adopté.</p>
+      <h3 data-k="a2h">Standard d'abord — pas l'institution</h3>
+      <p class="one" data-k="a2one">Le premier qui publie le standard que les autres adoptent a gagné.</p>
+      <p data-k="a2p">Construire d'abord une institution large est lent. On inverse : on publie d'abord un <b>standard ouvert + une implémentation de référence</b> sur <b>un seul périmètre étroit et légitime</b> — la <b>nutrition phosphatée</b>, là où OCP Nutricrops domine déjà. La gouvernance se construit <em>après</em>, autour d'un standard déjà adopté.</p>
       <ul>
-        <li><b>Périmètre v1 :</b> un schéma ouvert de « valeur nutritive » (unités, référentiel sol-culture, formats d'échange).</li>
-        <li><b>Pourquoi ça marche :</b> profondeur &gt; largeur. Étroit = rapide, crédible, défendable.</li>
-        <li><b>Effet :</b> startups, chercheurs et dev orgs intègrent le standard d'OCP Nutricrops → gravité, tôt et durablement.</li>
+        <li data-k="a2l1"><b>Périmètre v1 :</b> un schéma ouvert de « valeur nutritive » (unités, référentiel sol-culture, formats d'échange).</li>
+        <li data-k="a2l2"><b>Pourquoi ça marche :</b> profondeur &gt; largeur. Étroit = rapide, crédible, défendable.</li>
+        <li data-k="a2l3"><b>Effet :</b> startups, chercheurs et dev orgs intègrent le standard d'OCP Nutricrops → gravité, tôt et durablement.</li>
       </ul>
     </div>
   </div>
@@ -147,32 +157,125 @@ p{font-size:14px;margin:0 0 12px}
   <div class="axis">
     <div class="num">3</div>
     <div>
-      <h3>Plan 90 jours — prendre l'avance</h3>
-      <p class="one">En 90 jours : un standard publié, des partenaires pilotes et de la donnée terrain réelle.</p>
+      <h3 data-k="a3h">Plan 90 jours — prendre l'avance</h3>
+      <p class="one" data-k="a3one">En 90 jours : un standard publié, des partenaires pilotes et de la donnée terrain réelle.</p>
       <div class="timeline">
-        <div class="tl"><div class="w">Semaines 1-4</div><div class="bar"></div><h4>Prototype &amp; spec</h4><p>Console NutrientOS (déjà fonctionnelle) + v0 du standard ouvert, validés en interne.</p></div>
-        <div class="tl"><div class="w">Semaines 5-8</div><div class="bar"></div><h4>Publication open</h4><p>Standard + implémentation de référence publiés ; 3 partenaires pilotes (startup, labo, distributeur) embarqués.</p></div>
-        <div class="tl"><div class="w">Semaines 9-12</div><div class="bar"></div><h4>Boucle terrain</h4><p>Premières données agriculteurs réelles ; effet de réseau amorcé ; dossier de gouvernance prêt.</p></div>
+        <div class="tl"><div class="w" data-k="t1w">Semaines 1-4</div><div class="bar"></div><h4 data-k="t1h">Prototype &amp; spec</h4><p data-k="t1p">Console NutrientOS (déjà fonctionnelle) + v0 du standard ouvert, validés en interne.</p></div>
+        <div class="tl"><div class="w" data-k="t2w">Semaines 5-8</div><div class="bar"></div><h4 data-k="t2h">Publication open</h4><p data-k="t2p">Standard + implémentation de référence publiés ; 3 partenaires pilotes (startup, labo, distributeur) embarqués.</p></div>
+        <div class="tl"><div class="w" data-k="t3w">Semaines 9-12</div><div class="bar"></div><h4 data-k="t3h">Boucle terrain</h4><p data-k="t3p">Premières données agriculteurs réelles ; effet de réseau amorcé ; dossier de gouvernance prêt.</p></div>
       </div>
       <div class="kpis">
-        <div class="kpi"><b>90 j</b><span>jusqu'au standard publié</span></div>
-        <div class="kpi"><b>1</b><span>périmètre étroit, possédé</span></div>
-        <div class="kpi"><b>3</b><span>partenaires pilotes</span></div>
+        <div class="kpi"><b data-k="kp1b">90 j</b><span data-k="kp1s">jusqu'au standard publié</span></div>
+        <div class="kpi"><b>1</b><span data-k="kp2s">périmètre étroit, possédé</span></div>
+        <div class="kpi"><b>3</b><span data-k="kp3s">partenaires pilotes</span></div>
       </div>
     </div>
   </div>
 
   <div class="ask">
-    <h3>La demande au board</h3>
-    <p>Un <b>mandat de 90 jours</b> et une <b>petite équipe D²nAI</b> pour transformer le prototype en standard ouvert v1 + cœur OCP Nutricrops, et reprendre la main sur la nutrition data-driven.</p>
-    <p>Décision à prendre sur <b>un produit qui tourne déjà</b> (voir la plateforme &amp; la console NutrientOS) et un plan qui livre en 90 jours.</p>
+    <h3 data-k="askH">La demande au board</h3>
+    <p data-k="askP1">Un <b>mandat de 90 jours</b> et une <b>petite équipe D²nAI</b> pour transformer le prototype en standard ouvert v1 + cœur OCP Nutricrops, et reprendre la main sur la nutrition data-driven.</p>
+    <p data-k="askP2">Décision à prendre sur <b>un produit qui tourne déjà</b> (voir la plateforme &amp; la console NutrientOS) et un plan qui livre en 90 jours.</p>
   </div>
 
   <div class="foot">
-    <span>NutrientOS · OCP Nutricrops · D²nAI (Data, Digital &amp; AI)</span>
+    <span data-k="footL">NutrientOS · OCP Nutricrops · D²nAI (Data, Digital &amp; AI)</span>
     <span>« Feed the soil to feed the world »</span>
   </div>
 
 </div>
+
+<script>
+let LANG='fr';
+const T={
+ fr:{
+  'm1':`NOTE STRATÉGIQUE`,'m2':`Plateforme NutrientOS`,'m3':`Confidentiel · board OCP Nutricrops`,
+  'tag':`● Vision &amp; plan`,'title':`Mener le standard ouvert de la <em>nutrition des plantes</em>.`,
+  'tldr':`<b>En une phrase :</b> la valeur en agriculture se déplace vers la donnée et la décision. NutrientOS prend cette vague avec une posture gagnante pour OCP Nutricrops : <b>une plateforme ouverte dont OCP Nutricrops publie le standard et garde le cœur de valeur</b> (open-core), livrée en 90 jours. Ouvrir devient un levier de domination, pas un don.`,
+  'sModel':`Le modèle : open-core`,
+  'openH':`Couche ouverte — la gravité`,'o1':`Nutrient Value Standard publié par OCP Nutricrops, librement réutilisable`,'o2':`Datasets sol &amp; agro de base + implémentation de référence`,'o3':`APIs &amp; SDK : l'écosystème vient construire dessus`,'o4':`But : devenir l'infrastructure que tout le monde adopte`,
+  'coreH':`Cœur OCP Nutricrops — la valeur`,'k1':`Moteur de recommandation propriétaire (sol × culture → produit)`,'k2':`Digital twin des sols + réseau d'agriculteurs → effet de réseau`,'k3':`Orchestration commerciale &amp; marketplace de partenaires`,'k4':`But : capter la valeur que la couche ouverte fait grandir`,
+  'sBackbone':`L'écosystème du backbone`,
+  'bbP':`La couche ouverte ne se construit pas seule : un réseau de partenaires l'alimente et la déploie. <b>UM6P</b> n'y est pas une simple source de données, mais l'<b>ambassadeur académique</b> qui fédère les universités du monde entier autour du standard.`,
+  'pTag':`ambassadeur`,'pUM6P':`Fédère les universités du monde entier autour du standard.`,'pAlM':`Programme d'accompagnement des agriculteurs &amp; agronomie terrain.`,'pAE':`Agriculture de précision &amp; agronomie digitale.`,'pGT':`Données terrain &amp; analytics.`,
+  'sDecisions':`Les trois décisions`,
+  'a1h':`Gouvernance — ouvrir sans perdre le contrôle`,'a1one':`Principe : on ouvre la périphérie, on garde le centre.`,
+  'a1p':`Le piège d'une fondation « neutre dès le jour 1 » est de diluer l'avantage d'OCP Nutricrops avant même qu'il ne se matérialise. On applique le modèle <b>Android / Linux Foundation</b> : l'industriel sème le standard et l'implémentation de référence ; l'institution neutre n'arrive qu'<b>ensuite</b>, pour entériner et rassurer l'écosystème — pas pour diriger.`,
+  'a1l1':`<b>Ouvert :</b> spécification du standard, datasets de base, SDK, implémentation de référence.`,'a1l2':`<b>Gardé par OCP Nutricrops :</b> moteur de recommandation, données terrain agriculteurs, orchestration commerciale, marque du standard.`,'a1l3':`<b>Levier :</b> OCP Nutricrops préside le comité technique en tant que premier contributeur ; le contrôle vient de la légitimité, pas d'un veto juridique.`,
+  'a2h':`Standard d'abord — pas l'institution`,'a2one':`Le premier qui publie le standard que les autres adoptent a gagné.`,
+  'a2p':`Construire d'abord une institution large est lent. On inverse : on publie d'abord un <b>standard ouvert + une implémentation de référence</b> sur <b>un seul périmètre étroit et légitime</b> — la <b>nutrition phosphatée</b>, là où OCP Nutricrops domine déjà. La gouvernance se construit <em>après</em>, autour d'un standard déjà adopté.`,
+  'a2l1':`<b>Périmètre v1 :</b> un schéma ouvert de « valeur nutritive » (unités, référentiel sol-culture, formats d'échange).`,'a2l2':`<b>Pourquoi ça marche :</b> profondeur &gt; largeur. Étroit = rapide, crédible, défendable.`,'a2l3':`<b>Effet :</b> startups, chercheurs et dev orgs intègrent le standard d'OCP Nutricrops → gravité, tôt et durablement.`,
+  'a3h':`Plan 90 jours — prendre l'avance`,'a3one':`En 90 jours : un standard publié, des partenaires pilotes et de la donnée terrain réelle.`,
+  't1w':`Semaines 1-4`,'t1h':`Prototype &amp; spec`,'t1p':`Console NutrientOS (déjà fonctionnelle) + v0 du standard ouvert, validés en interne.`,
+  't2w':`Semaines 5-8`,'t2h':`Publication open`,'t2p':`Standard + implémentation de référence publiés ; 3 partenaires pilotes (startup, labo, distributeur) embarqués.`,
+  't3w':`Semaines 9-12`,'t3h':`Boucle terrain`,'t3p':`Premières données agriculteurs réelles ; effet de réseau amorcé ; dossier de gouvernance prêt.`,
+  'kp1b':`90 j`,'kp1s':`jusqu'au standard publié`,'kp2s':`périmètre étroit, possédé`,'kp3s':`partenaires pilotes`,
+  'askH':`La demande au board`,
+  'askP1':`Un <b>mandat de 90 jours</b> et une <b>petite équipe D²nAI</b> pour transformer le prototype en standard ouvert v1 + cœur OCP Nutricrops, et reprendre la main sur la nutrition data-driven.`,
+  'askP2':`Décision à prendre sur <b>un produit qui tourne déjà</b> (voir la plateforme &amp; la console NutrientOS) et un plan qui livre en 90 jours.`,
+  'footL':`NutrientOS · OCP Nutricrops · D²nAI (Data, Digital &amp; AI)`
+ },
+ en:{
+  'm1':`STRATEGIC NOTE`,'m2':`NutrientOS platform`,'m3':`Confidential · OCP Nutricrops board`,
+  'tag':`● Vision &amp; plan`,'title':`Lead the open standard for <em>plant nutrition</em>.`,
+  'tldr':`<b>In one line:</b> value in agriculture is shifting to data and the decision. NutrientOS rides this wave with a winning posture for OCP Nutricrops: <b>an open platform where OCP Nutricrops publishes the standard and keeps the value core</b> (open-core), delivered in 90 days. Opening becomes a lever for dominance, not a giveaway.`,
+  'sModel':`The model: open-core`,
+  'openH':`Open layer — the gravity`,'o1':`Nutrient Value Standard published by OCP Nutricrops, freely reusable`,'o2':`Base soil &amp; agro datasets + reference implementation`,'o3':`APIs &amp; SDK: the ecosystem builds on top`,'o4':`Goal: become the infrastructure everyone adopts`,
+  'coreH':`OCP Nutricrops core — the value`,'k1':`Proprietary recommendation engine (soil × crop → product)`,'k2':`Soil digital twin + farmer network → network effect`,'k3':`Commercial orchestration &amp; partner marketplace`,'k4':`Goal: capture the value the open layer grows`,
+  'sBackbone':`The backbone ecosystem`,
+  'bbP':`The open layer isn't built alone: a network of partners feeds and deploys it. <b>UM6P</b> is not a mere data source here, but the <b>academic ambassador</b> federating universities worldwide around the standard.`,
+  'pTag':`ambassador`,'pUM6P':`Federates universities worldwide around the standard.`,'pAlM':`Farmer support program &amp; field agronomy.`,'pAE':`Precision agriculture &amp; digital agronomy.`,'pGT':`Ground-truth data &amp; analytics.`,
+  'sDecisions':`The three decisions`,
+  'a1h':`Governance — open without losing control`,'a1one':`Principle: open the edges, keep the center.`,
+  'a1p':`The trap of a "neutral from day 1" foundation is to dilute OCP Nutricrops' advantage before it even materializes. We apply the <b>Android / Linux Foundation</b> model: the industrial player seeds the standard and the reference implementation; the neutral institution comes only <b>afterwards</b>, to ratify and reassure the ecosystem — not to run it.`,
+  'a1l1':`<b>Open:</b> standard spec, base datasets, SDK, reference implementation.`,'a1l2':`<b>Kept by OCP Nutricrops:</b> recommendation engine, farmer field data, commercial orchestration, the standard's brand.`,'a1l3':`<b>Leverage:</b> OCP Nutricrops chairs the technical committee as the first contributor; control comes from legitimacy, not a legal veto.`,
+  'a2h':`Standard first — not the institution`,'a2one':`Whoever first publishes the standard others adopt wins.`,
+  'a2p':`Building a broad institution first is slow. We flip it: publish first an <b>open standard + a reference implementation</b> on <b>a single narrow, legitimate scope</b> — <b>phosphate nutrition</b>, where OCP Nutricrops already leads. Governance is built <em>afterwards</em>, around an already-adopted standard.`,
+  'a2l1':`<b>v1 scope:</b> an open "nutrient value" schema (units, soil-crop reference, exchange formats).`,'a2l2':`<b>Why it works:</b> depth &gt; breadth. Narrow = fast, credible, defensible.`,'a2l3':`<b>Effect:</b> startups, researchers and dev orgs adopt OCP Nutricrops' standard → gravity, early and lasting.`,
+  'a3h':`90-day plan — get ahead`,'a3one':`In 90 days: a published standard, pilot partners and real field data.`,
+  't1w':`Weeks 1-4`,'t1h':`Prototype &amp; spec`,'t1p':`NutrientOS Console (already working) + v0 of the open standard, validated internally.`,
+  't2w':`Weeks 5-8`,'t2h':`Open release`,'t2p':`Standard + reference implementation published; 3 pilot partners (startup, lab, distributor) onboarded.`,
+  't3w':`Weeks 9-12`,'t3h':`Field loop`,'t3p':`First real farmer data; network effect kicking in; governance dossier ready.`,
+  'kp1b':`90 d`,'kp1s':`to the published standard`,'kp2s':`narrow scope, owned`,'kp3s':`pilot partners`,
+  'askH':`The ask to the board`,
+  'askP1':`A <b>90-day mandate</b> and a <b>small D²nAI team</b> to turn the prototype into open standard v1 + OCP Nutricrops core, and take the lead on data-driven nutrition.`,
+  'askP2':`Decide on <b>a product that already runs</b> (see the NutrientOS platform &amp; console) and a plan that delivers in 90 days.`,
+  'footL':`NutrientOS · OCP Nutricrops · D²nAI (Data, Digital &amp; AI)`
+ },
+ pt:{
+  'm1':`NOTA ESTRATÉGICA`,'m2':`Plataforma NutrientOS`,'m3':`Confidencial · board OCP Nutricrops`,
+  'tag':`● Visão &amp; plano`,'title':`Liderar o padrão aberto da <em>nutrição das plantas</em>.`,
+  'tldr':`<b>Em uma frase:</b> o valor na agricultura desloca-se para o dado e a decisão. A NutrientOS pega essa onda com uma postura vencedora para a OCP Nutricrops: <b>uma plataforma aberta em que a OCP Nutricrops publica o padrão e mantém o core de valor</b> (open-core), entregue em 90 dias. Abrir vira uma alavanca de domínio, não uma doação.`,
+  'sModel':`O modelo: open-core`,
+  'openH':`Camada aberta — a gravidade`,'o1':`Nutrient Value Standard publicado pela OCP Nutricrops, livremente reutilizável`,'o2':`Datasets de solo &amp; agro de base + implementação de referência`,'o3':`APIs &amp; SDK: o ecossistema constrói por cima`,'o4':`Objetivo: tornar-se a infraestrutura que todos adotam`,
+  'coreH':`Core OCP Nutricrops — o valor`,'k1':`Motor de recomendação proprietário (solo × cultura → produto)`,'k2':`Gêmeo digital dos solos + rede de agricultores → efeito de rede`,'k3':`Orquestração comercial &amp; marketplace de parceiros`,'k4':`Objetivo: capturar o valor que a camada aberta faz crescer`,
+  'sBackbone':`O ecossistema do backbone`,
+  'bbP':`A camada aberta não se constrói sozinha: uma rede de parceiros a alimenta e a implanta. A <b>UM6P</b> não é aqui uma simples fonte de dados, mas o <b>embaixador acadêmico</b> que federa universidades do mundo todo em torno do padrão.`,
+  'pTag':`embaixador`,'pUM6P':`Federa universidades do mundo todo em torno do padrão.`,'pAlM':`Programa de apoio a agricultores &amp; agronomia de campo.`,'pAE':`Agricultura de precisão &amp; agronomia digital.`,'pGT':`Dados de campo &amp; analytics.`,
+  'sDecisions':`As três decisões`,
+  'a1h':`Governança — abrir sem perder o controle`,'a1one':`Princípio: abrir a periferia, manter o centro.`,
+  'a1p':`A armadilha de uma fundação "neutra desde o dia 1" é diluir a vantagem da OCP Nutricrops antes mesmo de ela se materializar. Aplicamos o modelo <b>Android / Linux Foundation</b>: o player industrial semeia o padrão e a implementação de referência; a instituição neutra só chega <b>depois</b>, para ratificar e tranquilizar o ecossistema — não para dirigir.`,
+  'a1l1':`<b>Aberto:</b> especificação do padrão, datasets de base, SDK, implementação de referência.`,'a1l2':`<b>Mantido pela OCP Nutricrops:</b> motor de recomendação, dados de campo dos agricultores, orquestração comercial, a marca do padrão.`,'a1l3':`<b>Alavanca:</b> a OCP Nutricrops preside o comitê técnico como primeiro contribuidor; o controle vem da legitimidade, não de um veto jurídico.`,
+  'a2h':`Padrão primeiro — não a instituição`,'a2one':`Quem primeiro publica o padrão que os outros adotam, vence.`,
+  'a2p':`Construir primeiro uma instituição ampla é lento. Invertemos: publicamos primeiro um <b>padrão aberto + uma implementação de referência</b> num <b>único escopo estreito e legítimo</b> — a <b>nutrição fosfatada</b>, onde a OCP Nutricrops já lidera. A governança constrói-se <em>depois</em>, em torno de um padrão já adotado.`,
+  'a2l1':`<b>Escopo v1:</b> um esquema aberto de "valor nutritivo" (unidades, referencial solo-cultura, formatos de troca).`,'a2l2':`<b>Por que funciona:</b> profundidade &gt; amplitude. Estreito = rápido, crível, defensável.`,'a2l3':`<b>Efeito:</b> startups, pesquisadores e dev orgs adotam o padrão da OCP Nutricrops → gravidade, cedo e de forma duradoura.`,
+  'a3h':`Plano de 90 dias — sair na frente`,'a3one':`Em 90 dias: um padrão publicado, parceiros piloto e dados reais de campo.`,
+  't1w':`Semanas 1-4`,'t1h':`Protótipo &amp; spec`,'t1p':`Console NutrientOS (já funcional) + v0 do padrão aberto, validados internamente.`,
+  't2w':`Semanas 5-8`,'t2h':`Publicação open`,'t2p':`Padrão + implementação de referência publicados; 3 parceiros piloto (startup, laboratório, distribuidor) embarcados.`,
+  't3w':`Semanas 9-12`,'t3h':`Loop de campo`,'t3p':`Primeiros dados reais de agricultores; efeito de rede iniciado; dossiê de governança pronto.`,
+  'kp1b':`90 d`,'kp1s':`até o padrão publicado`,'kp2s':`escopo estreito, possuído`,'kp3s':`parceiros piloto`,
+  'askH':`O pedido ao board`,
+  'askP1':`Um <b>mandato de 90 dias</b> e uma <b>equipe pequena D²nAI</b> para transformar o protótipo em padrão aberto v1 + core OCP Nutricrops, e assumir a liderança na nutrição orientada por dados.`,
+  'askP2':`Decisão sobre <b>um produto que já funciona</b> (veja a plataforma &amp; a console NutrientOS) e um plano que entrega em 90 dias.`,
+  'footL':`NutrientOS · OCP Nutricrops · equipe D²nAI (Data, Digital &amp; AI)`
+ }
+};
+function applyLang(){
+  document.documentElement.lang=LANG;
+  document.querySelectorAll('[data-k]').forEach(e=>{const v=T[LANG][e.dataset.k];if(v!==undefined)e.innerHTML=v;});
+}
+function setLang(l){LANG=l;document.querySelectorAll('.lng').forEach(b=>b.classList.toggle('on',b.dataset.l===l));applyLang();}
+setLang('fr');
+</script>
 </body>
 </html>
