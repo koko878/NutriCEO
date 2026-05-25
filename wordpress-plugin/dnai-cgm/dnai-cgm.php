@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI CGM Simulator
  * Description:       Sales margin pricing-scenario simulator (CGM equivalent DAP/TSP, floor price, nutrient-value price, MCV) with an AI copilot. The copilot (an Open WebUI / OpenAI-compatible model — Qwen recommended) only returns a strict JSON action; every number shown comes from the verified in-browser engine, so the model can never hallucinate a margin. Calls go through a server-side proxy, so the API key never reaches the browser and there is no CORS.
- * Version:           1.5.1
+ * Version:           1.5.2
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-cgm
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_CGM_VER', '1.5.1' );
+define( 'DNAI_CGM_VER', '1.5.2' );
 define( 'DNAI_CGM_URL', plugin_dir_url( __FILE__ ) );
 
 /* -------------------------------------------------------------------------
@@ -38,7 +38,8 @@ Schéma :
 Règles :
 - "product_index" DOIT être choisi dans le CATALOGUE fourni (l'entier qui suit le #). Si la demande exige un produit mais qu'aucun ne correspond clairement, laisse "product_index" à null et pose une question dans "clarify".
 - Dans "rm", ne mets QUE les matières premières explicitement citées par l'utilisateur (en $/t). "sens" est en pourcentage.
-- Choix de "intent" : "compare" = classer/comparer les formules ; "sensitivity" = impact d'une variation NH3/Soufre ; "set" = l'utilisateur fixe un prix ou un paramètre ; "compute" ou "explain" = analyser le produit courant ; "smalltalk" = hors-sujet.
+- Choix de "intent" : "compare" = classer/comparer les formules OU choisir quel(s) produit(s) vendre/prioriser/recommander (ex. « quel produit vendre en priorité ? », « lesquels créent le plus de valeur ? », « top produits à pousser ? ») — dans ce cas product_index=null, NE demande PAS de clarification, le moteur classe les 141 produits ; "sensitivity" = impact d'une variation NH3/Soufre ; "set" = l'utilisateur fixe un prix ou un paramètre ; "compute" ou "explain" = analyser le produit courant ; "smalltalk" = hors-sujet.
+- N'utilise "clarify" que si la demande vise UN produit précis introuvable. Une question générale de priorité/recommandation/classement n'est JAMAIS ambiguë : c'est "compare".
 - Ne mets AUCUN chiffre dans "preface".
 - "preface" et "clarify" sont en français.
 EOT;

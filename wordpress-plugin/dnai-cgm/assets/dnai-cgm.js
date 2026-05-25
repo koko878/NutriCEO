@@ -5449,6 +5449,18 @@ function chatStateSummary(){
   return `produit=#${state.idx} ${p.product} — ${p.line} | référence=${state.ref} | prix=${Math.round(state.price)} | soufre=${state.rm.sulphur} | nh3=${state.rm.nh3} | rock=${state.rm.rock}`;
 }
 
+/* Generic "which product should I sell / rank the formulas" question. The
+   ranking is computed locally over all products, so this never needs a product
+   name nor a clarification — it always maps to intent=compare. */
+function chatIsRanking(message){
+  const m = cgmNorm(message);
+  if(/\b(compar|class|rang|rank|top|palmares)/.test(m)) return true;
+  if(/(priorit|recommand|conseill|suggere|preconis)/.test(m)) return true;
+  if(/(plus de valeur|plus rentable|meilleur|le plus interessant|interet a vendre|vendre en premier|pousser en premier)/.test(m)) return true;
+  if(/quel(le|les|s)?\s+produit/.test(m) && /(vendre|pousser|prioriser|choisir|mettre en avant)/.test(m)) return true;
+  return false;
+}
+
 /* Tolerant JSON extraction: strip code fences, grab first {...last }. */
 function parseAction(raw){
   if(!raw) return null;
@@ -5549,6 +5561,9 @@ async function chatSend(text){
     if(!res.ok || data.error){ thinking.innerHTML='⚠️ '+((data&&data.error)||('Erreur '+res.status)); return; }
     const act=parseAction(data.reply);
     if(!act){ thinking.innerHTML='⚠️ Réponse du modèle illisible. Reformulez la demande.'; return; }
+    // A ranking/priority question is answered locally over all products — never
+    // bounce it back as a clarify just because no product name was detected.
+    if(chatIsRanking(text)){ act.intent='compare'; act.clarify=null; }
     if(act.clarify){ thinking.innerHTML='❓ '+String(act.clarify).replace(/</g,'&lt;'); chatHist.push({role:'assistant',content:act.clarify}); return; }
     if(act.intent==='smalltalk'){ thinking.innerHTML=(act.preface||'Je suis le copilote CGM : demandez-moi un produit, un prix, une comparaison ou une sensibilité.').replace(/</g,'&lt;'); return; }
     applyAction(act);
