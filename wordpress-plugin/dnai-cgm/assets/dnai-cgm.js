@@ -5401,7 +5401,7 @@ function init(){
   document.querySelectorAll('[data-rm]').forEach(inp=>inp.addEventListener('input',e=>{state.rm[inp.dataset.rm]=+e.target.value||0;render();}));
   document.querySelectorAll('[data-ref]').forEach(inp=>inp.addEventListener('input',e=>{state.refprice[inp.dataset.ref]=+e.target.value||0;render();}));
   document.querySelectorAll('[data-sens]').forEach(inp=>inp.addEventListener('input',e=>{state.sens[inp.dataset.sens]=+e.target.value||0;render();}));
-  document.getElementById('rmToggle').addEventListener('click',function(){document.getElementById('rmGrid').classList.toggle('show');this.textContent=(document.getElementById('rmGrid').classList.contains('show')?'▾':'▸')+' Prix matières premières & références';});
+  document.getElementById('rmToggle').addEventListener('click',function(){var p=document.getElementById('rmGrid');p.classList.toggle('show');this.textContent=(p.classList.contains('show')?'⚙︎ Masquer les paramètres':'⚙︎ Paramètres de simulation');});
 
   document.getElementById('saveBtn').addEventListener('click',()=>{history.unshift(snapshot());history=history.slice(0,100);saveHist();renderHist();});
   document.getElementById('clearBtn').addEventListener('click',()=>{if(confirm('Effacer tout l\'historique ?')){history=[];saveHist();renderHist();}});

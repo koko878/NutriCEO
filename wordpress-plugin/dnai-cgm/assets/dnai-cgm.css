@@ -40,11 +40,21 @@
 .dnai-cgm-app .seg{display:flex;background:var(--green-50);border:1px solid var(--green-100);border-radius:9px;padding:3px;gap:3px}
 .dnai-cgm-app .seg button{flex:1;border:0;background:transparent;font:600 12px 'Inter',sans-serif;padding:7px;border-radius:7px;color:var(--muted);cursor:pointer}
 .dnai-cgm-app .seg button.on{background:var(--green-800);color:#fff}
-.dnai-cgm-app .rm-toggle{margin-top:12px;font-size:12px;font-weight:600;color:var(--green-800);cursor:pointer;display:inline-flex;align-items:center;gap:5px}
-.dnai-cgm-app .rm-grid{display:none;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
-.dnai-cgm-app .rm-grid.show{display:grid}
+.dnai-cgm-app .rm-btn{margin-top:14px;display:inline-flex;align-items:center;gap:7px;background:var(--green-800);color:#fff;border:0;border-radius:10px;padding:10px 16px;font:700 13px 'Inter',sans-serif;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.dnai-cgm-app .rm-btn:hover{filter:brightness(.92)}
+.dnai-cgm-app .rm-panel{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.dnai-cgm-app .rm-panel.show{display:block}
+.dnai-cgm-app .rm-group + .rm-group{margin-top:16px}
+.dnai-cgm-app .rm-group-title{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--green-800);margin-bottom:10px}
+.dnai-cgm-app .rm-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.dnai-cgm-app .rm-grid.ref{grid-template-columns:repeat(4,1fr)}
 .dnai-cgm-app .rm-grid .fld label{font-size:10px}
-@media(max-width:900px){.dnai-cgm-app .inputs{grid-template-columns:repeat(2,1fr)}.dnai-cgm-app .rm-grid{grid-template-columns:repeat(3,1fr)}}
+.dnai-cgm-app .fld.sens-fld{grid-column:span 2}
+.dnai-cgm-app .sens-hint{font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted);font-size:9px}
+.dnai-cgm-app .sens-pair{display:flex;align-items:center;gap:6px}
+.dnai-cgm-app .sens-pair input{flex:1;min-width:0}
+.dnai-cgm-app .sens-pair .sens-tag{font-size:10px;font-weight:700;color:var(--muted);white-space:nowrap}
+@media(max-width:900px){.dnai-cgm-app .inputs{grid-template-columns:repeat(2,1fr)}.dnai-cgm-app .rm-grid{grid-template-columns:repeat(2,1fr)}.dnai-cgm-app .rm-grid.ref{grid-template-columns:repeat(2,1fr)}.dnai-cgm-app .fld.sens-fld{grid-column:span 2}}
 
 /* scenarios */
 .dnai-cgm-app .scen-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}

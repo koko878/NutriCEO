@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI CGM Simulator
  * Description:       Sales margin pricing-scenario simulator (CGM equivalent DAP/TSP, floor price, nutrient-value price, MCV) with an AI copilot. The copilot (an Open WebUI / OpenAI-compatible model — Qwen recommended) only returns a strict JSON action; every number shown comes from the verified in-browser engine, so the model can never hallucinate a margin. Calls go through a server-side proxy, so the API key never reaches the browser and there is no CORS.
- * Version:           1.5.2
+ * Version:           1.6.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-cgm
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_CGM_VER', '1.5.2' );
+define( 'DNAI_CGM_VER', '1.6.0' );
 define( 'DNAI_CGM_URL', plugin_dir_url( __FILE__ ) );
 
 /* -------------------------------------------------------------------------
@@ -685,24 +685,32 @@ function dnai_cgm_shortcode( $atts ) {
 	      </div>
 	    </div>
 
-	    <div class="rm-toggle" id="rmToggle">▸ Prix matières premières &amp; références</div>
-	    <div class="rm-grid" id="rmGrid">
-	      <div class="fld"><label>Rock</label><input data-rm="rock" type="number" step="1"></div>
-	      <div class="fld"><label>NH3</label><input data-rm="nh3" type="number" step="1"></div>
-	      <div class="fld"><label>Soufre</label><input data-rm="sulphur" type="number" step="1"></div>
-	      <div class="fld"><label>KCl</label><input data-rm="kcl" type="number" step="1"></div>
-	      <div class="fld"><label>SAM</label><input data-rm="sam" type="number" step="1"></div>
-	      <div class="fld"><label>ACS</label><input data-rm="acs" type="number" step="1"></div>
-	      <div class="fld"><label>Borax</label><input data-rm="borax" type="number" step="1"></div>
-	      <div class="fld"><label>ZnO</label><input data-rm="zno" type="number" step="1"></div>
-	      <div class="fld"><label>CuSO4</label><input data-rm="cuso4" type="number" step="1"></div>
-	      <div class="fld"><label>CaSO4</label><input data-rm="caso4" type="number" step="1"></div>
-	      <div class="fld"><label>CaCO3</label><input data-rm="caco3" type="number" step="1"></div>
-	      <div class="fld"><label>Gypse</label><input data-rm="gypse" type="number" step="1"></div>
-	      <div class="fld"><label>Prix réf. DAP</label><input data-ref="dap" type="number" step="1"></div>
-	      <div class="fld"><label>Prix réf. TSP</label><input data-ref="tsp" type="number" step="1"></div>
-	      <div class="fld"><label>Sensi. NH3 %</label><input data-sens="nh3" type="number" step="1"></div>
-	      <div class="fld"><label>Sensi. Soufre %</label><input data-sens="sulphur" type="number" step="1"></div>
+	    <button type="button" class="rm-btn" id="rmToggle">⚙︎ Paramètres de simulation</button>
+	    <div class="rm-panel" id="rmGrid">
+	      <div class="rm-group">
+	        <div class="rm-group-title">Prix matières premières ($/t)</div>
+	        <div class="rm-grid">
+	          <div class="fld"><label>Rock</label><input data-rm="rock" type="number" step="1"></div>
+	          <div class="fld sens-fld"><label>NH3 <span class="sens-hint">prix $/t · sensi %</span></label><div class="sens-pair"><input data-rm="nh3" type="number" step="1" aria-label="Prix NH3 $/t"><span class="sens-tag">±%</span><input data-sens="nh3" type="number" step="1" aria-label="Sensibilité NH3 %"></div></div>
+	          <div class="fld sens-fld"><label>Soufre <span class="sens-hint">prix $/t · sensi %</span></label><div class="sens-pair"><input data-rm="sulphur" type="number" step="1" aria-label="Prix Soufre $/t"><span class="sens-tag">±%</span><input data-sens="sulphur" type="number" step="1" aria-label="Sensibilité Soufre %"></div></div>
+	          <div class="fld"><label>KCl</label><input data-rm="kcl" type="number" step="1"></div>
+	          <div class="fld"><label>SAM</label><input data-rm="sam" type="number" step="1"></div>
+	          <div class="fld"><label>ACS</label><input data-rm="acs" type="number" step="1"></div>
+	          <div class="fld"><label>Borax</label><input data-rm="borax" type="number" step="1"></div>
+	          <div class="fld"><label>ZnO</label><input data-rm="zno" type="number" step="1"></div>
+	          <div class="fld"><label>CuSO4</label><input data-rm="cuso4" type="number" step="1"></div>
+	          <div class="fld"><label>CaSO4</label><input data-rm="caso4" type="number" step="1"></div>
+	          <div class="fld"><label>CaCO3</label><input data-rm="caco3" type="number" step="1"></div>
+	          <div class="fld"><label>Gypse</label><input data-rm="gypse" type="number" step="1"></div>
+	        </div>
+	      </div>
+	      <div class="rm-group">
+	        <div class="rm-group-title">Prix de référence ($/t)</div>
+	        <div class="rm-grid ref">
+	          <div class="fld"><label>Prix réf. DAP</label><input data-ref="dap" type="number" step="1"></div>
+	          <div class="fld"><label>Prix réf. TSP</label><input data-ref="tsp" type="number" step="1"></div>
+	        </div>
+	      </div>
 	    </div>
 	  </div>
 
