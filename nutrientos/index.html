@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NutrientOS — la plateforme ouverte de la nutrition des plantes · OCP Nutricrops · D²nAI</title>
+<title>NutrientOS — OCP Nutricrops · D²nAI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
@@ -30,6 +30,9 @@ button{font-family:inherit}
 .navlink:hover{color:var(--green-800);background:var(--green-50)}
 .navlink.on{color:var(--green-800);background:var(--green-50)}
 .nav .right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.langsel{display:flex;gap:2px;border:1px solid var(--line);border-radius:8px;padding:2px}
+.lng{border:0;background:none;font:700 11.5px 'Inter';color:var(--muted);padding:5px 8px;border-radius:6px;cursor:pointer}
+.lng.on{background:var(--green-700);color:#fff}
 .legend{display:flex;gap:8px;font-size:10.5px;font-weight:600;color:var(--muted)}
 .lay{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;font-size:10.5px;font-weight:700;letter-spacing:.02em}
 .lay.open{color:var(--green-700);border:1px dashed var(--green-300);background:#fff}
@@ -52,8 +55,6 @@ button{font-family:inherit}
 .btn{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:14px;padding:13px 22px;border-radius:11px;cursor:pointer;border:0}
 .btn.primary{background:var(--green-500);color:#05230f}.btn.primary:hover{background:var(--green-300)}
 .btn.ghost{background:transparent;color:#eaf4ec;border:1px solid rgba(234,244,236,.35)}.btn.ghost:hover{border-color:var(--green-300);color:#fff}
-.hflip{margin-top:32px;display:inline-flex;align-items:center;gap:12px;font-size:13.5px;color:#9fc6a8;flex-wrap:wrap}
-.hflip s{color:#7f9686}.hflip b{color:#fff}
 
 /* hero feature row */
 .feat{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:46px}
@@ -188,7 +189,7 @@ h2.big{font-size:clamp(28px,4vw,44px);line-height:1.07;margin:12px 0 12px;font-w
 .pcard .ptime{margin-top:8px;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--green-600);background:var(--green-50);display:inline-block;padding:3px 7px;border-radius:6px}
 .bal{margin-top:20px}.bal h5{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
 .balrow{display:flex;align-items:center;gap:12px;margin-bottom:9px;font-size:13px}
-.balrow .nm{width:42px;font-weight:700;color:var(--green-800)}
+.balrow .nm{width:52px;font-weight:700;color:var(--green-800)}
 .track{flex:1;height:9px;background:var(--green-50);border-radius:6px;position:relative;overflow:hidden}
 .fill{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,var(--green-600),var(--green-300));border-radius:6px;transition:width .4s}
 .balrow .vv{width:104px;text-align:right;color:var(--muted);font-size:12px}
@@ -216,14 +217,19 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
   <div class="wrap">
     <span class="brand" onclick="go('home')">Nutrient<b>OS</b><span class="by">OCP Nutricrops · D²nAI</span></span>
     <div class="links">
-      <button class="navlink" data-v="explore" onclick="go('explore')">Explorer</button>
-      <button class="navlink" data-v="impact" onclick="go('impact')">Impact</button>
-      <button class="navlink" data-v="community" onclick="go('community')">Communauté</button>
-      <button class="navlink" data-v="console" onclick="go('console')">Console</button>
+      <button class="navlink" data-v="explore" data-k="nav.explore" onclick="go('explore')">Explorer</button>
+      <button class="navlink" data-v="impact" data-k="nav.impact" onclick="go('impact')">Impact</button>
+      <button class="navlink" data-v="community" data-k="nav.community" onclick="go('community')">Communauté</button>
+      <button class="navlink" data-v="console" data-k="nav.console" onclick="go('console')">Console</button>
     </div>
     <div class="right">
+      <div class="langsel">
+        <button class="lng on" data-l="fr" onclick="setLang('fr')">FR</button>
+        <button class="lng" data-l="en" onclick="setLang('en')">EN</button>
+        <button class="lng" data-l="pt" onclick="setLang('pt')">PT</button>
+      </div>
       <div class="legend"><span class="lay open">OPEN</span><span class="lay core">OCP CORE</span></div>
-      <button class="cta-mini" onclick="go('explore')">Entrer dans la plateforme</button>
+      <button class="cta-mini" data-k="nav.enter" onclick="go('explore')">Entrer dans la plateforme</button>
     </div>
   </div>
 </header>
@@ -234,28 +240,28 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
     <canvas id="matrix"></canvas>
     <div class="wrap">
       <span class="kicker">● OCP Nutricrops × D²nAI</span>
-      <h1>La plateforme ouverte de la <em>nutrition des plantes</em>.</h1>
-      <p class="lead">Explorer, contribuer, collaborer et tracer l'impact sur des datasets, modèles et standards ouverts — autour du <strong>Nutrient Value Standard</strong> publié par OCP. Une infrastructure commune dont OCP garde le cœur.</p>
+      <h1 data-k="home.h1">La plateforme ouverte de la <em>nutrition des plantes</em>.</h1>
+      <p class="lead" data-k="home.lead">Explorer, contribuer, collaborer et tracer l'impact sur des datasets, modèles et standards ouverts — autour du <strong>Nutrient Value Standard</strong> publié par OCP. Une infrastructure commune dont OCP garde le cœur.</p>
       <div class="hbtns">
-        <a class="btn primary" onclick="go('explore')">Explorer le catalogue</a>
-        <a class="btn ghost" onclick="go('console')">Voir la Console</a>
+        <a class="btn primary" data-k="home.btnExplore" onclick="go('explore')">Explorer le catalogue</a>
+        <a class="btn ghost" data-k="home.btnConsole" onclick="go('console')">Voir la Console</a>
       </div>
       <div class="feat">
-        <div class="f"><div class="i">🔍</div><h4>Explorer</h4><p>Datasets, modèles, pipelines &amp; standards de nutrition, ouverts et documentés.</p></div>
-        <div class="f"><div class="i">⬆️</div><h4>Contribuer</h4><p>L'écosystème publie et améliore ses travaux autour d'un standard commun.</p></div>
-        <div class="f"><div class="i">👥</div><h4>Collaborer</h4><p>Review, validation par les pairs, groupes de travail thématiques.</p></div>
-        <div class="f"><div class="i">📈</div><h4>Tracer l'impact</h4><p>Chaque asset trace ses réutilisations — reconnaissance &amp; visibilité.</p></div>
+        <div class="f"><div class="i">🔍</div><h4 data-k="feat.exploreH">Explorer</h4><p data-k="feat.exploreP">Datasets, modèles, pipelines &amp; standards de nutrition, ouverts et documentés.</p></div>
+        <div class="f"><div class="i">⬆️</div><h4 data-k="feat.contribH">Contribuer</h4><p data-k="feat.contribP">L'écosystème publie et améliore ses travaux autour d'un standard commun.</p></div>
+        <div class="f"><div class="i">👥</div><h4 data-k="feat.collabH">Collaborer</h4><p data-k="feat.collabP">Review, validation par les pairs, groupes de travail thématiques.</p></div>
+        <div class="f"><div class="i">📈</div><h4 data-k="feat.impactH">Tracer l'impact</h4><p data-k="feat.impactP">Chaque asset trace ses réutilisations — reconnaissance &amp; visibilité.</p></div>
       </div>
     </div>
   </section>
 
   <section class="dark">
     <div class="wrap">
-      <span class="eyebrow">Le modèle</span>
-      <h2 class="big" style="color:#fff">Ouvert par design. <em style="color:var(--green-300);font-style:italic">Possédé</em> par OCP.</h2>
-      <p class="sub">La couche ouverte — <b style="color:#fff">Nutrient Value Standard</b>, datasets, implémentations de référence — crée la gravité : l'écosystème vient construire dessus. Le cœur — moteur de recommandation et digital twin des sols — reste propriétaire d'OCP. La plateforme attire ; le cœur capte la valeur.</p>
+      <span class="eyebrow" data-k="model.eyebrow">Le modèle</span>
+      <h2 class="big" style="color:#fff" data-k="model.h2">Ouvert par design. <em style="color:var(--green-300);font-style:italic">Possédé</em> par OCP.</h2>
+      <p class="sub" data-k="model.sub">La couche ouverte — <b style="color:#fff">Nutrient Value Standard</b>, datasets, implémentations de référence — crée la gravité : l'écosystème vient construire dessus. Le cœur — moteur de recommandation et digital twin des sols — reste propriétaire d'OCP. La plateforme attire ; le cœur capte la valeur.</p>
       <div class="hbtns" style="margin-top:24px">
-        <a class="btn primary" onclick="go('explore')">Voir le catalogue ouvert &amp; cœur</a>
+        <a class="btn primary" data-k="model.btn" onclick="go('explore')">Voir le catalogue ouvert &amp; cœur</a>
       </div>
     </div>
   </section>
@@ -264,13 +270,13 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
 <!-- ============ EXPLORE ============ -->
 <div class="view" id="view-explore">
   <div class="phead"><div class="wrap">
-    <span class="eyebrow">Catalogue — explorer / contribuer / réutiliser</span>
-    <h1>Le commun de la nutrition des plantes.</h1>
-    <p>Datasets, modèles, pipelines, standards et publications — ouverts et documentés. Les briques marquées <span class="lay core" style="vertical-align:middle">OCP CORE</span> sont le moat d'OCP : visibles, mais propriétaires.</p>
+    <span class="eyebrow" data-k="exp.eyebrow">Catalogue — explorer / contribuer / réutiliser</span>
+    <h1 data-k="exp.h1">Le commun de la nutrition des plantes.</h1>
+    <p data-k="exp.p">Datasets, modèles, pipelines, standards et publications — ouverts et documentés. Les briques marquées <span class="lay core" style="vertical-align:middle">OCP CORE</span> sont le moat d'OCP : visibles, mais propriétaires.</p>
   </div></div>
   <div class="wrap">
     <div class="toolbar">
-      <div class="search"><span class="mag">🔍</span><input id="q" placeholder="Rechercher un dataset, un modèle, un standard…" oninput="renderGrid()"></div>
+      <div class="search"><span class="mag">🔍</span><input id="q" data-kph="exp.search" placeholder="Rechercher un dataset, un modèle, un standard…" oninput="renderGrid()"></div>
     </div>
     <div class="toolbar" style="margin-top:0">
       <div class="filters" id="typeFilters"></div>
@@ -289,18 +295,18 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
 <!-- ============ IMPACT ============ -->
 <div class="view" id="view-impact">
   <div class="phead"><div class="wrap">
-    <span class="eyebrow">Tableau d'impact — reconnaissance &amp; visibilité</span>
-    <h1>L'impact se trace. Et il revient à OCP.</h1>
-    <p>Chaque réutilisation est mesurée. Plus l'écosystème construit sur les assets, plus le standard d'OCP s'impose.</p>
+    <span class="eyebrow" data-k="imp.eyebrow">Tableau d'impact — reconnaissance &amp; visibilité</span>
+    <h1 data-k="imp.h1">L'impact se trace. Et il revient à OCP.</h1>
+    <p data-k="imp.p">Chaque réutilisation est mesurée. Plus l'écosystème construit sur les assets, plus le standard d'OCP s'impose.</p>
   </div></div>
   <div class="wrap" style="padding-bottom:50px">
     <div class="kpis" id="kpis"></div>
     <div class="twocol">
-      <div class="panel"><h3>Réutilisations par trimestre</h3><div class="chart" id="chart"></div></div>
-      <div class="panel"><h3>Top assets réutilisés</h3><div class="toplist" id="top"></div></div>
+      <div class="panel"><h3 data-k="imp.chartTitle">Réutilisations par trimestre</h3><div class="chart" id="chart"></div></div>
+      <div class="panel"><h3 data-k="imp.topTitle">Top assets réutilisés</h3><div class="toplist" id="top"></div></div>
     </div>
-    <h2 class="big" style="margin-top:46px">La valeur, par audience</h2>
-    <p class="sub">Chaque audience de l'écosystème construit <b>sur le standard d'OCP</b> — et y trouve sa valeur.</p>
+    <h2 class="big" style="margin-top:46px" data-k="imp.audH2">La valeur, par audience</h2>
+    <p class="sub" data-k="imp.audSub">Chaque audience de l'écosystème construit <b>sur le standard d'OCP</b> — et y trouve sa valeur.</p>
     <div class="audience" id="aud"></div>
   </div>
 </div>
@@ -308,13 +314,13 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
 <!-- ============ COMMUNITY ============ -->
 <div class="view" id="view-community">
   <div class="phead"><div class="wrap">
-    <span class="eyebrow">Communauté — contribuer &amp; collaborer</span>
-    <h1>Une plateforme déjà vivante.</h1>
-    <p>Des contributions, des reviews et des groupes de travail actifs autour du standard d'OCP.</p>
+    <span class="eyebrow" data-k="com.eyebrow">Communauté — contribuer &amp; collaborer</span>
+    <h1 data-k="com.h1">Une plateforme déjà vivante.</h1>
+    <p data-k="com.p">Des contributions, des reviews et des groupes de travail actifs autour du standard d'OCP.</p>
   </div></div>
   <div class="wrap" style="padding:30px 24px 60px">
     <div class="feed" id="feed"></div>
-    <h2 class="big" style="margin-top:42px">Groupes de travail</h2>
+    <h2 class="big" style="margin-top:42px" data-k="com.wgTitle">Groupes de travail</h2>
     <div class="wgroups" id="wg"></div>
   </div>
 </div>
@@ -322,9 +328,9 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
 <!-- ============ CONSOLE (flagship app) ============ -->
 <div class="view" id="view-console">
   <div class="phead"><div class="wrap">
-    <span class="eyebrow">Application phare</span>
-    <h1>NutrientOS Console — le produit OCP au-dessus du commun.</h1>
-    <p>Une application propriétaire d'OCP qui <b>consomme les assets ouverts</b> de la plateforme pour produire une décision de valeur : la recommandation nutrition personnalisée. La plateforme crée la gravité ; cette app capte la valeur.</p>
+    <span class="eyebrow" data-k="con.eyebrow">Application phare</span>
+    <h1 data-k="con.h1">NutrientOS Console — le produit OCP au-dessus du commun.</h1>
+    <p data-k="con.p">Une application propriétaire d'OCP qui <b>consomme les assets ouverts</b> de la plateforme pour produire une décision de valeur : la recommandation nutrition personnalisée. La plateforme crée la gravité ; cette app capte la valeur.</p>
   </div></div>
   <div class="wrap" style="padding-bottom:56px">
     <div class="console">
@@ -333,22 +339,22 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
         <span class="live"><i></i> LIVE</span></div>
       <div class="body">
         <div class="inp">
-          <label>Culture</label><div class="chips" id="cropChips"></div>
-          <label>Type de sol</label><div class="chips" id="soilChips"></div>
-          <label>Objectif prioritaire</label><div class="chips" id="objChips"></div>
-          <div class="feedsrc">Alimenté par : <b>Nutrient Value Standard v1.0</b>, <b>Maghreb Soil Profiles</b>, <b>Soil Digital Twin</b> — assets de la plateforme.</div>
+          <label data-k="con.lblCrop">Culture</label><div class="chips" id="cropChips"></div>
+          <label data-k="con.lblSoil">Type de sol</label><div class="chips" id="soilChips"></div>
+          <label data-k="con.lblObj">Objectif prioritaire</label><div class="chips" id="objChips"></div>
+          <div class="feedsrc" data-k="con.feedsrc">Alimenté par : <b>Nutrient Value Standard v1.0</b>, <b>Maghreb Soil Profiles</b>, <b>Soil Digital Twin</b> — assets de la plateforme.</div>
         </div>
         <div class="out">
-          <div class="top"><h4 id="ctitle">—</h4><span class="badge">Moteur OCP · données couche ouverte</span></div>
+          <div class="top"><h4 id="ctitle">—</h4><span class="badge" data-k="con.badge">Moteur OCP · données couche ouverte</span></div>
           <div class="prog" id="prog"></div>
-          <div class="bal"><h5>Bilan nutritif — apporté vs cible (kg/ha)</h5><div id="bal"></div></div>
+          <div class="bal"><h5 data-k="con.balTitle">Bilan nutritif — apporté vs cible (kg/ha)</h5><div id="bal"></div></div>
           <div class="scores">
-            <div class="sc hl"><div class="k">Rendement attendu</div><div class="v" id="sYield">—</div><div class="u">vs pratique standard</div></div>
-            <div class="sc"><div class="k">Score durabilité</div><div class="v" id="sSust">—</div><div class="u">/100 · efficience N</div></div>
-            <div class="sc"><div class="k">Coût indicatif</div><div class="v" id="sCost">—</div><div class="u">$/ha · programme</div></div>
+            <div class="sc hl"><div class="k" data-k="con.scYieldK">Rendement attendu</div><div class="v" id="sYield">—</div><div class="u" data-k="con.scYieldU">vs pratique standard</div></div>
+            <div class="sc"><div class="k" data-k="con.scSustK">Score durabilité</div><div class="v" id="sSust">—</div><div class="u" data-k="con.scSustU">/100 · efficience N</div></div>
+            <div class="sc"><div class="k" data-k="con.scCostK">Coût indicatif</div><div class="v" id="sCost">—</div><div class="u" data-k="con.scCostU">$/ha · programme</div></div>
           </div>
           <div class="rationale" id="why">—</div>
-          <div class="disclaimer">Démonstration produit — logique agronomique illustrative à calibrer sur les données réelles OCP / UM6P.</div>
+          <div class="disclaimer" data-k="con.disclaimer">Démonstration produit — logique agronomique illustrative à calibrer sur les données réelles OCP / UM6P.</div>
         </div>
       </div>
     </div>
@@ -358,21 +364,175 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
 <!-- shared CTA + footer -->
 <section class="cta-band">
   <div class="wrap">
-    <h2>Une plateforme qui tourne déjà.</h2>
-    <p>Explorer, contribuer, tracer l'impact — autour d'un standard qu'OCP <b>publie</b> et d'un cœur qu'OCP <b>garde</b>.</p>
+    <h2 data-k="cta.h2">Une plateforme qui tourne déjà.</h2>
+    <p data-k="cta.p">Explorer, contribuer, tracer l'impact — autour d'un standard qu'OCP <b>publie</b> et d'un cœur qu'OCP <b>garde</b>.</p>
     <div class="hbtns" style="justify-content:center">
-      <a class="btn primary" onclick="go('explore')">Explorer le catalogue</a>
-      <a class="btn ghost" onclick="go('console')">Lancer la Console</a>
+      <a class="btn primary" data-k="cta.btnExplore" onclick="go('explore')">Explorer le catalogue</a>
+      <a class="btn ghost" data-k="cta.btnConsole" onclick="go('console')">Lancer la Console</a>
     </div>
   </div>
   <footer><div class="wrap">
-    <span>NutrientOS · OCP Nutricrops · équipe D²nAI</span>
+    <span data-k="foot.left">NutrientOS · OCP Nutricrops · équipe D²nAI</span>
     <span>« Feed the soil to feed the world »</span>
   </div></footer>
 </section>
 
 <script>
-/* ---------- view router ---------- */
+/* ====================== i18n ====================== */
+let LANG='fr';
+const LOC={fr:'fr-FR',en:'en-US',pt:'pt-PT'};
+function fill(s,o){return s.replace(/\{(\w+)\}/g,(m,k)=>o[k])}
+
+const T={
+ fr:{
+  'nav.explore':`Explorer`,'nav.impact':`Impact`,'nav.community':`Communauté`,'nav.console':`Console`,'nav.enter':`Entrer dans la plateforme`,
+  'home.h1':`La plateforme ouverte de la <em>nutrition des plantes</em>.`,
+  'home.lead':`Explorer, contribuer, collaborer et tracer l'impact sur des datasets, modèles et standards ouverts — autour du <strong>Nutrient Value Standard</strong> publié par OCP. Une infrastructure commune dont OCP garde le cœur.`,
+  'home.btnExplore':`Explorer le catalogue`,'home.btnConsole':`Voir la Console`,
+  'feat.exploreH':`Explorer`,'feat.exploreP':`Datasets, modèles, pipelines &amp; standards de nutrition, ouverts et documentés.`,
+  'feat.contribH':`Contribuer`,'feat.contribP':`L'écosystème publie et améliore ses travaux autour d'un standard commun.`,
+  'feat.collabH':`Collaborer`,'feat.collabP':`Review, validation par les pairs, groupes de travail thématiques.`,
+  'feat.impactH':`Tracer l'impact`,'feat.impactP':`Chaque asset trace ses réutilisations — reconnaissance &amp; visibilité.`,
+  'model.eyebrow':`Le modèle`,'model.h2':`Ouvert par design. <em style="color:var(--green-300);font-style:italic">Possédé</em> par OCP.`,
+  'model.sub':`La couche ouverte — <b style="color:#fff">Nutrient Value Standard</b>, datasets, implémentations de référence — crée la gravité : l'écosystème vient construire dessus. Le cœur — moteur de recommandation et digital twin des sols — reste propriétaire d'OCP. La plateforme attire ; le cœur capte la valeur.`,
+  'model.btn':`Voir le catalogue ouvert &amp; cœur`,
+  'exp.eyebrow':`Catalogue — explorer / contribuer / réutiliser`,'exp.h1':`Le commun de la nutrition des plantes.`,
+  'exp.p':`Datasets, modèles, pipelines, standards et publications — ouverts et documentés. Les briques marquées <span class="lay core" style="vertical-align:middle">OCP CORE</span> sont le moat d'OCP : visibles, mais propriétaires.`,
+  'exp.search':`Rechercher un dataset, un modèle, un standard…`,
+  'exp.allTypes':`Tout type`,'exp.allLayers':`Toutes couches`,'exp.open':`Open`,'exp.core':`OCP Core`,
+  'imp.eyebrow':`Tableau d'impact — reconnaissance &amp; visibilité`,'imp.h1':`L'impact se trace. Et il revient à OCP.`,
+  'imp.p':`Chaque réutilisation est mesurée. Plus l'écosystème construit sur les assets, plus le standard d'OCP s'impose.`,
+  'imp.chartTitle':`Réutilisations par trimestre`,'imp.topTitle':`Top assets réutilisés`,
+  'imp.audH2':`La valeur, par audience`,'imp.audSub':`Chaque audience de l'écosystème construit <b>sur le standard d'OCP</b> — et y trouve sa valeur.`,
+  'com.eyebrow':`Communauté — contribuer &amp; collaborer`,'com.h1':`Une plateforme déjà vivante.`,
+  'com.p':`Des contributions, des reviews et des groupes de travail actifs autour du standard d'OCP.`,'com.wgTitle':`Groupes de travail`,
+  'con.eyebrow':`Application phare`,'con.h1':`NutrientOS Console — le produit OCP au-dessus du commun.`,
+  'con.p':`Une application propriétaire d'OCP qui <b>consomme les assets ouverts</b> de la plateforme pour produire une décision de valeur : la recommandation nutrition personnalisée. La plateforme crée la gravité ; cette app capte la valeur.`,
+  'con.lblCrop':`Culture`,'con.lblSoil':`Type de sol`,'con.lblObj':`Objectif prioritaire`,
+  'con.feedsrc':`Alimenté par : <b>Nutrient Value Standard v1.0</b>, <b>Maghreb Soil Profiles</b>, <b>Soil Digital Twin</b> — assets de la plateforme.`,
+  'con.badge':`Moteur OCP · données couche ouverte`,'con.balTitle':`Bilan nutritif — apporté vs cible (kg/ha)`,
+  'con.scYieldK':`Rendement attendu`,'con.scYieldU':`vs pratique standard`,'con.scSustK':`Score durabilité`,'con.scSustU':`/100 · efficience N`,'con.scCostK':`Coût indicatif`,'con.scCostU':`$/ha · programme`,
+  'con.disclaimer':`Démonstration produit — logique agronomique illustrative à calibrer sur les données réelles OCP / UM6P.`,
+  'cta.h2':`Une plateforme qui tourne déjà.`,'cta.p':`Explorer, contribuer, tracer l'impact — autour d'un standard qu'OCP <b>publie</b> et d'un cœur qu'OCP <b>garde</b>.`,
+  'cta.btnExplore':`Explorer le catalogue`,'cta.btnConsole':`Lancer la Console`,
+  'foot.left':`NutrientOS · OCP Nutricrops · équipe D²nAI`
+ },
+ en:{
+  'nav.explore':`Explore`,'nav.impact':`Impact`,'nav.community':`Community`,'nav.console':`Console`,'nav.enter':`Enter the platform`,
+  'home.h1':`The open platform for <em>plant nutrition</em>.`,
+  'home.lead':`Explore, contribute, collaborate and trace impact on open datasets, models and standards — around the <strong>Nutrient Value Standard</strong> published by OCP. A shared infrastructure whose core OCP keeps.`,
+  'home.btnExplore':`Explore the catalogue`,'home.btnConsole':`View the Console`,
+  'feat.exploreH':`Explore`,'feat.exploreP':`Nutrition datasets, models, pipelines &amp; standards — open and documented.`,
+  'feat.contribH':`Contribute`,'feat.contribP':`The ecosystem publishes and improves its work around a shared standard.`,
+  'feat.collabH':`Collaborate`,'feat.collabP':`Review, peer validation, thematic working groups.`,
+  'feat.impactH':`Trace impact`,'feat.impactP':`Every asset traces its reuses — recognition &amp; visibility.`,
+  'model.eyebrow':`The model`,'model.h2':`Open by design. <em style="color:var(--green-300);font-style:italic">Owned</em> by OCP.`,
+  'model.sub':`The open layer — <b style="color:#fff">Nutrient Value Standard</b>, datasets, reference implementations — creates the gravity: the ecosystem comes to build on it. The core — recommendation engine and soil digital twin — stays OCP-proprietary. The platform attracts; the core captures the value.`,
+  'model.btn':`See the open &amp; core catalogue`,
+  'exp.eyebrow':`Catalogue — explore / contribute / reuse`,'exp.h1':`The commons of plant nutrition.`,
+  'exp.p':`Datasets, models, pipelines, standards and publications — open and documented. Bricks marked <span class="lay core" style="vertical-align:middle">OCP CORE</span> are OCP's moat: visible, but proprietary.`,
+  'exp.search':`Search a dataset, a model, a standard…`,
+  'exp.allTypes':`All types`,'exp.allLayers':`All layers`,'exp.open':`Open`,'exp.core':`OCP Core`,
+  'imp.eyebrow':`Impact dashboard — recognition &amp; visibility`,'imp.h1':`Impact is traced. And it flows back to OCP.`,
+  'imp.p':`Every reuse is measured. The more the ecosystem builds on the assets, the more OCP's standard prevails.`,
+  'imp.chartTitle':`Reuses per quarter`,'imp.topTitle':`Most reused assets`,
+  'imp.audH2':`Value, by audience`,'imp.audSub':`Each ecosystem audience builds <b>on OCP's standard</b> — and finds its value there.`,
+  'com.eyebrow':`Community — contribute &amp; collaborate`,'com.h1':`A platform already alive.`,
+  'com.p':`Active contributions, reviews and working groups around OCP's standard.`,'com.wgTitle':`Working groups`,
+  'con.eyebrow':`Flagship app`,'con.h1':`NutrientOS Console — OCP's product on top of the commons.`,
+  'con.p':`A proprietary OCP application that <b>consumes the platform's open assets</b> to produce a value decision: the personalised nutrition recommendation. The platform creates the gravity; this app captures the value.`,
+  'con.lblCrop':`Crop`,'con.lblSoil':`Soil type`,'con.lblObj':`Priority objective`,
+  'con.feedsrc':`Powered by: <b>Nutrient Value Standard v1.0</b>, <b>Maghreb Soil Profiles</b>, <b>Soil Digital Twin</b> — platform assets.`,
+  'con.badge':`OCP engine · open-layer data`,'con.balTitle':`Nutrient balance — supplied vs target (kg/ha)`,
+  'con.scYieldK':`Expected yield`,'con.scYieldU':`vs standard practice`,'con.scSustK':`Sustainability score`,'con.scSustU':`/100 · N efficiency`,'con.scCostK':`Indicative cost`,'con.scCostU':`$/ha · program`,
+  'con.disclaimer':`Product demo — illustrative agronomic logic, to be calibrated on real OCP / UM6P data.`,
+  'cta.h2':`A platform already running.`,'cta.p':`Explore, contribute, trace impact — around a standard OCP <b>publishes</b> and a core OCP <b>keeps</b>.`,
+  'cta.btnExplore':`Explore the catalogue`,'cta.btnConsole':`Launch the Console`,
+  'foot.left':`NutrientOS · OCP Nutricrops · D²nAI team`
+ },
+ pt:{
+  'nav.explore':`Explorar`,'nav.impact':`Impacto`,'nav.community':`Comunidade`,'nav.console':`Console`,'nav.enter':`Entrar na plataforma`,
+  'home.h1':`A plataforma aberta para a <em>nutrição das plantas</em>.`,
+  'home.lead':`Explorar, contribuir, colaborar e rastrear o impacto em datasets, modelos e padrões abertos — em torno do <strong>Nutrient Value Standard</strong> publicado pela OCP. Uma infraestrutura comum cujo core a OCP mantém.`,
+  'home.btnExplore':`Explorar o catálogo`,'home.btnConsole':`Ver a Console`,
+  'feat.exploreH':`Explorar`,'feat.exploreP':`Datasets, modelos, pipelines e padrões de nutrição — abertos e documentados.`,
+  'feat.contribH':`Contribuir`,'feat.contribP':`O ecossistema publica e melhora o seu trabalho em torno de um padrão comum.`,
+  'feat.collabH':`Colaborar`,'feat.collabP':`Revisão, validação por pares, grupos de trabalho temáticos.`,
+  'feat.impactH':`Rastrear impacto`,'feat.impactP':`Cada asset rastreia as suas reutilizações — reconhecimento e visibilidade.`,
+  'model.eyebrow':`O modelo`,'model.h2':`Aberto por design. <em style="color:var(--green-300);font-style:italic">Detido</em> pela OCP.`,
+  'model.sub':`A camada aberta — <b style="color:#fff">Nutrient Value Standard</b>, datasets, implementações de referência — cria a gravidade: o ecossistema vem construir sobre ela. O core — motor de recomendação e gémeo digital dos solos — permanece proprietário da OCP. A plataforma atrai; o core capta o valor.`,
+  'model.btn':`Ver o catálogo aberto e core`,
+  'exp.eyebrow':`Catálogo — explorar / contribuir / reutilizar`,'exp.h1':`O comum da nutrição das plantas.`,
+  'exp.p':`Datasets, modelos, pipelines, padrões e publicações — abertos e documentados. Os blocos marcados <span class="lay core" style="vertical-align:middle">OCP CORE</span> são o moat da OCP: visíveis, mas proprietários.`,
+  'exp.search':`Pesquisar um dataset, um modelo, um padrão…`,
+  'exp.allTypes':`Todos os tipos`,'exp.allLayers':`Todas as camadas`,'exp.open':`Open`,'exp.core':`OCP Core`,
+  'imp.eyebrow':`Painel de impacto — reconhecimento e visibilidade`,'imp.h1':`O impacto é rastreado. E volta para a OCP.`,
+  'imp.p':`Cada reutilização é medida. Quanto mais o ecossistema constrói sobre os assets, mais o padrão da OCP se impõe.`,
+  'imp.chartTitle':`Reutilizações por trimestre`,'imp.topTitle':`Assets mais reutilizados`,
+  'imp.audH2':`O valor, por audiência`,'imp.audSub':`Cada audiência do ecossistema constrói <b>sobre o padrão da OCP</b> — e encontra aí o seu valor.`,
+  'com.eyebrow':`Comunidade — contribuir e colaborar`,'com.h1':`Uma plataforma já viva.`,
+  'com.p':`Contribuições, revisões e grupos de trabalho ativos em torno do padrão da OCP.`,'com.wgTitle':`Grupos de trabalho`,
+  'con.eyebrow':`Aplicação principal`,'con.h1':`NutrientOS Console — o produto da OCP sobre o comum.`,
+  'con.p':`Uma aplicação proprietária da OCP que <b>consome os assets abertos</b> da plataforma para produzir uma decisão de valor: a recomendação de nutrição personalizada. A plataforma cria a gravidade; esta app capta o valor.`,
+  'con.lblCrop':`Cultura`,'con.lblSoil':`Tipo de solo`,'con.lblObj':`Objetivo prioritário`,
+  'con.feedsrc':`Alimentado por: <b>Nutrient Value Standard v1.0</b>, <b>Maghreb Soil Profiles</b>, <b>Soil Digital Twin</b> — assets da plataforma.`,
+  'con.badge':`Motor OCP · dados da camada aberta`,'con.balTitle':`Balanço nutritivo — fornecido vs alvo (kg/ha)`,
+  'con.scYieldK':`Rendimento esperado`,'con.scYieldU':`vs prática padrão`,'con.scSustK':`Score de sustentabilidade`,'con.scSustU':`/100 · eficiência N`,'con.scCostK':`Custo indicativo`,'con.scCostU':`$/ha · programa`,
+  'con.disclaimer':`Demonstração de produto — lógica agronómica ilustrativa, a calibrar com dados reais OCP / UM6P.`,
+  'cta.h2':`Uma plataforma que já funciona.`,'cta.p':`Explorar, contribuir, rastrear o impacto — em torno de um padrão que a OCP <b>publica</b> e de um core que a OCP <b>mantém</b>.`,
+  'cta.btnExplore':`Explorar o catálogo`,'cta.btnConsole':`Iniciar a Console`,
+  'foot.left':`NutrientOS · OCP Nutricrops · equipa D²nAI`
+ }
+};
+
+/* UI strings (catalogue, detail) */
+const UI={
+ fr:{reuses:`réutil.`,back:`← Retour au catalogue`,layOpen:`OPEN — réutilisable`,layCore:`OCP CORE — propriétaire`,desc:`Description`,peer:`✓ Validé par les pairs · {n} reviews`,coreExec:`⚙ Cœur OCP · exécuté en propriétaire`,schema:`Extrait du schéma`,access:`Accès`,codeOpen:`Open — libre réutilisation (CC-BY)`,codeCore:`Accès cœur OCP — clé partenaire requise`,reusedBy:`Traçage d'impact — réutilisé par`,coreNote:`Brique propriétaire : non réutilisable directement. Elle <b>capte</b> la valeur générée par les assets ouverts ci-contre.`,derived:`+{n} dérivés`,metrics:`Métriques`,mReuses:`Réutilisations`,mStars:`Étoiles`,mReviews:`Reviews`,mLayer:`Couche`,layerOpen:`Ouverte`,layerCore:`Cœur OCP`,contributors:`Contributeurs`,appUses:`App qui l'utilise`,appUsesText:`La <b>NutrientOS Console</b> consomme cet asset en direct.`,openConsole:`Ouvrir la Console`,updPrefix:`maj`,count:`<b>{n}</b> asset(s) · {o} ouverts, {c} cœur OCP`},
+ en:{reuses:`reuses`,back:`← Back to catalogue`,layOpen:`OPEN — reusable`,layCore:`OCP CORE — proprietary`,desc:`Description`,peer:`✓ Peer-reviewed · {n} reviews`,coreExec:`⚙ OCP core · run proprietary`,schema:`Schema excerpt`,access:`Access`,codeOpen:`Open — free reuse (CC-BY)`,codeCore:`OCP core access — partner key required`,reusedBy:`Impact tracing — reused by`,coreNote:`Proprietary brick: not directly reusable. It <b>captures</b> the value generated by the open assets alongside.`,derived:`+{n} derived`,metrics:`Metrics`,mReuses:`Reuses`,mStars:`Stars`,mReviews:`Reviews`,mLayer:`Layer`,layerOpen:`Open`,layerCore:`OCP core`,contributors:`Contributors`,appUses:`App using it`,appUsesText:`The <b>NutrientOS Console</b> consumes this asset live.`,openConsole:`Open the Console`,updPrefix:`upd.`,count:`<b>{n}</b> asset(s) · {o} open, {c} OCP core`},
+ pt:{reuses:`reutil.`,back:`← Voltar ao catálogo`,layOpen:`OPEN — reutilizável`,layCore:`OCP CORE — proprietário`,desc:`Descrição`,peer:`✓ Revisto por pares · {n} reviews`,coreExec:`⚙ Core OCP · execução proprietária`,schema:`Excerto do esquema`,access:`Acesso`,codeOpen:`Open — reutilização livre (CC-BY)`,codeCore:`Acesso core OCP — chave de parceiro necessária`,reusedBy:`Rastreio de impacto — reutilizado por`,coreNote:`Bloco proprietário: não reutilizável diretamente. <b>Capta</b> o valor gerado pelos assets abertos ao lado.`,derived:`+{n} derivados`,metrics:`Métricas`,mReuses:`Reutilizações`,mStars:`Estrelas`,mReviews:`Reviews`,mLayer:`Camada`,layerOpen:`Aberta`,layerCore:`Core OCP`,contributors:`Contribuidores`,appUses:`App que o usa`,appUsesText:`A <b>NutrientOS Console</b> consome este asset em direto.`,openConsole:`Abrir a Console`,updPrefix:`atu.`,count:`<b>{n}</b> asset(s) · {o} abertos, {c} core OCP`}
+};
+
+const TYPES_L={
+ fr:{dataset:`Dataset`,model:`Modèle`,standard:`Standard`,pipeline:`Pipeline`,publication:`Publication`},
+ en:{dataset:`Dataset`,model:`Model`,standard:`Standard`,pipeline:`Pipeline`,publication:`Publication`},
+ pt:{dataset:`Dataset`,model:`Modelo`,standard:`Padrão`,pipeline:`Pipeline`,publication:`Publicação`}
+};
+const ICON={dataset:'🗄️',model:'🧠',standard:'📐',pipeline:'⚙️',publication:'📄'};
+const COMORG={fr:`Communauté NutrientOS`,en:`NutrientOS Community`,pt:`Comunidade NutrientOS`};
+const AGO={fr:{h:`il y a {n} h`,d:`il y a {n} j`,w:`il y a {n} sem`,mo:`il y a {n} mois`},en:{h:`{n}h ago`,d:`{n}d ago`,w:`{n}w ago`,mo:`{n}mo ago`},pt:{h:`há {n} h`,d:`há {n} d`,w:`há {n} sem`,mo:`há {n} mês`}};
+function ago(o){return fill(AGO[LANG][o.u],{n:o.n})}
+function orgD(o){return o===`Communauté NutrientOS`?COMORG[LANG]:o}
+
+/* ====================== ASSET DATA ====================== */
+const ASSETS=[
+ {id:'nvs',type:'standard',layer:'open',title:'Nutrient Value Standard v1.0',org:'OCP Nutricrops',reuses:312,stars:540,upd:{n:3,u:'d'},contributors:['OCP Nutricrops','UM6P','INRA Maroc'],reviews:18,
+  desc:{fr:`Le schéma ouvert de référence : unités, référentiel sol-culture et formats d'échange de la valeur nutritive. La brique de gravité publiée par OCP.`,en:`The reference open schema: units, soil-crop reference grid and exchange formats for nutrient value. The gravity brick published by OCP.`,pt:`O esquema aberto de referência: unidades, referencial solo-cultura e formatos de troca do valor nutritivo. O bloco de gravidade publicado pela OCP.`}},
+ {id:'twin',type:'model',layer:'core',title:'Soil Digital Twin — Phosphate',org:'OCP Nutricrops',reuses:0,stars:288,upd:{n:1,u:'d'},contributors:['OCP Nutricrops','D²nAI'],reviews:0,
+  desc:{fr:`Jumeau numérique propriétaire des sols phosphatés : prédit la disponibilité du P selon le type de sol. Visible sur la plateforme, exécuté dans le cœur OCP.`,en:`Proprietary digital twin of phosphate soils: predicts P availability by soil type. Visible on the platform, executed in the OCP core.`,pt:`Gémeo digital proprietário dos solos fosfatados: prevê a disponibilidade de P por tipo de solo. Visível na plataforma, executado no core OCP.`}},
+ {id:'soil-mag',type:'dataset',layer:'open',title:'Maghreb Soil Profiles 2024',org:'OCP / UM6P',reuses:147,stars:201,upd:{n:6,u:'d'},contributors:['UM6P','OCP Nutricrops'],reviews:9,
+  desc:{fr:`12 400 profils de sol harmonisés (texture, pH, CEC, P/K disponibles) sur le Maroc et l'Afrique du Nord.`,en:`12,400 harmonised soil profiles (texture, pH, CEC, available P/K) across Morocco and North Africa.`,pt:`12 400 perfis de solo harmonizados (textura, pH, CTC, P/K disponíveis) em Marrocos e no Norte de África.`}},
+ {id:'reco-engine',type:'model',layer:'core',title:'NutrientOS Recommendation Engine',org:'OCP Nutricrops',reuses:0,stars:176,upd:{n:2,u:'d'},contributors:['D²nAI'],reviews:0,
+  desc:{fr:`Le moteur qui propulse la Console : sol × culture × objectif → programme de nutrition personnalisé. Cœur de valeur d'OCP.`,en:`The engine powering the Console: soil × crop × objective → personalised nutrition program. OCP's value core.`,pt:`O motor que alimenta a Console: solo × cultura × objetivo → programa de nutrição personalizado. O core de valor da OCP.`}},
+ {id:'reco-ref',type:'pipeline',layer:'open',title:'Fertilizer Recommendation Pipeline (ref.)',org:'OCP Nutricrops',reuses:96,stars:143,upd:{n:5,u:'d'},contributors:['D²nAI','TerraSeed (startup)'],reviews:7,
+  desc:{fr:`Implémentation de référence open-source qui consomme le Nutrient Value Standard — pour que l'écosystème construise dessus.`,en:`Open-source reference implementation that consumes the Nutrient Value Standard — so the ecosystem can build on it.`,pt:`Implementação de referência open-source que consome o Nutrient Value Standard — para o ecossistema construir sobre ela.`}},
+ {id:'citrus',type:'dataset',layer:'open',title:'Citrus Nutrient Response Trials',org:'INRA Maroc',reuses:54,stars:88,upd:{n:2,u:'w'},contributors:['INRA Maroc'],reviews:5,
+  desc:{fr:`Essais de réponse aux apports N-P-K-S sur agrumes (3 saisons, 240 parcelles).`,en:`N-P-K-S response trials on citrus (3 seasons, 240 plots).`,pt:`Ensaios de resposta a N-P-K-S em citrinos (3 épocas, 240 parcelas).`}},
+ {id:'pue',type:'publication',layer:'open',title:'Phosphate Use Efficiency in Calcareous Soils',org:'UM6P',reuses:73,stars:119,upd:{n:1,u:'mo'},contributors:['UM6P'],reviews:11,
+  desc:{fr:`Étude de référence sur la fixation du P en sols calcaires — sous-tend les coefficients du standard.`,en:`Reference study on P fixation in calcareous soils — underpins the standard's coefficients.`,pt:`Estudo de referência sobre a fixação do P em solos calcários — sustenta os coeficientes do padrão.`}},
+ {id:'wheat-n',type:'dataset',layer:'open',title:'Wheat N-uptake curves (Morocco)',org:'OCP / UM6P',reuses:61,stars:77,upd:{n:9,u:'d'},contributors:['UM6P','OCP Nutricrops'],reviews:4,
+  desc:{fr:`Courbes d'absorption d'azote du blé par stade phénologique — calibration du fractionnement.`,en:`Wheat nitrogen uptake curves by growth stage — calibrates dose splitting.`,pt:`Curvas de absorção de azoto do trigo por estádio fenológico — calibra o fracionamento.`}},
+ {id:'soiltest',type:'standard',layer:'open',title:'Soil Test Exchange Format',org:'Communauté NutrientOS',reuses:88,stars:102,upd:{n:4,u:'d'},contributors:['INRA Maroc','AgriLab','OCP Nutricrops'],reviews:6,
+  desc:{fr:`Format ouvert d'échange des analyses de sol entre labos, distributeurs et la plateforme.`,en:`Open format to exchange soil analyses between labs, distributors and the platform.`,pt:`Formato aberto de troca de análises de solo entre laboratórios, distribuidores e a plataforma.`}},
+ {id:'beet',type:'model',layer:'open',title:'Yield Response Model — Sugar Beet',org:'TerraSeed (startup)',reuses:29,stars:51,upd:{n:1,u:'w'},contributors:['TerraSeed'],reviews:3,
+  desc:{fr:`Modèle de réponse rendement contribué par une AgTech, validé sur la plateforme.`,en:`Yield response model contributed by an AgTech, validated on the platform.`,pt:`Modelo de resposta de rendimento contribuído por uma AgTech, validado na plataforma.`}},
+ {id:'sust',type:'pipeline',layer:'open',title:'Sustainability Scoring (N efficiency)',org:'Communauté NutrientOS',reuses:42,stars:64,upd:{n:11,u:'d'},contributors:['D²nAI','GreenField NGO'],reviews:5,
+  desc:{fr:`Pipeline de scoring durabilité basé sur l'efficience azotée et le fractionnement.`,en:`Sustainability scoring pipeline based on nitrogen efficiency and dose splitting.`,pt:`Pipeline de scoring de sustentabilidade baseado na eficiência do azoto e no fracionamento.`}},
+ {id:'olive',type:'dataset',layer:'open',title:'Olive Nutrition Trials — Mediterranean',org:'UM6P / INRA',reuses:33,stars:47,upd:{n:3,u:'w'},contributors:['UM6P','INRA Maroc'],reviews:4,
+  desc:{fr:`Essais nutrition oliviers sur 5 ans, bassin méditerranéen.`,en:`Olive nutrition trials over 5 years, Mediterranean basin.`,pt:`Ensaios de nutrição de oliveiras ao longo de 5 anos, bacia mediterrânica.`}}
+];
+
+/* ====================== view router ====================== */
+let curAsset=null;
 function go(v){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('on'));
   document.getElementById('view-'+v).classList.add('on');
@@ -380,7 +540,7 @@ function go(v){
   window.scrollTo({top:0,behavior:'instant'});
 }
 
-/* ---------- matrix rain ---------- */
+/* ====================== matrix rain ====================== */
 (function(){
   const c=document.getElementById('matrix'),x=c.getContext('2d');let cols,drops,fs=15;
   const chars='01ATGCNPK①②③④NH₃SO₄P₂O₅·+=<>{}';
@@ -392,177 +552,204 @@ function go(v){
   size();setInterval(draw,55);window.addEventListener('resize',size);
 })();
 
-/* ---------- ASSET CATALOGUE DATA (illustrative) ---------- */
-const TYPES={dataset:'Dataset',model:'Modèle',standard:'Standard',pipeline:'Pipeline',publication:'Publication'};
-const ICON={dataset:'🗄️',model:'🧠',standard:'📐',pipeline:'⚙️',publication:'📄'};
-const ASSETS=[
- {id:'nvs',type:'standard',layer:'open',title:'Nutrient Value Standard v1.0',org:'OCP Nutricrops',desc:'Le schéma ouvert de référence : unités, référentiel sol-culture et formats d\'échange de la valeur nutritive. La brique de gravité publiée par OCP.',reuses:312,stars:540,updated:'il y a 3 j',contributors:['OCP Nutricrops','UM6P','INRA Maroc'],reviews:18,featured:true},
- {id:'twin',type:'model',layer:'core',title:'Soil Digital Twin — Phosphate',org:'OCP Nutricrops',desc:'Jumeau numérique propriétaire des sols phosphatés : prédit la disponibilité du P selon le type de sol. Visible sur la plateforme, exécuté dans le cœur OCP.',reuses:0,stars:288,updated:'il y a 1 j',contributors:['OCP Nutricrops','D²nAI'],reviews:0,core:true},
- {id:'soil-mag',type:'dataset',layer:'open',title:'Maghreb Soil Profiles 2024',org:'OCP / UM6P',desc:'12 400 profils de sol harmonisés (texture, pH, CEC, P/K disponibles) sur le Maroc et l\'Afrique du Nord.',reuses:147,stars:201,updated:'il y a 6 j',contributors:['UM6P','OCP Nutricrops'],reviews:9},
- {id:'reco-engine',type:'model',layer:'core',title:'NutrientOS Recommendation Engine',org:'OCP Nutricrops',desc:'Le moteur qui propulse la Console : sol × culture × objectif → programme de nutrition personnalisé. Cœur de valeur d\'OCP.',reuses:0,stars:176,updated:'il y a 2 j',contributors:['D²nAI'],reviews:0,core:true},
- {id:'reco-ref',type:'pipeline',layer:'open',title:'Fertilizer Recommendation Pipeline (ref.)',org:'OCP Nutricrops',desc:'Implémentation de référence open-source qui consomme le Nutrient Value Standard — pour que l\'écosystème construise dessus.',reuses:96,stars:143,updated:'il y a 5 j',contributors:['D²nAI','TerraSeed (startup)'],reviews:7},
- {id:'citrus',type:'dataset',layer:'open',title:'Citrus Nutrient Response Trials',org:'INRA Maroc',desc:'Essais de réponse aux apports N-P-K-S sur agrumes (3 saisons, 240 parcelles).',reuses:54,stars:88,updated:'il y a 2 sem',contributors:['INRA Maroc'],reviews:5},
- {id:'pue',type:'publication',layer:'open',title:'Phosphate Use Efficiency in Calcareous Soils',org:'UM6P',desc:'Étude de référence sur la fixation du P en sols calcaires — sous-tend les coefficients du standard.',reuses:73,stars:119,updated:'il y a 1 mois',contributors:['UM6P'],reviews:11},
- {id:'wheat-n',type:'dataset',layer:'open',title:'Wheat N-uptake curves (Morocco)',org:'OCP / UM6P',desc:'Courbes d\'absorption d\'azote du blé par stade phénologique — calibration du fractionnement.',reuses:61,stars:77,updated:'il y a 9 j',contributors:['UM6P','OCP Nutricrops'],reviews:4},
- {id:'soiltest',type:'standard',layer:'open',title:'Soil Test Exchange Format',org:'Communauté NutrientOS',desc:'Format ouvert d\'échange des analyses de sol entre labos, distributeurs et la plateforme.',reuses:88,stars:102,updated:'il y a 4 j',contributors:['INRA Maroc','AgriLab','OCP Nutricrops'],reviews:6},
- {id:'beet',type:'model',layer:'open',title:'Yield Response Model — Sugar Beet',org:'TerraSeed (startup)',desc:'Modèle de réponse rendement contribué par une AgTech, validé sur la plateforme.',reuses:29,stars:51,updated:'il y a 1 sem',contributors:['TerraSeed'],reviews:3},
- {id:'sust',type:'pipeline',layer:'open',title:'Sustainability Scoring (N efficiency)',org:'Communauté NutrientOS',desc:'Pipeline de scoring durabilité basé sur l\'efficience azotée et le fractionnement.',reuses:42,stars:64,updated:'il y a 11 j',contributors:['D²nAI','GreenField NGO'],reviews:5},
- {id:'olive',type:'dataset',layer:'open',title:'Olive Nutrition Trials — Mediterranean',org:'UM6P / INRA',desc:'Essais nutrition oliviers sur 5 ans, bassin méditerranéen.',reuses:33,stars:47,updated:'il y a 3 sem',contributors:['UM6P','INRA Maroc'],reviews:4}
-];
-
+/* ====================== EXPLORE ====================== */
 let FT={type:'all',layer:'all'};
 function initFilters(){
+  const u=UI[LANG],ty=TYPES_L[LANG];
   const tf=document.getElementById('typeFilters');
-  tf.innerHTML='<button class="fchip on" data-t="all" onclick="setF(\'type\',\'all\',this)">Tout type</button>'+
-    Object.keys(TYPES).map(t=>`<button class="fchip" data-t="${t}" onclick="setF('type','${t}',this)">${ICON[t]} ${TYPES[t]}</button>`).join('');
+  tf.innerHTML=`<button class="fchip${FT.type==='all'?' on':''}" onclick="setF('type','all',this)">${T[LANG]['exp.allTypes']}</button>`+
+    Object.keys(ty).map(t=>`<button class="fchip${FT.type===t?' on':''}" onclick="setF('type','${t}',this)">${ICON[t]} ${ty[t]}</button>`).join('');
   const lf=document.getElementById('layerFilters');
-  lf.innerHTML='<button class="fchip on" onclick="setF(\'layer\',\'all\',this)">Toutes couches</button>'+
-    '<button class="fchip" onclick="setF(\'layer\',\'open\',this)">Open</button>'+
-    '<button class="fchip" onclick="setF(\'layer\',\'core\',this)">OCP Core</button>';
+  lf.innerHTML=`<button class="fchip${FT.layer==='all'?' on':''}" onclick="setF('layer','all',this)">${T[LANG]['exp.allLayers']}</button>`+
+    `<button class="fchip${FT.layer==='open'?' on':''}" onclick="setF('layer','open',this)">${T[LANG]['exp.open']}</button>`+
+    `<button class="fchip${FT.layer==='core'?' on':''}" onclick="setF('layer','core',this)">${T[LANG]['exp.core']}</button>`;
 }
 function setF(k,v,btn){FT[k]=v;[...btn.parentElement.children].forEach(c=>c.classList.remove('on'));btn.classList.add('on');renderGrid();}
 function renderGrid(){
-  const q=(document.getElementById('q').value||'').toLowerCase();
+  const u=UI[LANG],ty=TYPES_L[LANG],q=(document.getElementById('q').value||'').toLowerCase();
   const list=ASSETS.filter(a=>(FT.type==='all'||a.type===FT.type)&&(FT.layer==='all'||a.layer===FT.layer)&&
-    (a.title.toLowerCase().includes(q)||a.desc.toLowerCase().includes(q)||a.org.toLowerCase().includes(q)));
-  document.getElementById('count').innerHTML=`<b>${list.length}</b> asset(s) · ${ASSETS.filter(a=>a.layer==='open').length} ouverts, ${ASSETS.filter(a=>a.layer==='core').length} cœur OCP`;
+    (a.title.toLowerCase().includes(q)||a.desc[LANG].toLowerCase().includes(q)||a.org.toLowerCase().includes(q)));
+  document.getElementById('count').innerHTML=fill(u.count,{n:list.length,o:ASSETS.filter(a=>a.layer==='open').length,c:ASSETS.filter(a=>a.layer==='core').length});
   document.getElementById('grid').innerHTML=list.map(a=>`
     <div class="acard" onclick="openAsset('${a.id}')">
-      <div class="row1"><span class="ttype">${ICON[a.type]} ${TYPES[a.type]}</span><span class="lay ${a.layer}">${a.layer==='open'?'OPEN':'OCP CORE'}</span></div>
+      <div class="row1"><span class="ttype">${ICON[a.type]} ${ty[a.type]}</span><span class="lay ${a.layer}">${a.layer==='open'?'OPEN':'OCP CORE'}</span></div>
       <h3>${a.title}</h3>
-      <div class="org">🏢 ${a.org}</div>
-      <p class="desc">${a.desc}</p>
+      <div class="org">🏢 ${orgD(a.org)}</div>
+      <p class="desc">${a.desc[LANG]}</p>
       <div class="stats">
         <span class="s">⭐ <b>${a.stars}</b></span>
-        <span class="s">♻️ <b>${a.reuses}</b> réutil.</span>
-        <span class="s">🕑 ${a.updated}</span>
+        <span class="s">♻️ <b>${a.reuses}</b> ${u.reuses}</span>
+        <span class="s">🕑 ${ago(a.upd)}</span>
       </div>
     </div>`).join('');
 }
 function openAsset(id){
-  const a=ASSETS.find(x=>x.id===id);
+  curAsset=id;
+  const u=UI[LANG],ty=TYPES_L[LANG],a=ASSETS.find(x=>x.id===id);
   const reusers=ASSETS.filter(x=>x.id!==id&&x.layer==='open').slice(0,4);
   const isStd=a.type==='standard';
   const code=isStd
     ? `{\n  "<span class='k'>nutrient</span>": "<span class='s'>P2O5</span>",\n  "<span class='k'>unit</span>": "<span class='s'>kg/ha</span>",\n  "<span class='k'>soil_ref</span>": "<span class='s'>calcareous</span>",\n  "<span class='k'>availability_coef</span>": 0.62,\n  "<span class='k'>source</span>": "<span class='s'>nutrient-value-standard@1.0</span>"\n}`
-    : `<span class='k'>GET</span> /api/v1/${a.id}\n<span class='k'>Authorization</span>: Bearer &lt;key&gt;\n\n<span class='s'># ${a.layer==='core'?'Accès cœur OCP — clé partenaire requise':'Open — libre réutilisation (CC-BY)'}</span>`;
+    : `<span class='k'>GET</span> /api/v1/${a.id}\n<span class='k'>Authorization</span>: Bearer &lt;key&gt;\n\n<span class='s'># ${a.layer==='core'?u.codeCore:u.codeOpen}</span>`;
   document.getElementById('assetBody').innerHTML=`
-    <span class="back" onclick="go('explore')">← Retour au catalogue</span>
+    <span class="back" onclick="go('explore')">${u.back}</span>
     <div class="dgrid">
       <div class="dmain">
-        <span class="lay ${a.layer}">${a.layer==='open'?'OPEN — réutilisable':'OCP CORE — propriétaire'}</span>
+        <span class="lay ${a.layer}">${a.layer==='open'?u.layOpen:u.layCore}</span>
         <h1>${ICON[a.type]} ${a.title}</h1>
-        <div class="dmeta"><span>🏢 <b>${a.org}</b></span><span>📦 ${TYPES[a.type]}</span><span>🕑 maj ${a.updated}</span><span>⭐ ${a.stars}</span></div>
-        <div class="dblock"><h4>Description</h4><p style="margin:0;color:var(--muted);font-size:14.5px">${a.desc}</p>
-          ${a.reviews>0?`<span class="peer">✓ Validé par les pairs · ${a.reviews} reviews</span>`:`<span class="peer" style="color:var(--warn);background:#fdf4e7">⚙ Cœur OCP · exécuté en propriétaire</span>`}</div>
-        <div class="dblock"><h4>${isStd?'Extrait du schéma':'Accès'}</h4><div class="codebox">${code}</div></div>
-        <div class="dblock"><h4>Traçage d'impact — réutilisé par</h4>
+        <div class="dmeta"><span>🏢 <b>${orgD(a.org)}</b></span><span>📦 ${ty[a.type]}</span><span>🕑 ${u.updPrefix} ${ago(a.upd)}</span><span>⭐ ${a.stars}</span></div>
+        <div class="dblock"><h4>${u.desc}</h4><p style="margin:0;color:var(--muted);font-size:14.5px">${a.desc[LANG]}</p>
+          ${a.reviews>0?`<span class="peer">${fill(u.peer,{n:a.reviews})}</span>`:`<span class="peer" style="color:var(--warn);background:#fdf4e7">${u.coreExec}</span>`}</div>
+        <div class="dblock"><h4>${isStd?u.schema:u.access}</h4><div class="codebox">${code}</div></div>
+        <div class="dblock"><h4>${u.reusedBy}</h4>
           ${a.layer==='core'
-            ? `<p style="margin:0;color:var(--muted);font-size:13.5px">Brique propriétaire : non réutilisable directement. Elle <b>capte</b> la valeur générée par les assets ouverts ci-contre.</p>`
-            : reusers.map(r=>`<div class="reuse"><span class="dot"></span><div><b>${r.title}</b><br><span style="font-size:12px;color:var(--muted)">${r.org}</span></div><span class="m">+${Math.round(r.reuses/3)} dérivés</span></div>`).join('')}
+            ? `<p style="margin:0;color:var(--muted);font-size:13.5px">${u.coreNote}</p>`
+            : reusers.map(r=>`<div class="reuse"><span class="dot"></span><div><b>${r.title}</b><br><span style="font-size:12px;color:var(--muted)">${orgD(r.org)}</span></div><span class="m">${fill(u.derived,{n:Math.round(r.reuses/3)})}</span></div>`).join('')}
         </div>
       </div>
       <div class="dside">
-        <div class="scard"><h4>Métriques</h4>
-          <div class="kv"><span>Réutilisations</span><b>${a.reuses}</b></div>
-          <div class="kv"><span>Étoiles</span><b>${a.stars}</b></div>
-          <div class="kv"><span>Reviews</span><b>${a.reviews}</b></div>
-          <div class="kv"><span>Couche</span><b>${a.layer==='open'?'Ouverte':'Cœur OCP'}</b></div>
+        <div class="scard"><h4>${u.metrics}</h4>
+          <div class="kv"><span>${u.mReuses}</span><b>${a.reuses}</b></div>
+          <div class="kv"><span>${u.mStars}</span><b>${a.stars}</b></div>
+          <div class="kv"><span>${u.mReviews}</span><b>${a.reviews}</b></div>
+          <div class="kv"><span>${u.mLayer}</span><b>${a.layer==='open'?u.layerOpen:u.layerCore}</b></div>
         </div>
-        <div class="scard"><h4>Contributeurs</h4>
+        <div class="scard"><h4>${u.contributors}</h4>
           ${a.contributors.map(c=>`<div class="contrib"><span class="av">${c.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</span>${c}</div>`).join('')}
         </div>
-        ${a.id==='reco-engine'||a.id==='nvs'?`<div class="scard" style="background:var(--green-50);border-color:var(--green-100)"><h4>App qui l'utilise</h4><p style="margin:0 0 10px;font-size:13px;color:var(--green-800)">La <b>NutrientOS Console</b> consomme cet asset en direct.</p><button class="cta-mini" style="width:100%" onclick="go('console')">Ouvrir la Console</button></div>`:''}
+        ${a.id==='reco-engine'||a.id==='nvs'?`<div class="scard" style="background:var(--green-50);border-color:var(--green-100)"><h4>${u.appUses}</h4><p style="margin:0 0 10px;font-size:13px;color:var(--green-800)">${u.appUsesText}</p><button class="cta-mini" style="width:100%" onclick="go('console')">${u.openConsole}</button></div>`:''}
       </div>
     </div>`;
   go('asset');
 }
 
-/* ---------- IMPACT ---------- */
+/* ====================== IMPACT ====================== */
+const KPI_L={
+ fr:[{k:`assets publiés`,t:`+4 ce mois`},{k:`organisations contributrices`,t:`recherche · startups · ONG`},{k:`réutilisations tracées`,t:`+18% / trimestre`},{k:`produits aval construits`,t:`dont 1 app phare OCP`}],
+ en:[{k:`published assets`,t:`+4 this month`},{k:`contributing organisations`,t:`research · startups · NGOs`},{k:`tracked reuses`,t:`+18% / quarter`},{k:`downstream products built`,t:`incl. 1 OCP flagship app`}],
+ pt:[{k:`assets publicados`,t:`+4 este mês`},{k:`organizações contribuidoras`,t:`investigação · startups · ONG`},{k:`reutilizações rastreadas`,t:`+18% / trimestre`},{k:`produtos a jusante criados`,t:`incl. 1 app principal OCP`}]
+};
+const QLAB={fr:['T1','T2','T3','T4'],en:['Q1','Q2','Q3','Q4'],pt:['T1','T2','T3','T4']};
+const AUD=[
+ {i:'🔬',h:{fr:`Recherche`,en:`Research`,pt:`Investigação`},li:{fr:[`La recherche ne s'arrête plus à la publication`,`Reproductibilité & peer review`,`Infrastructure partagée`],en:[`Research no longer ends at publication`,`Reproducibility & peer review`,`Shared infrastructure`],pt:[`A investigação já não acaba na publicação`,`Reprodutibilidade e peer review`,`Infraestrutura partilhada`]}},
+ {i:'🌍',h:{fr:`Dév. / ONG`,en:`Dev / NGOs`,pt:`Dev. / ONG`},li:{fr:[`Investir dans des biens publics durables`,`Transparence & confiance`,`Moins de dépendance fournisseur`],en:[`Invest in durable public goods`,`Transparency & trust`,`Less vendor dependence`],pt:[`Investir em bens públicos duradouros`,`Transparência e confiança`,`Menos dependência de fornecedores`]}},
+ {i:'🚜',h:{fr:`Agro-industrie`,en:`Agribusiness`,pt:`Agroindústria`},li:{fr:[`Innovation adossée à la science`,`Effets de réseau`,`Façonner les standards`],en:[`Science-backed innovation`,`Network effects`,`Shape the standards`],pt:[`Inovação apoiada na ciência`,`Efeitos de rede`,`Moldar os padrões`]}},
+ {i:'🚀',h:{fr:`Startups AgTech`,en:`AgTech startups`,pt:`Startups AgTech`},li:{fr:[`Stack fondationnel gratuit`,`Vitesse & itération`,`Canal de distribution`],en:[`Free foundational stack`,`Speed & iteration`,`Distribution channel`],pt:[`Stack fundacional gratuito`,`Velocidade e iteração`,`Canal de distribuição`]}},
+ {i:'🏛️',h:{fr:`Secteur public`,en:`Public sector`,pt:`Setor público`},li:{fr:[`Politiques renforcées`,`Souveraineté préservée`,`Devenir une référence`],en:[`Stronger policies`,`Sovereignty preserved`,`Become a reference`],pt:[`Políticas reforçadas`,`Soberania preservada`,`Tornar-se uma referência`]}}
+];
 function renderImpact(){
   const open=ASSETS.filter(a=>a.layer==='open');
   const totReuse=ASSETS.reduce((s,a)=>s+a.reuses,0);
   const orgs=new Set(ASSETS.flatMap(a=>a.contributors)).size;
-  const kpis=[
-    {v:ASSETS.length,k:'assets publiés',t:'+4 ce mois'},
-    {v:orgs,k:'organisations contributrices',t:'recherche · startups · ONG'},
-    {v:totReuse.toLocaleString('fr-FR'),k:'réutilisations tracées',t:'+18% / trimestre'},
-    {v:'7',k:'produits aval construits',t:'dont 1 app phare OCP'}
-  ];
-  document.getElementById('kpis').innerHTML=kpis.map(k=>`<div class="kpi"><div class="v">${k.v}</div><div class="k">${k.k}</div><div class="t">${k.t}</div></div>`).join('');
-  const data=[{l:'T1',v:120},{l:'T2',v:210},{l:'T3',v:360},{l:'T4',v:totReuse}];
+  const vals=[ASSETS.length,orgs,totReuse.toLocaleString(LOC[LANG]),'7'];
+  document.getElementById('kpis').innerHTML=KPI_L[LANG].map((k,i)=>`<div class="kpi"><div class="v">${vals[i]}</div><div class="k">${k.k}</div><div class="t">${k.t}</div></div>`).join('');
+  const data=[{l:QLAB[LANG][0],v:120},{l:QLAB[LANG][1],v:210},{l:QLAB[LANG][2],v:360},{l:QLAB[LANG][3],v:totReuse}];
   const max=Math.max(...data.map(d=>d.v));
   document.getElementById('chart').innerHTML=data.map(d=>`<div class="col"><span class="val">${d.v}</span><div class="bar" style="height:${Math.round(d.v/max*100)}%"></div><span class="lab">${d.l}</span></div>`).join('');
   const top=[...open].sort((a,b)=>b.reuses-a.reuses).slice(0,5);
-  document.getElementById('top').innerHTML=top.map((a,i)=>`<div class="item"><span class="rk">${i+1}</span><div><b>${a.title}</b><br><span style="font-size:12px;color:var(--muted)">${a.org}</span></div><span class="m">${a.reuses}</span></div>`).join('');
-  const AUD=[
-    {i:'🔬',h:'Recherche',li:['La recherche ne s\'arrête plus à la publication','Reproductibilité &amp; peer review','Infrastructure partagée']},
-    {i:'🌍',h:'Dév. / ONG',li:['Investir dans des biens publics durables','Transparence &amp; confiance','Moins de dépendance fournisseur']},
-    {i:'🚜',h:'Agro-industrie',li:['Innovation adossée à la science','Effets de réseau','Façonner les standards']},
-    {i:'🚀',h:'Startups AgTech',li:['Stack fondationnel gratuit','Vitesse &amp; itération','Canal de distribution']},
-    {i:'🏛️',h:'Secteur public',li:['Politiques renforcées','Souveraineté préservée','Devenir une référence']}
-  ];
-  document.getElementById('aud').innerHTML=AUD.map(a=>`<div class="aud"><div class="i">${a.i}</div><h4>${a.h}</h4><ul>${a.li.map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('');
+  document.getElementById('top').innerHTML=top.map((a,i)=>`<div class="item"><span class="rk">${i+1}</span><div><b>${a.title}</b><br><span style="font-size:12px;color:var(--muted)">${orgD(a.org)}</span></div><span class="m">${a.reuses}</span></div>`).join('');
+  document.getElementById('aud').innerHTML=AUD.map(a=>`<div class="aud"><div class="i">${a.i}</div><h4>${a.h[LANG]}</h4><ul>${a.li[LANG].map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('');
 }
 
-/* ---------- COMMUNITY ---------- */
+/* ====================== COMMUNITY ====================== */
+const VB={
+ contributed:{fr:`a contribué`,en:`contributed`,pt:`contribuiu`},
+ pubver:{fr:`a publié une nouvelle version de`,en:`published a new version of`,pt:`publicou uma nova versão de`},
+ updated:{fr:`a mis à jour`,en:`updated`,pt:`atualizou`},
+ review:{fr:`a ouvert une review sur`,en:`opened a review on`,pt:`abriu uma revisão em`},
+ shared:{fr:`a partagé`,en:`shared`,pt:`partilhou`},
+ published:{fr:`a publié`,en:`published`,pt:`publicou`}
+};
+const FEED=[
+ {who:'TerraSeed',vb:'contributed',obj:'Yield Response Model — Sugar Beet',tag:'model',a:{n:2,u:'h'},t:{fr:`validé par 3 reviewers`,en:`validated by 3 reviewers`,pt:`validado por 3 revisores`}},
+ {who:'INRA Maroc',vb:'pubver',obj:'Soil Test Exchange Format',tag:'standard',a:{n:6,u:'h'},t:{fr:`v1.2 — ajout des micro-éléments`,en:`v1.2 — micronutrients added`,pt:`v1.2 — micronutrientes adicionados`}},
+ {who:'D²nAI',vb:'updated',obj:'NutrientOS Recommendation Engine',tag:'core',a:{n:1,u:'d'},t:{fr:`intègre Maghreb Soil Profiles 2024`,en:`now uses Maghreb Soil Profiles 2024`,pt:`integra Maghreb Soil Profiles 2024`}},
+ {who:'GreenField NGO',vb:'review',obj:'Sustainability Scoring',tag:'pipeline',a:{n:1,u:'d'},t:{fr:`proposition : pondérer l'empreinte carbone`,en:`proposal: weight carbon footprint`,pt:`proposta: ponderar a pegada de carbono`}},
+ {who:'UM6P',vb:'shared',obj:'Olive Nutrition Trials — Mediterranean',tag:'dataset',a:{n:2,u:'d'},t:{fr:`5 ans de données, libre réutilisation`,en:`5 years of data, free reuse`,pt:`5 anos de dados, reutilização livre`}},
+ {who:'OCP Nutricrops',vb:'published',obj:'Nutrient Value Standard v1.0',tag:'standard',a:{n:3,u:'d'},t:{fr:`le standard de référence est ouvert`,en:`the reference standard is open`,pt:`o padrão de referência está aberto`}}
+];
+const WG=[
+ {h:{fr:`Standard Valeur Nutritive`,en:`Nutrient Value Standard`,pt:`Padrão de Valor Nutritivo`},p:{fr:`Maintien & évolution du Nutrient Value Standard.`,en:`Maintenance & evolution of the Nutrient Value Standard.`,pt:`Manutenção e evolução do Nutrient Value Standard.`},m:{fr:`OCP · UM6P · INRA · 7 membres`,en:`OCP · UM6P · INRA · 7 members`,pt:`OCP · UM6P · INRA · 7 membros`}},
+ {h:{fr:`Sols calcaires`,en:`Calcareous soils`,pt:`Solos calcários`},p:{fr:`Coefficients de disponibilité du P en sols calcaires.`,en:`P availability coefficients in calcareous soils.`,pt:`Coeficientes de disponibilidade do P em solos calcários.`},m:{fr:`UM6P · 5 membres`,en:`UM6P · 5 members`,pt:`UM6P · 5 membros`}},
+ {h:{fr:`Durabilité & carbone`,en:`Sustainability & carbon`,pt:`Sustentabilidade e carbono`},p:{fr:`Scoring d'efficience azotée et empreinte.`,en:`Nitrogen efficiency scoring and footprint.`,pt:`Scoring de eficiência do azoto e pegada.`},m:{fr:`GreenField · D²nAI · 6 membres`,en:`GreenField · D²nAI · 6 members`,pt:`GreenField · D²nAI · 6 membros`}}
+];
 function renderCommunity(){
-  const FEED=[
-    {who:'TerraSeed',act:'a contribué',obj:'Yield Response Model — Sugar Beet',tag:'model',t:'validé par 3 reviewers',when:'il y a 2 h'},
-    {who:'INRA Maroc',act:'a publié une nouvelle version de',obj:'Soil Test Exchange Format',tag:'standard',t:'v1.2 — ajout des micro-éléments',when:'il y a 6 h'},
-    {who:'D²nAI',act:'a mis à jour',obj:'NutrientOS Recommendation Engine',tag:'core',t:'intègre Maghreb Soil Profiles 2024',when:'il y a 1 j'},
-    {who:'GreenField NGO',act:'a ouvert une review sur',obj:'Sustainability Scoring',tag:'pipeline',t:'proposition : pondérer l\'empreinte carbone',when:'il y a 1 j'},
-    {who:'UM6P',act:'a partagé',obj:'Olive Nutrition Trials — Mediterranean',tag:'dataset',t:'5 ans de données, libre réutilisation',when:'il y a 2 j'},
-    {who:'OCP Nutricrops',act:'a publié',obj:'Nutrient Value Standard v1.0',tag:'standard',t:'le standard de référence est ouvert',when:'il y a 3 j'}
-  ];
   document.getElementById('feed').innerHTML=FEED.map(f=>`<div class="fitem">
     <span class="av">${f.who.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</span>
-    <div class="ct"><div class="h"><b>${f.who}</b> ${f.act} <b>${f.obj}</b> <span class="tagm">${f.tag}</span></div><div class="t">${f.t}</div></div>
-    <span class="when">${f.when}</span></div>`).join('');
-  const WG=[
-    {h:'Standard Valeur Nutritive',p:'Maintien &amp; évolution du Nutrient Value Standard.',m:'OCP · UM6P · INRA · 7 membres'},
-    {h:'Sols calcaires',p:'Coefficients de disponibilité du P en sols calcaires.',m:'UM6P · 5 membres'},
-    {h:'Durabilité &amp; carbone',p:'Scoring d\'efficience azotée et empreinte.',m:'GreenField · D²nAI · 6 membres'}
-  ];
-  document.getElementById('wg').innerHTML=WG.map(w=>`<div class="wg"><h4>${w.h}</h4><p>${w.p}</p><div class="mem">👥 ${w.m}</div></div>`).join('');
+    <div class="ct"><div class="h"><b>${f.who}</b> ${VB[f.vb][LANG]} <b>${f.obj}</b> <span class="tagm">${f.tag}</span></div><div class="t">${f.t[LANG]}</div></div>
+    <span class="when">${ago(f.a)}</span></div>`).join('');
+  document.getElementById('wg').innerHTML=WG.map(w=>`<div class="wg"><h4>${w.h[LANG]}</h4><p>${w.p[LANG]}</p><div class="mem">👥 ${w.m[LANG]}</div></div>`).join('');
 }
 
-/* ---------- CONSOLE (recommendation engine) ---------- */
-const CROPS={'Blé':{t:{N:150,P:70,K:60,S:30}},'Maïs':{t:{N:200,P:90,K:120,S:25}},'Agrumes':{t:{N:180,P:60,K:200,S:40}},'Betterave':{t:{N:160,P:80,K:200,S:35}},'Tomate':{t:{N:220,P:110,K:280,S:45}},'Olivier':{t:{N:120,P:50,K:150,S:30}}};
-const SOILS={'Argileux':{P:1.0,K:0.85,note:'retient bien le K',split:'2 apports'},'Sableux':{P:1.05,K:1.25,note:'lessivage → fractionner',split:'3-4 apports'},'Limoneux':{P:1.0,K:1.0,note:'équilibré',split:'2 apports'},'Calcaire':{P:1.30,K:1.0,note:'P fixé par le calcaire',split:'2 apports + starter'}};
-const OBJ={'Rendement':{yield:1.0,sustB:0,costB:1.0,carrier:'DAP',label:'rendement max'},'Durabilité':{yield:.93,sustB:22,costB:1.04,carrier:'NPS',label:'efficience & sols'},'Coût':{yield:.9,sustB:4,costB:.82,carrier:'TSP',label:'coût maîtrisé'}};
+/* ====================== CONSOLE (recommendation engine) ====================== */
+const CROPS=[
+ {id:'wheat',t:{N:150,P:70,K:60,S:30}},{id:'corn',t:{N:200,P:90,K:120,S:25}},{id:'citrus',t:{N:180,P:60,K:200,S:40}},
+ {id:'beet',t:{N:160,P:80,K:200,S:35}},{id:'tomato',t:{N:220,P:110,K:280,S:45}},{id:'olive',t:{N:120,P:50,K:150,S:30}}
+];
+const CROP_L={fr:{wheat:'Blé',corn:'Maïs',citrus:'Agrumes',beet:'Betterave',tomato:'Tomate',olive:'Olivier'},en:{wheat:'Wheat',corn:'Corn',citrus:'Citrus',beet:'Sugar beet',tomato:'Tomato',olive:'Olive'},pt:{wheat:'Trigo',corn:'Milho',citrus:'Citrinos',beet:'Beterraba',tomato:'Tomate',olive:'Oliveira'}};
+const SOILS=[{id:'clay',P:1.0,K:.85},{id:'sandy',P:1.05,K:1.25},{id:'loam',P:1.0,K:1.0},{id:'calc',P:1.30,K:1.0}];
+const SOIL_L={fr:{clay:'Argileux',sandy:'Sableux',loam:'Limoneux',calc:'Calcaire'},en:{clay:'Clay',sandy:'Sandy',loam:'Loam',calc:'Calcareous'},pt:{clay:'Argiloso',sandy:'Arenoso',loam:'Franco',calc:'Calcário'}};
+const SOIL_NOTE={fr:{clay:`retient bien le K`,sandy:`lessivage → fractionner`,loam:`équilibré`,calc:`P fixé par le calcaire`},en:{clay:`holds K well`,sandy:`leaching → split doses`,loam:`balanced`,calc:`P fixed by limestone`},pt:{clay:`retém bem o K`,sandy:`lixiviação → fracionar`,loam:`equilibrado`,calc:`P fixado pelo calcário`}};
+const SOIL_SPLIT={fr:{clay:`2 apports`,sandy:`3-4 apports`,loam:`2 apports`,calc:`2 apports + starter`},en:{clay:`2 splits`,sandy:`3-4 splits`,loam:`2 splits`,calc:`2 splits + starter`},pt:{clay:`2 aplicações`,sandy:`3-4 aplicações`,loam:`2 aplicações`,calc:`2 aplicações + starter`}};
+const OBJ=[{id:'yield',yield:1.0,sustB:0,costB:1.0,carrier:'DAP'},{id:'sustainability',yield:.93,sustB:22,costB:1.04,carrier:'NPS'},{id:'cost',yield:.9,sustB:4,costB:.82,carrier:'TSP'}];
+const OBJ_L={fr:{yield:'Rendement',sustainability:'Durabilité',cost:'Coût'},en:{yield:'Yield',sustainability:'Sustainability',cost:'Cost'},pt:{yield:'Rendimento',sustainability:'Sustentabilidade',cost:'Custo'}};
+const OBJ_LABEL={fr:{yield:'rendement max',sustainability:'efficience & sols',cost:'coût maîtrisé'},en:{yield:'max yield',sustainability:'efficiency & soils',cost:'controlled cost'},pt:{yield:'rendimento máx.',sustainability:'eficiência e solos',cost:'custo controlado'}};
+const PHASE={fr:{base:'Fond / starter',fond:'Fond'},en:{base:'Base / starter',fond:'Base'},pt:{base:'Fundo / starter',fond:'Fundo'}};
+const NUT={fr:{N:'Azote',P:'P₂O₅',K:'K₂O',S:'Soufre'},en:{N:'Nitrogen',P:'P₂O₅',K:'K₂O',S:'Sulfur'},pt:{N:'Azoto',P:'P₂O₅',K:'K₂O',S:'Enxofre'}};
 const PROD={DAP:{f:'18-46-0',g:{N:18,P:46,K:0,S:2},price:640},TSP:{f:'0-46-0',g:{N:0,P:46,K:0,S:1},price:520},NPS:{f:'20-20-0+13S',g:{N:20,P:20,K:0,S:13},price:560},Uree:{f:'46-0-0',g:{N:46,P:0,K:0,S:0},price:430},SOP:{f:'0-0-50+18S',g:{N:0,P:0,K:50,S:18},price:780},MOP:{f:'0-0-60',g:{N:0,P:0,K:60,S:0},price:360}};
-const CS={crop:'Blé',soil:'Limoneux',obj:'Rendement'};
+const RAT={
+ fr:o=>`<b>Pourquoi :</b> objectif <b>${o.label}</b> sur sol <b>${o.soil}</b> (${o.note}). Le moteur dose le P via <b>${o.carrier}</b>, complète le K en <b>${o.k}</b> et fractionne l'azote en <b>${o.split}</b>.`,
+ en:o=>`<b>Why:</b> <b>${o.label}</b> objective on <b>${o.soil}</b> soil (${o.note}). The engine doses P via <b>${o.carrier}</b>, tops up K with <b>${o.k}</b> and splits nitrogen across <b>${o.split}</b>.`,
+ pt:o=>`<b>Porquê:</b> objetivo <b>${o.label}</b> em solo <b>${o.soil}</b> (${o.note}). O motor doseia o P via <b>${o.carrier}</b>, completa o K com <b>${o.k}</b> e fraciona o azoto em <b>${o.split}</b>.`
+};
+const CTITLE={fr:(c,s)=>`Programme ${c} · sol ${s}`,en:(c,s)=>`${c} program · ${s} soil`,pt:(c,s)=>`Programa ${c} · solo ${s}`};
+const CS={crop:'wheat',soil:'loam',obj:'yield'};
 function cel(id){return document.getElementById(id)}
-function cfmt(n){return Math.round(n).toLocaleString('fr-FR')}
-function buildChips(host,obj,key){const h=cel(host);h.innerHTML='';Object.keys(obj).forEach(k=>{const b=document.createElement('div');b.className='chip'+(CS[key]===k?' on':'');b.textContent=k;b.onclick=()=>{CS[key]=k;[...h.children].forEach(c=>c.classList.remove('on'));b.classList.add('on');renderConsole();};h.appendChild(b);});}
+function cfmt(n){return Math.round(n).toLocaleString(LOC[LANG])}
+function buildChips(host,arr,labelMap,key){
+  const h=cel(host);h.innerHTML='';
+  arr.forEach(it=>{const b=document.createElement('div');b.className='chip'+(CS[key]===it.id?' on':'');b.textContent=labelMap[LANG][it.id];
+    b.onclick=()=>{CS[key]=it.id;[...h.children].forEach(c=>c.classList.remove('on'));b.classList.add('on');renderConsole();};h.appendChild(b);});
+}
 function computeC(){
-  const crop=CROPS[CS.crop],soil=SOILS[CS.soil],obj=OBJ[CS.obj];
+  const crop=CROPS.find(c=>c.id===CS.crop),soil=SOILS.find(s=>s.id===CS.soil),obj=OBJ.find(o=>o.id===CS.obj);
   const tgt={N:crop.t.N,P:crop.t.P*soil.P,K:crop.t.K*soil.K,S:crop.t.S};
   const pCar=obj.carrier;const prog=[];let sup={N:0,P:0,K:0,S:0};
+  const split=SOIL_SPLIT[LANG][soil.id];
   function add(name,kg,phase){const g=PROD[name].g;sup.N+=kg*g.N/100;sup.P+=kg*g.P/100;sup.K+=kg*g.K/100;sup.S+=kg*g.S/100;prog.push({name,f:PROD[name].f,kg,phase});}
-  add(pCar,tgt.P/(PROD[pCar].g.P/100),'Fond / starter');
-  const kCar=(CS.obj==='Coût')?'MOP':'SOP';const kRate=Math.max(0,(tgt.K-sup.K))/(PROD[kCar].g.K/100);if(kRate>3)add(kCar,kRate,'Fond');
-  const nRate=Math.max(0,(tgt.N-sup.N))/(PROD.Uree.g.N/100);if(nRate>3)add('Uree',nRate,soil.split);
+  add(pCar,tgt.P/(PROD[pCar].g.P/100),PHASE[LANG].base);
+  const kCar=(CS.obj==='cost')?'MOP':'SOP';const kRate=Math.max(0,(tgt.K-sup.K))/(PROD[kCar].g.K/100);if(kRate>3)add(kCar,kRate,PHASE[LANG].fond);
+  const nRate=Math.max(0,(tgt.N-sup.N))/(PROD.Uree.g.N/100);if(nRate>3)add('Uree',nRate,split);
   let cost=0;prog.forEach(p=>cost+=p.kg*PROD[p.name].price/1000);cost*=obj.costB;
   const cover=Math.min(1,(sup.N/tgt.N+sup.P/tgt.P+sup.K/tgt.K)/3);
   const yieldUp=(8+cover*9)*obj.yield;
-  const sust=Math.min(98,58+obj.sustB+(kCar==='SOP'?6:0)+(CS.soil==='Sableux'?-4:2));
-  return {tgt,sup,prog,cost,yieldUp,sust,soil,obj};
+  const sust=Math.min(98,58+obj.sustB+(kCar==='SOP'?6:0)+(CS.soil==='sandy'?-4:2));
+  return {tgt,sup,prog,cost,yieldUp,sust,obj,soil,kCar,split};
 }
 function renderConsole(){
   const r=computeC();
-  cel('ctitle').textContent='Programme '+CS.crop+' · sol '+CS.soil.toLowerCase();
+  const cropLbl=CROP_L[LANG][CS.crop],soilLbl=SOIL_L[LANG][CS.soil];
+  cel('ctitle').textContent=CTITLE[LANG](cropLbl,soilLbl.toLowerCase());
   cel('prog').innerHTML=r.prog.map(p=>`<div class="pcard"><div class="pn">${p.name}</div><div class="pf">${p.f}</div><div class="pr">${cfmt(p.kg)}</div><div class="pu">kg/ha</div><div class="ptime">${p.phase}</div></div>`).join('');
-  const keys=[['N','Azote'],['P','P₂O₅'],['K','K₂O'],['S','Soufre']];
-  cel('bal').innerHTML=keys.map(([k,lbl])=>{const pct=Math.min(120,(r.sup[k]/r.tgt[k])*100);return `<div class="balrow"><span class="nm">${lbl}</span><div class="track"><div class="fill" style="width:${Math.min(100,pct)}%"></div></div><span class="vv">${cfmt(r.sup[k])} / ${cfmt(r.tgt[k])}</span></div>`;}).join('');
+  cel('bal').innerHTML=['N','P','K','S'].map(k=>{const pct=Math.min(120,(r.sup[k]/r.tgt[k])*100);return `<div class="balrow"><span class="nm">${NUT[LANG][k]}</span><div class="track"><div class="fill" style="width:${Math.min(100,pct)}%"></div></div><span class="vv">${cfmt(r.sup[k])} / ${cfmt(r.tgt[k])}</span></div>`;}).join('');
   cel('sYield').textContent='+'+cfmt(r.yieldUp)+'%';cel('sSust').textContent=cfmt(r.sust);cel('sCost').textContent=cfmt(r.cost)+' $';
-  cel('why').innerHTML=`<b>Pourquoi :</b> objectif <b>${r.obj.label}</b> sur sol <b>${CS.soil.toLowerCase()}</b> (${r.soil.note}). Le moteur dose le P via <b>${OBJ[CS.obj].carrier}</b>, complète le K en <b>${(CS.obj==='Coût')?'MOP':'SOP'}</b> et fractionne l'azote en <b>${r.soil.split}</b>.`;
+  cel('why').innerHTML=RAT[LANG]({label:OBJ_LABEL[LANG][CS.obj],soil:soilLbl.toLowerCase(),note:SOIL_NOTE[LANG][CS.soil],carrier:r.obj.carrier,k:r.kCar,split:r.split});
 }
 
-/* ---------- init ---------- */
-initFilters();renderGrid();renderImpact();renderCommunity();
-buildChips('cropChips',CROPS,'crop');buildChips('soilChips',SOILS,'soil');buildChips('objChips',OBJ,'obj');renderConsole();
+/* ====================== apply language ====================== */
+function applyLang(){
+  document.documentElement.lang=LANG;
+  document.querySelectorAll('[data-k]').forEach(e=>{const v=T[LANG][e.dataset.k];if(v!==undefined)e.innerHTML=v;});
+  document.querySelectorAll('[data-kph]').forEach(e=>{const v=T[LANG][e.dataset.kph];if(v!==undefined)e.placeholder=v;});
+  initFilters();renderGrid();renderImpact();renderCommunity();
+  buildChips('cropChips',CROPS,CROP_L,'crop');buildChips('soilChips',SOILS,SOIL_L,'soil');buildChips('objChips',OBJ,OBJ_L,'obj');
+  renderConsole();
+  if(document.getElementById('view-asset').classList.contains('on')&&curAsset)openAsset(curAsset);
+}
+function setLang(l){LANG=l;document.querySelectorAll('.lng').forEach(b=>b.classList.toggle('on',b.dataset.l===l));applyLang();}
+
+/* init */
+setLang('fr');
 </script>
 </body>
 </html>
