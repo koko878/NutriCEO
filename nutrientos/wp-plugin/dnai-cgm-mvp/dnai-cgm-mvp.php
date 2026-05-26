@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI CGM Simulator — MVP
  * Description:       MVP of the CGM Simulator (business UX: config / market inputs / results, with editable referential). Serves a FULL-SCREEN URL (no theme chrome) and a shortcode [cgm_mvp]. Calculation rules ported 1:1 from the CGM Excel; ships with placeholder data.
- * Version:           1.3.0
+ * Version:           1.3.1
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-cgm-mvp
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_CGMMVP_VER', '1.3.0' );
+define( 'DNAI_CGMMVP_VER', '1.3.1' );
 define( 'DNAI_CGMMVP_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_CGMMVP_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -65,11 +65,15 @@ function dnai_cgmmvp_fs_url() {
  *    with a "Plein écran" link to the dedicated full-screen URL.
  * ---------------------------------------------------------------------- */
 function dnai_cgmmvp_frame( $atts = array() ) {
-	$src = esc_url( DNAI_CGMMVP_URL . 'app/cgm-mvp.html' );
+	// Cache-busting via the plugin version, so re-uploads load the new app.
+	$src = esc_url( DNAI_CGMMVP_URL . 'app/cgm-mvp.html?v=' . DNAI_CGMMVP_VER );
 	$fs  = esc_url( dnai_cgmmvp_fs_url() );
 	$id  = 'dnaiCgmFrame_' . wp_rand( 1000, 9999 );
 
-	return '<div class="dnai-cgmmvp-wrap" style="width:100%;max-width:100%;margin:0;">'
+	// Full-bleed: break out of the theme's content column to use the whole window width.
+	$wrap = 'position:relative;left:50%;right:50%;width:100vw;max-width:100vw;margin-left:-50vw;margin-right:-50vw;padding:0 16px;box-sizing:border-box;';
+
+	return '<div class="dnai-cgmmvp-wrap" style="' . $wrap . '">'
 		. '<div style="text-align:right;margin:0 0 8px;"><a href="' . $fs . '" target="_blank" rel="noopener" '
 		. 'style="display:inline-flex;align-items:center;gap:6px;font:600 13px sans-serif;color:#2E7D32;text-decoration:none;">⛶ Ouvrir en plein écran</a></div>'
 		. '<iframe id="' . esc_attr( $id ) . '" src="' . $src . '" title="CGM Simulator — MVP" loading="lazy" scrolling="no" '
