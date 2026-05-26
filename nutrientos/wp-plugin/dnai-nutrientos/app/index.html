@@ -253,6 +253,8 @@ body.embed .botnav{display:none!important}
 .dvtoolbar .presets button:hover{background:var(--green-50);border-color:var(--green-300)}
 .raw{background:#07140c;color:#cfe3d4;border-radius:10px;padding:12px 14px;font:500 12px var(--mono);overflow:auto;max-height:320px;white-space:pre;margin-top:8px}
 /* intake wizard */
+.intakecard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px;max-width:840px;margin:0 auto}
+.cta-mini{white-space:nowrap}
 .cta-mini.contrib{background:var(--green-500);color:#05230f}
 .cta-mini.contrib:hover{background:var(--green-300)}
 .ibtn{display:inline-grid;place-items:center;width:38px;height:38px;border:1px solid var(--line);background:#fff;border-radius:9px;font-size:15px;color:var(--green-700);cursor:pointer}
@@ -448,6 +450,82 @@ body.embed .botnav{display:none!important}
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="view" id="view-contribute">
+  <div class="phead"><div class="wrap">
+    <span class="eyebrow">Contribuer</span>
+    <h1>Ajouter un asset</h1>
+    <p>Ajoutez une donnée de plusieurs façons. Sur mobile, vous pouvez prendre une photo ou un enregistrement directement.</p>
+  </div></div>
+  <div class="wrap" style="padding:24px 0 60px">
+   <div class="intakecard">
+    <div class="srcbar" id="srcbar">
+      <button class="src on" data-s="upload" onclick="setSrc('upload')">📁 Fichier / Photo / Audio</button>
+      <button class="src" data-s="api" onclick="setSrc('api')">🔌 API</button>
+      <button class="src" data-s="db" onclick="setSrc('db')">🗄️ Base de données</button>
+      <button class="src" data-s="manual" onclick="setSrc('manual')">✏️ Saisie manuelle</button>
+    </div>
+
+    <!-- UPLOAD -->
+    <div class="spane on" id="sp-upload">
+      <div class="drop" id="drop">
+        <input type="file" id="fileInput" multiple style="display:none" onchange="onFiles(this.files)">
+        <input type="file" id="camInput" accept="image/*" capture="environment" style="display:none" onchange="onFiles(this.files)">
+        <input type="file" id="micInput" accept="audio/*" capture style="display:none" onchange="onFiles(this.files)">
+        <div class="di">⤓</div>
+        <div class="dt">Glissez-déposez un fichier ici</div>
+        <div class="dm">CSV, Excel, JSON, PDF, image, audio…</div>
+        <div class="dbtns">
+          <button class="btn primary sm" onclick="document.getElementById('fileInput').click()">Choisir un fichier</button>
+          <button class="btn ghost sm cam" onclick="document.getElementById('camInput').click()">📷 Photo</button>
+          <button class="btn ghost sm cam" onclick="document.getElementById('micInput').click()">🎙️ Audio</button>
+        </div>
+      </div>
+      <div id="filePrev"></div>
+    </div>
+
+    <!-- API -->
+    <div class="spane" id="sp-api">
+      <label class="fl">Nom de la source</label><input type="text" id="api_name" placeholder="ex. Capteurs sol — IoT Maghreb">
+      <div class="grid2"><div><label class="fl">Endpoint (URL)</label><input type="text" id="api_url" placeholder="https://api.exemple.com/v1/soil"></div>
+      <div><label class="fl">Clé API (optionnel)</label><input type="text" id="api_key" placeholder="••••••••"></div></div>
+      <label class="fl">Format</label><select id="api_fmt"><option>JSON / REST</option><option>GeoJSON</option><option>CSV</option><option>GraphQL</option></select>
+      <button class="btn ghost sm" onclick="testConn('api')">Tester la connexion</button> <span class="connmsg" id="api_msg"></span>
+    </div>
+
+    <!-- DB -->
+    <div class="spane" id="sp-db">
+      <label class="fl">Nom de la source</label><input type="text" id="db_name" placeholder="ex. Entrepôt agronomique UM6P">
+      <div class="grid2"><div><label class="fl">Type</label><select id="db_type"><option>PostgreSQL</option><option>MySQL</option><option>BigQuery</option><option>Snowflake</option><option>MongoDB</option></select></div>
+      <div><label class="fl">Hôte</label><input type="text" id="db_host" placeholder="db.exemple.com:5432"></div></div>
+      <div class="grid2"><div><label class="fl">Base</label><input type="text" id="db_name2" placeholder="agronomy"></div>
+      <div><label class="fl">Table / collection</label><input type="text" id="db_table" placeholder="soil_profiles"></div></div>
+      <button class="btn ghost sm" onclick="testConn('db')">Tester la connexion</button> <span class="connmsg" id="db_msg"></span>
+    </div>
+
+    <!-- MANUAL -->
+    <div class="spane" id="sp-manual">
+      <label class="fl">Titre</label><input type="text" id="m_title" placeholder="ex. Essais nutrition tomate — Souss 2024">
+      <div class="grid2"><div><label class="fl">Type</label><select id="m_type"><option value="dataset">Dataset</option><option value="model">Modèle</option><option value="standard">Standard</option><option value="pipeline">Pipeline</option><option value="publication">Publication</option></select></div>
+      <div><label class="fl">Organisation</label><input type="text" id="m_org" placeholder="ex. OCP Nutricrops"></div></div>
+      <label class="fl">Description</label><textarea id="m_desc" rows="2" placeholder="Quelques mots sur le contenu…"></textarea>
+    </div>
+
+    <!-- common: layer + submit -->
+    <div class="common">
+      <div><label class="fl">Couche</label>
+        <div class="refsel" id="layerSel"><button class="on" data-l="open" onclick="setLayer('open')">Open</button><button data-l="core" onclick="setLayer('core')">OCP Nutricrops Core</button></div>
+      </div>
+    </div>
+    <div class="mfoot">
+      <span class="muted" id="intakeHint">Sauvegarde locale — exportez en JSON pour partager / publier.</span>
+      <span style="flex:1"></span>
+      <button class="btn ghost sm" onclick="closeIntake()">Annuler</button>
+      <button class="btn primary sm" onclick="submitIntake()">Ajouter au catalogue</button>
+    </div>
+   </div>
   </div>
 </div>
 
@@ -1007,8 +1085,8 @@ function setLang(l){LANG=l;document.querySelectorAll('.lng').forEach(b=>b.classL
 
 /* ====================== INTAKE WIZARD ====================== */
 let intakeSrc='upload', intakeLayer='open', pendingFiles=[];
-function openIntake(){ document.getElementById('intake').classList.add('on'); }
-function closeIntake(){ document.getElementById('intake').classList.remove('on'); }
+function openIntake(){ go('contribute'); if(EMBED){ try{parent.postMessage({dnaiNosScroll:true},'*');}catch(e){} } }
+function closeIntake(){ go('explore'); }
 function setSrc(s){ intakeSrc=s; document.querySelectorAll('.src').forEach(b=>b.classList.toggle('on',b.dataset.s===s)); document.querySelectorAll('.spane').forEach(p=>p.classList.toggle('on',p.id==='sp-'+s)); }
 function setLayer(l){ intakeLayer=l; document.querySelectorAll('#layerSel button').forEach(b=>b.classList.toggle('on',b.dataset.l===l)); }
 function typeFromName(n){
@@ -1102,76 +1180,5 @@ postHeight();
 setTimeout(postHeight,400);
 </script>
 <!-- ====================== INTAKE WIZARD ====================== -->
-<div class="modal" id="intake">
-  <div class="box">
-    <div class="mhead"><h3>Contribuer un asset</h3><button class="x" onclick="closeIntake()">✕</button></div>
-    <p class="msub">Ajoutez une donnée de plusieurs façons. Sur mobile vous pouvez prendre une photo ou un enregistrement directement.</p>
-    <div class="srcbar" id="srcbar">
-      <button class="src on" data-s="upload" onclick="setSrc('upload')">📁 Fichier / Photo / Audio</button>
-      <button class="src" data-s="api" onclick="setSrc('api')">🔌 API</button>
-      <button class="src" data-s="db" onclick="setSrc('db')">🗄️ Base de données</button>
-      <button class="src" data-s="manual" onclick="setSrc('manual')">✏️ Saisie manuelle</button>
-    </div>
-
-    <!-- UPLOAD -->
-    <div class="spane on" id="sp-upload">
-      <div class="drop" id="drop">
-        <input type="file" id="fileInput" multiple style="display:none" onchange="onFiles(this.files)">
-        <input type="file" id="camInput" accept="image/*" capture="environment" style="display:none" onchange="onFiles(this.files)">
-        <input type="file" id="micInput" accept="audio/*" capture style="display:none" onchange="onFiles(this.files)">
-        <div class="di">⤓</div>
-        <div class="dt">Glissez-déposez un fichier ici</div>
-        <div class="dm">CSV, Excel, JSON, PDF, image, audio…</div>
-        <div class="dbtns">
-          <button class="btn primary sm" onclick="document.getElementById('fileInput').click()">Choisir un fichier</button>
-          <button class="btn ghost sm cam" onclick="document.getElementById('camInput').click()">📷 Photo</button>
-          <button class="btn ghost sm cam" onclick="document.getElementById('micInput').click()">🎙️ Audio</button>
-        </div>
-      </div>
-      <div id="filePrev"></div>
-    </div>
-
-    <!-- API -->
-    <div class="spane" id="sp-api">
-      <label class="fl">Nom de la source</label><input type="text" id="api_name" placeholder="ex. Capteurs sol — IoT Maghreb">
-      <div class="grid2"><div><label class="fl">Endpoint (URL)</label><input type="text" id="api_url" placeholder="https://api.exemple.com/v1/soil"></div>
-      <div><label class="fl">Clé API (optionnel)</label><input type="text" id="api_key" placeholder="••••••••"></div></div>
-      <label class="fl">Format</label><select id="api_fmt"><option>JSON / REST</option><option>GeoJSON</option><option>CSV</option><option>GraphQL</option></select>
-      <button class="btn ghost sm" onclick="testConn('api')">Tester la connexion</button> <span class="connmsg" id="api_msg"></span>
-    </div>
-
-    <!-- DB -->
-    <div class="spane" id="sp-db">
-      <label class="fl">Nom de la source</label><input type="text" id="db_name" placeholder="ex. Entrepôt agronomique UM6P">
-      <div class="grid2"><div><label class="fl">Type</label><select id="db_type"><option>PostgreSQL</option><option>MySQL</option><option>BigQuery</option><option>Snowflake</option><option>MongoDB</option></select></div>
-      <div><label class="fl">Hôte</label><input type="text" id="db_host" placeholder="db.exemple.com:5432"></div></div>
-      <div class="grid2"><div><label class="fl">Base</label><input type="text" id="db_name2" placeholder="agronomy"></div>
-      <div><label class="fl">Table / collection</label><input type="text" id="db_table" placeholder="soil_profiles"></div></div>
-      <button class="btn ghost sm" onclick="testConn('db')">Tester la connexion</button> <span class="connmsg" id="db_msg"></span>
-    </div>
-
-    <!-- MANUAL -->
-    <div class="spane" id="sp-manual">
-      <label class="fl">Titre</label><input type="text" id="m_title" placeholder="ex. Essais nutrition tomate — Souss 2024">
-      <div class="grid2"><div><label class="fl">Type</label><select id="m_type"><option value="dataset">Dataset</option><option value="model">Modèle</option><option value="standard">Standard</option><option value="pipeline">Pipeline</option><option value="publication">Publication</option></select></div>
-      <div><label class="fl">Organisation</label><input type="text" id="m_org" placeholder="ex. OCP Nutricrops"></div></div>
-      <label class="fl">Description</label><textarea id="m_desc" rows="2" placeholder="Quelques mots sur le contenu…"></textarea>
-    </div>
-
-    <!-- common: layer + submit -->
-    <div class="common">
-      <div><label class="fl">Couche</label>
-        <div class="refsel" id="layerSel"><button class="on" data-l="open" onclick="setLayer('open')">Open</button><button data-l="core" onclick="setLayer('core')">OCP Nutricrops Core</button></div>
-      </div>
-    </div>
-    <div class="mfoot">
-      <span class="muted" id="intakeHint">Sauvegarde locale — exportez en JSON pour partager / publier.</span>
-      <span style="flex:1"></span>
-      <button class="btn ghost sm" onclick="closeIntake()">Annuler</button>
-      <button class="btn primary sm" onclick="submitIntake()">Ajouter au catalogue</button>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>

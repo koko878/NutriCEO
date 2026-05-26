@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutrientOS
  * Description:       Hosts the NutrientOS prototype, the executive one-pager and the executive summary. Serves FULL-SCREEN URLs (no theme chrome) and shortcodes [nutrientos], [nutrientos_exec], [nutrientos_execsum] with full-bleed, cache-busted, auto-resizing iframes.
- * Version:           1.6.0
+ * Version:           1.7.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutrientos
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NOS_VER', '1.6.0' );
+define( 'DNAI_NOS_VER', '1.7.0' );
 define( 'DNAI_NOS_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NOS_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -93,7 +93,9 @@ function dnai_nos_frame( $which ) {
 		. 'style="display:block;width:100%;height:820px;min-height:620px;border:0;border-radius:12px;overflow:hidden;" '
 		. 'allow="fullscreen" allowfullscreen></iframe>'
 		. '<script>(function(){var f=document.getElementById(' . wp_json_encode( $id ) . ');'
-		. 'window.addEventListener("message",function(e){if(e.data&&typeof e.data.dnaiNosHeight==="number"){f.style.height=(e.data.dnaiNosHeight+2)+"px";}});'
+		. 'window.addEventListener("message",function(e){if(!e.data)return;'
+		. 'if(typeof e.data.dnaiNosHeight==="number"){f.style.height=(e.data.dnaiNosHeight+2)+"px";}'
+		. 'if(e.data.dnaiNosScroll){f.scrollIntoView({behavior:"smooth",block:"start"});}});'
 		. '})();</script>'
 		. '</div>';
 }
