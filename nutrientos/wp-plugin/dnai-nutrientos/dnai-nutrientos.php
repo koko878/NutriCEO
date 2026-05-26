@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutrientOS
  * Description:       Hosts the NutrientOS prototype, the executive one-pager and the executive summary. Full-screen URLs (no theme chrome) + shortcodes with full-bleed auto-resizing iframes. Includes a server-side AI proxy (curate) to the OCP AI Lab for auto-summaries/insights.
- * Version:           1.9.1
+ * Version:           1.9.2
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutrientos
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NOS_VER', '1.9.1' );
+define( 'DNAI_NOS_VER', '1.9.2' );
 define( 'DNAI_NOS_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NOS_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -104,11 +104,14 @@ add_action( 'rest_api_init', function () {
 		'methods'             => 'GET',
 		'permission_callback' => '__return_true',
 		'callback'            => function () {
-			return new WP_REST_Response( array(
-				'curate' => esc_url_raw( rest_url( 'dnai-nutrientos/v1/curate' ) ),
-				'nonce'  => wp_create_nonce( 'wp_rest' ),
-				'ai'     => dnai_nos_ai_ready(),
-			), 200 );
+			nocache_headers();
+				$r = new WP_REST_Response( array(
+					'curate' => esc_url_raw( rest_url( 'dnai-nutrientos/v1/curate' ) ),
+					'nonce'  => wp_create_nonce( 'wp_rest' ),
+					'ai'     => dnai_nos_ai_ready(),
+				), 200 );
+				$r->header( 'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0' );
+				return $r;
 		},
 	) );
 	register_rest_route( 'dnai-nutrientos/v1', '/curate', array(
@@ -185,31 +188,56 @@ function dnai_nos_curate( $req ) {
 add_action( 'admin_menu', function () {
 	add_options_page( 'D²nAI NutrientOS', 'D²nAI NutrientOS', 'manage_options', 'dnai-nutrientos', 'dnai_nos_settings_page' );
 } );
-add_action( 'admin_init', function () {
-	register_setting( 'dnai_nos', 'dnai_nos_settings', function ( $in ) {
-		return array(
-			'base_url'  => isset( $in['base_url'] ) ? esc_url_raw( trim( $in['base_url'] ) ) : '',
-			'api_path'  => isset( $in['api_path'] ) ? sanitize_text_field( $in['api_path'] ) : '/api/chat/completions',
-			'api_key'   => isset( $in['api_key'] ) ? trim( $in['api_key'] ) : '',
-			'model'     => isset( $in['model'] ) ? sanitize_text_field( $in['model'] ) : 'nutrientos-curator',
-			'json_mode' => isset( $in['json_mode'] ) ? '1' : '0',
-		);
-	} );
+
+/* Self-handled save through admin-post.php. We do NOT use the Settings API /
+ * options.php here because this site sits behind Azure Front Door, where the
+ * options.php POST round-trip can be dropped/cached and the option never
+ * persists. admin-post.php + update_option() is direct and reliable. */
+add_action( 'admin_post_dnai_nos_save', function () {
+	if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'Forbidden', 403 ); }
+	check_admin_referer( 'dnai_nos_save' );
+	$in  = isset( $_POST['dnai_nos_settings'] ) && is_array( $_POST['dnai_nos_settings'] )
+		? wp_unslash( $_POST['dnai_nos_settings'] ) : array();
+	$key = isset( $in['api_key'] ) ? trim( $in['api_key'] ) : '';
+	// Blank key field = keep the previously stored key (so re-saving doesn't wipe it).
+	if ( $key === '' ) { $key = dnai_nos_opt( 'api_key' ); }
+	$val = array(
+		'base_url'  => isset( $in['base_url'] ) ? esc_url_raw( trim( $in['base_url'] ) ) : '',
+		'api_path'  => isset( $in['api_path'] ) && trim( $in['api_path'] ) !== '' ? sanitize_text_field( $in['api_path'] ) : '/api/chat/completions',
+		'api_key'   => $key,
+		'model'     => isset( $in['model'] ) && trim( $in['model'] ) !== '' ? sanitize_text_field( $in['model'] ) : 'nutrientos-curator',
+		'json_mode' => isset( $in['json_mode'] ) ? '1' : '0',
+	);
+	update_option( 'dnai_nos_settings', $val );
+	wp_safe_redirect( add_query_arg( array( 'page' => 'dnai-nutrientos', 'dnai_saved' => '1' ), admin_url( 'options-general.php' ) ) );
+	exit;
 } );
+
 function dnai_nos_settings_page() {
 	$o = get_option( 'dnai_nos_settings', array() );
 	$g = function ( $k, $d = '' ) use ( $o ) { return isset( $o[ $k ] ) ? esc_attr( $o[ $k ] ) : $d; };
+	$has_key  = ( isset( $o['api_key'] ) && $o['api_key'] !== '' );
+	$base_set = ( isset( $o['base_url'] ) && $o['base_url'] !== '' );
+	$ready    = dnai_nos_ai_ready();
 	?>
 	<div class="wrap">
 		<h1>D²nAI NutrientOS — IA</h1>
+		<?php if ( isset( $_GET['dnai_saved'] ) ) : ?>
+			<div class="notice notice-success is-dismissible"><p>Réglages enregistrés.</p></div>
+		<?php endif; ?>
 		<p>Proxy serveur vers l'AI Lab (OpenAI-compatible). La clé reste côté serveur ; le navigateur appelle <code>/wp-json/dnai-nutrientos/v1/curate</code>.</p>
-		<p>Statut : <strong><?php echo dnai_nos_ai_ready() ? '✅ configuré' : '⚠️ non configuré'; ?></strong> · Plein écran : <code><?php echo esc_html( dnai_nos_fs_url( 'index' ) ); ?></code></p>
-		<form method="post" action="options.php">
-			<?php settings_fields( 'dnai_nos' ); ?>
+		<p>Statut : <strong><?php echo $ready ? '✅ configuré' : '⚠️ non configuré'; ?></strong> · Plein écran : <code><?php echo esc_html( dnai_nos_fs_url( 'index' ) ); ?></code></p>
+		<p style="color:#555;font-size:13px;margin-top:-6px;">
+			Réellement stocké côté serveur — base URL : <code><?php echo $base_set ? esc_html( $o['base_url'] ) : '(vide)'; ?></code> ·
+			clé API : <code><?php echo $has_key ? 'enregistrée (' . (int) strlen( $o['api_key'] ) . ' car.)' : '(vide)'; ?></code>
+		</p>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" autocomplete="off">
+			<input type="hidden" name="action" value="dnai_nos_save">
+			<?php wp_nonce_field( 'dnai_nos_save' ); ?>
 			<table class="form-table">
-				<tr><th>AI Lab base URL</th><td><input type="text" name="dnai_nos_settings[base_url]" value="<?php echo $g( 'base_url' ); ?>" class="regular-text" placeholder="https://lab.ocpnutricrops.ai"></td></tr>
+				<tr><th>AI Lab base URL</th><td><input type="url" name="dnai_nos_settings[base_url]" value="<?php echo $g( 'base_url' ); ?>" class="regular-text" placeholder="https://lab.ocpnutricrops.ai"></td></tr>
 				<tr><th>API path</th><td><input type="text" name="dnai_nos_settings[api_path]" value="<?php echo $g( 'api_path', '/api/chat/completions' ); ?>" class="regular-text"></td></tr>
-				<tr><th>API key</th><td><input type="password" name="dnai_nos_settings[api_key]" value="<?php echo $g( 'api_key' ); ?>" class="regular-text"></td></tr>
+				<tr><th>API key</th><td><input type="password" autocomplete="new-password" name="dnai_nos_settings[api_key]" value="" class="regular-text" placeholder="<?php echo $has_key ? '•••• déjà enregistrée — laisser vide pour conserver' : 'colle ta clé ici'; ?>"></td></tr>
 				<tr><th>Modèle</th><td><input type="text" name="dnai_nos_settings[model]" value="<?php echo $g( 'model', 'nutrientos-curator' ); ?>" class="regular-text"></td></tr>
 				<tr><th>JSON mode</th><td><label><input type="checkbox" name="dnai_nos_settings[json_mode]" value="1" <?php checked( '1', isset( $o['json_mode'] ) ? $o['json_mode'] : '1' ); ?>> Envoyer response_format=json_object</label></td></tr>
 			</table>
