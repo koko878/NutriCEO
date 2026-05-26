@@ -1127,7 +1127,10 @@ function typeFromName(n){
 }
 function humanSize(b){ if(b<1024)return b+' o'; if(b<1048576)return (b/1024).toFixed(0)+' Ko'; return (b/1048576).toFixed(1)+' Mo'; }
 let pendingCsv=null, pendingMeta='', pendingAI=null;
-const AI = !!(window.DNAI_NOS && window.DNAI_NOS.ai && window.DNAI_NOS.curate);
+let AI=false;
+function applyCfg(c){ if(c&&c.curate){ window.DNAI_NOS=c; AI=!!(c.ai&&c.curate); } }
+applyCfg(window.DNAI_NOS);
+if(!AI){ try{ fetch('/wp-json/dnai-nutrientos/v1/config',{headers:{'Accept':'application/json'}}).then(function(r){return r.ok?r.json():null;}).then(applyCfg).catch(function(){}); }catch(e){} }
 function fileToDataURL(f){ return new Promise(function(res,rej){ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(f); }); }
 let _pdfjs=null;
 function ensurePdfjs(){ if(_pdfjs) return _pdfjs; _pdfjs=new Promise(function(res,rej){ const s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'; s.onload=function(){ try{window['pdfjsLib'].GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}catch(e){} res(window['pdfjsLib']); }; s.onerror=rej; document.head.appendChild(s); }); return _pdfjs; }

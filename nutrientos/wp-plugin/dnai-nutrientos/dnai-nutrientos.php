@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutrientOS
  * Description:       Hosts the NutrientOS prototype, the executive one-pager and the executive summary. Full-screen URLs (no theme chrome) + shortcodes with full-bleed auto-resizing iframes. Includes a server-side AI proxy (curate) to the OCP AI Lab for auto-summaries/insights.
- * Version:           1.9.0
+ * Version:           1.9.1
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutrientos
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NOS_VER', '1.9.0' );
+define( 'DNAI_NOS_VER', '1.9.1' );
 define( 'DNAI_NOS_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NOS_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -72,9 +72,11 @@ function dnai_nos_fs_url( $which = 'index' ) {
  * 2. Shortcodes — iframe points at the route (so the AI config is injected).
  * ---------------------------------------------------------------------- */
 function dnai_nos_frame( $which ) {
-	$src = esc_url( dnai_nos_fs_url( $which ) );
-	$fs  = $src;
-	$id  = 'dnaiNosFrame_' . wp_rand( 1000, 9999 );
+	$files = dnai_nos_files();
+	$file  = isset( $files[ $which ] ) ? $files[ $which ] : 'index.html';
+	$src   = esc_url( DNAI_NOS_URL . 'app/' . $file . '?v=' . DNAI_NOS_VER );
+	$fs    = esc_url( dnai_nos_fs_url( $which ) );
+	$id    = 'dnaiNosFrame_' . wp_rand( 1000, 9999 );
 	$wrap = 'position:relative;left:50%;right:50%;width:100vw;max-width:100vw;margin-left:-50vw;margin-right:-50vw;padding:0 16px;box-sizing:border-box;';
 	return '<div class="dnai-nos-wrap" style="' . $wrap . '">'
 		. '<div style="text-align:right;margin:0 0 8px;"><a href="' . $fs . '" target="_blank" rel="noopener" '
@@ -98,6 +100,17 @@ add_shortcode( 'nutrientos_execsum', function () { return dnai_nos_frame( 'execs
  *    Calls the AI Lab (OpenAI-compatible) with the custom model, key server-side.
  * ---------------------------------------------------------------------- */
 add_action( 'rest_api_init', function () {
+	register_rest_route( 'dnai-nutrientos/v1', '/config', array(
+		'methods'             => 'GET',
+		'permission_callback' => '__return_true',
+		'callback'            => function () {
+			return new WP_REST_Response( array(
+				'curate' => esc_url_raw( rest_url( 'dnai-nutrientos/v1/curate' ) ),
+				'nonce'  => wp_create_nonce( 'wp_rest' ),
+				'ai'     => dnai_nos_ai_ready(),
+			), 200 );
+		},
+	) );
 	register_rest_route( 'dnai-nutrientos/v1', '/curate', array(
 		'methods'             => 'POST',
 		'callback'            => 'dnai_nos_curate',
