@@ -104,6 +104,31 @@ h2.big{font-size:clamp(28px,4vw,44px);line-height:1.07;margin:12px 0 12px;font-w
 .dupwarn{margin:12px 0;padding:12px 14px;border:1px solid #f0c9c9;background:#fdecec;border-radius:10px;font-size:13.5px;color:#8a2b2b}
 .tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .topic{font-size:11.5px;font-weight:600;color:var(--green-800);background:var(--green-50);border:1px solid var(--green-100);border-radius:999px;padding:3px 10px}
+.acard{position:relative}
+.acard .selcb{position:absolute;top:12px;right:12px;z-index:2}
+.acard .selcb input{width:17px;height:17px;cursor:pointer;accent-color:var(--green-700)}
+.s.star{cursor:pointer;user-select:none}
+.s.star.on b{color:var(--green-700)}
+.vtag{display:inline-block;font-size:10.5px;font-weight:700;border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:middle;background:#eef1ef;color:#5a6b60}
+.vtag.ok{background:#e7f5e9;color:#1B5E20}
+.vtag.rev{background:#fdf4e7;color:#9a6a12}
+.vbadge{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;margin-left:6px;background:#eef1ef;color:#5a6b60}
+.vbadge.ok{background:#e7f5e9;color:#1B5E20}
+.vbadge.rev{background:#fdf4e7;color:#9a6a12}
+.rvlist{display:flex;flex-direction:column;gap:5px;margin:6px 0}
+.rvopt{font-size:12.5px;display:flex;gap:7px;align-items:center;cursor:pointer}
+.rvwho{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13px}
+.rvlog{margin-top:10px;border-top:1px solid var(--line);padding-top:8px;display:flex;flex-direction:column;gap:5px}
+.rvev{font-size:12px;color:var(--muted)}
+.mpgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.mph{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--green-700);margin-bottom:4px}
+.steps{margin:0;padding-left:18px;font-size:13.5px;color:var(--ink)}
+.steps li{margin:3px 0}
+.selbar{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);background:#07140c;color:#fff;border-radius:14px;padding:12px 18px;display:flex;align-items:center;gap:18px;z-index:350;box-shadow:0 18px 40px -12px rgba(0,0,0,.55);transition:transform .28s ease;opacity:0}
+.selbar.on{transform:translate(-50%,0);opacity:1}
+.selbar .seln{font:600 13.5px Inter,sans-serif}
+.selacts{display:flex;gap:8px}
+@media(max-width:560px){.mpgrid{grid-template-columns:1fr}.selbar{flex-direction:column;gap:10px;width:calc(100% - 32px)}}
 .back{font-size:13px;font-weight:600;color:var(--green-700);cursor:pointer;display:inline-flex;gap:6px;align-items:center;margin-bottom:18px}
 .adetail{overflow-x:hidden}
 .dgrid{display:grid;grid-template-columns:1fr 320px;gap:30px}
@@ -393,6 +418,13 @@ body.embed .botnav{display:none!important}
     <div class="countline" id="count"></div>
     <div class="grid" id="grid"></div>
   </div>
+  <div class="selbar" id="selbar">
+    <span class="seln">0 asset sélectionné</span>
+    <div class="selacts">
+      <button class="btn primary sm" onclick="bulkValidate()">🚦 Lancer un cycle de validation</button>
+      <button class="btn ghost sm" onclick="clearSel()">Annuler</button>
+    </div>
+  </div>
 </div>
 
 <!-- ============ ASSET DETAIL ============ -->
@@ -503,6 +535,8 @@ body.embed .botnav{display:none!important}
       <div id="up_dup"></div>
       <div id="upMeta" style="display:none;margin-top:6px">
         <label class="fl">Titre</label><input type="text" id="up_title">
+        <label class="fl">Type d'asset <span id="up_type_ai" class="muted" style="font-weight:400"></span></label>
+        <select id="up_type"><option value="dataset">🗄️ Dataset</option><option value="model">🧠 Modèle</option><option value="standard">📐 Standard</option><option value="pipeline">⚙️ Pipeline</option><option value="publication">📄 Publication</option></select>
         <label class="fl">Source (URL ou origine)</label><input type="text" id="up_source" placeholder="ex. https://… ou « rapport interne OCP 2024 »">
         <label class="fl">Description</label><textarea id="up_desc" rows="2" placeholder="À quoi sert ce document/jeu de données ?"></textarea>
         <label class="fl">Résumé court (max 3 phrases)</label><textarea id="up_summary" rows="3" placeholder="Synthèse du contenu…"></textarea>
@@ -814,19 +848,50 @@ function renderGrid(){
   const list=A.filter(a=>(FT.type==='all'||a.type===FT.type)&&(FT.layer==='all'||a.layer===FT.layer)&&
     (a.title.toLowerCase().includes(q)||a.desc[LANG].toLowerCase().includes(q)||a.org.toLowerCase().includes(q)));
   document.getElementById('count').innerHTML=fill(u.count,{n:list.length,o:A.filter(a=>a.layer==='open').length,c:A.filter(a=>a.layer==='core').length});
-  document.getElementById('grid').innerHTML=list.map(a=>`
+  document.getElementById('grid').innerHTML=list.map(a=>{
+    const stt=reviewStatus(a);
+    const vtag=stt==='validated'?'<span class="vtag ok">✅ validé</span>':stt==='in_review'?'<span class="vtag rev">🕓 en revue</span>':'';
+    return `
     <div class="acard" onclick="openAsset('${a.id}')">
+      <label class="selcb" onclick="event.stopPropagation()"><input type="checkbox" id="selcb_${a.id}" ${SEL.has(a.id)?'checked':''} onchange="toggleSel('${a.id}',event)"></label>
       <div class="row1"><span class="ttype">${ICON[a.type]} ${ty[a.type]}</span><span class="lay ${a.layer}">${a.layer==='open'?'OPEN':'OCP Nutricrops CORE'}</span></div>
       <h3>${a.title}</h3>
-      <div class="org">🏢 ${orgD(a.org)}</div>
+      <div class="org">🏢 ${orgD(a.org)} ${vtag}</div>
       <p class="desc">${a.desc[LANG]}</p>
       <div class="stats">
-        <span class="s">⭐ <b>${a.stars}</b></span>
+        <span class="s star ${isStarred(a.id)?'on':''}" onclick="toggleStar('${a.id}',event)" title="Ajouter/retirer une étoile">${isStarred(a.id)?'⭐':'☆'} <b>${starCount(a)}</b></span>
         <span class="s">♻️ <b>${a.reuses}</b> ${u.reuses}</span>
         <span class="s">🕑 ${ago(a.upd)}</span>
       </div>
-    </div>`).join('');
+    </div>`;}).join('');
   tagReveal(document.getElementById('grid'));
+  renderSelBar();
+}
+const MP_DEMO={
+  twin:{model:{inputs:['Profil de sol (SoilGrids)','Historique météo','Type de culture'],outputs:['Dynamique P/N par horizon','Réponse simulée à la fertilisation'],metric:'RMSE 0.18 sur P disponible',basis:'Jumeau numérique calibré sur Maghreb Soil Profiles 2024.'}},
+  'reco-engine':{model:{inputs:['Analyse de sol','Culture & objectif de rendement','Nutrient Value Standard'],outputs:['Dose & formule recommandées','Score d\'efficience azotée'],metric:'MAE 12 kg/ha vs essais terrain',basis:'Modèle agronomique + apprentissage sur essais multi-sites.'}},
+  beet:{model:{inputs:['Doses N appliquées','Stade phénologique'],outputs:['Rendement attendu (t/ha)'],metric:'R² 0.86',basis:'Courbe de réponse — betterave sucrière.'}},
+  'reco-ref':{pipeline:{steps:['Ingestion de l\'analyse de sol','Normalisation (Soil Test Exchange Format)','Calcul du besoin (Nutrient Value Standard)','Génération de la recommandation'],consumes:['soiltest','nvs','soil-mag']}},
+  sust:{pipeline:{steps:['Collecte intrants / sorties','Calcul de l\'efficience azotée','Scoring de durabilité'],consumes:['wheat-n','nvs']}}
+};
+function modelPipelineBlock(a){
+  const mp=(a.model||a.pipeline)?{model:a.model,pipeline:a.pipeline}:(MP_DEMO[a.id]||{});
+  if(a.type==='model'){
+    const m=mp.model; if(!m) return '';
+    return `<div class="dblock"><h4>🧠 Fiche modèle</h4><div class="mpgrid">
+        <div><div class="mph">Entrées</div><ul class="insl">${(m.inputs||[]).map(x=>'<li>'+escapeHtml(x)+'</li>').join('')||'<li class="muted">—</li>'}</ul></div>
+        <div><div class="mph">Sorties</div><ul class="insl">${(m.outputs||[]).map(x=>'<li>'+escapeHtml(x)+'</li>').join('')||'<li class="muted">—</li>'}</ul></div></div>
+      ${m.metric?`<p style="margin:8px 0 0;font-size:13px"><b>Qualité :</b> ${escapeHtml(m.metric)}</p>`:''}
+      ${m.basis?`<p style="margin:4px 0 0;font-size:12.5px;color:var(--muted)">${escapeHtml(m.basis)}</p>`:''}</div>`;
+  }
+  if(a.type==='pipeline'){
+    const p=mp.pipeline; if(!p) return '';
+    const cons=(p.consumes||[]).map(function(id){var x=allAssets().find(y=>y.id===id);return x?`<span class="topic" style="cursor:pointer" onclick="openAsset('${x.id}')">${ICON[x.type]} ${escapeHtml(x.title)}</span>`:'';}).join('');
+    return `<div class="dblock"><h4>⚙️ Étapes du pipeline</h4>
+      <ol class="steps">${(p.steps||[]).map(s=>'<li>'+escapeHtml(s)+'</li>').join('')||'<li class="muted">—</li>'}</ol>
+      ${cons?`<div class="mph" style="margin-top:10px">Assets consommés (traçabilité)</div><div class="tagrow">${cons}</div>`:''}</div>`;
+  }
+  return '';
 }
 function previewBlock(a){
   const k=a.previewKind; if(!k) return '';
@@ -883,6 +948,7 @@ function openAsset(id){
           ${FILES[a.id]?`<div style="margin-top:10px"><button class="btn ghost sm" onclick="downloadFile('${a.id}')">⤓ Télécharger le fichier original (${escapeHtml(FILES[a.id].name)})</button></div>`:''}
           ${a.topics&&a.topics.length?`<div class="tagrow">${a.topics.map(t=>'<span class="topic">'+escapeHtml(t)+'</span>').join('')}</div>`:''}
           ${statusTag}</div>
+        ${modelPipelineBlock(a)}
         ${previewBlock(a)}
         ${a.csv?`<div class="dblock"><h4>Visualiser les données</h4>
           <div style="margin-bottom:10px"><button class="btn ghost sm" onclick="downloadCsv('${a.id}')">⤓ Télécharger (CSV)</button></div>
@@ -899,15 +965,16 @@ function openAsset(id){
       <div class="dside">
         <div class="scard"><h4>${u.metrics}</h4>
           <div class="kv"><span>${u.mReuses}</span><b>${a.reuses}</b></div>
-          <div class="kv"><span>${u.mStars}</span><b>${a.stars}</b></div>
-          <div class="kv"><span>${u.mReviews}</span><b>${a.reviews}</b></div>
+          <div class="kv"><span>${u.mStars}</span><b><span class="star ${isStarred(a.id)?'on':''}" style="cursor:pointer" onclick="toggleStar('${a.id}')">${isStarred(a.id)?'⭐':'☆'}</span> ${starCount(a)}</b></div>
+          <div class="kv"><span>${u.mReviews}</span><b>${reviewApprovals(a)}</b></div>
           <div class="kv"><span>${u.mLayer}</span><b>${a.layer==='open'?u.layerOpen:u.layerCore}</b></div>
         </div>
+        ${validationCard(a)}
         <div class="scard"><h4>${u.contributors}</h4>
           ${a.contributors.map(c=>`<div class="contrib"><span class="av">${c.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</span>${c}</div>`).join('')}
         </div>
         ${a.id==='reco-engine'||a.id==='nvs'?`<div class="scard" style="background:var(--green-50);border-color:var(--green-100)"><h4>${u.appUses}</h4><p style="margin:0 0 10px;font-size:13px;color:var(--green-800)">${u.appUsesText}</p><button class="cta-mini" style="width:100%" onclick="go('console')">${u.openConsole}</button></div>`:''}
-        ${isDelta(a.id)?`<button class="btn ghost sm" style="width:100%;color:var(--bad);border:1px solid #f0c9c9;background:#fff" onclick="deleteAsset('${a.id}')">🗑 Supprimer cet asset</button>`:''}
+        ${isDelta(a.id)?`<div class="scard"><h4>Gérer</h4><label class="fl" style="font-size:11px">Type d'asset</label><select class="rvwho" onchange="changeType('${a.id}',this.value)">${['dataset','model','standard','pipeline','publication'].map(t=>`<option value="${t}" ${a.type===t?'selected':''}>${ICON[t]} ${ty[t]}</option>`).join('')}</select><button class="btn ghost sm" style="width:100%;margin-top:10px;color:var(--bad);border:1px solid #f0c9c9;background:#fff" onclick="deleteAsset('${a.id}')">🗑 Supprimer cet asset</button></div>`:''}
       </div>
     </div>
     ${browse}`;
@@ -1016,6 +1083,87 @@ function deleteAsset(id){
   DELTA=DELTA.filter(function(x){return x.id!==id;}); saveDelta();
   renderGrid(); renderImpact(); renderCommunity();
   go('explore'); toast('Asset supprimé');
+}
+function changeType(id,t){
+  const a=DELTA.find(function(x){return x.id===id;});
+  if(!a){ alert('Le type des assets d\'exemple n\'est pas modifiable dans cette démo.'); return; }
+  a.type=t; saveDelta(); renderGrid(); if(curAsset===id) openAsset(id); toast('Type mis à jour ✓');
+}
+
+/* ---- Stars : 1 par utilisateur, persistées localement ---- */
+let STARS=(function(){try{return JSON.parse(localStorage.getItem('nos_stars_v1'))||[]}catch(e){return []}})();
+function isStarred(id){return STARS.indexOf(id)>=0;}
+function starCount(a){return (a.stars||0)+(isStarred(a.id)?1:0);}
+function toggleStar(id,ev){ if(ev){ev.stopPropagation();} const i=STARS.indexOf(id); if(i>=0)STARS.splice(i,1); else STARS.push(id); localStorage.setItem('nos_stars_v1',JSON.stringify(STARS)); renderGrid(); if(curAsset===id)openAsset(id); }
+
+/* ---- Workflow de validation par les pairs ---- */
+let REVIEWS=(function(){try{return JSON.parse(localStorage.getItem('nos_reviews_v1'))||{}}catch(e){return {}}})();
+const REVIEWERS=['UM6P','INRA Maroc','D²nAI','AgriEdge','Al Moutmir','Ground Truth Analytics'];
+const REVIEW_THRESHOLD=2;
+function saveReviews(){localStorage.setItem('nos_reviews_v1',JSON.stringify(REVIEWS));}
+function getReview(id){return REVIEWS[id]||null;}
+function reviewStatus(a){ const r=getReview(a.id); if(r)return r.status; return (a.reviews>0?'validated':'open'); }
+function reviewApprovals(a){ const r=getReview(a.id); return r?r.approvals:(a.reviews||0); }
+function submitReview(id,reviewers){
+  REVIEWS[id]={status:'in_review',reviewers:reviewers&&reviewers.length?reviewers:REVIEWERS.slice(0,3),approvals:0,
+    events:[{who:'Vous',act:'a soumis l\'asset à validation',t:Date.now()}]};
+  saveReviews();
+}
+function startReviewFromDetail(id){
+  const picks=[...document.querySelectorAll('.rvpick:checked')].map(c=>c.value);
+  submitReview(id,picks); openAsset(id); toast('Cycle de validation lancé ✓');
+}
+function approveReview(id){
+  const who=(document.getElementById('rvWho')||{}).value||'Pair';
+  const r=REVIEWS[id]; if(!r)return; r.approvals++; r.events.push({who,act:'a approuvé',t:Date.now()});
+  if(r.approvals>=REVIEW_THRESHOLD) r.status='validated';
+  saveReviews(); renderGrid(); openAsset(id); toast(r.status==='validated'?'Asset validé par les pairs ✓':'Approbation enregistrée ✓');
+}
+function requestChanges(id){
+  const who=(document.getElementById('rvWho')||{}).value||'Pair';
+  const note=(document.getElementById('rvNote')||{}).value||'';
+  const r=REVIEWS[id]; if(!r)return; r.events.push({who,act:'a demandé des modifications'+(note?(' : « '+note+' »'):''),t:Date.now()});
+  saveReviews(); openAsset(id); toast('Demande de modifications envoyée');
+}
+function validationCard(a){
+  const stt=reviewStatus(a), r=getReview(a.id);
+  const badge=stt==='validated'?'<span class="vbadge ok">✅ Validé par les pairs</span>'
+    :stt==='in_review'?'<span class="vbadge rev">🕓 En revue</span>'
+    :'<span class="vbadge">⚪ Ouvert</span>';
+  let body='';
+  if(stt==='open'){
+    body='<p style="margin:0 0 8px;font-size:12.5px;color:var(--muted)">Lancez un cycle de validation : choisissez les pairs relecteurs.</p>'
+      +'<div class="rvlist">'+REVIEWERS.map(rv=>`<label class="rvopt"><input type="checkbox" class="rvpick" value="${escapeHtml(rv)}" ${REVIEWERS.indexOf(rv)<2?'checked':''}> ${escapeHtml(rv)}</label>`).join('')+'</div>'
+      +`<button class="btn primary sm" style="width:100%;margin-top:10px" onclick="startReviewFromDetail('${a.id}')">🚦 Soumettre à validation</button>`;
+  } else {
+    const rev=r?r.reviewers:[]; const appr=r?r.approvals:0;
+    body='<p style="margin:0 0 6px;font-size:12.5px"><b>'+appr+'/'+REVIEW_THRESHOLD+'</b> approbation(s) · relecteurs : '+(rev.map(escapeHtml).join(', ')||'—')+'</p>';
+    if(stt==='in_review'){
+      body+='<div style="margin:8px 0"><select id="rvWho" class="rvwho">'+(rev.length?rev:REVIEWERS).map(x=>`<option>${escapeHtml(x)}</option>`).join('')+'</select></div>'
+        +'<textarea id="rvNote" rows="2" placeholder="Commentaire (optionnel)" style="width:100%;margin-bottom:8px"></textarea>'
+        +`<div style="display:flex;gap:8px"><button class="btn primary sm" style="flex:1" onclick="approveReview('${a.id}')">✓ Approuver</button>`
+        +`<button class="btn ghost sm" style="flex:1" onclick="requestChanges('${a.id}')">✎ Modifs</button></div>`;
+    }
+    if(r&&r.events&&r.events.length){
+      body+='<div class="rvlog">'+r.events.slice().reverse().map(e=>`<div class="rvev"><b>${escapeHtml(e.who)}</b> ${escapeHtml(e.act)}</div>`).join('')+'</div>';
+    }
+  }
+  return `<div class="scard"><h4>Validation ${badge}</h4>${body}</div>`;
+}
+
+/* ---- Multi-sélection dans l'explorateur ---- */
+let SEL=new Set();
+function toggleSel(id,ev){ if(ev){ev.stopPropagation();} if(SEL.has(id))SEL.delete(id); else SEL.add(id); renderSelBar(); const c=document.getElementById('selcb_'+id); if(c)c.checked=SEL.has(id); }
+function clearSel(){ SEL.clear(); renderGrid(); renderSelBar(); }
+function renderSelBar(){
+  const bar=document.getElementById('selbar'); if(!bar) return;
+  if(SEL.size){ bar.classList.add('on'); bar.querySelector('.seln').textContent=SEL.size+' asset'+(SEL.size>1?'s':'')+' sélectionné'+(SEL.size>1?'s':''); }
+  else bar.classList.remove('on');
+}
+function bulkValidate(){
+  if(!SEL.size) return;
+  const ids=[...SEL]; ids.forEach(id=>{ if(reviewStatus(allAssets().find(x=>x.id===id)||{})!=='validated') submitReview(id,REVIEWERS.slice(0,3)); });
+  clearSel(); renderGrid(); toast('Cycle de validation lancé pour '+ids.length+' asset'+(ids.length>1?'s':'')+' ✓');
 }
 
 function renderImpact(){
@@ -1219,6 +1367,8 @@ async function runAI(auto){
     if(desc){ descEl.value=desc; filled.push('description'); }
     if(r.source && !srcEl.value){ srcEl.value=r.source; filled.push('source'); }
     if(!srcEl.value){ srcEl.value='Fichier importé — '+f.name; }
+    const tEl=document.getElementById('up_type'); const TY=['dataset','model','standard','pipeline','publication'];
+    if(r.suggested_type && TY.indexOf(r.suggested_type)>=0){ tEl.value=r.suggested_type; document.getElementById('up_type_ai').textContent='· proposé par l\'IA (modifiable)'; filled.push('type'); }
     if(r.topics.length) filled.push('mots-clés');
     if(st){
       if(filled.length){
@@ -1260,6 +1410,7 @@ function onFiles(files){
     : ''; }
   document.getElementById('up_title').value=f.name.replace(/\.[^.]+$/,'')+(pendingFiles.length>1?(' (+'+(pendingFiles.length-1)+')'):'');
   document.getElementById('up_desc').value=''; document.getElementById('up_summary').value=''; document.getElementById('up_source').value='';
+  document.getElementById('up_type').value=typeFromName(f.name); document.getElementById('up_type_ai').textContent='';
   document.getElementById('up_extra').innerHTML=''; document.getElementById('up_related').innerHTML='';
   const nm=(f.type+' '+f.name).toLowerCase();
   if(/spreadsheet|excel|officedocument\.spreadsheet|\.xlsx|\.xls\b|\.ods/.test(nm)) enrichSheet(f);
@@ -1367,7 +1518,7 @@ function submitIntake(){
     const title=val('up_title')||f.name.replace(/\.[^.]+$/,'');
     const desc=val('up_desc')||val('up_summary')||('Importé : '+pendingFiles.map(x=>x.name).join(', '));
     const pk=previewKind(f);
-    const newId=addAsset({type:(pendingAI&&pendingAI.suggested_type)||typeFromName(f.name),title,org:'Contribution',via:'fichier',
+    const newId=addAsset({type:document.getElementById('up_type').value||typeFromName(f.name),title,org:'Contribution',via:'fichier',
       source:val('up_source'), summary:val('up_summary'), filemeta:(f.type||'fichier')+' · '+humanSize(f.size)+(pendingMeta?(' · '+pendingMeta):''),
       insights:(pendingAI&&pendingAI.insights)||null, topics:(pendingAI&&pendingAI.topics)||null,
       csv: pendingCsv?{head:pendingCsv.head,body:pendingCsv.body.slice(0,200),n:pendingCsv.n}:null,
