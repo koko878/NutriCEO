@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutrientOS
  * Description:       Hosts the NutrientOS prototype, the executive one-pager and the executive summary. Full-screen URLs (no theme chrome) + shortcodes with full-bleed auto-resizing iframes. Includes a server-side AI proxy (curate) to the OCP AI Lab for auto-summaries/insights.
- * Version:           1.9.6
+ * Version:           1.9.7
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutrientos
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NOS_VER', '1.9.6' );
+define( 'DNAI_NOS_VER', '1.9.7' );
 define( 'DNAI_NOS_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NOS_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -160,6 +160,11 @@ function dnai_nos_curate( $req ) {
 	if ( ! dnai_nos_ai_ready() ) {
 		return new WP_REST_Response( array( 'error' => 'AI non configurée (Réglages → D²nAI NutrientOS).' ), 400 );
 	}
+	// The AI Lab model can be slow (cold start, vision). Give it room.
+	@set_time_limit( 0 );
+	@ignore_user_abort( true );
+	$timeout = (int) dnai_nos_opt( 'timeout', '300' );
+	if ( $timeout < 30 ) { $timeout = 300; }
 	$b       = $req->get_json_params();
 	$title   = isset( $b['title'] ) ? sanitize_text_field( $b['title'] ) : '';
 	$ftype   = isset( $b['ftype'] ) ? sanitize_text_field( $b['ftype'] ) : '';
@@ -201,7 +206,7 @@ function dnai_nos_curate( $req ) {
 	}
 
 	$resp = wp_remote_post( $base . $path, array(
-		'timeout' => 60,
+		'timeout' => $timeout,
 		'headers' => array( 'Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . $key ),
 		'body'    => wp_json_encode( $payload ),
 	) );
@@ -249,6 +254,7 @@ add_action( 'admin_post_dnai_nos_save', function () {
 		'api_key'   => $key,
 		'model'     => isset( $in['model'] ) && trim( $in['model'] ) !== '' ? sanitize_text_field( $in['model'] ) : 'nutrientos-curator',
 		'json_mode' => isset( $in['json_mode'] ) ? '1' : '0',
+		'timeout'   => isset( $in['timeout'] ) && (int) $in['timeout'] >= 30 ? (string) (int) $in['timeout'] : '300',
 	);
 	update_option( 'dnai_nos_settings', $val );
 	wp_safe_redirect( add_query_arg( array( 'page' => 'dnai-nutrientos', 'dnai_saved' => '1' ), admin_url( 'options-general.php' ) ) );
@@ -282,6 +288,7 @@ function dnai_nos_settings_page() {
 				<tr><th>API key</th><td><input type="password" autocomplete="new-password" name="dnai_nos_settings[api_key]" value="" class="regular-text" placeholder="<?php echo $has_key ? '•••• déjà enregistrée — laisser vide pour conserver' : 'colle ta clé ici'; ?>"></td></tr>
 				<tr><th>Modèle</th><td><input type="text" name="dnai_nos_settings[model]" value="<?php echo $g( 'model', 'nutrientos-curator' ); ?>" class="regular-text"></td></tr>
 				<tr><th>JSON mode</th><td><label><input type="checkbox" name="dnai_nos_settings[json_mode]" value="1" <?php checked( '1', isset( $o['json_mode'] ) ? $o['json_mode'] : '1' ); ?>> Envoyer response_format=json_object</label></td></tr>
+				<tr><th>Timeout (s)</th><td><input type="number" min="30" max="900" name="dnai_nos_settings[timeout]" value="<?php echo $g( 'timeout', '300' ); ?>" class="small-text"> <span style="color:#777;font-size:12px">délai max d'attente du modèle (défaut 300 s). Note : l'hébergeur/CDN peut imposer sa propre limite.</span></td></tr>
 			</table>
 			<?php submit_button(); ?>
 		</form>

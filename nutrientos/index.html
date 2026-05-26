@@ -1191,6 +1191,7 @@ async function runAI(auto){
   const f=pendingFiles[0]; if(!f) return;
   if(f.type.startsWith('audio/')){ if(st){st.textContent='Audio : transcription (Whisper) à brancher avant analyse.';st.className='aistat err';} return; }
   if(st){ st.textContent='✨ Analyse IA en cours…'; st.className='aistat run'; }
+  aiOverlay(true);
   try{
     const payload=Object.assign({title:document.getElementById('up_title').value||f.name, ftype:(f.type||f.name)}, await gatherContent(f));
     const raw=await aiCurate(payload);
@@ -1226,6 +1227,7 @@ async function runAI(auto){
     if(seed) showRelated(seed, document.getElementById('up_related'));
     setTimeout(postHeight,80);
   }catch(e){ if(st){ st.textContent='IA indisponible : '+(e.message||e); st.className='aistat err'; } }
+  finally{ aiOverlay(false); }
 }
 function onFiles(files){
   pendingFiles=[...files]; pendingCsv=null; pendingMeta=''; pendingAI=null;
@@ -1383,6 +1385,25 @@ function importDelta(inp){
   const r=new FileReader();
   r.onload=()=>{ try{ const d=JSON.parse(r.result); if(Array.isArray(d)){ DELTA=d.concat(DELTA); saveDelta(); renderGrid(); renderImpact(); renderCommunity(); toast('Contributions importées ✓'); } else alert('Format invalide.'); }catch(e){ alert('JSON invalide.'); } };
   r.readAsText(file); inp.value='';
+}
+function aiOverlay(on){
+  let o=document.getElementById('aiOverlay');
+  if(!o){
+    if(!document.getElementById('aiOvStyle')){ const s=document.createElement('style'); s.id='aiOvStyle';
+      s.textContent='@keyframes aiovspin{to{transform:rotate(360deg)}}@keyframes aiovpulse{0%,100%{opacity:.4}50%{opacity:1}}'
+       +'#aiOverlay{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(7,20,12,.62);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}'
+       +'#aiOverlay.on{display:flex}'
+       +'#aiOverlay .card{background:#fff;border-radius:18px;padding:30px 34px;max-width:380px;text-align:center;box-shadow:0 30px 70px -20px rgba(0,0,0,.55)}'
+       +'#aiOverlay .spin{width:46px;height:46px;margin:0 auto 16px;border-radius:50%;border:4px solid #EAF4EC;border-top-color:#2E7D32;animation:aiovspin .9s linear infinite}'
+       +'#aiOverlay h3{margin:0 0 6px;font:700 18px Inter,sans-serif;color:#10231a}'
+       +'#aiOverlay p{margin:0;font:400 13.5px Inter,sans-serif;color:#5a6b60;line-height:1.5}'
+       +'#aiOverlay .dots{margin-top:10px;font:600 12px Inter,sans-serif;color:#2E7D32;animation:aiovpulse 1.4s ease-in-out infinite}';
+      document.head.appendChild(s); }
+    o=document.createElement('div'); o.id='aiOverlay';
+    o.innerHTML='<div class="card"><div class="spin"></div><h3>✨ Analyse IA en cours…</h3><p>Le modèle <b>nutrientos-curator</b> lit votre fichier et en extrait le résumé, les insights et les mots-clés.</p><div class="dots">Cela peut prendre jusqu’à 1–2 minutes…</div></div>';
+    document.body.appendChild(o);
+  }
+  o.classList.toggle('on',!!on);
 }
 function toast(msg){
   let t=document.getElementById('nosToast');
