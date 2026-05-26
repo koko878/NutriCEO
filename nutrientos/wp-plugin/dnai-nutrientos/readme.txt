@@ -1,35 +1,31 @@
 === D²nAI NutrientOS ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 
 Hosts the NutrientOS prototype, the executive one-pager and the executive
-summary on your WordPress site — as shortcodes and as direct, mobile-friendly
-URLs (fully interactive on iPhone/Android, unlike an HTML file sent by chat).
+summary on your WordPress site — full-screen URLs (no theme chrome) and
+shortcodes with full-bleed, cache-busted, auto-resizing iframes.
 
 == Install ==
 1. Plugins → Add New → Upload Plugin → choose `dnai-nutrientos.zip` → Install → Activate.
-   (Or copy the `dnai-nutrientos/` folder into wp-content/plugins/ and activate.)
+2. If pretty URLs 404, go to Settings → Permalinks → Save (flushes rewrite rules).
 
-== Use — Option A: shortcodes (recommended, gives a clean page URL) ==
-Create a new Page (e.g. "NutrientOS") and put ONE shortcode in it:
-  [nutrientos]            → the interactive platform prototype
-  [nutrientos_exec]       → the 1-page executive (Why/What/How)
-  [nutrientos_execsum]    → the detailed executive summary
-Publish, then share that page's URL. Works on mobile.
-Optional height: [nutrientos height="900px"]
+== Use — FULL SCREEN (recommended) ==
+Open, on any device, edge-to-edge with NO theme around it:
+  https://YOURSITE/nutrientos            → the interactive platform
+  https://YOURSITE/nutrientos-exec       → the 1-page executive (Why/What/How)
+  https://YOURSITE/nutrientos-execsum    → the detailed executive summary
+Fallbacks (always work): /?dnai_nos_app=index | exec | execsum
 
-Tip: for a clean full-screen feel, use a blank/"canvas" page template if your
-theme offers one.
-
-== Use — Option B: direct URLs (no page needed) ==
-After activation, these links are live and shareable:
-  https://YOURSITE/wp-content/plugins/dnai-nutrientos/app/index.html
-  https://YOURSITE/wp-content/plugins/dnai-nutrientos/app/exec.html
-  https://YOURSITE/wp-content/plugins/dnai-nutrientos/app/execsum.html
+== Use — embed in a page (optional) ==
+Add ONE shortcode to a Page:
+  [nutrientos]  ·  [nutrientos_exec]  ·  [nutrientos_execsum]
+The iframe is full-bleed (spans the window width), cache-busted and auto-resizes
+to its content (no nested scrollbar), with an "Ouvrir en plein écran" link.
 
 == Update the content ==
-Replace the files in `app/` (index.html / exec.html / execsum.html) with newer
-versions and re-upload the plugin. No database, no settings.
+Replace the files in `app/` and re-upload. The version number cache-busts the
+embed automatically. No database, no settings.

@@ -276,6 +276,7 @@ function applyLang(){
 }
 function setLang(l){LANG=l;document.querySelectorAll('.lng').forEach(b=>b.classList.toggle('on',b.dataset.l===l));applyLang();}
 setLang('fr');
+(function(){if(window.self===window.top)return;function ph(){var p=document.querySelector('.page');var h=Math.ceil(p?(p.offsetTop*2+p.offsetHeight):document.body.scrollHeight);parent.postMessage({dnaiNosHeight:h},'*');}window.addEventListener('load',ph);window.addEventListener('resize',ph);if('ResizeObserver'in window)new ResizeObserver(ph).observe(document.body);ph();})();
 </script>
 </body>
 </html>
