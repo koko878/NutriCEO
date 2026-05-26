@@ -166,6 +166,33 @@ h2.big{font-size:clamp(28px,4vw,44px);line-height:1.07;margin:12px 0 12px;font-w
 .maptoggle{display:inline-flex;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px}
 .mmbtn{border:0;background:#fff;padding:8px 16px;font:600 13px Inter,sans-serif;color:var(--muted);cursor:pointer}
 .mmbtn.on{background:var(--green-700);color:#fff}
+.mapwrap{position:relative}
+.mappanel{position:absolute;top:14px;z-index:10;background:rgba(6,16,10,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(102,187,106,.28);border-radius:14px;padding:13px;color:#dff0e3;font:13px Inter,sans-serif;box-shadow:0 18px 40px -16px rgba(0,0,0,.6)}
+.mappanel{left:14px;width:228px}
+.mappanel.right{left:auto;right:14px;width:280px;max-height:calc(68vh - 28px);overflow:auto}
+.mfh{display:flex;justify-content:space-between;align-items:center;font:700 11px Inter;letter-spacing:.08em;color:#8fe0a3;margin-bottom:10px}
+.mfc{color:#bfe9c8;font-weight:600;letter-spacing:0}
+.mfsec{display:flex;flex-direction:column;gap:6px}
+.lyr{display:flex;align-items:center;gap:9px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);border-radius:9px;padding:7px 10px;cursor:pointer;color:#9fb3a6}
+.lyr.on{border-color:rgba(124,252,154,.5);background:rgba(76,175,80,.16);color:#eafff0}
+.lyr .ll{flex:1;font-weight:600;font-size:12.5px}
+.lyr .lc{font-weight:700;font-size:11.5px;background:rgba(255,255,255,.08);border-radius:999px;padding:1px 8px}
+.lyr.on .lc{background:rgba(124,252,154,.22)}
+.mfrow{display:flex;gap:8px;margin-top:8px}
+.mflink{flex:1;border:0;background:rgba(255,255,255,.05);color:#9fd7ac;border-radius:8px;padding:5px;font:600 11px Inter;cursor:pointer}
+.mfh2{font:700 10.5px Inter;letter-spacing:.07em;color:#7fb98e;margin:12px 0 6px}
+.segbar{display:flex;gap:5px;flex-wrap:wrap}
+.seg{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#9fb3a6;border-radius:8px;padding:5px 9px;font:600 11.5px Inter;cursor:pointer}
+.seg.on{background:#2E7D32;border-color:#2E7D32;color:#fff}
+.mph3{display:flex;justify-content:space-between;align-items:center;font-size:14px;margin-bottom:4px}
+.mpx{border:0;background:none;color:#9fb3a6;font-size:15px;cursor:pointer}
+.mpsub{font-size:11.5px;color:#9fd7ac;margin-bottom:10px}
+.mplist{display:flex;flex-direction:column;gap:7px}
+.mpitem{display:flex;gap:9px;align-items:flex-start;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:8px 10px;cursor:pointer}
+.mpitem:hover{border-color:rgba(124,252,154,.45);background:rgba(76,175,80,.14)}
+.mpitem b{font-size:12.5px;color:#eafff0}
+.mpo{font-size:11px;color:#9fb3a6}
+@media(max-width:700px){.mappanel{position:static;width:auto;margin-top:10px;max-height:none}.mapwrap{display:flex;flex-direction:column}}
 .mapstats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
 .mapstats .ms{background:var(--green-50);border:1px solid var(--green-100);border-radius:10px;padding:8px 14px;font-size:13px;color:var(--green-800)}
 .mapstats .ms b{font-size:18px;color:var(--green-700)}
@@ -510,8 +537,12 @@ body.embed .botnav{display:none!important}
   <div class="wrap" style="padding:24px 0 60px">
     <div class="maptoggle"><button class="mmbtn on" data-m="globe" onclick="setMapMode('globe')">🌍 Globe 3D</button><button class="mmbtn" data-m="flat" onclick="setMapMode('flat')">🗺️ Plan</button></div>
     <div id="mapStats" class="mapstats"></div>
-    <div id="mapCanvas"></div>
-    <div class="maplegend">⬤ Région avec assets · taille = volume · <span style="color:var(--muted)">données localisées sur ce prototype</span></div>
+    <div class="mapwrap">
+      <div id="mapCanvas"></div>
+      <div class="mappanel" id="mapFilters"></div>
+      <div class="mappanel right" id="mapPanel" style="display:none"></div>
+    </div>
+    <div class="maplegend">⬤ Région avec assets · taille = volume · clique un point pour explorer · <span style="color:var(--muted)">données localisées sur ce prototype</span></div>
   </div>
 </div>
 
@@ -884,9 +915,21 @@ function assetRegion(a){ if(a.region&&typeof a.region.lat==='number') return a.r
 
 /* ---- Carte mondiale : globe 3D (globe.gl) + plan (Leaflet), à la demande ---- */
 let _leaflet=null,_map=null,_mlayer=null,_globeLib=null,GLOBES={},mapMode='globe';
-function mapGroups(){
+const MAP_TYPES=['dataset','model','standard','pipeline','publication'];
+let mapFilter={types:new Set(MAP_TYPES),layer:'all',status:'all',applyHome:false};
+function mapFilteredAssets(useFilter){
+  return allAssets().filter(function(a){
+    if(!assetRegion(a)) return false;
+    if(!useFilter) return true;
+    if(!mapFilter.types.has(a.type)) return false;
+    if(mapFilter.layer!=='all' && a.layer!==mapFilter.layer) return false;
+    if(mapFilter.status!=='all' && reviewStatus(a)!==mapFilter.status) return false;
+    return true;
+  });
+}
+function mapGroups(useFilter){
   const groups={};
-  allAssets().forEach(function(a){ const r=assetRegion(a); if(!r)return; const k=r.name; (groups[k]=groups[k]||{name:r.name,lat:r.lat,lon:r.lon,items:[]}).items.push(a); });
+  mapFilteredAssets(useFilter).forEach(function(a){ const r=assetRegion(a); if(!r)return; const k=r.name; (groups[k]=groups[k]||{name:r.name,lat:r.lat,lon:r.lon,items:[]}).items.push(a); });
   return Object.keys(groups).map(function(k){ const g=groups[k]; const by={}; g.items.forEach(a=>by[a.type]=(by[a.type]||0)+1); g.n=g.items.length; g.by=by; return g; });
 }
 function groupLabel(g){
@@ -900,7 +943,7 @@ function updateMapStats(data){
 }
 function resetMapHost(){ const host=document.getElementById('mapCanvas'); if(_map){try{_map.remove();}catch(e){}} _map=null;_mlayer=null; if(GLOBES.mapCanvas){delete GLOBES.mapCanvas;} if(host)host.innerHTML=''; }
 function setMapMode(m){ if(m===mapMode){return;} mapMode=m; document.querySelectorAll('.mmbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m)); resetMapHost(); renderMapView(); }
-function renderMapView(){ if(mapMode==='flat') renderMap(); else buildGlobe('mapCanvas',true); }
+function renderMapView(){ renderMapFilters(); if(mapMode==='flat') renderMap(); else buildGlobe('mapCanvas',true,true); }
 function ensureGlobe(){ if(_globeLib) return _globeLib; _globeLib=new Promise(function(res,rej){
   if(window.Globe){return res(window.Globe);}
   const s=document.createElement('script'); s.src='https://unpkg.com/globe.gl@2.32.0/dist/globe.gl.min.js'; s.onload=function(){res(window.Globe);}; s.onerror=rej; document.head.appendChild(s);
@@ -923,10 +966,10 @@ async function worldFeatures(){
   _world={features:feats};
   return _world;
 }
-async function buildGlobe(hostId,withStats){
+async function buildGlobe(hostId,withStats,useFilter){
   const host=document.getElementById(hostId); if(!host) return;
   let GG; try{ GG=await ensureGlobe(); }catch(e){ host.innerHTML='<p class="muted" style="padding:20px;color:#bcd">Globe 3D indisponible (réseau ?).</p>'; return; }
-  const data=mapGroups(); const labels=data.map(d=>({lat:d.lat,lng:d.lon,text:d.name,n:d.n}));
+  const data=mapGroups(useFilter); const labels=data.map(d=>({lat:d.lat,lng:d.lon,text:d.name,n:d.n}));
   let G=GLOBES[hostId];
   if(!G){
     host.innerHTML='';
@@ -940,7 +983,8 @@ async function buildGlobe(hostId,withStats){
       .pointLabel(function(d){return groupLabel(d);})
       .pointsData(data)
       .labelsData(labels).labelLat('lat').labelLng('lng').labelText('text')
-      .labelSize(0.85).labelDotRadius(0.28).labelColor(()=> 'rgba(190,255,205,0.8)').labelResolution(2).labelAltitude(0.012);
+      .labelSize(0.85).labelDotRadius(0.28).labelColor(()=> 'rgba(190,255,205,0.8)').labelResolution(2).labelAltitude(0.012)
+      .onPointClick(function(d){ if(hostId==='mapCanvas'){ showRegionPanel(d); try{G.pointOfView({lat:d.lat,lng:d.lon,altitude:1.5},700);}catch(e){} } else { go('map'); } });
     try{ const m=G.globeMaterial(); if(m&&m.color)m.color.set('#0c1d15'); if(m&&m.emissive)m.emissive.set('#04100a'); }catch(e){}
     // Dark globe with subtle country outlines (Morocco merged with W. Sahara → no border line).
     try{ const w=await worldFeatures(); G.polygonsData(w.features)
@@ -956,7 +1000,37 @@ async function buildGlobe(hostId,withStats){
   setTimeout(function(){ try{ G.width(host.clientWidth||800).height(host.clientHeight||520); }catch(e){} },150);
   return G;
 }
-function renderHomeGlobe(){ buildGlobe('homeGlobe',false); }
+function renderHomeGlobe(){ buildGlobe('homeGlobe',false,false); }
+function refreshMap(){ if(mapMode==='flat') renderMap(); else buildGlobe('mapCanvas',true,true); }
+function toggleMapType(t){ if(mapFilter.types.has(t))mapFilter.types.delete(t); else mapFilter.types.add(t); renderMapFilters(); refreshMap(); }
+function setMapLayer(l){ mapFilter.layer=l; renderMapFilters(); refreshMap(); }
+function setMapStatus(s){ mapFilter.status=s; renderMapFilters(); refreshMap(); }
+function mapAllTypes(on){ mapFilter.types=new Set(on?MAP_TYPES:[]); renderMapFilters(); refreshMap(); }
+function renderMapFilters(){
+  const host=document.getElementById('mapFilters'); if(!host) return;
+  const ty=TYPES_L[LANG]; const located=allAssets().filter(a=>assetRegion(a));
+  const cnt=t=>located.filter(a=>a.type===t).length;
+  const types=MAP_TYPES.map(t=>`<button class="lyr${mapFilter.types.has(t)?' on':''}" onclick="toggleMapType('${t}')"><span class="ld">${ICON[t]}</span><span class="ll">${ty[t]}</span><span class="lc">${cnt(t)}</span></button>`).join('');
+  const layers=[['all','Toutes'],['open','Open'],['core','Core']].map(o=>`<button class="seg${mapFilter.layer===o[0]?' on':''}" onclick="setMapLayer('${o[0]}')">${o[1]}</button>`).join('');
+  const status=[['all','Tous'],['validated','Validés'],['in_review','En revue'],['open','Ouverts']].map(o=>`<button class="seg${mapFilter.status===o[0]?' on':''}" onclick="setMapStatus('${o[0]}')">${o[1]}</button>`).join('');
+  host.innerHTML=`<div class="mfh"><span>◉ COUCHES</span><span class="mfc">${mapFilteredAssets(true).length} assets</span></div>
+    <div class="mfsec">${types}</div>
+    <div class="mfrow"><button class="mflink" onclick="mapAllTypes(true)">Tout</button><button class="mflink" onclick="mapAllTypes(false)">Aucun</button></div>
+    <div class="mfh2">Couche</div><div class="segbar">${layers}</div>
+    <div class="mfh2">Validation</div><div class="segbar">${status}</div>`;
+}
+function showRegionPanel(g){
+  const host=document.getElementById('mapPanel'); if(!host) return;
+  // recompute items honoring current filter
+  const items=mapFilteredAssets(true).filter(a=>{const r=assetRegion(a);return r&&r.name===g.name;});
+  if(!items.length){ host.style.display='none'; return; }
+  const by={}; items.forEach(a=>by[a.type]=(by[a.type]||0)+1);
+  const stats=Object.keys(by).map(t=>`${ICON[t]} ${by[t]}`).join(' · ');
+  host.innerHTML=`<div class="mph3"><b>📍 ${escapeHtml(g.name)}</b><button class="mpx" onclick="document.getElementById('mapPanel').style.display='none'">✕</button></div>
+    <div class="mpsub">${items.length} asset(s) · ${stats}</div>
+    <div class="mplist">${items.map(a=>`<div class="mpitem" onclick="openAsset('${a.id}')"><span>${ICON[a.type]}</span><div><b>${escapeHtml(a.title)}</b><br><span class="mpo">${escapeHtml(orgD(a.org))}${a.contributor?(' · 👤 '+escapeHtml(a.contributor)):''}</span></div></div>`).join('')}</div>`;
+  host.style.display='block';
+}
 function ensureLeaflet(){ if(_leaflet) return _leaflet; _leaflet=new Promise(function(res,rej){
   if(window.L){return res(window.L);}
   const css=document.createElement('link'); css.rel='stylesheet'; css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'; document.head.appendChild(css);
@@ -972,10 +1046,11 @@ async function renderMap(){
   }
   if(_mlayer){ _map.removeLayer(_mlayer); }
   _mlayer=L.layerGroup().addTo(_map);
-  const data=mapGroups();
+  const data=mapGroups(true);
   data.forEach(function(g){ const radius=9+Math.sqrt(g.n)*5;
     const m=L.circleMarker([g.lat,g.lon],{radius:radius,color:'#66BB6A',weight:2,fillColor:'#2E7D32',fillOpacity:.55});
-    m.bindTooltip(groupLabel(g),{direction:'top',opacity:1}); m.bindPopup(groupLabel(g));
+    m.bindTooltip(groupLabel(g),{direction:'top',opacity:1});
+    m.on('click',function(){ showRegionPanel(g); });
     _mlayer.addLayer(m);
   });
   updateMapStats(data);
