@@ -1259,7 +1259,7 @@ function onFiles(files){
     ? `<div class="dupwarn">⚠️ <b>Cet asset existe déjà</b> — un fichier identique (<i>${escapeHtml(f.name)}</i>) a déjà été importé.<div style="margin-top:8px"><button class="btn ghost sm" onclick="openAsset('${dup.id}')">→ Voir l'asset existant</button></div></div>`
     : ''; }
   document.getElementById('up_title').value=f.name.replace(/\.[^.]+$/,'')+(pendingFiles.length>1?(' (+'+(pendingFiles.length-1)+')'):'');
-  document.getElementById('up_desc').value=''; document.getElementById('up_summary').value='';
+  document.getElementById('up_desc').value=''; document.getElementById('up_summary').value=''; document.getElementById('up_source').value='';
   document.getElementById('up_extra').innerHTML=''; document.getElementById('up_related').innerHTML='';
   const nm=(f.type+' '+f.name).toLowerCase();
   if(/spreadsheet|excel|officedocument\.spreadsheet|\.xlsx|\.xls\b|\.ods/.test(nm)) enrichSheet(f);
