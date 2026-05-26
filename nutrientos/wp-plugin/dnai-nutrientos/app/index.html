@@ -1156,12 +1156,21 @@ function fileToDataURL(f){ return new Promise(function(res,rej){ const r=new Fil
 let _pdfjs=null;
 function ensurePdfjs(){ if(_pdfjs) return _pdfjs; _pdfjs=new Promise(function(res,rej){ const s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'; s.onload=function(){ try{window['pdfjsLib'].GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}catch(e){} res(window['pdfjsLib']); }; s.onerror=rej; document.head.appendChild(s); }); return _pdfjs; }
 async function pdfText(f){ const lib=await ensurePdfjs(); const buf=await f.arrayBuffer(); const pdf=await lib.getDocument({data:buf}).promise; let t=''; const n=Math.min(pdf.numPages,6); for(let i=1;i<=n;i++){ const pg=await pdf.getPage(i); const c=await pg.getTextContent(); t+=c.items.map(x=>x.str).join(' ')+'\n'; if(t.length>12000)break; } return t; }
+async function pdfPageImage(f){ const lib=await ensurePdfjs(); const buf=await f.arrayBuffer(); const pdf=await lib.getDocument({data:buf}).promise; const pg=await pdf.getPage(1); const vp=pg.getViewport({scale:1.6}); const cv=document.createElement('canvas'); cv.width=Math.min(vp.width,1400); cv.height=Math.round(cv.width*vp.height/vp.width); const sc=cv.width/vp.width; await pg.render({canvasContext:cv.getContext('2d'),viewport:pg.getViewport({scale:1.6*sc})}).promise; return cv.toDataURL('image/jpeg',0.82); }
+let gatherInfo={mode:'',chars:0,note:''};
 async function gatherContent(f){
   const nm=(f.type+' '+f.name).toLowerCase();
-  if(f.type.startsWith('image/')) return {image:await fileToDataURL(f)};
-  if(/pdf/.test(nm)) return {content:await pdfText(f).catch(()=> '')};
-  if(/csv|tsv|json|text|\.csv|\.tsv|\.txt|\.json/.test(nm)) return {content:(await f.text()).slice(0,12000)};
-  return {content:''};
+  gatherInfo={mode:'',chars:0,note:''};
+  if(f.type.startsWith('image/')){ gatherInfo.mode='image'; return {image:await fileToDataURL(f)}; }
+  if(/pdf/.test(nm)){
+    let t=''; try{ t=await pdfText(f); }catch(e){ gatherInfo.note='pdf.js indisponible'; }
+    if((t||'').trim().length>=200){ gatherInfo.mode='texte PDF'; gatherInfo.chars=t.length; return {content:t}; }
+    // Thin/empty text layer (scanned PDF) → fall back to the vision model on the rendered page.
+    try{ const img=await pdfPageImage(f); gatherInfo.mode='vision (page rendue)'; gatherInfo.chars=(t||'').length; return {image:img, content:t||''}; }
+    catch(e){ gatherInfo.mode='texte PDF'; gatherInfo.chars=(t||'').length; if(!gatherInfo.note) gatherInfo.note='extraction PDF échouée'; return {content:t||''}; }
+  }
+  if(/csv|tsv|json|text|\.csv|\.tsv|\.txt|\.json/.test(nm)){ const c=(await f.text()).slice(0,12000); gatherInfo.mode='texte'; gatherInfo.chars=c.length; return {content:c}; }
+  gatherInfo.mode='inconnu'; return {content:''};
 }
 function aiCurate(p){ return fetch(window.DNAI_NOS.curate,{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':window.DNAI_NOS.nonce},body:JSON.stringify(p)}).then(x=>x.json()); }
 function aiField(r,keys){ for(const k of keys){ const v=r[k]; if(v!=null&&v!=='' && !(Array.isArray(v)&&!v.length)) return v; } return null; }
@@ -1197,8 +1206,18 @@ async function runAI(auto){
     if(!srcEl.value){ srcEl.value='Fichier importé — '+f.name; }
     if(r.topics.length) filled.push('mots-clés');
     if(st){
-      st.textContent = filled.length ? ('✓ Analyse IA appliquée — '+filled.join(', ')+' rempli'+(filled.length>1?'s':'')+'.') : '✓ Analyse IA terminée (aucun champ exploitable retourné par le modèle).';
-      st.className = filled.length ? 'aistat ok' : 'aistat err';
+      if(filled.length){
+        st.textContent='✓ Analyse IA appliquée — '+filled.join(', ')+' rempli'+(filled.length>1?'s':'')+'.';
+        st.className='aistat ok';
+      } else {
+        const keys=Object.keys(raw||{}).join(', ')||'(vide)';
+        const why = gatherInfo.chars<200 && gatherInfo.mode.indexOf('vision')<0
+          ? 'contenu non lisible — '+(gatherInfo.note||(gatherInfo.chars+' caractères extraits'))+'. PDF scanné/protégé ? Essaie un PDF avec texte sélectionnable, ou une image.'
+          : 'le modèle a répondu mais sans champ exploitable (clés reçues : '+keys+').';
+        st.innerHTML='⚠️ Rien à remplir — '+escapeHtml(why)+' <span style="color:var(--muted)">[mode : '+escapeHtml(gatherInfo.mode||'?')+']</span>';
+        st.className='aistat err';
+        try{ console.warn('[NutrientOS AI] gatherInfo=',gatherInfo,'raw=',raw); }catch(e){}
+      }
     }
     const seed=(r.topics.join(' ')+' '+(r.summary||'')+' '+(document.getElementById('up_title').value||'')).trim();
     if(seed) showRelated(seed, document.getElementById('up_related'));
