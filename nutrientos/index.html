@@ -111,7 +111,7 @@ h2.big{font-size:clamp(28px,4vw,44px);line-height:1.07;margin:12px 0 12px;font-w
 .dmeta b{color:var(--ink)}
 .dblock{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
 .dblock h4{margin:0 0 12px;font-size:18px}
-.codebox{background:#07140c;color:#cfe3d4;border-radius:10px;padding:14px 16px;font:500 12.5px var(--mono);overflow-x:auto;white-space:pre}
+.codebox{background:#07140c;color:#cfe3d4;border-radius:10px;padding:14px 16px;font:500 12.5px var(--mono);white-space:pre-wrap;word-break:break-all;overflow-wrap:anywhere}
 .codebox .k{color:var(--green-300)}.codebox .s{color:#e6c07b}
 .reuse{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line);font-size:13.5px}
 .reuse:first-of-type{border-top:0}
@@ -772,6 +772,11 @@ function openAsset(id){
   go('asset');
 }
 function escapeHtml(s){return String(s).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+function pickNum(o){ if(o==null) return null; if(typeof o==='number') return o;
+  if(typeof o==='object'){ if(typeof o.mean==='number') return o.mean;
+    for(const k in o){ if(typeof o[k]==='number') return o[k]; }
+    for(const k in o){ const n=pickNum(o[k]); if(n!=null) return n; } }
+  return null; }
 const SOIL_DICT={
   phh2o:{label:'pH du sol',unit:'',meaning:'Acidité/alcalinité — pilote la disponibilité du P et des oligo-éléments.'},
   nitrogen:{label:'Azote total (N)',unit:'g/kg',meaning:'Stock d\'azote du sol — base du besoin en fertilisation azotée.'},
@@ -809,7 +814,7 @@ async function browseData(id, mode){
         const info=SOIL_DICT[l.name]||{label:l.name,unit:'',meaning:''};
         const um=l.unit_measure||{}; const fac=um.d_factor||1; const unit=info.unit||um.target_units||'';
         (l.depths||[]).forEach(function(d){
-          const raw=d.values?(d.values.mean!=null?d.values.mean:(d.values['Q0.5']!=null?d.values['Q0.5']:null)):null;
+          const raw=pickNum(d.values);
           const real=(typeof raw==='number')?(Math.round((raw/fac)*100)/100):null;
           cards+='<div class="kvc"><div class="kk">'+escapeHtml(info.label)+'</div>'
             +'<div class="vv">'+(real!=null?real:'—')+' <span class="un">'+escapeHtml(unit)+'</span></div>'
