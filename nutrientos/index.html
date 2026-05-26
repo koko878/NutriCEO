@@ -164,6 +164,9 @@ h2.big{font-size:clamp(28px,4vw,44px);line-height:1.07;margin:12px 0 12px;font-w
 .regionsel{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font:inherit;font-size:14px;background:#fff}
 #view-map .phead{display:none}
 #view-map>.wrap{padding-top:16px}
+/* On the map view the shared landing CTA + footer must not add height/scroll. */
+body.mapview .cta-band{display:none}
+body.embed #view-map .maplegend{display:none}
 #mapCanvas{height:calc(100vh - 232px);min-height:340px;width:100%;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#06100a}
 body.embed #mapCanvas{height:600px}
 .mappanel.right{max-height:calc(100vh - 216px)}
@@ -1080,6 +1083,7 @@ function go(v){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('on'));
   document.getElementById('view-'+v).classList.add('on');
   document.querySelectorAll('.navlink,.botnav button').forEach(n=>n.classList.toggle('on',n.dataset.v===v));
+  document.body.classList.toggle('mapview',v==='map');
   window.scrollTo({top:0,behavior:'instant'});
   tagReveal();
   if(v==='map') setTimeout(renderMapView,80);
