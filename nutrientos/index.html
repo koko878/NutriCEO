@@ -252,6 +252,14 @@ body.embed .botnav{display:none!important}
 .dvtoolbar .presets button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;font:600 12px 'Inter';color:var(--green-700);cursor:pointer}
 .dvtoolbar .presets button:hover{background:var(--green-50);border-color:var(--green-300)}
 .raw{background:#07140c;color:#cfe3d4;border-radius:10px;padding:12px 14px;font:500 12px var(--mono);overflow:auto;max-height:320px;white-space:pre;margin-top:8px}
+/* data table preview */
+.tblwrap2{overflow:auto;max-height:340px;border:1px solid var(--line);border-radius:10px}
+.dtable{width:100%;border-collapse:collapse;font-size:12.5px}
+.dtable th,.dtable td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.dtable thead th{position:sticky;top:0;background:var(--green-50);color:var(--green-800);font-weight:700}
+.relbox{margin-top:12px;background:var(--green-50);border:1px solid var(--green-100);border-radius:11px;padding:11px 13px;font-size:12.5px;color:var(--green-800)}
+.relbox b{display:block;margin-bottom:6px}
+.relrow{padding:4px 0;color:var(--ink)}
 /* intake wizard */
 .intakecard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px;max-width:840px;margin:0 auto}
 .cta-mini{white-space:nowrap}
@@ -485,6 +493,14 @@ body.embed .botnav{display:none!important}
         </div>
       </div>
       <div id="filePrev"></div>
+      <div id="upMeta" style="display:none;margin-top:6px">
+        <label class="fl">Titre</label><input type="text" id="up_title">
+        <label class="fl">Source (URL ou origine)</label><input type="text" id="up_source" placeholder="ex. https://… ou « rapport interne OCP 2024 »">
+        <label class="fl">Description</label><textarea id="up_desc" rows="2" placeholder="À quoi sert ce document/jeu de données ?"></textarea>
+        <label class="fl">Résumé court (max 3 phrases)</label><textarea id="up_summary" rows="3" placeholder="Synthèse du contenu…"></textarea>
+        <div id="up_extra"></div>
+        <div id="up_related"></div>
+      </div>
     </div>
 
     <!-- API -->
@@ -839,13 +855,21 @@ function openAsset(id){
         <h1>${ICON[a.type]} ${a.title}</h1>
         <div class="dmeta"><span>🏢 <b>${orgD(a.org)}</b></span><span>📦 ${ty[a.type]}</span><span>🕑 ${u.updPrefix} ${ago(a.upd)}</span><span>⭐ ${a.stars}</span></div>
         <div class="dblock"><h4>${u.desc}</h4><p style="margin:0;color:var(--muted);font-size:14.5px">${a.desc[LANG]}</p>
+          ${a.summary?`<p style="margin:10px 0 0;font-size:13.5px"><b>Résumé :</b> ${escapeHtml(a.summary)}</p>`:''}
+          ${a.source?`<p style="margin:8px 0 0;font-size:12.5px;color:var(--muted)"><b>Source :</b> ${/^https?:/.test(a.source)?('<a href="'+escapeHtml(a.source)+'" target="_blank" rel="noopener" style="color:var(--green-700)">'+escapeHtml(a.source)+'</a>'):escapeHtml(a.source)}</p>`:''}
+          ${a.filemeta?`<p style="margin:6px 0 0;font-size:12px;color:var(--muted)">📎 ${escapeHtml(a.filemeta)}</p>`:''}
           ${statusTag}</div>
+        ${a.csv?`<div class="dblock"><h4>Visualiser les données</h4>
+          <div style="margin-bottom:10px"><button class="btn ghost sm" onclick="downloadCsv('${a.id}')">⤓ Télécharger (CSV)</button></div>
+          <div class="muted" style="font-size:12px;margin-bottom:6px">${a.csv.n} lignes · aperçu :</div>
+          <div class="tblwrap2"><table class="dtable"><thead><tr>${a.csv.head.map(h=>'<th>'+escapeHtml(h)+'</th>').join('')}</tr></thead><tbody>${a.csv.body.slice(0,20).map(r=>'<tr>'+r.map(x=>'<td>'+escapeHtml(x)+'</td>').join('')+'</tr>').join('')}</tbody></table></div></div>`:''}
         <div class="dblock"><h4>${isStd?u.schema:u.access}</h4><div class="codebox">${code}</div></div>
         <div class="dblock"><h4>${u.reusedBy}</h4>
           ${a.layer==='core'
             ? `<p style="margin:0;color:var(--muted);font-size:13.5px">${u.coreNote}</p>`
             : reusers.map(r=>`<div class="reuse"><span class="dot"></span><div><b>${r.title}</b><br><span style="font-size:12px;color:var(--muted)">${orgD(r.org)}</span></div><span class="m">${fill(u.derived,{n:Math.round(r.reuses/3)})}</span></div>`).join('')}
         </div>
+        ${(function(){var rel=relatedAssets(a);return rel.length?`<div class="dblock"><h4>🔗 Assets liés — même sujet</h4>${rel.map(r=>`<div class="reuse" style="cursor:pointer" onclick="openAsset('${r.id}')"><span class="dot" style="background:var(--green-300)"></span><div><b>${escapeHtml(r.title)}</b><br><span style="font-size:12px;color:var(--muted)">${ICON[r.type]} ${orgD(r.org)}</span></div></div>`).join('')}</div>`:'';})()}
       </div>
       <div class="dside">
         <div class="scard"><h4>${u.metrics}</h4>
@@ -1096,16 +1120,85 @@ function typeFromName(n){
   return 'dataset';
 }
 function humanSize(b){ if(b<1024)return b+' o'; if(b<1048576)return (b/1024).toFixed(0)+' Ko'; return (b/1048576).toFixed(1)+' Mo'; }
+let pendingCsv=null, pendingMeta='';
 function onFiles(files){
-  pendingFiles=[...files];
+  pendingFiles=[...files]; pendingCsv=null; pendingMeta='';
   const host=document.getElementById('filePrev'); host.innerHTML='';
   pendingFiles.forEach(f=>{
     const row=document.createElement('div'); row.className='fitem-prev';
     if(f.type.startsWith('image/')){ const img=document.createElement('img'); img.src=URL.createObjectURL(f); row.appendChild(img); }
-    else { const ic=document.createElement('div'); ic.className='ic'; ic.textContent = f.type.startsWith('audio/')?'🎙️':(/pdf|word|doc/.test(f.type)?'📄':'🗄️'); row.appendChild(ic); }
-    const meta=document.createElement('div'); meta.innerHTML=`<div class="nm">${f.name}</div><div class="me">${f.type||'fichier'} · ${humanSize(f.size)}</div>`;
+    else { const ic=document.createElement('div'); ic.className='ic'; ic.textContent=f.type.startsWith('audio/')?'🎙️':(/pdf|word|doc|ppt/.test(f.type+f.name)?'📄':(/csv|sheet|excel|xls/.test(f.type+f.name)?'📊':'🗄️')); row.appendChild(ic); }
+    const meta=document.createElement('div'); meta.innerHTML=`<div class="nm">${escapeHtml(f.name)}</div><div class="me">${escapeHtml(f.type||'fichier')} · ${humanSize(f.size)}</div>`;
     row.appendChild(meta); host.appendChild(row);
   });
+  if(!pendingFiles.length) return;
+  document.getElementById('upMeta').style.display='block';
+  const f=pendingFiles[0];
+  document.getElementById('up_title').value=f.name.replace(/\.[^.]+$/,'')+(pendingFiles.length>1?(' (+'+(pendingFiles.length-1)+')'):'');
+  document.getElementById('up_desc').value=''; document.getElementById('up_summary').value='';
+  document.getElementById('up_extra').innerHTML=''; document.getElementById('up_related').innerHTML='';
+  const nm=(f.type+' '+f.name).toLowerCase();
+  if(/csv|tsv|text\/plain|\.csv|\.tsv|\.txt/.test(nm)) enrichText(f);
+  else if(f.type.startsWith('image/')) enrichImage(f);
+  else if(f.type.startsWith('audio/')) enrichAudio(f);
+  else enrichDoc(f);
+  showRelated(document.getElementById('up_title').value, document.getElementById('up_related'));
+}
+function setSummary(s){ const el=document.getElementById('up_summary'); if(el&&!el.value) el.value=s; }
+function enrichText(f){
+  const r=new FileReader();
+  r.onload=()=>{ const txt=String(r.result||'');
+    if(/\.txt|text\/plain/.test((f.type+f.name).toLowerCase()) && !/[,;\t]/.test(txt.split('\n')[0]||'')){
+      const s=txt.replace(/\s+/g,' ').trim().split(/(?<=[.!?])\s/).slice(0,3).join(' ');
+      setSummary(s.slice(0,400)); pendingMeta='Document texte'; return;
+    }
+    const sep=(txt.split('\n')[0]||'').includes(';')?';':((txt.split('\n')[0]||'').includes('\t')?'\t':',');
+    const lines=txt.split(/\r?\n/).filter(l=>l.trim()!==''); const rows=lines.map(l=>l.split(sep));
+    const cols=rows[0]||[]; pendingCsv={head:cols,body:rows.slice(1),n:rows.length-1,sep};
+    setSummary('Tableur : '+(rows.length-1)+' lignes × '+cols.length+' colonnes. Colonnes : '+cols.slice(0,8).join(', ')+(cols.length>8?'…':'')+'.');
+    pendingMeta=(rows.length-1)+' lignes × '+cols.length+' colonnes';
+    document.getElementById('up_extra').innerHTML='<div class="muted" style="font-size:12px;margin:8px 0 4px">Aperçu (15 premières lignes) :</div>'+csvTable(pendingCsv,15);
+  };
+  r.readAsText(f.slice(0,500000));
+}
+function csvTable(c,limit){
+  const body=c.body.slice(0,limit||15);
+  return '<div class="tblwrap2"><table class="dtable"><thead><tr>'+c.head.map(h=>'<th>'+escapeHtml(h)+'</th>').join('')+'</tr></thead><tbody>'
+    +body.map(r=>'<tr>'+r.map(x=>'<td>'+escapeHtml(x)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
+}
+function enrichImage(f){
+  const img=new Image(); img.onload=()=>{ pendingMeta=img.naturalWidth+'×'+img.naturalHeight+' px';
+    setSummary('Image '+pendingMeta+'. Insights (objets, parcelle, état du couvert…) à extraire par IA vision — à brancher.');
+    document.getElementById('up_extra').innerHTML='<div class="muted" style="font-size:12px">📐 '+pendingMeta+' — analyse d\'image (IA vision) à connecter pour en extraire les insights.</div>';
+  }; img.src=URL.createObjectURL(f);
+}
+function enrichAudio(f){
+  const au=document.createElement('audio'); au.preload='metadata';
+  au.onloadedmetadata=()=>{ const s=Math.round(au.duration||0); pendingMeta=s+' s';
+    setSummary('Audio de '+s+' s. Transcription & insights à extraire par IA audio — à brancher.');
+    document.getElementById('up_extra').innerHTML='<div class="muted" style="font-size:12px">🎙️ Durée '+s+' s — transcription/insights (IA audio) à connecter.</div>';
+  }; au.src=URL.createObjectURL(f);
+}
+function enrichDoc(f){
+  pendingMeta='Document';
+  document.getElementById('up_extra').innerHTML='<div class="muted" style="font-size:12px">📄 Renseignez la source et un résumé court. Le résumé automatique du contenu PDF/Word nécessite un LLM (à brancher via le proxy serveur).</div>';
+}
+/* keyword overlap → related assets */
+function tokens(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').match(/[a-z0-9]{4,}/g)||[]; }
+const STOP=new Set(['avec','pour','dans','data','dataset','source','fichier','propriete','proprietes','open','nutricrops','soil','sols']);
+function relatedAssets(a){
+  const base=new Set(tokens((a.title||'')+' '+(a.desc?(a.desc[LANG]||a.desc.fr||''):'')+' '+(a.summary||'')).filter(t=>!STOP.has(t)));
+  if(!base.size) return [];
+  return allAssets().filter(x=>x.id!==a.id).map(x=>{
+    const t=new Set(tokens((x.title||'')+' '+(x.desc?(x.desc[LANG]||x.desc.fr||''):'')+' '+(x.summary||'')));
+    let s=0; base.forEach(w=>{ if(t.has(w)) s++; }); return {x,s};
+  }).filter(o=>o.s>0).sort((p,q)=>q.s-p.s).slice(0,3).map(o=>o.x);
+}
+function showRelated(title, host){
+  const rel=relatedAssets({id:'__new__',title,desc:{fr:title},summary:''});
+  host.innerHTML = rel.length
+    ? '<div class="relbox"><b>🔗 Assets liés détectés (même sujet)</b>'+rel.map(r=>'<div class="relrow">'+ICON[r.type]+' '+escapeHtml(r.title)+'</div>').join('')+'</div>'
+    : '';
 }
 function testConn(kind){
   const el=document.getElementById(kind+'_msg');
@@ -1127,10 +1220,13 @@ function addAsset(o){
 function submitIntake(){
   if(intakeSrc==='upload'){
     if(!pendingFiles.length){ alert('Choisissez au moins un fichier.'); return; }
-    const f=pendingFiles[0], base=f.name.replace(/\.[^.]+$/,'');
-    const extra=pendingFiles.length>1?(' (+'+(pendingFiles.length-1)+' fichiers)'):'';
-    addAsset({type:typeFromName(f.name),title:base+extra,org:'Contribution',via:'fichier',
-      desc:'Importé : '+pendingFiles.map(x=>x.name).join(', ')});
+    const f=pendingFiles[0];
+    const title=val('up_title')||f.name.replace(/\.[^.]+$/,'');
+    const desc=val('up_desc')||val('up_summary')||('Importé : '+pendingFiles.map(x=>x.name).join(', '));
+    addAsset({type:typeFromName(f.name),title,org:'Contribution',via:'fichier',
+      source:val('up_source'), summary:val('up_summary'), filemeta:(f.type||'fichier')+' · '+humanSize(f.size)+(pendingMeta?(' · '+pendingMeta):''),
+      csv: pendingCsv?{head:pendingCsv.head,body:pendingCsv.body.slice(0,200),n:pendingCsv.n}:null,
+      desc});
   } else if(intakeSrc==='api'){
     const name=val('api_name')||'Source API', url=val('api_url');
     if(!url){ alert('Renseignez l\'endpoint.'); return; }
@@ -1146,10 +1242,18 @@ function submitIntake(){
     const title=val('m_title'); if(!title){ alert('Le titre est requis.'); return; }
     addAsset({type:document.getElementById('m_type').value,title,org:val('m_org')||'Contribution',via:'saisie',desc:val('m_desc')});
   }
-  pendingFiles=[]; document.getElementById('filePrev').innerHTML='';
+  pendingFiles=[]; pendingCsv=null; document.getElementById('filePrev').innerHTML='';
+  var um=document.getElementById('upMeta'); if(um) um.style.display='none';
   closeIntake(); go('explore'); renderGrid();
 }
 function val(id){ return (document.getElementById(id).value||'').trim(); }
+function downloadCsv(id){
+  const a=allAssets().find(x=>x.id===id); if(!a||!a.csv) return;
+  const rows=[a.csv.head].concat(a.csv.body);
+  const csv=rows.map(r=>r.map(c=>'"'+String(c==null?'':c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  const el=document.createElement('a'); el.href=URL.createObjectURL(blob); el.download=(a.title||'data')+'.csv'; el.click();
+}
 function exportDelta(){
   if(!DELTA.length){ alert('Aucune contribution à exporter.'); return; }
   const blob=new Blob([JSON.stringify(DELTA,null,2)],{type:'application/json'});
