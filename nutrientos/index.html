@@ -100,7 +100,7 @@ h2.big{font-size:clamp(28px,4vw,44px);line-height:1.07;margin:12px 0 12px;font-w
 .acard .stats .s{display:flex;align-items:center;gap:5px}
 
 /* asset detail */
-.adetail{padding:30px 0 60px}
+.adetail{padding-top:30px;padding-bottom:60px}
 .back{font-size:13px;font-weight:600;color:var(--green-700);cursor:pointer;display:inline-flex;gap:6px;align-items:center;margin-bottom:18px}
 .adetail{overflow-x:hidden}
 .dgrid{display:grid;grid-template-columns:1fr 320px;gap:30px}
@@ -255,8 +255,9 @@ body.embed .botnav{display:none!important}
 /* intake wizard */
 .intakecard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px;max-width:840px;margin:0 auto}
 .cta-mini{white-space:nowrap}
-.cta-mini.contrib{background:var(--green-500);color:#05230f}
+.cta-mini.contrib{display:inline-flex;align-items:center;gap:7px;background:var(--green-500);color:#05230f;padding:10px 16px;border-radius:10px}
 .cta-mini.contrib:hover{background:var(--green-300)}
+.cta-mini .pl{font-size:16px;font-weight:800;line-height:0}
 .ibtn{display:inline-grid;place-items:center;width:38px;height:38px;border:1px solid var(--line);background:#fff;border-radius:9px;font-size:15px;color:var(--green-700);cursor:pointer}
 .ibtn:hover{border-color:var(--green-300);background:var(--green-50)}
 .modal{position:fixed;inset:0;background:rgba(7,20,12,.6);display:none;align-items:flex-start;justify-content:center;z-index:200;padding:20px;overflow:auto}
@@ -318,7 +319,7 @@ body.embed .botnav{display:none!important}
         <button class="lng" data-l="pt" onclick="setLang('pt')">PT</button>
       </div>
       <div class="legend"><span class="lay open">OPEN</span><span class="lay core">OCP Nutricrops CORE</span></div>
-      <button class="cta-mini contrib" onclick="openIntake()">＋ Contribuer</button>
+      <button class="cta-mini contrib" onclick="openIntake()"><span class="pl">+</span> Contribuer</button>
     </div>
   </div>
 </header>
@@ -366,7 +367,7 @@ body.embed .botnav{display:none!important}
   <div class="wrap">
     <div class="toolbar">
       <div class="search"><span class="mag">🔍</span><input id="q" data-kph="exp.search" placeholder="Rechercher un dataset, un modèle, un standard…" oninput="renderGrid()"></div>
-      <button class="cta-mini contrib" onclick="openIntake()">＋ Contribuer un asset</button>
+      <button class="cta-mini contrib" onclick="openIntake()"><span class="pl">+</span> Contribuer un asset</button>
       <button class="ibtn" onclick="exportDelta()" title="Exporter mes contributions">⤓</button>
       <label class="ibtn" title="Importer des contributions (JSON)">⤒<input type="file" accept=".json" style="display:none" onchange="importDelta(this)"></label>
     </div>
