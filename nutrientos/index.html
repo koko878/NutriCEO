@@ -167,6 +167,18 @@ h2.big{font-size:clamp(28px,4vw,44px);line-height:1.07;margin:12px 0 12px;font-w
 #mapCanvas{height:calc(100vh - 232px);min-height:340px;width:100%;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#06100a}
 body.embed #mapCanvas{height:72vh}
 .mappanel.right{max-height:calc(100vh - 216px)}
+/* Full-viewport "command" layout for the map (full-screen route): globe fills the
+   screen, panels float on top, no document scroll. */
+body:not(.embed) #view-map.on{position:fixed;left:0;right:0;top:62px;bottom:0;z-index:40;background:#06100a}
+body:not(.embed) #view-map.on>.wrap{max-width:none;width:100%;height:100%;padding:0;position:relative}
+body:not(.embed) #view-map.on .mapwrap{position:absolute;inset:0}
+body:not(.embed) #view-map.on #mapCanvas{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:0}
+body:not(.embed) #view-map.on .maptoggle{position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:15;margin:0;background:rgba(6,16,10,.82);border-color:rgba(102,187,106,.3)}
+body:not(.embed) #view-map.on .mmbtn{background:transparent;color:#bfe9c8}
+body:not(.embed) #view-map.on .mmbtn.on{background:var(--green-700);color:#fff}
+body:not(.embed) #view-map.on #mapStats{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:15;margin:0;background:rgba(6,16,10,.82);backdrop-filter:blur(8px);border:1px solid rgba(102,187,106,.28);padding:7px 12px;border-radius:12px}
+body:not(.embed) #view-map.on .mapstats .ms{background:rgba(76,175,80,.14);border-color:rgba(102,187,106,.3);color:#dff0e3}
+body:not(.embed) #view-map.on .maplegend{display:none}
 .maptoggle{display:inline-flex;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px}
 .mmbtn{border:0;background:#fff;padding:8px 16px;font:600 13px Inter,sans-serif;color:var(--muted);cursor:pointer}
 .mmbtn.on{background:var(--green-700);color:#fff}
