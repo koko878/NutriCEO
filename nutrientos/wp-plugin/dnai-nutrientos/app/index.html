@@ -245,6 +245,12 @@ body.embed .botnav{display:none!important}
 .kvc .un{font-size:13px;color:var(--muted);font-family:'Inter'}
 .kvc .mn{font-size:11.5px;color:var(--muted);margin-top:7px;border-top:1px solid var(--green-100);padding-top:7px}
 .dvintro{font-size:13px;color:var(--green-800);background:var(--green-50);border-radius:10px;padding:11px 14px;margin-bottom:14px}
+.dvtoolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:14px}
+.dvf{display:flex;flex-direction:column;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
+.dvf input{margin-top:5px;width:130px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;font:500 14px 'Inter'}
+.dvtoolbar .presets{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.dvtoolbar .presets button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;font:600 12px 'Inter';color:var(--green-700);cursor:pointer}
+.dvtoolbar .presets button:hover{background:var(--green-50);border-color:var(--green-300)}
 .raw{background:#07140c;color:#cfe3d4;border-radius:10px;padding:12px 14px;font:500 12px var(--mono);overflow:auto;max-height:320px;white-space:pre;margin-top:8px}
 /* intake wizard */
 .cta-mini.contrib{background:var(--green-500);color:#05230f}
@@ -733,8 +739,16 @@ function openAsset(id){
     : (a.layer==='core'
         ? `<span class="peer" style="color:var(--warn);background:#fdf4e7">${u.coreExec}</span>`
         : `<span class="peer">🆕 Nouvel asset · à enrichir</span>`);
+  const isSoil = a.api && /soilgrids/.test(a.api.url);
+  const lon0 = a.api ? (((a.api.url.match(/lon=([-\d.]+)/)||[])[1])||'-7.6') : '';
+  const lat0 = a.api ? (((a.api.url.match(/lat=([-\d.]+)/)||[])[1])||'33.6') : '';
   const browse = a.api
     ? `<div class="dblock"><h4>Parcourir les données</h4>
+         ${isSoil?`<div class="dvtoolbar">
+           <span class="dvf"><span>Longitude</span><input id="dvlon" type="number" step="0.01" value="${lon0}"></span>
+           <span class="dvf"><span>Latitude</span><input id="dvlat" type="number" step="0.01" value="${lat0}"></span>
+           <span class="presets">Exemples : <button onclick="setPt(-7.6,33.6)">Casablanca</button><button onclick="setPt(-6.9,32.88)">Khouribga</button><button onclick="setPt(-5.55,33.9)">Meknès</button></span>
+         </div>`:''}
          <button class="btn primary sm" onclick="browseData('${a.id}')">🔍 Récupérer &amp; parcourir</button>
          <div id="dataView" style="margin-top:12px"></div></div>`
     : '';
@@ -748,7 +762,6 @@ function openAsset(id){
         <div class="dblock"><h4>${u.desc}</h4><p style="margin:0;color:var(--muted);font-size:14.5px">${a.desc[LANG]}</p>
           ${statusTag}</div>
         <div class="dblock"><h4>${isStd?u.schema:u.access}</h4><div class="codebox">${code}</div></div>
-        ${browse}
         <div class="dblock"><h4>${u.reusedBy}</h4>
           ${a.layer==='core'
             ? `<p style="margin:0;color:var(--muted);font-size:13.5px">${u.coreNote}</p>`
@@ -768,7 +781,8 @@ function openAsset(id){
         ${a.id==='reco-engine'||a.id==='nvs'?`<div class="scard" style="background:var(--green-50);border-color:var(--green-100)"><h4>${u.appUses}</h4><p style="margin:0 0 10px;font-size:13px;color:var(--green-800)">${u.appUsesText}</p><button class="cta-mini" style="width:100%" onclick="go('console')">${u.openConsole}</button></div>`:''}
         ${isDelta(a.id)?`<button class="btn ghost sm" style="width:100%;color:var(--bad);border:1px solid #f0c9c9;background:#fff" onclick="deleteAsset('${a.id}')">🗑 Supprimer cet asset</button>`:''}
       </div>
-    </div>`;
+    </div>
+    ${browse}`;
   go('asset');
 }
 function escapeHtml(s){return String(s).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
@@ -794,12 +808,19 @@ function soilUrl(base, props, depths){
   const lat=((base.match(/lat=([-\d.]+)/)||[])[1])||'33.6';
   return 'https://rest.isric.org/soilgrids/v2.0/properties/query?lon='+lon+'&lat='+lat+props.map(function(p){return '&property='+p;}).join('')+depths.map(function(d){return '&depth='+d;}).join('')+'&value=mean';
 }
+function setPt(lon,lat){var a=document.getElementById('dvlon'),b=document.getElementById('dvlat');if(a)a.value=lon;if(b)b.value=lat;}
 async function browseData(id, mode){
   const a=allAssets().find(function(x){return x.id===id;}); if(!a||!a.api) return;
   const isSoil=/soilgrids/.test(a.api.url);
-  const url=(mode==='full'&&isSoil)
-    ? soilUrl(a.api.url,['phh2o','nitrogen','soc','cec','clay','sand','bdod'],['0-5cm','5-15cm','15-30cm'])
-    : a.api.url;
+  let url=a.api.url;
+  if(isSoil){
+    const lonEl=document.getElementById('dvlon'), latEl=document.getElementById('dvlat');
+    const lon=(lonEl&&lonEl.value!=='')?lonEl.value:(((a.api.url.match(/lon=([-\d.]+)/)||[])[1])||'-7.6');
+    const lat=(latEl&&latEl.value!=='')?latEl.value:(((a.api.url.match(/lat=([-\d.]+)/)||[])[1])||'33.6');
+    const props=(mode==='full')?['phh2o','nitrogen','soc','cec','clay','sand','bdod']:['phh2o','nitrogen','soc'];
+    const depths=(mode==='full')?['0-5cm','5-15cm','15-30cm']:['0-5cm'];
+    url=soilUrl('lon='+lon+'&lat='+lat,props,depths);
+  }
   const v=document.getElementById('dataView'); v.innerHTML='<div class="muted" style="font-size:13px">Récupération des données…</div>';
   try{
     const res=await fetch(url); if(!res.ok) throw new Error('HTTP '+res.status);
@@ -809,19 +830,21 @@ async function browseData(id, mode){
       const lon=data.geometry&&data.geometry.coordinates?data.geometry.coordinates[0]:'';
       const lat=data.geometry&&data.geometry.coordinates?data.geometry.coordinates[1]:'';
       html='<div class="dvintro">📍 Point <b>lon '+lon+' · lat '+lat+'</b> — propriétés du sol qui déterminent sa <b>valeur nutritive</b> et les besoins en fertilisation. Chaque carte = une propriété à une profondeur.</div>';
-      let cards='';
+      let cards='', found=0;
       data.properties.layers.forEach(function(l){
         const info=SOIL_DICT[l.name]||{label:l.name,unit:'',meaning:''};
         const um=l.unit_measure||{}; const fac=um.d_factor||1; const unit=info.unit||um.target_units||'';
         (l.depths||[]).forEach(function(d){
           const raw=pickNum(d.values);
           const real=(typeof raw==='number')?(Math.round((raw/fac)*100)/100):null;
+          if(real!=null) found++;
           cards+='<div class="kvc"><div class="kk">'+escapeHtml(info.label)+'</div>'
-            +'<div class="vv">'+(real!=null?real:'—')+' <span class="un">'+escapeHtml(unit)+'</span></div>'
+            +'<div class="vv">'+(real!=null?real:'n/d')+' <span class="un">'+escapeHtml(unit)+'</span></div>'
             +'<div class="uu">profondeur '+escapeHtml(d.label||'')+'</div>'
             +(info.meaning?'<div class="mn">'+escapeHtml(info.meaning)+'</div>':'')+'</div>';
         });
       });
+      if(found===0) html+='<div class="connmsg" style="color:var(--warn);font-size:13px;margin-bottom:10px">⚠️ SoilGrids ne renvoie pas de valeur à ce point (zone urbaine / hors couverture). Essayez un autre point — ex. « Khouribga ».</div>';
       html+='<div class="kvgrid">'+cards+'</div>';
       if(isSoil&&mode!=='full') html+='<button class="btn ghost sm" style="margin-top:12px" onclick="browseData(\''+id+'\',\'full\')">➕ Récupérer plus (7 propriétés × 3 profondeurs)</button>';
     } else if(data&&data.daily){
