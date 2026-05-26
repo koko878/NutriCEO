@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI CGM Simulator — MVP
  * Description:       MVP of the CGM Simulator (business UX: config / market inputs / results, with editable referential). Exposed as a shortcode [cgm_mvp] and as a direct, mobile-friendly URL. Calculation rules ported 1:1 from the CGM Excel; ships with placeholder data.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-cgm-mvp
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_CGMMVP_VER', '1.0.0' );
+define( 'DNAI_CGMMVP_VER', '1.1.0' );
 define( 'DNAI_CGMMVP_URL', plugin_dir_url( __FILE__ ) );
 
 /**
@@ -22,11 +22,17 @@ function dnai_cgmmvp_frame( $atts = array() ) {
 	$height = preg_replace( '/[^0-9a-z%.]/i', '', (string) $a['height'] );
 	if ( $height === '' ) { $height = '100vh'; }
 	$src = esc_url( DNAI_CGMMVP_URL . 'app/cgm-mvp.html' );
+	$id  = 'dnaiCgmFrame_' . wp_rand( 1000, 9999 );
 
+	// The app posts its content height; the iframe auto-resizes so the page
+	// scrolls naturally (no nested scrollbar) on desktop and mobile.
 	return '<div class="dnai-cgmmvp-wrap" style="width:100%;max-width:100%;margin:0;">'
-		. '<iframe src="' . $src . '" title="CGM Simulator — MVP" loading="lazy" '
-		. 'style="display:block;width:100%;height:' . esc_attr( $height ) . ';min-height:680px;border:0;border-radius:12px;overflow:hidden;" '
+		. '<iframe id="' . esc_attr( $id ) . '" src="' . $src . '" title="CGM Simulator — MVP" loading="lazy" scrolling="no" '
+		. 'style="display:block;width:100%;height:760px;min-height:680px;border:0;border-radius:12px;overflow:hidden;" '
 		. 'allow="fullscreen" allowfullscreen></iframe>'
+		. '<script>(function(){var f=document.getElementById(' . wp_json_encode( $id ) . ');'
+		. 'window.addEventListener("message",function(e){if(e.data&&typeof e.data.dnaiCgmHeight==="number"){f.style.height=(e.data.dnaiCgmHeight+2)+"px";}});'
+		. '})();</script>'
 		. '</div>';
 }
 add_shortcode( 'cgm_mvp', 'dnai_cgmmvp_frame' );
