@@ -233,6 +233,13 @@ body.embed .botnav{display:none!important}
   .botnav button.on .bi{transform:translateY(-1px)}
 }
 @media(max-width:560px){.grid,.audience,.wgroups,.prog,.scores{grid-template-columns:1fr}.feat{grid-template-columns:1fr}.hero h1{font-size:34px}.acard h3{font-size:18px}}
+/* data viewer */
+.kvgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.kvc{border:1px solid var(--line);border-radius:12px;padding:13px;background:var(--green-50)}
+.kvc .kk{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--green-700)}
+.kvc .vv{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:var(--green-800);line-height:1.1}
+.kvc .uu{font-size:11px;color:var(--muted)}
+.raw{background:#07140c;color:#cfe3d4;border-radius:10px;padding:12px 14px;font:500 12px var(--mono);overflow:auto;max-height:320px;white-space:pre;margin-top:8px}
 /* intake wizard */
 .cta-mini.contrib{background:var(--green-500);color:#05230f}
 .cta-mini.contrib:hover{background:var(--green-300)}
@@ -712,7 +719,19 @@ function openAsset(id){
   const isStd=a.type==='standard';
   const code=isStd
     ? `{\n  "<span class='k'>nutrient</span>": "<span class='s'>P2O5</span>",\n  "<span class='k'>unit</span>": "<span class='s'>kg/ha</span>",\n  "<span class='k'>soil_ref</span>": "<span class='s'>calcareous</span>",\n  "<span class='k'>availability_coef</span>": 0.62,\n  "<span class='k'>source</span>": "<span class='s'>nutrient-value-standard@1.0</span>"\n}`
+    : a.api
+    ? `<span class='k'>GET</span> ${escapeHtml(a.api.url)}\n\n<span class='s'># ${a.layer==='core'?u.codeCore:u.codeOpen}</span>`
     : `<span class='k'>GET</span> /api/v1/${a.id}\n<span class='k'>Authorization</span>: Bearer &lt;key&gt;\n\n<span class='s'># ${a.layer==='core'?u.codeCore:u.codeOpen}</span>`;
+  const statusTag = a.reviews>0
+    ? `<span class="peer">${fill(u.peer,{n:a.reviews})}</span>`
+    : (a.layer==='core'
+        ? `<span class="peer" style="color:var(--warn);background:#fdf4e7">${u.coreExec}</span>`
+        : `<span class="peer">🆕 Nouvel asset · à enrichir</span>`);
+  const browse = a.api
+    ? `<div class="dblock"><h4>Parcourir les données</h4>
+         <button class="btn primary sm" onclick="browseData('${a.id}')">🔍 Récupérer &amp; parcourir</button>
+         <div id="dataView" style="margin-top:12px"></div></div>`
+    : '';
   document.getElementById('assetBody').innerHTML=`
     <span class="back" onclick="go('explore')">${u.back}</span>
     <div class="dgrid">
@@ -721,8 +740,9 @@ function openAsset(id){
         <h1>${ICON[a.type]} ${a.title}</h1>
         <div class="dmeta"><span>🏢 <b>${orgD(a.org)}</b></span><span>📦 ${ty[a.type]}</span><span>🕑 ${u.updPrefix} ${ago(a.upd)}</span><span>⭐ ${a.stars}</span></div>
         <div class="dblock"><h4>${u.desc}</h4><p style="margin:0;color:var(--muted);font-size:14.5px">${a.desc[LANG]}</p>
-          ${a.reviews>0?`<span class="peer">${fill(u.peer,{n:a.reviews})}</span>`:`<span class="peer" style="color:var(--warn);background:#fdf4e7">${u.coreExec}</span>`}</div>
+          ${statusTag}</div>
         <div class="dblock"><h4>${isStd?u.schema:u.access}</h4><div class="codebox">${code}</div></div>
+        ${browse}
         <div class="dblock"><h4>${u.reusedBy}</h4>
           ${a.layer==='core'
             ? `<p style="margin:0;color:var(--muted);font-size:13.5px">${u.coreNote}</p>`
@@ -743,6 +763,36 @@ function openAsset(id){
       </div>
     </div>`;
   go('asset');
+}
+function escapeHtml(s){return String(s).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+async function browseData(id){
+  const a=allAssets().find(x=>x.id===id); if(!a||!a.api) return;
+  const v=document.getElementById('dataView'); v.innerHTML='<div class="muted" style="font-size:13px">Récupération des données…</div>';
+  try{
+    const res=await fetch(a.api.url);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const txt=await res.text();
+    let data=null; try{data=JSON.parse(txt);}catch(e){}
+    let html='';
+    if(data&&data.properties&&Array.isArray(data.properties.layers)){
+      // SoilGrids
+      html='<div class="kvgrid">'+data.properties.layers.map(function(l){
+        const d=(l.depths&&l.depths[0])||{}; const mean=(d.values&&d.values.mean!=null)?d.values.mean:'—';
+        const unit=(l.unit_measure&&(l.unit_measure.target_units||l.unit_measure.mapped_units))||'';
+        const fac=l.unit_measure&&l.unit_measure.d_factor; const real=(typeof mean==='number'&&fac)?(' ('+(mean/fac)+' '+unit+')'):'';
+        return '<div class="kvc"><div class="kk">'+escapeHtml(l.name)+'</div><div class="vv">'+mean+'</div><div class="uu">'+escapeHtml(d.label||'')+real+'</div></div>';
+      }).join('')+'</div>';
+    } else if(data&&data.daily){
+      // Open-Meteo daily
+      const keys=Object.keys(data.daily).filter(function(k){return k!=='time';});
+      html='<div class="kvgrid">'+keys.map(function(k){return '<div class="kvc"><div class="kk">'+escapeHtml(k)+'</div><div class="vv">'+(data.daily[k][0])+'</div><div class="uu">'+escapeHtml((data.daily_units&&data.daily_units[k])||'')+'</div></div>';}).join('')+'</div>';
+    }
+    html+='<details style="margin-top:12px"><summary style="cursor:pointer;font-size:12.5px;color:var(--muted)">Réponse brute (JSON)</summary><pre class="raw">'+escapeHtml(JSON.stringify(data||txt,null,2)).slice(0,5000)+'</pre></details>';
+    v.innerHTML=html; setTimeout(postHeight,60);
+  }catch(err){
+    v.innerHTML='<div class="connmsg" style="color:var(--bad);font-size:13px">Échec : '+escapeHtml(String(err.message||err))+' — l\'API bloque peut-être le navigateur (CORS) ou exige une clé.</div>';
+    setTimeout(postHeight,60);
+  }
 }
 
 /* ====================== IMPACT ====================== */
@@ -932,6 +982,7 @@ function submitIntake(){
     const name=val('api_name')||'Source API', url=val('api_url');
     if(!url){ alert('Renseignez l\'endpoint.'); return; }
     addAsset({type:'dataset',title:name,org:val('api_name')||'API',via:'API',
+      api:{url:url,fmt:val('api_fmt')},
       desc:'Source API connectée : '+url+' ('+val('api_fmt')+')'});
   } else if(intakeSrc==='db'){
     const name=val('db_name')||'Base de données', host=val('db_host');

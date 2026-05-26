@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutrientOS
  * Description:       Hosts the NutrientOS prototype, the executive one-pager and the executive summary. Serves FULL-SCREEN URLs (no theme chrome) and shortcodes [nutrientos], [nutrientos_exec], [nutrientos_execsum] with full-bleed, cache-busted, auto-resizing iframes.
- * Version:           1.4.0
+ * Version:           1.5.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutrientos
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NOS_VER', '1.4.0' );
+define( 'DNAI_NOS_VER', '1.5.0' );
 define( 'DNAI_NOS_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NOS_DIR', plugin_dir_path( __FILE__ ) );
 
