@@ -15,7 +15,7 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:'Inter',sans-serif;color:var(--ink);background:var(--soft);line-height:1.5}
 h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif}
-.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.wrap{max-width:1640px;margin:0 auto;padding:0 32px}
 button{font-family:inherit;cursor:pointer}
 input,select{font-family:inherit}
 
@@ -145,8 +145,12 @@ tbody tr.sel{background:var(--green-50)}
 .muted{color:var(--muted);font-size:12.5px}
 .note{font-size:12px;color:var(--muted);font-style:italic;margin-top:8px}
 
+.cols3in{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;align-items:start}
+.rgrid{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;align-items:start}
+@media(max-width:1180px){.cols3in{grid-template-columns:1fr 1fr}}
+@media(max-width:980px){.rgrid{grid-template-columns:1fr}}
 @media(max-width:900px){.cfg2{grid-template-columns:1fr}}
-@media(max-width:820px){.grid2,.grid3,.scen2,.fgrid{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.rmrow{grid-template-columns:1fr 100px 84px}}
+@media(max-width:820px){.grid2,.grid3,.scen2,.fgrid,.cols3in{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.rmrow{grid-template-columns:1fr 100px 84px}}
 @media(max-width:520px){.kpis{grid-template-columns:1fr}.h2.h,h2.h{font-size:22px}.brand{font-size:18px}.prof button{padding:6px 9px;font-size:11.5px}}
 </style>
 </head>
@@ -206,7 +210,7 @@ tbody tr.sel{background:var(--green-50)}
     <h2 class="h">Prix des matières premières & références</h2>
     <p class="lead">Les MP <b>obligatoires</b> sont celles que le produit consomme réellement ; les autres sont facultatives. Les MP volatiles disposent d'un champ de variation (%) pour l'analyse de sensibilité.</p>
 
-    <div class="grid2">
+    <div class="cols3in">
       <div class="card rmblock">
         <h4>MP volatiles</h4>
         <p class="sub">Prix + variation % (sensibilité)</p>
@@ -217,16 +221,11 @@ tbody tr.sel{background:var(--green-50)}
         <p class="sub">Prix uniquement</p>
         <div id="stabRows"></div>
       </div>
-    </div>
-
-    <div class="card">
-      <h3>Prix de référence</h3>
-      <div class="grid2">
-        <div><label class="fl">Prix DAP ($/t)</label><input type="number" id="rpdap" step="1"></div>
-        <div><label class="fl">Prix TSP ($/t)</label><input type="number" id="rptsp" step="1"></div>
-      </div>
-      <div class="grid2" style="margin-top:14px">
-        <div><label class="fl">Prix de vente visé du produit ($/t)</label><input type="number" id="price" step="1"></div>
+      <div class="card">
+        <h3>Références & prix</h3>
+        <label class="fl">Prix DAP ($/t)</label><input type="number" id="rpdap" step="1">
+        <label class="fl" style="margin-top:13px">Prix TSP ($/t)</label><input type="number" id="rptsp" step="1">
+        <label class="fl" style="margin-top:13px">Prix de vente visé ($/t)</label><input type="number" id="price" step="1">
       </div>
     </div>
 
@@ -246,16 +245,17 @@ tbody tr.sel{background:var(--green-50)}
       <div class="kpis" id="kpis"></div>
     </div>
 
-    <div class="card">
-      <h3>Marge équivalente — vs DAP et vs TSP</h3>
-      <div class="scen2" id="scen2"></div>
-    </div>
-
-    <div class="card">
-      <h3>Analyse de sensibilité</h3>
-      <div class="kpis" id="sensKpis" style="grid-template-columns:1fr 1fr;margin-bottom:14px"></div>
-      <div id="tornado"></div>
-      <div class="driver" id="driver"></div>
+    <div class="rgrid">
+      <div class="card">
+        <h3>Marge équivalente — vs DAP et vs TSP</h3>
+        <div class="scen2" id="scen2"></div>
+      </div>
+      <div class="card">
+        <h3>Analyse de sensibilité</h3>
+        <div class="kpis" id="sensKpis" style="grid-template-columns:1fr 1fr;margin-bottom:14px"></div>
+        <div id="tornado"></div>
+        <div class="driver" id="driver"></div>
+      </div>
     </div>
 
     <div class="card">
