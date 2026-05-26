@@ -45,7 +45,9 @@ button{font-family:inherit}
 
 /* hero */
 .hero{position:relative;background:#07140c;color:#eaf4ec;overflow:hidden}
-#matrix{position:absolute;inset:0;width:100%;height:100%;opacity:.30}
+#matrix{position:absolute;inset:0;width:100%;height:100%;opacity:.16}
+.herogl{position:absolute;right:-4%;top:50%;transform:translateY(-50%);width:60%;height:130%;z-index:1;pointer-events:auto}
+@media(max-width:980px){.herogl{width:100%;right:0;opacity:.32;height:110%;pointer-events:none}}
 .hero .wrap{position:relative;z-index:2;padding:88px 24px 92px}
 .kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green-300);border:1px solid rgba(102,187,106,.4);padding:6px 13px;border-radius:999px;background:rgba(76,175,80,.08)}
 .hero h1{font-size:clamp(38px,5.8vw,70px);line-height:1.03;margin:22px 0 18px;font-weight:700;color:#fff;max-width:18ch}
@@ -410,13 +412,14 @@ body.embed .botnav{display:none!important}
 <div class="view on" id="view-home">
   <section class="hero" style="padding:0">
     <canvas id="matrix"></canvas>
+    <div id="homeGlobe" class="herogl"></div>
     <div class="wrap">
       <span class="kicker">● OCP Nutricrops × D²nAI</span>
       <h1 data-k="home.h1">La plateforme ouverte de la <em>nutrition des plantes</em>.</h1>
       <p class="lead" data-k="home.lead">Explorer, contribuer, collaborer et tracer l'impact sur des datasets, modèles et standards ouverts — autour du <strong>Nutrient Value Standard</strong> publié par OCP Nutricrops. Une infrastructure commune dont OCP Nutricrops garde le cœur.</p>
       <div class="hbtns">
         <a class="btn primary" data-k="home.btnExplore" onclick="go('explore')">Explorer le catalogue</a>
-        <a class="btn ghost" data-k="home.btnConsole" onclick="go('console')">Voir la Console</a>
+        <a class="btn ghost" data-k="home.btnConsole" onclick="go('map')">Voir la carte mondiale</a>
       </div>
       <div class="feat">
         <div class="f"><div class="i">🔍</div><h4 data-k="feat.exploreH">Explorer</h4><p data-k="feat.exploreP">Datasets, modèles, pipelines &amp; standards de nutrition, ouverts et documentés.</p></div>
@@ -880,7 +883,7 @@ const REGION_DEMO={
 function assetRegion(a){ if(a.region&&typeof a.region.lat==='number') return a.region; const n=REGION_DEMO[a.id]; return n?regionByName(n):null; }
 
 /* ---- Carte mondiale : globe 3D (globe.gl) + plan (Leaflet), à la demande ---- */
-let _leaflet=null,_map=null,_mlayer=null,_globeLib=null,_globe=null,mapMode='globe';
+let _leaflet=null,_map=null,_mlayer=null,_globeLib=null,GLOBES={},mapMode='globe';
 function mapGroups(){
   const groups={};
   allAssets().forEach(function(a){ const r=assetRegion(a); if(!r)return; const k=r.name; (groups[k]=groups[k]||{name:r.name,lat:r.lat,lon:r.lon,items:[]}).items.push(a); });
@@ -895,36 +898,65 @@ function updateMapStats(data){
   const placed=data.length, loc=allAssets().filter(a=>assetRegion(a)).length, mx=data.length?Math.max.apply(null,data.map(d=>d.n)):0;
   ms.innerHTML=`<span class="ms"><b>${placed}</b> région(s)</span><span class="ms"><b>${loc}</b> assets localisés</span><span class="ms"><b>${mx}</b> max / région</span>`;
 }
-function resetMapHost(){ const host=document.getElementById('mapCanvas'); if(_map){try{_map.remove();}catch(e){}} _map=null;_mlayer=null;_globe=null; if(host)host.innerHTML=''; }
+function resetMapHost(){ const host=document.getElementById('mapCanvas'); if(_map){try{_map.remove();}catch(e){}} _map=null;_mlayer=null; if(GLOBES.mapCanvas){delete GLOBES.mapCanvas;} if(host)host.innerHTML=''; }
 function setMapMode(m){ if(m===mapMode){return;} mapMode=m; document.querySelectorAll('.mmbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m)); resetMapHost(); renderMapView(); }
-function renderMapView(){ if(mapMode==='flat') renderMap(); else renderGlobe(); }
+function renderMapView(){ if(mapMode==='flat') renderMap(); else buildGlobe('mapCanvas',true); }
 function ensureGlobe(){ if(_globeLib) return _globeLib; _globeLib=new Promise(function(res,rej){
   if(window.Globe){return res(window.Globe);}
   const s=document.createElement('script'); s.src='https://unpkg.com/globe.gl@2.32.0/dist/globe.gl.min.js'; s.onload=function(){res(window.Globe);}; s.onerror=rej; document.head.appendChild(s);
 }); return _globeLib; }
-async function renderGlobe(){
-  const host=document.getElementById('mapCanvas'); if(!host) return;
-  let GG; try{ GG=await ensureGlobe(); }catch(e){ host.innerHTML='<p class="muted" style="padding:20px">Globe 3D indisponible (réseau ?). Bascule sur « Plan ».</p>'; return; }
-  const data=mapGroups(); const IMG='https://unpkg.com/three-globe@2.31.0/example/img/';
-  if(!_globe){
-    host.innerHTML='';
-    _globe=GG()(host)
-      .width(host.clientWidth||800).height(host.clientHeight||520)
-      .backgroundColor('#06100a')
-      .globeImageUrl(IMG+'earth-night.jpg').bumpImageUrl(IMG+'earth-topology.png').backgroundImageUrl(IMG+'night-sky.png')
-      .showAtmosphere(true).atmosphereColor('#4CAF50').atmosphereAltitude(0.16)
-      .pointLat('lat').pointLng('lon').pointColor(()=> '#7CFC9A')
-      .pointAltitude(function(d){return Math.min(0.05+d.n*0.03,0.55);})
-      .pointRadius(function(d){return 0.28+Math.sqrt(d.n)*0.22;})
-      .pointLabel(function(d){return groupLabel(d);})
-      .pointsData(data);
-    try{ const c=_globe.controls(); c.autoRotate=true; c.autoRotateSpeed=0.55; c.enableZoom=true; }catch(e){}
-    _globe.pointOfView({lat:24,lng:-4,altitude:2.2},0);
-  } else {
-    _globe.width(host.clientWidth||800).height(host.clientHeight||520).pointsData(data);
-  }
-  updateMapStats(data);
+let _topoLib=null,_world=null;
+function ensureTopo(){ if(_topoLib) return _topoLib; _topoLib=new Promise(function(res,rej){
+  if(window.topojson){return res(window.topojson);}
+  const s=document.createElement('script'); s.src='https://unpkg.com/topojson-client@3'; s.onload=function(){res(window.topojson);}; s.onerror=rej; document.head.appendChild(s);
+}); return _topoLib; }
+async function worldFeatures(){
+  if(_world) return _world;
+  const topojson=await ensureTopo();
+  const topo=await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(r=>r.json());
+  const geoms=topo.objects.countries.geometries;
+  // Merge Morocco (504) + Western Sahara (732) into a single feature → no dividing line.
+  const ma=geoms.filter(g=>g.id==='504'||g.id==='732');
+  const others=geoms.filter(g=>g.id!=='504'&&g.id!=='732');
+  const feats=others.map(g=>topojson.feature(topo,g));
+  if(ma.length){ feats.push({type:'Feature',properties:{name:'Maroc'},geometry:topojson.merge(topo,ma)}); }
+  _world={features:feats};
+  return _world;
 }
+async function buildGlobe(hostId,withStats){
+  const host=document.getElementById(hostId); if(!host) return;
+  let GG; try{ GG=await ensureGlobe(); }catch(e){ host.innerHTML='<p class="muted" style="padding:20px;color:#bcd">Globe 3D indisponible (réseau ?).</p>'; return; }
+  const data=mapGroups(); const labels=data.map(d=>({lat:d.lat,lng:d.lon,text:d.name,n:d.n}));
+  let G=GLOBES[hostId];
+  if(!G){
+    host.innerHTML='';
+    G=GG()(host)
+      .width(host.clientWidth||800).height(host.clientHeight||520)
+      .backgroundColor('rgba(0,0,0,0)')
+      .showGlobe(true).showAtmosphere(true).atmosphereColor('#4CAF50').atmosphereAltitude(0.2)
+      .pointLat('lat').pointLng('lon').pointColor(()=> '#8CFFA8')
+      .pointAltitude(function(d){return Math.min(0.06+d.n*0.04,0.6);})
+      .pointRadius(function(d){return 0.32+Math.sqrt(d.n)*0.22;})
+      .pointLabel(function(d){return groupLabel(d);})
+      .pointsData(data)
+      .labelsData(labels).labelLat('lat').labelLng('lng').labelText('text')
+      .labelSize(0.85).labelDotRadius(0.28).labelColor(()=> 'rgba(190,255,205,0.8)').labelResolution(2).labelAltitude(0.012);
+    try{ const m=G.globeMaterial(); if(m&&m.color)m.color.set('#0c1d15'); if(m&&m.emissive)m.emissive.set('#04100a'); }catch(e){}
+    // Dark globe with subtle country outlines (Morocco merged with W. Sahara → no border line).
+    try{ const w=await worldFeatures(); G.polygonsData(w.features)
+        .polygonCapColor(()=> 'rgba(28,72,48,0.55)').polygonSideColor(()=> 'rgba(0,0,0,0)')
+        .polygonStrokeColor(()=> '#3a7d52').polygonAltitude(0.008); }catch(e){}
+    try{ const c=G.controls(); c.autoRotate=true; c.autoRotateSpeed=0.5; c.enableZoom=(hostId!=='homeGlobe'); }catch(e){}
+    G.pointOfView({lat:22,lng:-2,altitude:2.1},0);
+    GLOBES[hostId]=G;
+  } else {
+    G.width(host.clientWidth||800).height(host.clientHeight||520).pointsData(data).labelsData(labels);
+  }
+  if(withStats) updateMapStats(data);
+  setTimeout(function(){ try{ G.width(host.clientWidth||800).height(host.clientHeight||520); }catch(e){} },150);
+  return G;
+}
+function renderHomeGlobe(){ buildGlobe('homeGlobe',false); }
 function ensureLeaflet(){ if(_leaflet) return _leaflet; _leaflet=new Promise(function(res,rej){
   if(window.L){return res(window.L);}
   const css=document.createElement('link'); css.rel='stylesheet'; css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'; document.head.appendChild(css);
@@ -958,7 +990,8 @@ function go(v){
   document.querySelectorAll('.navlink,.botnav button').forEach(n=>n.classList.toggle('on',n.dataset.v===v));
   window.scrollTo({top:0,behavior:'instant'});
   tagReveal();
-  if(v==='map') setTimeout(renderMap,80);
+  if(v==='map') setTimeout(renderMapView,80);
+  if(v==='home') setTimeout(renderHomeGlobe,80);
   setTimeout(postHeight,60);
 }
 
@@ -1871,6 +1904,7 @@ function initIntake(){
 /* init */
 initIntake();
 setLang('fr');
+setTimeout(renderHomeGlobe,300);
 postHeight();
 setTimeout(postHeight,400);
 </script>
