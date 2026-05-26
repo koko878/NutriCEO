@@ -162,14 +162,19 @@ h2.big{font-size:clamp(28px,4vw,44px);line-height:1.07;margin:12px 0 12px;font-w
 .rb{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;margin-top:4px;background:#eef1ef;color:#5a6b60}
 .rb.admin{background:#fde8e8;color:#9a2b2b}.rb.validator{background:#e7f0fb;color:#1b4f8a}.rb.contributor{background:#e7f5e9;color:#1B5E20}
 .regionsel{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font:inherit;font-size:14px;background:#fff}
-#mapCanvas{height:68vh;min-height:420px;width:100%;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#06100a}
+#view-map .phead{display:none}
+#view-map>.wrap{padding-top:16px}
+#mapCanvas{height:calc(100vh - 232px);min-height:340px;width:100%;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#06100a}
+body.embed #mapCanvas{height:72vh}
+.mappanel.right{max-height:calc(100vh - 216px)}
 .maptoggle{display:inline-flex;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px}
 .mmbtn{border:0;background:#fff;padding:8px 16px;font:600 13px Inter,sans-serif;color:var(--muted);cursor:pointer}
 .mmbtn.on{background:var(--green-700);color:#fff}
 .mapwrap{position:relative}
 .mappanel{position:absolute;top:14px;z-index:10;background:rgba(6,16,10,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(102,187,106,.28);border-radius:14px;padding:13px;color:#dff0e3;font:13px Inter,sans-serif;box-shadow:0 18px 40px -16px rgba(0,0,0,.6)}
 .mappanel{left:14px;width:228px}
-.mappanel.right{left:auto;right:14px;width:280px;max-height:calc(68vh - 28px);overflow:auto}
+.mappanel.right{left:auto;right:14px;width:280px;max-height:calc(100vh - 230px);overflow:auto}
+body.embed .mappanel.right{max-height:calc(72vh - 28px)}
 .mfh{display:flex;justify-content:space-between;align-items:center;font:700 11px Inter;letter-spacing:.08em;color:#8fe0a3;margin-bottom:10px}
 .mfc{color:#bfe9c8;font-weight:600;letter-spacing:0}
 .mfsec{display:flex;flex-direction:column;gap:6px}
@@ -978,8 +983,8 @@ async function buildGlobe(hostId,withStats,useFilter){
       .backgroundColor('rgba(0,0,0,0)')
       .showGlobe(true).showAtmosphere(true).atmosphereColor('#4CAF50').atmosphereAltitude(0.2)
       .pointLat('lat').pointLng('lon').pointColor(()=> '#8CFFA8')
-      .pointAltitude(function(d){return Math.min(0.06+d.n*0.04,0.6);})
-      .pointRadius(function(d){return 0.32+Math.sqrt(d.n)*0.22;})
+      .pointAltitude(function(d){return Math.min(0.04+d.n*0.022,0.32);})
+      .pointRadius(function(d){return 0.3+Math.sqrt(d.n)*0.16;})
       .pointLabel(function(d){return groupLabel(d);})
       .pointsData(data)
       .labelsData(labels).labelLat('lat').labelLng('lng').labelText('text')
@@ -991,7 +996,7 @@ async function buildGlobe(hostId,withStats,useFilter){
         .polygonCapColor(()=> 'rgba(28,72,48,0.55)').polygonSideColor(()=> 'rgba(0,0,0,0)')
         .polygonStrokeColor(()=> '#3a7d52').polygonAltitude(0.008); }catch(e){}
     try{ const c=G.controls(); c.autoRotate=true; c.autoRotateSpeed=0.5; c.enableZoom=(hostId!=='homeGlobe'); }catch(e){}
-    G.pointOfView({lat:22,lng:-2,altitude:2.1},0);
+    G.pointOfView({lat:22,lng:-2,altitude:(hostId==='mapCanvas'?2.5:2.2)},0);
     GLOBES[hostId]=G;
   } else {
     G.width(host.clientWidth||800).height(host.clientHeight||520).pointsData(data).labelsData(labels);
