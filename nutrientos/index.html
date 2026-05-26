@@ -963,7 +963,7 @@ function updateMapStats(data){
 }
 function resetMapHost(){ const host=document.getElementById('mapCanvas'); if(_map){try{_map.remove();}catch(e){}} _map=null;_mlayer=null; if(GLOBES.mapCanvas){delete GLOBES.mapCanvas;} if(host)host.innerHTML=''; }
 function setMapMode(m){ if(m===mapMode){return;} mapMode=m; document.querySelectorAll('.mmbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m)); resetMapHost(); renderMapView(); }
-function renderMapView(){ renderMapFilters(); if(mapMode==='flat') renderMap(); else buildGlobe('mapCanvas',true,true); }
+function renderMapView(){ renderMapFilters(); if(mapMode==='flat') renderMap(); else buildGlobe('mapCanvas',true,true); setTimeout(postHeight,220); }
 function ensureGlobe(){ if(_globeLib) return _globeLib; _globeLib=new Promise(function(res,rej){
   if(window.Globe){return res(window.Globe);}
   const s=document.createElement('script'); s.src='https://unpkg.com/globe.gl@2.32.0/dist/globe.gl.min.js'; s.onload=function(){res(window.Globe);}; s.onerror=rej; document.head.appendChild(s);
@@ -1096,8 +1096,15 @@ const EMBED=(function(){try{return window.self!==window.top}catch(e){return true
 let _lastH=0;
 function postHeight(){
   if(!EMBED) return;
-  const last=document.querySelector('.cta-band');
-  const h=Math.ceil(last?(last.offsetTop+last.offsetHeight):document.body.offsetHeight)+8;
+  let bottom;
+  if(document.body.classList.contains('mapview')){
+    const mv=document.getElementById('view-map');
+    bottom=mv?(mv.offsetTop+mv.offsetHeight):document.body.scrollHeight;
+  } else {
+    const last=document.querySelector('.cta-band');
+    bottom=last?(last.offsetTop+last.offsetHeight):document.body.offsetHeight;
+  }
+  const h=Math.ceil(bottom)+10;
   if(Math.abs(h-_lastH)<2) return; _lastH=h;
   parent.postMessage({dnaiNosHeight:h},'*');
 }
