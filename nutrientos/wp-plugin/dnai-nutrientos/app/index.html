@@ -989,7 +989,7 @@ async function worldFeatures(){
 async function buildGlobe(hostId,withStats,useFilter){
   const host=document.getElementById(hostId); if(!host) return;
   let GG; try{ GG=await ensureGlobe(); }catch(e){ host.innerHTML='<p class="muted" style="padding:20px;color:#bcd">Globe 3D indisponible (réseau ?).</p>'; return; }
-  const data=mapGroups(useFilter); const labels=data.map(d=>({lat:d.lat,lng:d.lon,text:d.name,n:d.n}));
+  const data=mapGroups(useFilter);
   let G=GLOBES[hostId];
   if(!G){
     host.innerHTML='';
@@ -997,24 +997,22 @@ async function buildGlobe(hostId,withStats,useFilter){
       .width(host.clientWidth||800).height(host.clientHeight||520)
       .backgroundColor('rgba(0,0,0,0)')
       .showGlobe(true).showAtmosphere(true).atmosphereColor('#4CAF50').atmosphereAltitude(0.2)
-      .pointLat('lat').pointLng('lon').pointColor(()=> '#8CFFA8')
-      .pointAltitude(function(d){return Math.min(0.04+d.n*0.022,0.32);})
-      .pointRadius(function(d){return 0.3+Math.sqrt(d.n)*0.16;})
+      .pointLat('lat').pointLng('lon').pointColor(()=> '#8CFFA8').pointResolution(8)
+      .pointAltitude(function(d){return Math.min(0.02+d.n*0.012,0.16);})
+      .pointRadius(function(d){return 0.22+Math.sqrt(d.n)*0.09;})
       .pointLabel(function(d){return groupLabel(d);})
       .pointsData(data)
-      .labelsData(labels).labelLat('lat').labelLng('lng').labelText('text')
-      .labelSize(0.85).labelDotRadius(0.28).labelColor(()=> 'rgba(190,255,205,0.8)').labelResolution(2).labelAltitude(0.012)
-      .onPointClick(function(d){ if(hostId==='mapCanvas'){ showRegionPanel(d); try{G.pointOfView({lat:d.lat,lng:d.lon,altitude:1.5},700);}catch(e){} } else { go('map'); } });
+      .onPointClick(function(d){ if(hostId==='mapCanvas'){ showRegionPanel(d); try{G.pointOfView({lat:d.lat,lng:d.lon,altitude:1.6},700);}catch(e){} } else { go('map'); } });
     try{ const m=G.globeMaterial(); if(m&&m.color)m.color.set('#0c1d15'); if(m&&m.emissive)m.emissive.set('#04100a'); }catch(e){}
     // Dark globe with subtle country outlines (Morocco merged with W. Sahara → no border line).
     try{ const w=await worldFeatures(); G.polygonsData(w.features)
         .polygonCapColor(()=> 'rgba(28,72,48,0.55)').polygonSideColor(()=> 'rgba(0,0,0,0)')
         .polygonStrokeColor(()=> '#3a7d52').polygonAltitude(0.008); }catch(e){}
-    try{ const c=G.controls(); c.autoRotate=true; c.autoRotateSpeed=0.5; c.enableZoom=(hostId!=='homeGlobe'); }catch(e){}
+    try{ const c=G.controls(); c.autoRotate=(hostId==='homeGlobe'); c.autoRotateSpeed=0.35; c.enableZoom=(hostId!=='homeGlobe'); }catch(e){}
     G.pointOfView({lat:22,lng:-2,altitude:(hostId==='mapCanvas'?(EMBED?3.7:2.4):2.4)},0);
     GLOBES[hostId]=G;
   } else {
-    G.width(host.clientWidth||800).height(host.clientHeight||520).pointsData(data).labelsData(labels);
+    G.width(host.clientWidth||800).height(host.clientHeight||520).pointsData(data);
   }
   if(withStats) updateMapStats(data);
   setTimeout(function(){ try{ G.width(host.clientWidth||800).height(host.clientHeight||520); }catch(e){} },150);

@@ -1,6 +1,6 @@
 === D²nAI NutrientOS ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 2.5.7
+Stable tag: 2.5.8
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
