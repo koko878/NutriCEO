@@ -102,8 +102,11 @@ h2.big{font-size:clamp(28px,4vw,44px);line-height:1.07;margin:12px 0 12px;font-w
 /* asset detail */
 .adetail{padding:30px 0 60px}
 .back{font-size:13px;font-weight:600;color:var(--green-700);cursor:pointer;display:inline-flex;gap:6px;align-items:center;margin-bottom:18px}
+.adetail{overflow-x:hidden}
 .dgrid{display:grid;grid-template-columns:1fr 320px;gap:30px}
-.dmain h1{font-size:34px;margin:8px 0 8px;font-weight:700}
+.dmain{min-width:0}
+.dmain h1{font-size:34px;margin:8px 0 8px;font-weight:700;overflow-wrap:anywhere}
+.dblock p,.dmeta span{overflow-wrap:anywhere;word-break:break-word}
 .dmeta{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-bottom:18px}
 .dmeta b{color:var(--ink)}
 .dblock{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
@@ -239,6 +242,9 @@ body.embed .botnav{display:none!important}
 .kvc .kk{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--green-700)}
 .kvc .vv{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:var(--green-800);line-height:1.1}
 .kvc .uu{font-size:11px;color:var(--muted)}
+.kvc .un{font-size:13px;color:var(--muted);font-family:'Inter'}
+.kvc .mn{font-size:11.5px;color:var(--muted);margin-top:7px;border-top:1px solid var(--green-100);padding-top:7px}
+.dvintro{font-size:13px;color:var(--green-800);background:var(--green-50);border-radius:10px;padding:11px 14px;margin-bottom:14px}
 .raw{background:#07140c;color:#cfe3d4;border-radius:10px;padding:12px 14px;font:500 12px var(--mono);overflow:auto;max-height:320px;white-space:pre;margin-top:8px}
 /* intake wizard */
 .cta-mini.contrib{background:var(--green-500);color:#05230f}
@@ -766,29 +772,60 @@ function openAsset(id){
   go('asset');
 }
 function escapeHtml(s){return String(s).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
-async function browseData(id){
-  const a=allAssets().find(x=>x.id===id); if(!a||!a.api) return;
+const SOIL_DICT={
+  phh2o:{label:'pH du sol',unit:'',meaning:'Acidité/alcalinité — pilote la disponibilité du P et des oligo-éléments.'},
+  nitrogen:{label:'Azote total (N)',unit:'g/kg',meaning:'Stock d\'azote du sol — base du besoin en fertilisation azotée.'},
+  soc:{label:'Carbone organique',unit:'g/kg',meaning:'Matière organique — fertilité, rétention d\'eau et de nutriments.'},
+  cec:{label:'CEC',unit:'cmol(+)/kg',meaning:'Capacité à retenir les cations (K, Ca, Mg).'},
+  clay:{label:'Argile',unit:'%',meaning:'Texture — rétention/fixation du P et du K.'},
+  sand:{label:'Sable',unit:'%',meaning:'Texture — drainage et lessivage.'},
+  silt:{label:'Limon',unit:'%',meaning:'Texture — équilibre rétention/drainage.'},
+  bdod:{label:'Densité apparente',unit:'kg/dm³',meaning:'Compaction du sol — enracinement.'},
+  cfvo:{label:'Éléments grossiers',unit:'%',meaning:'Cailloux — volume de sol exploitable.'},
+  ocd:{label:'Densité de carbone',unit:'kg/m³',meaning:'Carbone organique par volume.'}
+};
+function soilUrl(base, props, depths){
+  const lon=((base.match(/lon=([-\d.]+)/)||[])[1])||'-7.6';
+  const lat=((base.match(/lat=([-\d.]+)/)||[])[1])||'33.6';
+  return 'https://rest.isric.org/soilgrids/v2.0/properties/query?lon='+lon+'&lat='+lat+props.map(function(p){return '&property='+p;}).join('')+depths.map(function(d){return '&depth='+d;}).join('')+'&value=mean';
+}
+async function browseData(id, mode){
+  const a=allAssets().find(function(x){return x.id===id;}); if(!a||!a.api) return;
+  const isSoil=/soilgrids/.test(a.api.url);
+  const url=(mode==='full'&&isSoil)
+    ? soilUrl(a.api.url,['phh2o','nitrogen','soc','cec','clay','sand','bdod'],['0-5cm','5-15cm','15-30cm'])
+    : a.api.url;
   const v=document.getElementById('dataView'); v.innerHTML='<div class="muted" style="font-size:13px">Récupération des données…</div>';
   try{
-    const res=await fetch(a.api.url);
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    const txt=await res.text();
-    let data=null; try{data=JSON.parse(txt);}catch(e){}
+    const res=await fetch(url); if(!res.ok) throw new Error('HTTP '+res.status);
+    const data=JSON.parse(await res.text());
     let html='';
     if(data&&data.properties&&Array.isArray(data.properties.layers)){
-      // SoilGrids
-      html='<div class="kvgrid">'+data.properties.layers.map(function(l){
-        const d=(l.depths&&l.depths[0])||{}; const mean=(d.values&&d.values.mean!=null)?d.values.mean:'—';
-        const unit=(l.unit_measure&&(l.unit_measure.target_units||l.unit_measure.mapped_units))||'';
-        const fac=l.unit_measure&&l.unit_measure.d_factor; const real=(typeof mean==='number'&&fac)?(' ('+(mean/fac)+' '+unit+')'):'';
-        return '<div class="kvc"><div class="kk">'+escapeHtml(l.name)+'</div><div class="vv">'+mean+'</div><div class="uu">'+escapeHtml(d.label||'')+real+'</div></div>';
-      }).join('')+'</div>';
+      const lon=data.geometry&&data.geometry.coordinates?data.geometry.coordinates[0]:'';
+      const lat=data.geometry&&data.geometry.coordinates?data.geometry.coordinates[1]:'';
+      html='<div class="dvintro">📍 Point <b>lon '+lon+' · lat '+lat+'</b> — propriétés du sol qui déterminent sa <b>valeur nutritive</b> et les besoins en fertilisation. Chaque carte = une propriété à une profondeur.</div>';
+      let cards='';
+      data.properties.layers.forEach(function(l){
+        const info=SOIL_DICT[l.name]||{label:l.name,unit:'',meaning:''};
+        const um=l.unit_measure||{}; const fac=um.d_factor||1; const unit=info.unit||um.target_units||'';
+        (l.depths||[]).forEach(function(d){
+          const raw=d.values?(d.values.mean!=null?d.values.mean:(d.values['Q0.5']!=null?d.values['Q0.5']:null)):null;
+          const real=(typeof raw==='number')?(Math.round((raw/fac)*100)/100):null;
+          cards+='<div class="kvc"><div class="kk">'+escapeHtml(info.label)+'</div>'
+            +'<div class="vv">'+(real!=null?real:'—')+' <span class="un">'+escapeHtml(unit)+'</span></div>'
+            +'<div class="uu">profondeur '+escapeHtml(d.label||'')+'</div>'
+            +(info.meaning?'<div class="mn">'+escapeHtml(info.meaning)+'</div>':'')+'</div>';
+        });
+      });
+      html+='<div class="kvgrid">'+cards+'</div>';
+      if(isSoil&&mode!=='full') html+='<button class="btn ghost sm" style="margin-top:12px" onclick="browseData(\''+id+'\',\'full\')">➕ Récupérer plus (7 propriétés × 3 profondeurs)</button>';
     } else if(data&&data.daily){
-      // Open-Meteo daily
       const keys=Object.keys(data.daily).filter(function(k){return k!=='time';});
-      html='<div class="kvgrid">'+keys.map(function(k){return '<div class="kvc"><div class="kk">'+escapeHtml(k)+'</div><div class="vv">'+(data.daily[k][0])+'</div><div class="uu">'+escapeHtml((data.daily_units&&data.daily_units[k])||'')+'</div></div>';}).join('')+'</div>';
+      html='<div class="dvintro">Prévisions agro-météo (jour J). Utile pour le pilotage des apports et le stress hydrique.</div><div class="kvgrid">'+keys.map(function(k){return '<div class="kvc"><div class="kk">'+escapeHtml(k)+'</div><div class="vv">'+(data.daily[k][0])+' <span class="un">'+escapeHtml((data.daily_units&&data.daily_units[k])||'')+'</span></div></div>';}).join('')+'</div>';
+    } else {
+      html='<div class="muted" style="font-size:13px">Données reçues — voir le JSON brut ci-dessous.</div>';
     }
-    html+='<details style="margin-top:12px"><summary style="cursor:pointer;font-size:12.5px;color:var(--muted)">Réponse brute (JSON)</summary><pre class="raw">'+escapeHtml(JSON.stringify(data||txt,null,2)).slice(0,5000)+'</pre></details>';
+    html+='<details style="margin-top:12px"><summary style="cursor:pointer;font-size:12.5px;color:var(--muted)">Réponse brute (JSON)</summary><pre class="raw">'+escapeHtml(JSON.stringify(data,null,2)).slice(0,6000)+'</pre></details>';
     v.innerHTML=html; setTimeout(postHeight,60);
   }catch(err){
     v.innerHTML='<div class="connmsg" style="color:var(--bad);font-size:13px">Échec : '+escapeHtml(String(err.message||err))+' — l\'API bloque peut-être le navigateur (CORS) ou exige une clé.</div>';
