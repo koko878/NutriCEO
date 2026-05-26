@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutrientOS
  * Description:       Hosts the NutrientOS prototype, the executive one-pager and the executive summary. Full-screen URLs (no theme chrome) + shortcodes with full-bleed auto-resizing iframes. Includes a server-side AI proxy (curate) to the OCP AI Lab for auto-summaries/insights.
- * Version:           1.9.5
+ * Version:           1.9.6
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutrientos
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NOS_VER', '1.9.5' );
+define( 'DNAI_NOS_VER', '1.9.6' );
 define( 'DNAI_NOS_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NOS_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -135,6 +135,26 @@ add_action( 'rest_api_init', function () {
 		},
 	) );
 } );
+
+/* WordPress runs a GLOBAL cookie-nonce check (rest_cookie_check_errors, priority 100
+ * on rest_authentication_errors) before any route permission_callback. Running at 99
+ * and returning a non-empty value makes that core check short-circuit. Behind Azure
+ * Front Door the cookie-bound nonce is often stale (cached), so logged-in admins get
+ * a 403 "Cookie check failed" before our same-origin logic can run. Neutralize that
+ * error ONLY for our /curate endpoint and ONLY for same-origin browser requests. */
+add_filter( 'rest_authentication_errors', function ( $result ) {
+	$uri = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : '';
+	if ( strpos( $uri, 'dnai-nutrientos/v1/curate' ) === false ) { return $result; }
+	$origin = isset( $_SERVER['HTTP_ORIGIN'] ) ? $_SERVER['HTTP_ORIGIN'] : ( isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : '' );
+	if ( $origin ) {
+		$oh = wp_parse_url( $origin, PHP_URL_HOST );
+		$sh = wp_parse_url( home_url(), PHP_URL_HOST );
+		if ( $oh && $sh && strcasecmp( $oh, $sh ) === 0 ) {
+			return true; // Same-origin: treat as authenticated, bypassing the stale-nonce 403.
+		}
+	}
+	return $result;
+}, 99 );
 
 function dnai_nos_curate( $req ) {
 	if ( ! dnai_nos_ai_ready() ) {
