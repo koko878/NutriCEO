@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name:       D²nAI NutrientOS
- * Description:       Hosts the NutrientOS prototype, the executive one-pager and the executive summary. Serves FULL-SCREEN URLs (no theme chrome) and shortcodes [nutrientos], [nutrientos_exec], [nutrientos_execsum] with full-bleed, cache-busted, auto-resizing iframes.
- * Version:           1.8.0
+ * Description:       Hosts the NutrientOS prototype, the executive one-pager and the executive summary. Full-screen URLs (no theme chrome) + shortcodes with full-bleed auto-resizing iframes. Includes a server-side AI proxy (curate) to the OCP AI Lab for auto-summaries/insights.
+ * Version:           1.9.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutrientos
@@ -10,23 +10,23 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NOS_VER', '1.8.0' );
+define( 'DNAI_NOS_VER', '1.9.0' );
 define( 'DNAI_NOS_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NOS_DIR', plugin_dir_path( __FILE__ ) );
 
-/* Which app maps to which bundled file. */
 function dnai_nos_files() {
-	return array(
-		'index'   => 'index.html',
-		'exec'    => 'exec.html',
-		'execsum' => 'execsum.html',
-	);
+	return array( 'index' => 'index.html', 'exec' => 'exec.html', 'execsum' => 'execsum.html' );
+}
+function dnai_nos_opt( $key, $default = '' ) {
+	$o = get_option( 'dnai_nos_settings', array() );
+	return isset( $o[ $key ] ) && $o[ $key ] !== '' ? $o[ $key ] : $default;
+}
+function dnai_nos_ai_ready() {
+	return dnai_nos_opt( 'base_url' ) !== '' && dnai_nos_opt( 'api_key' ) !== '';
 }
 
 /* -------------------------------------------------------------------------
- * 1. FULL-SCREEN routes — serve an app with NO theme around it.
- *    Pretty:   /nutrientos  ·  /nutrientos-exec  ·  /nutrientos-execsum
- *    Fallback: /?dnai_nos_app=index|exec|execsum
+ * 1. FULL-SCREEN routes — serve an app with NO theme, and inject the AI config.
  * ---------------------------------------------------------------------- */
 function dnai_nos_add_rewrite() {
 	add_rewrite_rule( '^nutrientos/?$',         'index.php?dnai_nos_app=index',   'top' );
@@ -34,11 +34,7 @@ function dnai_nos_add_rewrite() {
 	add_rewrite_rule( '^nutrientos-execsum/?$', 'index.php?dnai_nos_app=execsum', 'top' );
 }
 add_action( 'init', 'dnai_nos_add_rewrite' );
-
-add_filter( 'query_vars', function ( $vars ) {
-	$vars[] = 'dnai_nos_app';
-	return $vars;
-} );
+add_filter( 'query_vars', function ( $v ) { $v[] = 'dnai_nos_app'; return $v; } );
 
 add_action( 'template_redirect', function () {
 	$which = get_query_var( 'dnai_nos_app' );
@@ -51,41 +47,35 @@ add_action( 'template_redirect', function () {
 		header( 'Content-Type: text/html; charset=utf-8' );
 		header( 'X-Robots-Tag: noindex, nofollow', true );
 		nocache_headers();
-		readfile( $path );
+		$html = file_get_contents( $path );
+		$cfg  = '<script>window.DNAI_NOS=' . wp_json_encode( array(
+			'curate' => esc_url_raw( rest_url( 'dnai-nutrientos/v1/curate' ) ),
+			'nonce'  => wp_create_nonce( 'wp_rest' ),
+			'ai'     => dnai_nos_ai_ready(),
+		) ) . ';</script>';
+		echo str_replace( '</head>', $cfg . '</head>', $html ); // phpcs:ignore
 	} else {
-		status_header( 404 );
-		echo 'NutrientOS app not found.';
+		status_header( 404 ); echo 'NutrientOS app not found.';
 	}
 	exit;
 } );
 
-register_activation_hook( __FILE__, function () {
-	dnai_nos_add_rewrite();
-	flush_rewrite_rules();
-} );
+register_activation_hook( __FILE__, function () { dnai_nos_add_rewrite(); flush_rewrite_rules(); } );
 register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
 
-/* Best full-screen URL for a given app (pretty if permalinks on). */
 function dnai_nos_fs_url( $which = 'index' ) {
 	$slug = array( 'index' => 'nutrientos', 'exec' => 'nutrientos-exec', 'execsum' => 'nutrientos-execsum' );
-	if ( get_option( 'permalink_structure' ) ) {
-		return home_url( '/' . $slug[ $which ] );
-	}
-	return home_url( '/?dnai_nos_app=' . $which );
+	return get_option( 'permalink_structure' ) ? home_url( '/' . $slug[ $which ] ) : home_url( '/?dnai_nos_app=' . $which );
 }
 
 /* -------------------------------------------------------------------------
- * 2. Shortcodes — full-bleed, cache-busted, auto-resizing iframe.
+ * 2. Shortcodes — iframe points at the route (so the AI config is injected).
  * ---------------------------------------------------------------------- */
 function dnai_nos_frame( $which ) {
-	$files = dnai_nos_files();
-	$file  = isset( $files[ $which ] ) ? $files[ $which ] : 'index.html';
-	$src   = esc_url( DNAI_NOS_URL . 'app/' . $file . '?v=' . DNAI_NOS_VER );
-	$fs    = esc_url( dnai_nos_fs_url( $which ) );
-	$id    = 'dnaiNosFrame_' . wp_rand( 1000, 9999 );
-
+	$src = esc_url( dnai_nos_fs_url( $which ) );
+	$fs  = $src;
+	$id  = 'dnaiNosFrame_' . wp_rand( 1000, 9999 );
 	$wrap = 'position:relative;left:50%;right:50%;width:100vw;max-width:100vw;margin-left:-50vw;margin-right:-50vw;padding:0 16px;box-sizing:border-box;';
-
 	return '<div class="dnai-nos-wrap" style="' . $wrap . '">'
 		. '<div style="text-align:right;margin:0 0 8px;"><a href="' . $fs . '" target="_blank" rel="noopener" '
 		. 'style="display:inline-flex;align-items:center;gap:6px;font:600 13px sans-serif;color:#2E7D32;text-decoration:none;">⛶ Ouvrir en plein écran</a></div>'
@@ -96,20 +86,131 @@ function dnai_nos_frame( $which ) {
 		. 'window.addEventListener("message",function(e){if(!e.data)return;'
 		. 'if(typeof e.data.dnaiNosHeight==="number"){f.style.height=(e.data.dnaiNosHeight+2)+"px";}'
 		. 'if(e.data.dnaiNosScroll){f.scrollIntoView({behavior:"smooth",block:"start"});}});'
-		. '})();</script>'
-		. '</div>';
+		. '})();</script></div>';
 }
-
 add_shortcode( 'nutrientos',         function () { return dnai_nos_frame( 'index' ); } );
 add_shortcode( 'nutrientos_exec',    function () { return dnai_nos_frame( 'exec' ); } );
 add_shortcode( 'nutrientos_execsum', function () { return dnai_nos_frame( 'execsum' ); } );
 
-/* Plugins page: link to the full-screen URLs. */
+/* -------------------------------------------------------------------------
+ * 3. AI proxy — POST /wp-json/dnai-nutrientos/v1/curate
+ *    Body: { title, ftype, content?, image? (data URL) }
+ *    Calls the AI Lab (OpenAI-compatible) with the custom model, key server-side.
+ * ---------------------------------------------------------------------- */
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'dnai-nutrientos/v1', '/curate', array(
+		'methods'             => 'POST',
+		'callback'            => 'dnai_nos_curate',
+		'permission_callback' => function ( $req ) {
+			return (bool) wp_verify_nonce( $req->get_header( 'X-WP-Nonce' ), 'wp_rest' );
+		},
+	) );
+} );
+
+function dnai_nos_curate( $req ) {
+	if ( ! dnai_nos_ai_ready() ) {
+		return new WP_REST_Response( array( 'error' => 'AI non configurée (Réglages → D²nAI NutrientOS).' ), 400 );
+	}
+	$b       = $req->get_json_params();
+	$title   = isset( $b['title'] ) ? sanitize_text_field( $b['title'] ) : '';
+	$ftype   = isset( $b['ftype'] ) ? sanitize_text_field( $b['ftype'] ) : '';
+	$content = isset( $b['content'] ) ? (string) $b['content'] : '';
+	$image   = isset( $b['image'] ) ? (string) $b['image'] : '';
+
+	$base  = rtrim( dnai_nos_opt( 'base_url' ), '/' );
+	$path  = dnai_nos_opt( 'api_path', '/api/chat/completions' );
+	$key   = dnai_nos_opt( 'api_key' );
+	$model = dnai_nos_opt( 'model', 'nutrientos-curator' );
+
+	$intro = "Asset à cataloguer.\nTitre : {$title}\nType de fichier : {$ftype}\n";
+	if ( $image ) {
+		$user = array(
+			array( 'type' => 'text', 'text' => $intro . "Analyse cette image dans le contexte agronomique et renvoie le JSON de curation." ),
+			array( 'type' => 'image_url', 'image_url' => array( 'url' => $image ) ),
+		);
+	} else {
+		$content = mb_substr( $content, 0, 12000 );
+		$user    = $intro . "Contenu :\n" . $content;
+	}
+
+	$payload = array(
+		'model'       => $model,
+		'temperature' => 0.1,
+		'messages'    => array( array( 'role' => 'user', 'content' => $user ) ),
+	);
+	if ( dnai_nos_opt( 'json_mode', '1' ) === '1' ) {
+		$payload['response_format'] = array( 'type' => 'json_object' );
+	}
+
+	$resp = wp_remote_post( $base . $path, array(
+		'timeout' => 60,
+		'headers' => array( 'Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . $key ),
+		'body'    => wp_json_encode( $payload ),
+	) );
+	if ( is_wp_error( $resp ) ) {
+		return new WP_REST_Response( array( 'error' => $resp->get_error_message() ), 502 );
+	}
+	$data = json_decode( wp_remote_retrieve_body( $resp ), true );
+	$txt  = isset( $data['choices'][0]['message']['content'] ) ? $data['choices'][0]['message']['content'] : '';
+	if ( $txt === '' ) {
+		return new WP_REST_Response( array( 'error' => 'Réponse vide du modèle.', 'raw' => $data ), 502 );
+	}
+	// Extract the JSON object from the model's reply.
+	$json = json_decode( $txt, true );
+	if ( ! is_array( $json ) && preg_match( '/\{.*\}/s', $txt, $m ) ) {
+		$json = json_decode( $m[0], true );
+	}
+	if ( ! is_array( $json ) ) {
+		return new WP_REST_Response( array( 'error' => 'JSON non interprétable.', 'text' => $txt ), 502 );
+	}
+	return new WP_REST_Response( $json, 200 );
+}
+
+/* -------------------------------------------------------------------------
+ * 4. Settings page
+ * ---------------------------------------------------------------------- */
+add_action( 'admin_menu', function () {
+	add_options_page( 'D²nAI NutrientOS', 'D²nAI NutrientOS', 'manage_options', 'dnai-nutrientos', 'dnai_nos_settings_page' );
+} );
+add_action( 'admin_init', function () {
+	register_setting( 'dnai_nos', 'dnai_nos_settings', function ( $in ) {
+		return array(
+			'base_url'  => isset( $in['base_url'] ) ? esc_url_raw( trim( $in['base_url'] ) ) : '',
+			'api_path'  => isset( $in['api_path'] ) ? sanitize_text_field( $in['api_path'] ) : '/api/chat/completions',
+			'api_key'   => isset( $in['api_key'] ) ? trim( $in['api_key'] ) : '',
+			'model'     => isset( $in['model'] ) ? sanitize_text_field( $in['model'] ) : 'nutrientos-curator',
+			'json_mode' => isset( $in['json_mode'] ) ? '1' : '0',
+		);
+	} );
+} );
+function dnai_nos_settings_page() {
+	$o = get_option( 'dnai_nos_settings', array() );
+	$g = function ( $k, $d = '' ) use ( $o ) { return isset( $o[ $k ] ) ? esc_attr( $o[ $k ] ) : $d; };
+	?>
+	<div class="wrap">
+		<h1>D²nAI NutrientOS — IA</h1>
+		<p>Proxy serveur vers l'AI Lab (OpenAI-compatible). La clé reste côté serveur ; le navigateur appelle <code>/wp-json/dnai-nutrientos/v1/curate</code>.</p>
+		<p>Statut : <strong><?php echo dnai_nos_ai_ready() ? '✅ configuré' : '⚠️ non configuré'; ?></strong> · Plein écran : <code><?php echo esc_html( dnai_nos_fs_url( 'index' ) ); ?></code></p>
+		<form method="post" action="options.php">
+			<?php settings_fields( 'dnai_nos' ); ?>
+			<table class="form-table">
+				<tr><th>AI Lab base URL</th><td><input type="text" name="dnai_nos_settings[base_url]" value="<?php echo $g( 'base_url' ); ?>" class="regular-text" placeholder="https://lab.ocpnutricrops.ai"></td></tr>
+				<tr><th>API path</th><td><input type="text" name="dnai_nos_settings[api_path]" value="<?php echo $g( 'api_path', '/api/chat/completions' ); ?>" class="regular-text"></td></tr>
+				<tr><th>API key</th><td><input type="password" name="dnai_nos_settings[api_key]" value="<?php echo $g( 'api_key' ); ?>" class="regular-text"></td></tr>
+				<tr><th>Modèle</th><td><input type="text" name="dnai_nos_settings[model]" value="<?php echo $g( 'model', 'nutrientos-curator' ); ?>" class="regular-text"></td></tr>
+				<tr><th>JSON mode</th><td><label><input type="checkbox" name="dnai_nos_settings[json_mode]" value="1" <?php checked( '1', isset( $o['json_mode'] ) ? $o['json_mode'] : '1' ); ?>> Envoyer response_format=json_object</label></td></tr>
+			</table>
+			<?php submit_button(); ?>
+		</form>
+	</div>
+	<?php
+}
+
+/* Plugins page links. */
 add_filter( 'plugin_row_meta', function ( $links, $file ) {
 	if ( strpos( $file, 'dnai-nutrientos' ) !== false ) {
 		$links[] = '<a href="' . esc_url( dnai_nos_fs_url( 'index' ) ) . '" target="_blank"><strong>Plateforme</strong></a>';
-		$links[] = '<a href="' . esc_url( dnai_nos_fs_url( 'exec' ) ) . '" target="_blank">Exec</a>';
-		$links[] = '<a href="' . esc_url( dnai_nos_fs_url( 'execsum' ) ) . '" target="_blank">Exec-sum</a>';
+		$links[] = '<a href="' . esc_url( admin_url( 'options-general.php?page=dnai-nutrientos' ) ) . '">Réglages IA</a>';
 	}
 	return $links;
 }, 10, 2 );

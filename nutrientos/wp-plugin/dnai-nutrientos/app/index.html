@@ -252,6 +252,10 @@ body.embed .botnav{display:none!important}
 .dvtoolbar .presets button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;font:600 12px 'Inter';color:var(--green-700);cursor:pointer}
 .dvtoolbar .presets button:hover{background:var(--green-50);border-color:var(--green-300)}
 .raw{background:#07140c;color:#cfe3d4;border-radius:10px;padding:12px 14px;font:500 12px var(--mono);overflow:auto;max-height:320px;white-space:pre;margin-top:8px}
+/* AI row */
+.airow{display:flex;align-items:center;gap:10px;margin:8px 0 2px;flex-wrap:wrap}
+.aistat{font-size:12px}.aistat.run{color:var(--warn)}.aistat.ok{color:var(--green-700)}.aistat.err{color:var(--bad)}
+.insl{margin:8px 0 0;padding-left:18px;font-size:13px;color:var(--muted)}.insl li{margin-bottom:3px}
 /* data table preview */
 .tblwrap2{overflow:auto;max-height:340px;border:1px solid var(--line);border-radius:10px}
 .dtable{width:100%;border-collapse:collapse;font-size:12.5px}
@@ -498,6 +502,7 @@ body.embed .botnav{display:none!important}
         <label class="fl">Source (URL ou origine)</label><input type="text" id="up_source" placeholder="ex. https://… ou « rapport interne OCP 2024 »">
         <label class="fl">Description</label><textarea id="up_desc" rows="2" placeholder="À quoi sert ce document/jeu de données ?"></textarea>
         <label class="fl">Résumé court (max 3 phrases)</label><textarea id="up_summary" rows="3" placeholder="Synthèse du contenu…"></textarea>
+        <div class="airow"><button class="btn ghost sm" id="aiBtn" onclick="runAI(false)">✨ Analyser par IA</button><span class="aistat" id="aiStatus"></span></div>
         <div id="up_extra"></div>
         <div id="up_related"></div>
       </div>
@@ -855,7 +860,8 @@ function openAsset(id){
         <h1>${ICON[a.type]} ${a.title}</h1>
         <div class="dmeta"><span>🏢 <b>${orgD(a.org)}</b></span><span>📦 ${ty[a.type]}</span><span>🕑 ${u.updPrefix} ${ago(a.upd)}</span><span>⭐ ${a.stars}</span></div>
         <div class="dblock"><h4>${u.desc}</h4><p style="margin:0;color:var(--muted);font-size:14.5px">${a.desc[LANG]}</p>
-          ${a.summary?`<p style="margin:10px 0 0;font-size:13.5px"><b>Résumé :</b> ${escapeHtml(a.summary)}</p>`:''}
+          ${a.summary?`<p style="margin:10px 0 0;font-size:13.5px"><b>Résumé${a.insights?' ✨':''} :</b> ${escapeHtml(a.summary)}</p>`:''}
+          ${a.insights&&a.insights.length?`<ul class="insl">${a.insights.map(i=>'<li>'+escapeHtml(i)+'</li>').join('')}</ul>`:''}
           ${a.source?`<p style="margin:8px 0 0;font-size:12.5px;color:var(--muted)"><b>Source :</b> ${/^https?:/.test(a.source)?('<a href="'+escapeHtml(a.source)+'" target="_blank" rel="noopener" style="color:var(--green-700)">'+escapeHtml(a.source)+'</a>'):escapeHtml(a.source)}</p>`:''}
           ${a.filemeta?`<p style="margin:6px 0 0;font-size:12px;color:var(--muted)">📎 ${escapeHtml(a.filemeta)}</p>`:''}
           ${statusTag}</div>
@@ -1120,9 +1126,40 @@ function typeFromName(n){
   return 'dataset';
 }
 function humanSize(b){ if(b<1024)return b+' o'; if(b<1048576)return (b/1024).toFixed(0)+' Ko'; return (b/1048576).toFixed(1)+' Mo'; }
-let pendingCsv=null, pendingMeta='';
+let pendingCsv=null, pendingMeta='', pendingAI=null;
+const AI = !!(window.DNAI_NOS && window.DNAI_NOS.ai && window.DNAI_NOS.curate);
+function fileToDataURL(f){ return new Promise(function(res,rej){ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(f); }); }
+let _pdfjs=null;
+function ensurePdfjs(){ if(_pdfjs) return _pdfjs; _pdfjs=new Promise(function(res,rej){ const s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'; s.onload=function(){ try{window['pdfjsLib'].GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}catch(e){} res(window['pdfjsLib']); }; s.onerror=rej; document.head.appendChild(s); }); return _pdfjs; }
+async function pdfText(f){ const lib=await ensurePdfjs(); const buf=await f.arrayBuffer(); const pdf=await lib.getDocument({data:buf}).promise; let t=''; const n=Math.min(pdf.numPages,6); for(let i=1;i<=n;i++){ const pg=await pdf.getPage(i); const c=await pg.getTextContent(); t+=c.items.map(x=>x.str).join(' ')+'\n'; if(t.length>12000)break; } return t; }
+async function gatherContent(f){
+  const nm=(f.type+' '+f.name).toLowerCase();
+  if(f.type.startsWith('image/')) return {image:await fileToDataURL(f)};
+  if(/pdf/.test(nm)) return {content:await pdfText(f).catch(()=> '')};
+  if(/csv|tsv|json|text|\.csv|\.tsv|\.txt|\.json/.test(nm)) return {content:(await f.text()).slice(0,12000)};
+  return {content:''};
+}
+function aiCurate(p){ return fetch(window.DNAI_NOS.curate,{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':window.DNAI_NOS.nonce},body:JSON.stringify(p)}).then(x=>x.json()); }
+async function runAI(auto){
+  const st=document.getElementById('aiStatus');
+  if(!AI){ if(st){st.textContent='IA disponible une fois la plateforme publiée sur WordPress (Réglages → D²nAI NutrientOS).';st.className='aistat err';} return; }
+  const f=pendingFiles[0]; if(!f) return;
+  if(f.type.startsWith('audio/')){ if(st){st.textContent='Audio : transcription (Whisper) à brancher avant analyse.';st.className='aistat err';} return; }
+  if(st){ st.textContent='✨ Analyse IA en cours…'; st.className='aistat run'; }
+  try{
+    const payload=Object.assign({title:document.getElementById('up_title').value||f.name, ftype:(f.type||f.name)}, await gatherContent(f));
+    const r=await aiCurate(payload);
+    if(!r||r.error) throw new Error((r&&r.error)||'réponse invalide');
+    pendingAI=r;
+    if(r.summary) document.getElementById('up_summary').value=r.summary;
+    if(r.insights&&r.insights.length&&!document.getElementById('up_desc').value) document.getElementById('up_desc').value=r.insights.join(' · ');
+    if(st){ st.textContent='✓ Analyse IA appliquée — résumé, insights et mots-clés remplis.'; st.className='aistat ok'; }
+    if(r.topics&&r.topics.length) showRelated(r.topics.join(' ')+' '+(document.getElementById('up_title').value||''), document.getElementById('up_related'));
+    setTimeout(postHeight,80);
+  }catch(e){ if(st){ st.textContent='IA indisponible : '+(e.message||e); st.className='aistat err'; } }
+}
 function onFiles(files){
-  pendingFiles=[...files]; pendingCsv=null; pendingMeta='';
+  pendingFiles=[...files]; pendingCsv=null; pendingMeta=''; pendingAI=null;
   const host=document.getElementById('filePrev'); host.innerHTML='';
   pendingFiles.forEach(f=>{
     const row=document.createElement('div'); row.className='fitem-prev';
@@ -1143,6 +1180,9 @@ function onFiles(files){
   else if(f.type.startsWith('audio/')) enrichAudio(f);
   else enrichDoc(f);
   showRelated(document.getElementById('up_title').value, document.getElementById('up_related'));
+  const ai=document.getElementById('aiStatus');
+  if(AI){ if(ai){ai.textContent='';} if(!f.type.startsWith('audio/')) setTimeout(()=>runAI(true),200); }
+  else if(ai){ ai.textContent='Analyse IA auto disponible une fois publié sur WordPress.'; ai.className='aistat'; }
 }
 function setSummary(s){ const el=document.getElementById('up_summary'); if(el&&!el.value) el.value=s; }
 function enrichText(f){
@@ -1187,10 +1227,10 @@ function enrichDoc(f){
 function tokens(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').match(/[a-z0-9]{4,}/g)||[]; }
 const STOP=new Set(['avec','pour','dans','data','dataset','source','fichier','propriete','proprietes','open','nutricrops','soil','sols']);
 function relatedAssets(a){
-  const base=new Set(tokens((a.title||'')+' '+(a.desc?(a.desc[LANG]||a.desc.fr||''):'')+' '+(a.summary||'')).filter(t=>!STOP.has(t)));
+  const base=new Set(tokens((a.title||'')+' '+(a.desc?(a.desc[LANG]||a.desc.fr||''):'')+' '+(a.summary||'')+' '+((a.topics||[]).join(' '))).filter(t=>!STOP.has(t)));
   if(!base.size) return [];
   return allAssets().filter(x=>x.id!==a.id).map(x=>{
-    const t=new Set(tokens((x.title||'')+' '+(x.desc?(x.desc[LANG]||x.desc.fr||''):'')+' '+(x.summary||'')));
+    const t=new Set(tokens((x.title||'')+' '+(x.desc?(x.desc[LANG]||x.desc.fr||''):'')+' '+(x.summary||'')+' '+((x.topics||[]).join(' '))));
     let s=0; base.forEach(w=>{ if(t.has(w)) s++; }); return {x,s};
   }).filter(o=>o.s>0).sort((p,q)=>q.s-p.s).slice(0,3).map(o=>o.x);
 }
@@ -1223,8 +1263,9 @@ function submitIntake(){
     const f=pendingFiles[0];
     const title=val('up_title')||f.name.replace(/\.[^.]+$/,'');
     const desc=val('up_desc')||val('up_summary')||('Importé : '+pendingFiles.map(x=>x.name).join(', '));
-    addAsset({type:typeFromName(f.name),title,org:'Contribution',via:'fichier',
+    addAsset({type:(pendingAI&&pendingAI.suggested_type)||typeFromName(f.name),title,org:'Contribution',via:'fichier',
       source:val('up_source'), summary:val('up_summary'), filemeta:(f.type||'fichier')+' · '+humanSize(f.size)+(pendingMeta?(' · '+pendingMeta):''),
+      insights:(pendingAI&&pendingAI.insights)||null, topics:(pendingAI&&pendingAI.topics)||null,
       csv: pendingCsv?{head:pendingCsv.head,body:pendingCsv.body.slice(0,200),n:pendingCsv.n}:null,
       desc});
   } else if(intakeSrc==='api'){
@@ -1242,7 +1283,7 @@ function submitIntake(){
     const title=val('m_title'); if(!title){ alert('Le titre est requis.'); return; }
     addAsset({type:document.getElementById('m_type').value,title,org:val('m_org')||'Contribution',via:'saisie',desc:val('m_desc')});
   }
-  pendingFiles=[]; pendingCsv=null; document.getElementById('filePrev').innerHTML='';
+  pendingFiles=[]; pendingCsv=null; pendingAI=null; document.getElementById('filePrev').innerHTML='';
   var um=document.getElementById('upMeta'); if(um) um.style.display='none';
   closeIntake(); go('explore'); renderGrid();
 }
