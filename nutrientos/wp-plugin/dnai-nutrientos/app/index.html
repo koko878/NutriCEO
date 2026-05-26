@@ -160,7 +160,10 @@ h2.big{font-size:clamp(28px,4vw,44px);line-height:1.07;margin:12px 0 12px;font-w
 .rb{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;margin-top:4px;background:#eef1ef;color:#5a6b60}
 .rb.admin{background:#fde8e8;color:#9a2b2b}.rb.validator{background:#e7f0fb;color:#1b4f8a}.rb.contributor{background:#e7f5e9;color:#1B5E20}
 .regionsel{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font:inherit;font-size:14px;background:#fff}
-#mapCanvas{height:68vh;min-height:420px;width:100%;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#0b1f14}
+#mapCanvas{height:68vh;min-height:420px;width:100%;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#06100a}
+.maptoggle{display:inline-flex;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.mmbtn{border:0;background:#fff;padding:8px 16px;font:600 13px Inter,sans-serif;color:var(--muted);cursor:pointer}
+.mmbtn.on{background:var(--green-700);color:#fff}
 .mapstats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
 .mapstats .ms{background:var(--green-50);border:1px solid var(--green-100);border-radius:10px;padding:8px 14px;font-size:13px;color:var(--green-800)}
 .mapstats .ms b{font-size:18px;color:var(--green-700)}
@@ -502,6 +505,7 @@ body.embed .botnav{display:none!important}
     <p>Chaque point représente une région ; sa taille reflète le nombre d'assets. Survolez (ou cliquez) pour voir la répartition par type.</p>
   </div></div>
   <div class="wrap" style="padding:24px 0 60px">
+    <div class="maptoggle"><button class="mmbtn on" data-m="globe" onclick="setMapMode('globe')">🌍 Globe 3D</button><button class="mmbtn" data-m="flat" onclick="setMapMode('flat')">🗺️ Plan</button></div>
     <div id="mapStats" class="mapstats"></div>
     <div id="mapCanvas"></div>
     <div class="maplegend">⬤ Région avec assets · taille = volume · <span style="color:var(--muted)">données localisées sur ce prototype</span></div>
@@ -875,8 +879,52 @@ const REGION_DEMO={
 };
 function assetRegion(a){ if(a.region&&typeof a.region.lat==='number') return a.region; const n=REGION_DEMO[a.id]; return n?regionByName(n):null; }
 
-/* ---- Carte mondiale (Leaflet, chargé à la demande) ---- */
-let _leaflet=null,_map=null,_mlayer=null;
+/* ---- Carte mondiale : globe 3D (globe.gl) + plan (Leaflet), à la demande ---- */
+let _leaflet=null,_map=null,_mlayer=null,_globeLib=null,_globe=null,mapMode='globe';
+function mapGroups(){
+  const groups={};
+  allAssets().forEach(function(a){ const r=assetRegion(a); if(!r)return; const k=r.name; (groups[k]=groups[k]||{name:r.name,lat:r.lat,lon:r.lon,items:[]}).items.push(a); });
+  return Object.keys(groups).map(function(k){ const g=groups[k]; const by={}; g.items.forEach(a=>by[a.type]=(by[a.type]||0)+1); g.n=g.items.length; g.by=by; return g; });
+}
+function groupLabel(g){
+  const stats=Object.keys(g.by).map(t=>`${ICON[t]} <b>${g.by[t]}</b> ${TYPES_L[LANG][t]}`).join('<br>');
+  return `<div style="font:13px Inter,sans-serif;min-width:160px;color:#0c1f14;background:#fff;padding:8px 11px;border-radius:10px;box-shadow:0 8px 22px -8px rgba(0,0,0,.5)"><b style="font-size:13.5px">${escapeHtml(g.name)}</b><br><span style="color:#2E7D32;font-weight:700">${g.n} asset(s)</span><br>${stats}</div>`;
+}
+function updateMapStats(data){
+  const ms=document.getElementById('mapStats'); if(!ms) return;
+  const placed=data.length, loc=allAssets().filter(a=>assetRegion(a)).length, mx=data.length?Math.max.apply(null,data.map(d=>d.n)):0;
+  ms.innerHTML=`<span class="ms"><b>${placed}</b> région(s)</span><span class="ms"><b>${loc}</b> assets localisés</span><span class="ms"><b>${mx}</b> max / région</span>`;
+}
+function resetMapHost(){ const host=document.getElementById('mapCanvas'); if(_map){try{_map.remove();}catch(e){}} _map=null;_mlayer=null;_globe=null; if(host)host.innerHTML=''; }
+function setMapMode(m){ if(m===mapMode){return;} mapMode=m; document.querySelectorAll('.mmbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m)); resetMapHost(); renderMapView(); }
+function renderMapView(){ if(mapMode==='flat') renderMap(); else renderGlobe(); }
+function ensureGlobe(){ if(_globeLib) return _globeLib; _globeLib=new Promise(function(res,rej){
+  if(window.Globe){return res(window.Globe);}
+  const s=document.createElement('script'); s.src='https://unpkg.com/globe.gl@2.32.0/dist/globe.gl.min.js'; s.onload=function(){res(window.Globe);}; s.onerror=rej; document.head.appendChild(s);
+}); return _globeLib; }
+async function renderGlobe(){
+  const host=document.getElementById('mapCanvas'); if(!host) return;
+  let GG; try{ GG=await ensureGlobe(); }catch(e){ host.innerHTML='<p class="muted" style="padding:20px">Globe 3D indisponible (réseau ?). Bascule sur « Plan ».</p>'; return; }
+  const data=mapGroups(); const IMG='https://unpkg.com/three-globe@2.31.0/example/img/';
+  if(!_globe){
+    host.innerHTML='';
+    _globe=GG()(host)
+      .width(host.clientWidth||800).height(host.clientHeight||520)
+      .backgroundColor('#06100a')
+      .globeImageUrl(IMG+'earth-night.jpg').bumpImageUrl(IMG+'earth-topology.png').backgroundImageUrl(IMG+'night-sky.png')
+      .showAtmosphere(true).atmosphereColor('#4CAF50').atmosphereAltitude(0.16)
+      .pointLat('lat').pointLng('lon').pointColor(()=> '#7CFC9A')
+      .pointAltitude(function(d){return Math.min(0.05+d.n*0.03,0.55);})
+      .pointRadius(function(d){return 0.28+Math.sqrt(d.n)*0.22;})
+      .pointLabel(function(d){return groupLabel(d);})
+      .pointsData(data);
+    try{ const c=_globe.controls(); c.autoRotate=true; c.autoRotateSpeed=0.55; c.enableZoom=true; }catch(e){}
+    _globe.pointOfView({lat:24,lng:-4,altitude:2.2},0);
+  } else {
+    _globe.width(host.clientWidth||800).height(host.clientHeight||520).pointsData(data);
+  }
+  updateMapStats(data);
+}
 function ensureLeaflet(){ if(_leaflet) return _leaflet; _leaflet=new Promise(function(res,rej){
   if(window.L){return res(window.L);}
   const css=document.createElement('link'); css.rel='stylesheet'; css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'; document.head.appendChild(css);
@@ -887,24 +935,18 @@ async function renderMap(){
   let L; try{ L=await ensureLeaflet(); }catch(e){ host.innerHTML='<p class="muted" style="padding:20px">Carte indisponible (le composant Leaflet n\'a pas pu se charger — réseau ?).</p>'; return; }
   if(!_map){
     _map=L.map(host,{worldCopyJump:true,minZoom:2,scrollWheelZoom:true}).setView([22,2],2);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:18,attribution:'© OpenStreetMap, © CARTO'}).addTo(_map);
+    // Satellite imagery (no political borders drawn) — avoids any disputed boundary line.
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,attribution:'Imagery © Esri'}).addTo(_map);
   }
   if(_mlayer){ _map.removeLayer(_mlayer); }
   _mlayer=L.layerGroup().addTo(_map);
-  const groups={};
-  allAssets().forEach(function(a){ const r=assetRegion(a); if(!r)return; const k=r.name; (groups[k]=groups[k]||{name:r.name,lat:r.lat,lon:r.lon,items:[]}).items.push(a); });
-  const keys=Object.keys(groups); let placed=0;
-  keys.forEach(function(k){
-    const g=groups[k], n=g.items.length, by={}; g.items.forEach(a=>by[a.type]=(by[a.type]||0)+1);
-    const radius=9+Math.sqrt(n)*5;
-    const stats=Object.keys(by).map(t=>`${ICON[t]} <b>${by[t]}</b> ${TYPES_L[LANG][t]}`).join('<br>');
-    const html=`<div style="font:13px Inter,sans-serif;min-width:150px"><b style="font-size:13.5px">${escapeHtml(g.name)}</b><br><span style="color:#2E7D32;font-weight:700">${n} asset(s)</span><br>${stats}</div>`;
+  const data=mapGroups();
+  data.forEach(function(g){ const radius=9+Math.sqrt(g.n)*5;
     const m=L.circleMarker([g.lat,g.lon],{radius:radius,color:'#66BB6A',weight:2,fillColor:'#2E7D32',fillOpacity:.55});
-    m.bindTooltip(html,{direction:'top',opacity:1}); m.bindPopup(html);
-    _mlayer.addLayer(m); placed++;
+    m.bindTooltip(groupLabel(g),{direction:'top',opacity:1}); m.bindPopup(groupLabel(g));
+    _mlayer.addLayer(m);
   });
-  const ms=document.getElementById('mapStats');
-  if(ms) ms.innerHTML=`<span class="ms"><b>${placed}</b> région(s)</span><span class="ms"><b>${allAssets().filter(a=>assetRegion(a)).length}</b> assets localisés</span><span class="ms"><b>${keys.length?Math.max.apply(null,keys.map(k=>groups[k].items.length)):0}</b> max / région</span>`;
+  updateMapStats(data);
   setTimeout(function(){ try{_map.invalidateSize();}catch(e){} },120);
 }
 
