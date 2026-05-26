@@ -760,6 +760,7 @@ function openAsset(id){
           ${a.contributors.map(c=>`<div class="contrib"><span class="av">${c.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</span>${c}</div>`).join('')}
         </div>
         ${a.id==='reco-engine'||a.id==='nvs'?`<div class="scard" style="background:var(--green-50);border-color:var(--green-100)"><h4>${u.appUses}</h4><p style="margin:0 0 10px;font-size:13px;color:var(--green-800)">${u.appUsesText}</p><button class="cta-mini" style="width:100%" onclick="go('console')">${u.openConsole}</button></div>`:''}
+        ${isDelta(a.id)?`<button class="btn ghost sm" style="width:100%;color:var(--bad);border:1px solid #f0c9c9;background:#fff" onclick="deleteAsset('${a.id}')">🗑 Supprimer cet asset</button>`:''}
       </div>
     </div>`;
   go('asset');
@@ -815,6 +816,14 @@ const LS_NOS_DELTA='nos_delta_v1';
 let DELTA=(function(){try{return JSON.parse(localStorage.getItem(LS_NOS_DELTA))||[]}catch(e){return []}})();
 function saveDelta(){localStorage.setItem(LS_NOS_DELTA,JSON.stringify(DELTA));}
 function allAssets(){return DELTA.concat(ASSETS);}
+function isDelta(id){return DELTA.some(function(x){return x.id===id;});}
+function deleteAsset(id){
+  if(!isDelta(id)){ alert('Les assets d\'exemple ne peuvent pas être supprimés.'); return; }
+  if(!confirm('Supprimer définitivement cet asset de vos contributions ?')) return;
+  DELTA=DELTA.filter(function(x){return x.id!==id;}); saveDelta();
+  renderGrid(); renderImpact(); renderCommunity();
+  go('explore'); toast('Asset supprimé');
+}
 
 function renderImpact(){
   const A=allAssets();
