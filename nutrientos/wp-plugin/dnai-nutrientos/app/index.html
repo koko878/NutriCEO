@@ -209,6 +209,10 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
 
 /* mobile bottom nav */
 .botnav{display:none}
+/* scroll-reveal */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .55s ease,transform .55s ease;will-change:opacity,transform}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
 /* embedded in an iframe: no sticky/fixed nav, parent auto-sizes */
 body.embed .nav{position:static}
 body.embed .botnav{display:none!important}
@@ -567,6 +571,7 @@ function go(v){
   document.getElementById('view-'+v).classList.add('on');
   document.querySelectorAll('.navlink,.botnav button').forEach(n=>n.classList.toggle('on',n.dataset.v===v));
   window.scrollTo({top:0,behavior:'instant'});
+  tagReveal();
   setTimeout(postHeight,60);
 }
 
@@ -585,6 +590,27 @@ if(EMBED){
   window.addEventListener('load',postHeight);
   window.addEventListener('resize',postHeight);
   if('ResizeObserver' in window){ new ResizeObserver(postHeight).observe(document.body); }
+}
+
+/* ====================== scroll-reveal + animated bars ====================== */
+const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const REVEAL_SEL = '.feat .f,.aud,.wg,.fitem,.acard,.kpi,.panel,.oc .col,.flip2 .c,.pill';
+const revObs = ('IntersectionObserver' in window && !EMBED && !REDUCED)
+  ? new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');revObs.unobserve(e.target);setTimeout(postHeight,650);}})},{threshold:.12,rootMargin:'0px 0px -8% 0px'})
+  : null;
+function tagReveal(scope){
+  (scope||document).querySelectorAll(REVEAL_SEL).forEach(el=>{
+    if(el.classList.contains('rv')) return; el.classList.add('rv');
+    if(!revObs){ el.classList.add('reveal','in'); return; }
+    el.classList.add('reveal');
+    const sibs=el.parentElement?[...el.parentElement.children].filter(c=>c.classList.contains('reveal')):[el];
+    el.style.transitionDelay=(Math.min(sibs.indexOf(el),8)*55)+'ms';
+    revObs.observe(el);
+  });
+}
+function grow(scope){
+  (scope||document).querySelectorAll('[data-w]').forEach(e=>{e.style.width='0';requestAnimationFrame(()=>requestAnimationFrame(()=>{e.style.width=e.dataset.w;}));});
+  (scope||document).querySelectorAll('[data-h]').forEach(e=>{e.style.height='0';requestAnimationFrame(()=>requestAnimationFrame(()=>{e.style.height=e.dataset.h;}));});
 }
 
 /* ====================== matrix rain ====================== */
@@ -629,6 +655,7 @@ function renderGrid(){
         <span class="s">🕑 ${ago(a.upd)}</span>
       </div>
     </div>`).join('');
+  tagReveal(document.getElementById('grid'));
 }
 function openAsset(id){
   curAsset=id;
@@ -692,7 +719,8 @@ function renderImpact(){
   document.getElementById('kpis').innerHTML=KPI_L[LANG].map((k,i)=>`<div class="kpi"><div class="v">${vals[i]}</div><div class="k">${k.k}</div><div class="t">${k.t}</div></div>`).join('');
   const data=[{l:QLAB[LANG][0],v:120},{l:QLAB[LANG][1],v:210},{l:QLAB[LANG][2],v:360},{l:QLAB[LANG][3],v:totReuse}];
   const max=Math.max(...data.map(d=>d.v));
-  document.getElementById('chart').innerHTML=data.map(d=>`<div class="col"><span class="val">${d.v}</span><div class="bar" style="height:${Math.round(d.v/max*100)}%"></div><span class="lab">${d.l}</span></div>`).join('');
+  document.getElementById('chart').innerHTML=data.map(d=>`<div class="col"><span class="val">${d.v}</span><div class="bar" data-h="${Math.round(d.v/max*100)}%" style="height:0"></div><span class="lab">${d.l}</span></div>`).join('');
+  grow(document.getElementById('chart'));
   const top=[...open].sort((a,b)=>b.reuses-a.reuses).slice(0,5);
   document.getElementById('top').innerHTML=top.map((a,i)=>`<div class="item"><span class="rk">${i+1}</span><div><b>${a.title}</b><br><span style="font-size:12px;color:var(--muted)">${orgD(a.org)}</span></div><span class="m">${a.reuses}</span></div>`).join('');
   document.getElementById('aud').innerHTML=AUD.map(a=>`<div class="aud"><div class="i">${a.i}</div><h4>${a.h[LANG]}</h4><ul>${a.li[LANG].map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('');
@@ -778,7 +806,8 @@ function renderConsole(){
   const cropLbl=CROP_L[LANG][CS.crop],soilLbl=SOIL_L[LANG][CS.soil];
   cel('ctitle').textContent=CTITLE[LANG](cropLbl,soilLbl.toLowerCase());
   cel('prog').innerHTML=r.prog.map(p=>`<div class="pcard"><div class="pn">${p.name}</div><div class="pf">${p.f}</div><div class="pr">${cfmt(p.kg)}</div><div class="pu">kg/ha</div><div class="ptime">${p.phase}</div></div>`).join('');
-  cel('bal').innerHTML=['N','P','K','S'].map(k=>{const pct=Math.min(120,(r.sup[k]/r.tgt[k])*100);return `<div class="balrow"><span class="nm">${NUT[LANG][k]}</span><div class="track"><div class="fill" style="width:${Math.min(100,pct)}%"></div></div><span class="vv">${cfmt(r.sup[k])} / ${cfmt(r.tgt[k])}</span></div>`;}).join('');
+  cel('bal').innerHTML=['N','P','K','S'].map(k=>{const pct=Math.min(120,(r.sup[k]/r.tgt[k])*100);return `<div class="balrow"><span class="nm">${NUT[LANG][k]}</span><div class="track"><div class="fill" data-w="${Math.min(100,pct)}%" style="width:0"></div></div><span class="vv">${cfmt(r.sup[k])} / ${cfmt(r.tgt[k])}</span></div>`;}).join('');
+  grow(cel('bal'));
   cel('sYield').textContent='+'+cfmt(r.yieldUp)+'%';cel('sSust').textContent=cfmt(r.sust);cel('sCost').textContent=cfmt(r.cost)+' $';
   cel('why').innerHTML=RAT[LANG]({label:OBJ_LABEL[LANG][CS.obj],soil:soilLbl.toLowerCase(),note:SOIL_NOTE[LANG][CS.soil],carrier:r.obj.carrier,k:r.kCar,split:r.split});
 }
@@ -792,6 +821,7 @@ function applyLang(){
   buildChips('cropChips',CROPS,CROP_L,'crop');buildChips('soilChips',SOILS,SOIL_L,'soil');buildChips('objChips',OBJ,OBJ_L,'obj');
   renderConsole();
   if(document.getElementById('view-asset').classList.contains('on')&&curAsset)openAsset(curAsset);
+  tagReveal();
 }
 function setLang(l){LANG=l;document.querySelectorAll('.lng').forEach(b=>b.classList.toggle('on',b.dataset.l===l));applyLang();}
 

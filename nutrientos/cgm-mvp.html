@@ -55,6 +55,10 @@ select,input[type=text],input[type=number]{width:100%;padding:10px 12px;border:1
 .pillscol{flex-direction:column}
 .pillscol .pill{min-width:0;width:100%}
 /* embedded (inside iframe): no sticky, let parent auto-size */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease;will-change:opacity,transform}
+.reveal.in{opacity:1;transform:none}
+.chart rect{transition:width .55s ease}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.chart rect{transition:none}}
 body.embed .top{position:static}
 body.embed .tabs{position:static;top:auto}
 
@@ -585,6 +589,7 @@ function renderSensi(p){
   drivers.sort((a,b)=>Math.abs(b.v)-Math.abs(a.v));
   const tot=drivers.reduce((s,d)=>s+Math.abs(d.v),0)||1;
   document.getElementById('tornado').innerHTML=tornado(drivers);
+  grow(document.getElementById('tornado'));
   document.getElementById('driver').innerHTML= drivers.length?
     `Driver principal d'impact : <b>${drivers[0].k}</b> — ${f(Math.abs(drivers[0].v)/tot*100,0)} % de l'impact total sur le coût MP.`
     : 'Aucune variation MP appliquée — ajustez les % sur les MP volatiles (écran Inputs).';
@@ -597,7 +602,7 @@ function tornado(items){
   items.forEach(it=>{
     const len=Math.abs(it.v)/max*bw, col=it.v>=0?'#B91C1C':'#15803D';
     rows+=`<text x="${pad-8}" y="${y+h/2+4}" text-anchor="end" font-size="12" font-weight="600" fill="#3C4642">${it.k}</text>`;
-    rows+=`<rect x="${pad}" y="${y}" width="${len}" height="${h}" rx="6" fill="${col}" opacity=".85"/>`;
+    rows+=`<rect x="${pad}" y="${y}" width="0" data-len="${len}" height="${h}" rx="6" fill="${col}" opacity=".85"/>`;
     rows+=`<text x="${pad+len+8}" y="${y+h/2+4}" font-size="12" font-weight="700" fill="${col}">${it.v>=0?'+':''}${f(it.v,1)} $/t</text>`;
     y+=h+gap;
   });
@@ -776,13 +781,35 @@ if(EMBED){
   if('ResizeObserver' in window){ new ResizeObserver(postHeight).observe(document.body); }
   setInterval(postHeight, 1000);
 }
+/* ============ scroll-reveal + animated bars ============ */
+const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const REVEAL_SEL = '.card,.kpi,.scol,.pcard,.pc';
+const revObs = ('IntersectionObserver' in window && !EMBED && !REDUCED)
+  ? new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');revObs.unobserve(e.target);}})},{threshold:.1,rootMargin:'0px 0px -6% 0px'})
+  : null;
+function tagReveal(scope){
+  (scope||document).querySelectorAll(REVEAL_SEL).forEach(function(el){
+    if(el.classList.contains('rv')) return; el.classList.add('rv');
+    if(!revObs){ el.classList.add('reveal','in'); return; }
+    el.classList.add('reveal');
+    var sibs=el.parentElement?[].slice.call(el.parentElement.children).filter(function(c){return c.classList.contains('reveal')}):[el];
+    el.style.transitionDelay=(Math.min(sibs.indexOf(el),8)*55)+'ms';
+    revObs.observe(el);
+  });
+}
+function grow(scope){
+  (scope||document).querySelectorAll('[data-w]').forEach(function(e){e.style.width='0';requestAnimationFrame(function(){requestAnimationFrame(function(){e.style.width=e.dataset.w;});});});
+  (scope||document).querySelectorAll('rect[data-len]').forEach(function(r){requestAnimationFrame(function(){requestAnimationFrame(function(){r.setAttribute('width',r.dataset.len);});});});
+}
+
 const _goTab = goTab;
-goTab = function(t){ _goTab(t); setTimeout(postHeight, 60); };
+goTab = function(t){ _goTab(t); tagReveal(); setTimeout(postHeight, 60); };
 
 /* ============ init ============ */
 buildTabs();
 buildConfig();
 goTab('config');
+tagReveal();
 postHeight();
 </script>
 </body>
