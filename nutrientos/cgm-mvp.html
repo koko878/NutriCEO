@@ -683,9 +683,15 @@ function resetConst(){ localStorage.removeItem(LS_CONST); CONST=Object.assign({}
 
 /* ============ embed: auto-resize parent iframe ============ */
 const EMBED = (function(){ try{ return window.self !== window.top; }catch(e){ return true; } })();
+let _lastH = 0;
 function postHeight(){
   if(!EMBED) return;
-  const h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+  const m = document.querySelector('main');
+  // True content bottom (intrinsic) — never the iframe viewport height, so it
+  // doesn't ratchet upward and leave growing empty space.
+  const h = Math.ceil(m ? (m.offsetTop + m.offsetHeight) : document.body.offsetHeight) + 8;
+  if(Math.abs(h - _lastH) < 2) return;
+  _lastH = h;
   parent.postMessage({ dnaiCgmHeight: h }, '*');
 }
 if(EMBED){
