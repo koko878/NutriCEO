@@ -1011,7 +1011,7 @@ async function buildGlobe(hostId,withStats,useFilter){
         .polygonCapColor(()=> 'rgba(28,72,48,0.55)').polygonSideColor(()=> 'rgba(0,0,0,0)')
         .polygonStrokeColor(()=> '#3a7d52').polygonAltitude(0.008); }catch(e){}
     try{ const c=G.controls(); c.autoRotate=true; c.autoRotateSpeed=0.5; c.enableZoom=(hostId!=='homeGlobe'); }catch(e){}
-    G.pointOfView({lat:22,lng:-2,altitude:(hostId==='mapCanvas'?(EMBED?3.0:2.4):2.2)},0);
+    G.pointOfView({lat:22,lng:-2,altitude:(hostId==='mapCanvas'?(EMBED?3.7:2.4):2.4)},0);
     GLOBES[hostId]=G;
   } else {
     G.width(host.clientWidth||800).height(host.clientHeight||520).pointsData(data).labelsData(labels);
