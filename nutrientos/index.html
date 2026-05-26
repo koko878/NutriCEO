@@ -159,6 +159,13 @@ h2.big{font-size:clamp(28px,4vw,44px);line-height:1.07;margin:12px 0 12px;font-w
 .uacts{display:flex;gap:6px;align-items:center}
 .rb{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;margin-top:4px;background:#eef1ef;color:#5a6b60}
 .rb.admin{background:#fde8e8;color:#9a2b2b}.rb.validator{background:#e7f0fb;color:#1b4f8a}.rb.contributor{background:#e7f5e9;color:#1B5E20}
+.regionsel{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font:inherit;font-size:14px;background:#fff}
+#mapCanvas{height:68vh;min-height:420px;width:100%;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#0b1f14}
+.mapstats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.mapstats .ms{background:var(--green-50);border:1px solid var(--green-100);border-radius:10px;padding:8px 14px;font-size:13px;color:var(--green-800)}
+.mapstats .ms b{font-size:18px;color:var(--green-700)}
+.maplegend{margin-top:12px;font-size:12.5px;color:var(--green-700)}
+.leaflet-popup-content-wrapper,.leaflet-tooltip{border-radius:10px}
 .back{font-size:13px;font-weight:600;color:var(--green-700);cursor:pointer;display:inline-flex;gap:6px;align-items:center;margin-bottom:18px}
 .adetail{overflow-x:hidden}
 .dgrid{display:grid;grid-template-columns:1fr 320px;gap:30px}
@@ -379,6 +386,7 @@ body.embed .botnav{display:none!important}
     <div class="links">
       <button class="navlink" data-v="explore" data-k="nav.explore" onclick="go('explore')">Explorer</button>
       <button class="navlink" data-v="impact" data-k="nav.impact" onclick="go('impact')">Impact</button>
+      <button class="navlink" data-v="map" onclick="go('map')">Carte</button>
       <button class="navlink" data-v="community" data-k="nav.community" onclick="go('community')">Communauté</button>
       <button class="navlink" data-v="console" data-k="nav.console" onclick="go('console')">Console</button>
     </div>
@@ -486,6 +494,20 @@ body.embed .botnav{display:none!important}
   </div>
 </div>
 
+<!-- ============ MAP ============ -->
+<div class="view" id="view-map">
+  <div class="phead"><div class="wrap">
+    <span class="eyebrow">Carte mondiale des assets</span>
+    <h1>D'où viennent les contributions ?</h1>
+    <p>Chaque point représente une région ; sa taille reflète le nombre d'assets. Survolez (ou cliquez) pour voir la répartition par type.</p>
+  </div></div>
+  <div class="wrap" style="padding:24px 0 60px">
+    <div id="mapStats" class="mapstats"></div>
+    <div id="mapCanvas"></div>
+    <div class="maplegend">⬤ Région avec assets · taille = volume · <span style="color:var(--muted)">données localisées sur ce prototype</span></div>
+  </div>
+</div>
+
 <!-- ============ COMMUNITY ============ -->
 <div class="view" id="view-community">
   <div class="phead"><div class="wrap">
@@ -582,6 +604,8 @@ body.embed .botnav{display:none!important}
         <label class="fl">Titre</label><input type="text" id="up_title">
         <label class="fl">Type d'asset <span id="up_type_ai" class="muted" style="font-weight:400"></span></label>
         <select id="up_type"><option value="dataset">🗄️ Dataset</option><option value="model">🧠 Modèle</option><option value="standard">📐 Standard</option><option value="pipeline">⚙️ Pipeline</option><option value="publication">📄 Publication</option></select>
+        <label class="fl">Région d'origine de l'asset</label>
+        <select id="up_region" class="regionsel"></select>
         <label class="fl">Source (URL ou origine)</label><input type="text" id="up_source" placeholder="ex. https://… ou « rapport interne OCP 2024 »">
         <label class="fl">Description</label><textarea id="up_desc" rows="2" placeholder="À quoi sert ce document/jeu de données ?"></textarea>
         <label class="fl">Résumé court (max 3 phrases)</label><textarea id="up_summary" rows="3" placeholder="Synthèse du contenu…"></textarea>
@@ -615,6 +639,7 @@ body.embed .botnav{display:none!important}
       <label class="fl">Titre</label><input type="text" id="m_title" placeholder="ex. Essais nutrition tomate — Souss 2024">
       <div class="grid2"><div><label class="fl">Type</label><select id="m_type"><option value="dataset">Dataset</option><option value="model">Modèle</option><option value="standard">Standard</option><option value="pipeline">Pipeline</option><option value="publication">Publication</option></select></div>
       <div><label class="fl">Organisation</label><input type="text" id="m_org" placeholder="ex. OCP Nutricrops"></div></div>
+      <label class="fl">Région d'origine de l'asset</label><select id="m_region" class="regionsel"></select>
       <label class="fl">Description</label><textarea id="m_desc" rows="2" placeholder="Quelques mots sur le contenu…"></textarea>
     </div>
 
@@ -655,6 +680,7 @@ body.embed .botnav{display:none!important}
   <button data-v="home" onclick="go('home')"><span class="bi">🏠</span><span data-k="nav.home">Accueil</span></button>
   <button data-v="explore" onclick="go('explore')"><span class="bi">🔍</span><span data-k="nav.explore">Explorer</span></button>
   <button data-v="impact" onclick="go('impact')"><span class="bi">📈</span><span data-k="nav.impact">Impact</span></button>
+  <button data-v="map" onclick="go('map')"><span class="bi">🗺️</span><span>Carte</span></button>
   <button data-v="community" onclick="go('community')"><span class="bi">👥</span><span data-k="nav.community">Communauté</span></button>
   <button data-v="console" onclick="go('console')"><span class="bi">🧪</span><span data-k="nav.console">Console</span></button>
 </nav>
@@ -813,6 +839,75 @@ const ASSETS=[
   desc:{fr:`Essais nutrition oliviers sur 5 ans, bassin méditerranéen.`,en:`Olive nutrition trials over 5 years, Mediterranean basin.`,pt:`Ensaios de nutrição de oliveiras ao longo de 5 anos, bacia mediterrânica.`}}
 ];
 
+/* ====================== Régions & géolocalisation des assets ====================== */
+const REGIONS=[
+ {name:'Khouribga, Maroc',lat:32.88,lon:-6.91},
+ {name:'Benguérir (UM6P), Maroc',lat:32.24,lon:-7.95},
+ {name:'Rabat (INRA), Maroc',lat:34.02,lon:-6.84},
+ {name:'Casablanca-Settat, Maroc',lat:33.1,lon:-7.4},
+ {name:'Meknès, Maroc',lat:33.9,lon:-5.55},
+ {name:'Béni Mellal / Tadla, Maroc',lat:32.34,lon:-6.35},
+ {name:'Paris, France',lat:48.85,lon:2.35},
+ {name:'Madrid, Espagne',lat:40.4,lon:-3.7},
+ {name:'Brasília, Brésil',lat:-15.79,lon:-47.9},
+ {name:'Iowa, USA',lat:41.9,lon:-93.6},
+ {name:'New Delhi, Inde',lat:28.6,lon:77.2},
+ {name:'Le Caire, Égypte',lat:30.0,lon:31.2},
+ {name:'Dakar, Sénégal',lat:14.69,lon:-17.45},
+ {name:'Abidjan, Côte d’Ivoire',lat:5.35,lon:-4.0},
+ {name:'Abuja, Nigéria',lat:9.06,lon:7.49},
+ {name:'Nairobi, Kenya',lat:-1.29,lon:36.82},
+ {name:'Addis-Abeba, Éthiopie',lat:9.03,lon:38.74},
+ {name:'Pampa, Argentine',lat:-34.0,lon:-60.0},
+ {name:'Canberra, Australie',lat:-35.28,lon:149.13},
+ {name:'Pékin, Chine',lat:39.9,lon:116.4},
+ {name:'Kyiv, Ukraine',lat:50.45,lon:30.52},
+ {name:'Jakarta, Indonésie',lat:-6.2,lon:106.8},
+ {name:'Mexico, Mexique',lat:19.43,lon:-99.13},
+ {name:'Saskatchewan, Canada',lat:52.0,lon:-106.0}
+];
+function regionByName(n){ return REGIONS.find(r=>r.name===n)||null; }
+const REGION_DEMO={
+ nvs:'Khouribga, Maroc', twin:'Benguérir (UM6P), Maroc', 'soil-mag':'Benguérir (UM6P), Maroc',
+ 'reco-engine':'Casablanca-Settat, Maroc', 'reco-ref':'Casablanca-Settat, Maroc',
+ citrus:'Rabat (INRA), Maroc', pue:'Benguérir (UM6P), Maroc', 'wheat-n':'Meknès, Maroc',
+ soiltest:'Paris, France', beet:'Madrid, Espagne', sust:'Brasília, Brésil', olive:'Madrid, Espagne'
+};
+function assetRegion(a){ if(a.region&&typeof a.region.lat==='number') return a.region; const n=REGION_DEMO[a.id]; return n?regionByName(n):null; }
+
+/* ---- Carte mondiale (Leaflet, chargé à la demande) ---- */
+let _leaflet=null,_map=null,_mlayer=null;
+function ensureLeaflet(){ if(_leaflet) return _leaflet; _leaflet=new Promise(function(res,rej){
+  if(window.L){return res(window.L);}
+  const css=document.createElement('link'); css.rel='stylesheet'; css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'; document.head.appendChild(css);
+  const s=document.createElement('script'); s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'; s.onload=function(){res(window.L);}; s.onerror=rej; document.head.appendChild(s);
+}); return _leaflet; }
+async function renderMap(){
+  const host=document.getElementById('mapCanvas'); if(!host) return;
+  let L; try{ L=await ensureLeaflet(); }catch(e){ host.innerHTML='<p class="muted" style="padding:20px">Carte indisponible (le composant Leaflet n\'a pas pu se charger — réseau ?).</p>'; return; }
+  if(!_map){
+    _map=L.map(host,{worldCopyJump:true,minZoom:2,scrollWheelZoom:true}).setView([22,2],2);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:18,attribution:'© OpenStreetMap, © CARTO'}).addTo(_map);
+  }
+  if(_mlayer){ _map.removeLayer(_mlayer); }
+  _mlayer=L.layerGroup().addTo(_map);
+  const groups={};
+  allAssets().forEach(function(a){ const r=assetRegion(a); if(!r)return; const k=r.name; (groups[k]=groups[k]||{name:r.name,lat:r.lat,lon:r.lon,items:[]}).items.push(a); });
+  const keys=Object.keys(groups); let placed=0;
+  keys.forEach(function(k){
+    const g=groups[k], n=g.items.length, by={}; g.items.forEach(a=>by[a.type]=(by[a.type]||0)+1);
+    const radius=9+Math.sqrt(n)*5;
+    const stats=Object.keys(by).map(t=>`${ICON[t]} <b>${by[t]}</b> ${TYPES_L[LANG][t]}`).join('<br>');
+    const html=`<div style="font:13px Inter,sans-serif;min-width:150px"><b style="font-size:13.5px">${escapeHtml(g.name)}</b><br><span style="color:#2E7D32;font-weight:700">${n} asset(s)</span><br>${stats}</div>`;
+    const m=L.circleMarker([g.lat,g.lon],{radius:radius,color:'#66BB6A',weight:2,fillColor:'#2E7D32',fillOpacity:.55});
+    m.bindTooltip(html,{direction:'top',opacity:1}); m.bindPopup(html);
+    _mlayer.addLayer(m); placed++;
+  });
+  const ms=document.getElementById('mapStats');
+  if(ms) ms.innerHTML=`<span class="ms"><b>${placed}</b> région(s)</span><span class="ms"><b>${allAssets().filter(a=>assetRegion(a)).length}</b> assets localisés</span><span class="ms"><b>${keys.length?Math.max.apply(null,keys.map(k=>groups[k].items.length)):0}</b> max / région</span>`;
+  setTimeout(function(){ try{_map.invalidateSize();}catch(e){} },120);
+}
+
 /* ====================== view router ====================== */
 let curAsset=null;
 function go(v){
@@ -821,6 +916,7 @@ function go(v){
   document.querySelectorAll('.navlink,.botnav button').forEach(n=>n.classList.toggle('on',n.dataset.v===v));
   window.scrollTo({top:0,behavior:'instant'});
   tagReveal();
+  if(v==='map') setTimeout(renderMap,80);
   setTimeout(postHeight,60);
 }
 
@@ -984,7 +1080,7 @@ function openAsset(id){
       <div class="dmain">
         <span class="lay ${a.layer}">${a.layer==='open'?u.layOpen:u.layCore}</span>
         <h1>${ICON[a.type]} ${a.title}</h1>
-        <div class="dmeta"><span>🏢 <b>${orgD(a.org)}</b></span><span>📦 ${ty[a.type]}</span><span>🕑 ${u.updPrefix} ${ago(a.upd)}</span><span>⭐ ${a.stars}</span></div>
+        <div class="dmeta"><span>🏢 <b>${orgD(a.org)}</b></span><span>📦 ${ty[a.type]}</span>${assetRegion(a)?`<span>📍 ${escapeHtml(assetRegion(a).name)}</span>`:''}${a.contributor?`<span>👤 ${escapeHtml(a.contributor)}</span>`:''}<span>🕑 ${u.updPrefix} ${ago(a.upd)}</span><span>⭐ ${starCount(a)}</span></div>
         <div class="dblock"><h4>${u.desc}</h4><p style="margin:0;color:var(--muted);font-size:14.5px">${a.desc[LANG]}</p>
           ${a.summary?`<p style="margin:10px 0 0;font-size:13.5px"><b>Résumé${a.insights?' ✨':''} :</b> ${escapeHtml(a.summary)}</p>`:''}
           ${a.insights&&a.insights.length?`<ul class="insl">${a.insights.map(i=>'<li>'+escapeHtml(i)+'</li>').join('')}</ul>`:''}
@@ -1404,13 +1500,15 @@ function applyLang(){
   document.documentElement.lang=LANG;
   document.querySelectorAll('[data-k]').forEach(e=>{const v=T[LANG][e.dataset.k];if(v!==undefined)e.innerHTML=v;});
   document.querySelectorAll('[data-kph]').forEach(e=>{const v=T[LANG][e.dataset.kph];if(v!==undefined)e.placeholder=v;});
-  initFilters();renderGrid();renderImpact();renderCommunity();renderUserChip();
+  initFilters();renderGrid();renderImpact();renderCommunity();renderUserChip();fillRegions();
   buildChips('cropChips',CROPS,CROP_L,'crop');buildChips('soilChips',SOILS,SOIL_L,'soil');buildChips('objChips',OBJ,OBJ_L,'obj');
   renderConsole();
   if(document.getElementById('view-asset').classList.contains('on')&&curAsset)openAsset(curAsset);
   tagReveal();
 }
 function setLang(l){LANG=l;document.querySelectorAll('.lng').forEach(b=>b.classList.toggle('on',b.dataset.l===l));applyLang();}
+function fillRegions(){ const opts=REGIONS.map((r,i)=>`<option value="${i}">${escapeHtml(r.name)}</option>`).join(''); ['up_region','m_region'].forEach(function(id){ const el=document.getElementById(id); if(el&&!el.children.length) el.innerHTML=opts; }); }
+function selectedRegion(id){ const el=document.getElementById(id); if(!el)return null; const r=REGIONS[+el.value]; return r?{name:r.name,lat:r.lat,lon:r.lon}:null; }
 
 /* ====================== INTAKE WIZARD ====================== */
 let intakeSrc='upload', intakeLayer='open', pendingFiles=[];
@@ -1632,11 +1730,12 @@ function testConn(kind){
 function addAsset(o){
   o.id='u'+Date.now()+Math.floor(Math.random()*999);
   o.layer=intakeLayer; o.reuses=0; o.stars=0; o.reviews=0; o.upd={n:0,u:'h'};
+  o.contributor=currentUser().name;
   if(!o.desc||typeof o.desc==='string'){ const d=o.desc||''; o.desc={fr:d,en:d,pt:d}; }
   if(!o.contributors) o.contributors=[o.org||'Contribution'];
   DELTA.unshift(o); saveDelta();
   // reflect in community feed
-  FEED.unshift({who:o.org||'Contribution',vb:'contributed',obj:o.title,tag:o.type,a:{n:0,u:'h'},
+  FEED.unshift({who:o.contributor||o.org||'Contribution',vb:'contributed',obj:o.title,tag:o.type,a:{n:0,u:'h'},
     t:{fr:'ajouté via '+o.via,en:'added via '+o.via,pt:'adicionado via '+o.via}});
   renderGrid(); renderImpact(); renderCommunity();
   toast('Asset ajouté au catalogue ✓');
@@ -1653,7 +1752,7 @@ function submitIntake(){
       source:val('up_source'), summary:val('up_summary'), filemeta:(f.type||'fichier')+' · '+humanSize(f.size)+(pendingMeta?(' · '+pendingMeta):''),
       insights:(pendingAI&&pendingAI.insights)||null, topics:(pendingAI&&pendingAI.topics)||null,
       csv: pendingCsv?{head:pendingCsv.head,body:pendingCsv.body.slice(0,200),n:pendingCsv.n}:null,
-      sig:sigOf(f), previewKind:pk, fname:f.name, desc});
+      sig:sigOf(f), previewKind:pk, fname:f.name, region:selectedRegion('up_region'), desc});
     if(pk && newId){ try{ PREVIEW[newId]=URL.createObjectURL(f); }catch(e){} }
     if(newId){ try{ FILES[newId]={url:URL.createObjectURL(f), name:f.name}; }catch(e){} }
     const dupHost=document.getElementById('up_dup'); if(dupHost) dupHost.innerHTML='';
@@ -1670,7 +1769,7 @@ function submitIntake(){
       desc:val('db_type')+' · '+host+' · '+val('db_name2')+'.'+val('db_table')});
   } else {
     const title=val('m_title'); if(!title){ alert('Le titre est requis.'); return; }
-    addAsset({type:document.getElementById('m_type').value,title,org:val('m_org')||'Contribution',via:'saisie',desc:val('m_desc')});
+    addAsset({type:document.getElementById('m_type').value,title,org:val('m_org')||'Contribution',via:'saisie',region:selectedRegion('m_region'),desc:val('m_desc')});
   }
   pendingFiles=[]; pendingCsv=null; pendingAI=null; document.getElementById('filePrev').innerHTML='';
   var um=document.getElementById('upMeta'); if(um) um.style.display='none';
