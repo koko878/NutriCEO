@@ -101,6 +101,9 @@ h2.big{font-size:clamp(28px,4vw,44px);line-height:1.07;margin:12px 0 12px;font-w
 
 /* asset detail */
 .adetail{padding-top:30px;padding-bottom:60px}
+.dupwarn{margin:12px 0;padding:12px 14px;border:1px solid #f0c9c9;background:#fdecec;border-radius:10px;font-size:13.5px;color:#8a2b2b}
+.tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.topic{font-size:11.5px;font-weight:600;color:var(--green-800);background:var(--green-50);border:1px solid var(--green-100);border-radius:999px;padding:3px 10px}
 .back{font-size:13px;font-weight:600;color:var(--green-700);cursor:pointer;display:inline-flex;gap:6px;align-items:center;margin-bottom:18px}
 .adetail{overflow-x:hidden}
 .dgrid{display:grid;grid-template-columns:1fr 320px;gap:30px}
@@ -497,6 +500,7 @@ body.embed .botnav{display:none!important}
         </div>
       </div>
       <div id="filePrev"></div>
+      <div id="up_dup"></div>
       <div id="upMeta" style="display:none;margin-top:6px">
         <label class="fl">Titre</label><input type="text" id="up_title">
         <label class="fl">Source (URL ou origine)</label><input type="text" id="up_source" placeholder="ex. https://… ou « rapport interne OCP 2024 »">
@@ -824,6 +828,18 @@ function renderGrid(){
     </div>`).join('');
   tagReveal(document.getElementById('grid'));
 }
+function previewBlock(a){
+  const k=a.previewKind; if(!k) return '';
+  const url=PREVIEW[a.id];
+  if(!url){
+    return `<div class="dblock"><h4>Aperçu du fichier</h4><p class="muted" style="margin:0;font-size:12.5px">L'aperçu de « ${escapeHtml(a.fname||a.title)} » n'est disponible que dans la session où il a été importé (stockage fichier serveur non activé sur ce prototype).</p></div>`;
+  }
+  let body='';
+  if(k==='image') body=`<img src="${url}" alt="" style="max-width:100%;border-radius:10px;display:block">`;
+  else if(k==='audio') body=`<audio controls src="${url}" style="width:100%"></audio>`;
+  else if(k==='pdf') body=`<iframe src="${url}" title="Aperçu PDF" style="width:100%;height:600px;border:1px solid var(--line);border-radius:10px"></iframe><div style="margin-top:8px"><a href="${url}" target="_blank" rel="noopener" class="btn ghost sm">⤓ Ouvrir le PDF</a></div>`;
+  return body?`<div class="dblock"><h4>Aperçu du fichier</h4>${body}</div>`:'';
+}
 function openAsset(id){
   curAsset=id;
   const u=UI[LANG],ty=TYPES_L[LANG],a=allAssets().find(x=>x.id===id);
@@ -864,7 +880,9 @@ function openAsset(id){
           ${a.insights&&a.insights.length?`<ul class="insl">${a.insights.map(i=>'<li>'+escapeHtml(i)+'</li>').join('')}</ul>`:''}
           ${a.source?`<p style="margin:8px 0 0;font-size:12.5px;color:var(--muted)"><b>Source :</b> ${/^https?:/.test(a.source)?('<a href="'+escapeHtml(a.source)+'" target="_blank" rel="noopener" style="color:var(--green-700)">'+escapeHtml(a.source)+'</a>'):escapeHtml(a.source)}</p>`:''}
           ${a.filemeta?`<p style="margin:6px 0 0;font-size:12px;color:var(--muted)">📎 ${escapeHtml(a.filemeta)}</p>`:''}
+          ${a.topics&&a.topics.length?`<div class="tagrow">${a.topics.map(t=>'<span class="topic">'+escapeHtml(t)+'</span>').join('')}</div>`:''}
           ${statusTag}</div>
+        ${previewBlock(a)}
         ${a.csv?`<div class="dblock"><h4>Visualiser les données</h4>
           <div style="margin-bottom:10px"><button class="btn ghost sm" onclick="downloadCsv('${a.id}')">⤓ Télécharger (CSV)</button></div>
           <div class="muted" style="font-size:12px;margin-bottom:6px">${a.csv.n} lignes · aperçu :</div>
@@ -1127,6 +1145,9 @@ function typeFromName(n){
 }
 function humanSize(b){ if(b<1024)return b+' o'; if(b<1048576)return (b/1024).toFixed(0)+' Ko'; return (b/1048576).toFixed(1)+' Mo'; }
 let pendingCsv=null, pendingMeta='', pendingAI=null;
+const PREVIEW={};
+function sigOf(f){ return (f.name||'')+'|'+(f.size||0); }
+function previewKind(f){ const nm=((f&&f.type||'')+' '+(f&&f.name||'')).toLowerCase(); if(/^image\//.test(f&&f.type||'')||/\.(png|jpe?g|gif|webp|bmp|svg)$/.test(nm)) return 'image'; if(/^audio\//.test(f&&f.type||'')||/\.(mp3|wav|m4a|ogg)$/.test(nm)) return 'audio'; if(/pdf/.test(nm)) return 'pdf'; return ''; }
 let AI=false;
 function applyCfg(c){ if(c&&c.curate){ window.DNAI_NOS=c; AI=!!(c.ai&&c.curate); } }
 applyCfg(window.DNAI_NOS);
@@ -1143,6 +1164,18 @@ async function gatherContent(f){
   return {content:''};
 }
 function aiCurate(p){ return fetch(window.DNAI_NOS.curate,{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':window.DNAI_NOS.nonce},body:JSON.stringify(p)}).then(x=>x.json()); }
+function aiField(r,keys){ for(const k of keys){ const v=r[k]; if(v!=null&&v!=='' && !(Array.isArray(v)&&!v.length)) return v; } return null; }
+function asList(v){ if(v==null) return []; if(Array.isArray(v)) return v.map(x=>typeof x==='string'?x:(x&&(x.text||x.label||x.value||JSON.stringify(x)))).filter(Boolean); return String(v).split(/\n|·|;/).map(s=>s.trim()).filter(Boolean); }
+function normalizeAI(r){
+  return {
+    summary:  aiField(r,['summary','resume','résumé','synthese','synthèse','abstract','tldr']),
+    desc:     aiField(r,['description','desc','purpose','utilite','utilité','about','objet']),
+    insights: asList(aiField(r,['insights','points_cles','points_clés','key_points','keyPoints','findings','highlights','faits'])),
+    topics:   asList(aiField(r,['topics','keywords','mots_cles','mots_clés','tags','themes','thèmes','sujets'])),
+    source:   aiField(r,['source','origin','origine','reference','référence']),
+    suggested_type: aiField(r,['suggested_type','type','asset_type'])
+  };
+}
 async function runAI(auto){
   const st=document.getElementById('aiStatus');
   if(!AI){ if(st){st.textContent='IA disponible une fois la plateforme publiée sur WordPress (Réglages → D²nAI NutrientOS).';st.className='aistat err';} return; }
@@ -1151,13 +1184,24 @@ async function runAI(auto){
   if(st){ st.textContent='✨ Analyse IA en cours…'; st.className='aistat run'; }
   try{
     const payload=Object.assign({title:document.getElementById('up_title').value||f.name, ftype:(f.type||f.name)}, await gatherContent(f));
-    const r=await aiCurate(payload);
-    if(!r||r.error) throw new Error((r&&r.error)||'réponse invalide');
-    pendingAI=r;
-    if(r.summary) document.getElementById('up_summary').value=r.summary;
-    if(r.insights&&r.insights.length&&!document.getElementById('up_desc').value) document.getElementById('up_desc').value=r.insights.join(' · ');
-    if(st){ st.textContent='✓ Analyse IA appliquée — résumé, insights et mots-clés remplis.'; st.className='aistat ok'; }
-    if(r.topics&&r.topics.length) showRelated(r.topics.join(' ')+' '+(document.getElementById('up_title').value||''), document.getElementById('up_related'));
+    const raw=await aiCurate(payload);
+    if(!raw||raw.error) throw new Error((raw&&raw.error)||'réponse invalide');
+    const r=normalizeAI(raw); r.insights=r.insights; r.topics=r.topics; pendingAI=r;
+    const sumEl=document.getElementById('up_summary'), descEl=document.getElementById('up_desc'), srcEl=document.getElementById('up_source');
+    const filled=[];
+    const summary = r.summary || (r.insights.length?r.insights.slice(0,3).join(' '):null);
+    if(summary){ sumEl.value=summary; filled.push('résumé'); }
+    const desc = r.desc || (r.insights.length?r.insights.join(' · '):null);
+    if(desc){ descEl.value=desc; filled.push('description'); }
+    if(r.source && !srcEl.value){ srcEl.value=r.source; filled.push('source'); }
+    if(!srcEl.value){ srcEl.value='Fichier importé — '+f.name; }
+    if(r.topics.length) filled.push('mots-clés');
+    if(st){
+      st.textContent = filled.length ? ('✓ Analyse IA appliquée — '+filled.join(', ')+' rempli'+(filled.length>1?'s':'')+'.') : '✓ Analyse IA terminée (aucun champ exploitable retourné par le modèle).';
+      st.className = filled.length ? 'aistat ok' : 'aistat err';
+    }
+    const seed=(r.topics.join(' ')+' '+(r.summary||'')+' '+(document.getElementById('up_title').value||'')).trim();
+    if(seed) showRelated(seed, document.getElementById('up_related'));
     setTimeout(postHeight,80);
   }catch(e){ if(st){ st.textContent='IA indisponible : '+(e.message||e); st.className='aistat err'; } }
 }
@@ -1174,6 +1218,11 @@ function onFiles(files){
   if(!pendingFiles.length) return;
   document.getElementById('upMeta').style.display='block';
   const f=pendingFiles[0];
+  const dup=allAssets().find(x=>x.sig&&x.sig===sigOf(f));
+  const dupHost=document.getElementById('up_dup');
+  if(dupHost){ dupHost.innerHTML = dup
+    ? `<div class="dupwarn">⚠️ <b>Cet asset existe déjà</b> — un fichier identique (<i>${escapeHtml(f.name)}</i>) a déjà été importé.<div style="margin-top:8px"><button class="btn ghost sm" onclick="openAsset('${dup.id}')">→ Voir l'asset existant</button></div></div>`
+    : ''; }
   document.getElementById('up_title').value=f.name.replace(/\.[^.]+$/,'')+(pendingFiles.length>1?(' (+'+(pendingFiles.length-1)+')'):'');
   document.getElementById('up_desc').value=''; document.getElementById('up_summary').value='';
   document.getElementById('up_extra').innerHTML=''; document.getElementById('up_related').innerHTML='';
@@ -1259,6 +1308,7 @@ function addAsset(o){
     t:{fr:'ajouté via '+o.via,en:'added via '+o.via,pt:'adicionado via '+o.via}});
   renderGrid(); renderImpact(); renderCommunity();
   toast('Asset ajouté au catalogue ✓');
+  return o.id;
 }
 function submitIntake(){
   if(intakeSrc==='upload'){
@@ -1266,11 +1316,14 @@ function submitIntake(){
     const f=pendingFiles[0];
     const title=val('up_title')||f.name.replace(/\.[^.]+$/,'');
     const desc=val('up_desc')||val('up_summary')||('Importé : '+pendingFiles.map(x=>x.name).join(', '));
-    addAsset({type:(pendingAI&&pendingAI.suggested_type)||typeFromName(f.name),title,org:'Contribution',via:'fichier',
+    const pk=previewKind(f);
+    const newId=addAsset({type:(pendingAI&&pendingAI.suggested_type)||typeFromName(f.name),title,org:'Contribution',via:'fichier',
       source:val('up_source'), summary:val('up_summary'), filemeta:(f.type||'fichier')+' · '+humanSize(f.size)+(pendingMeta?(' · '+pendingMeta):''),
       insights:(pendingAI&&pendingAI.insights)||null, topics:(pendingAI&&pendingAI.topics)||null,
       csv: pendingCsv?{head:pendingCsv.head,body:pendingCsv.body.slice(0,200),n:pendingCsv.n}:null,
-      desc});
+      sig:sigOf(f), previewKind:pk, fname:f.name, desc});
+    if(pk && newId){ try{ PREVIEW[newId]=URL.createObjectURL(f); }catch(e){} }
+    const dupHost=document.getElementById('up_dup'); if(dupHost) dupHost.innerHTML='';
   } else if(intakeSrc==='api'){
     const name=val('api_name')||'Source API', url=val('api_url');
     if(!url){ alert('Renseignez l\'endpoint.'); return; }

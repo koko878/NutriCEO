@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutrientOS
  * Description:       Hosts the NutrientOS prototype, the executive one-pager and the executive summary. Full-screen URLs (no theme chrome) + shortcodes with full-bleed auto-resizing iframes. Includes a server-side AI proxy (curate) to the OCP AI Lab for auto-summaries/insights.
- * Version:           1.9.2
+ * Version:           1.9.3
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutrientos
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NOS_VER', '1.9.2' );
+define( 'DNAI_NOS_VER', '1.9.3' );
 define( 'DNAI_NOS_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NOS_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -138,15 +138,24 @@ function dnai_nos_curate( $req ) {
 	$key   = dnai_nos_opt( 'api_key' );
 	$model = dnai_nos_opt( 'model', 'nutrientos-curator' );
 
-	$intro = "Asset à cataloguer.\nTitre : {$title}\nType de fichier : {$ftype}\n";
+	$schema = "Réponds UNIQUEMENT par un objet JSON valide, sans texte autour, avec EXACTEMENT ces clés :\n"
+		. "{\n"
+		. "  \"summary\": \"résumé synthétique du contenu, 3 phrases maximum\",\n"
+		. "  \"description\": \"à quoi sert ce document/jeu de données, 1 phrase\",\n"
+		. "  \"insights\": [\"insight agronomique clé 1\", \"insight 2\", \"insight 3\"],\n"
+		. "  \"topics\": [\"mot-clé\", \"mot-clé\"],\n"
+		. "  \"suggested_type\": \"dataset|standard|model|document\"\n"
+		. "}\n";
+	$intro = "Tu es nutrientos-curator, l'IA de curation du hub agronomique OCP Nutricrops.\n"
+		. "Asset à cataloguer.\nTitre : {$title}\nType de fichier : {$ftype}\n" . $schema;
 	if ( $image ) {
 		$user = array(
-			array( 'type' => 'text', 'text' => $intro . "Analyse cette image dans le contexte agronomique et renvoie le JSON de curation." ),
+			array( 'type' => 'text', 'text' => $intro . "Analyse cette image dans le contexte agronomique (sol, culture, parcelle, état du couvert) puis renvoie le JSON." ),
 			array( 'type' => 'image_url', 'image_url' => array( 'url' => $image ) ),
 		);
 	} else {
 		$content = mb_substr( $content, 0, 12000 );
-		$user    = $intro . "Contenu :\n" . $content;
+		$user    = $intro . "\nContenu à analyser :\n" . $content;
 	}
 
 	$payload = array(
