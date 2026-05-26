@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutrientOS
  * Description:       Hosts the NutrientOS prototype, the executive one-pager and the executive summary. Full-screen URLs (no theme chrome) + shortcodes with full-bleed auto-resizing iframes. Includes a server-side AI proxy (curate) to the OCP AI Lab for auto-summaries/insights.
- * Version:           1.9.7
+ * Version:           1.9.8
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutrientos
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NOS_VER', '1.9.7' );
+define( 'DNAI_NOS_VER', '1.9.8' );
 define( 'DNAI_NOS_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NOS_DIR', plugin_dir_path( __FILE__ ) );
 

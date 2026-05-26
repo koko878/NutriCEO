@@ -880,6 +880,7 @@ function openAsset(id){
           ${a.insights&&a.insights.length?`<ul class="insl">${a.insights.map(i=>'<li>'+escapeHtml(i)+'</li>').join('')}</ul>`:''}
           ${a.source?`<p style="margin:8px 0 0;font-size:12.5px;color:var(--muted)"><b>Source :</b> ${/^https?:/.test(a.source)?('<a href="'+escapeHtml(a.source)+'" target="_blank" rel="noopener" style="color:var(--green-700)">'+escapeHtml(a.source)+'</a>'):escapeHtml(a.source)}</p>`:''}
           ${a.filemeta?`<p style="margin:6px 0 0;font-size:12px;color:var(--muted)">📎 ${escapeHtml(a.filemeta)}</p>`:''}
+          ${FILES[a.id]?`<div style="margin-top:10px"><button class="btn ghost sm" onclick="downloadFile('${a.id}')">⤓ Télécharger le fichier original (${escapeHtml(FILES[a.id].name)})</button></div>`:''}
           ${a.topics&&a.topics.length?`<div class="tagrow">${a.topics.map(t=>'<span class="topic">'+escapeHtml(t)+'</span>').join('')}</div>`:''}
           ${statusTag}</div>
         ${previewBlock(a)}
@@ -1146,6 +1147,8 @@ function typeFromName(n){
 function humanSize(b){ if(b<1024)return b+' o'; if(b<1048576)return (b/1024).toFixed(0)+' Ko'; return (b/1048576).toFixed(1)+' Mo'; }
 let pendingCsv=null, pendingMeta='', pendingAI=null;
 const PREVIEW={};
+const FILES={};
+function downloadFile(id){ const e=FILES[id]; if(!e){ toast('Fichier disponible uniquement dans la session d\'upload.'); return; } const a=document.createElement('a'); a.href=e.url; a.download=e.name||'fichier'; document.body.appendChild(a); a.click(); a.remove(); }
 function sigOf(f){ return (f.name||'')+'|'+(f.size||0); }
 function previewKind(f){ const nm=((f&&f.type||'')+' '+(f&&f.name||'')).toLowerCase(); if(/^image\//.test(f&&f.type||'')||/\.(png|jpe?g|gif|webp|bmp|svg)$/.test(nm)) return 'image'; if(/^audio\//.test(f&&f.type||'')||/\.(mp3|wav|m4a|ogg)$/.test(nm)) return 'audio'; if(/pdf/.test(nm)) return 'pdf'; return ''; }
 let AI=false;
@@ -1157,11 +1160,19 @@ let _pdfjs=null;
 function ensurePdfjs(){ if(_pdfjs) return _pdfjs; _pdfjs=new Promise(function(res,rej){ const s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'; s.onload=function(){ try{window['pdfjsLib'].GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}catch(e){} res(window['pdfjsLib']); }; s.onerror=rej; document.head.appendChild(s); }); return _pdfjs; }
 async function pdfText(f){ const lib=await ensurePdfjs(); const buf=await f.arrayBuffer(); const pdf=await lib.getDocument({data:buf}).promise; let t=''; const n=Math.min(pdf.numPages,6); for(let i=1;i<=n;i++){ const pg=await pdf.getPage(i); const c=await pg.getTextContent(); t+=c.items.map(x=>x.str).join(' ')+'\n'; if(t.length>12000)break; } return t; }
 async function pdfPageImage(f){ const lib=await ensurePdfjs(); const buf=await f.arrayBuffer(); const pdf=await lib.getDocument({data:buf}).promise; const pg=await pdf.getPage(1); const vp=pg.getViewport({scale:1.6}); const cv=document.createElement('canvas'); cv.width=Math.min(vp.width,1400); cv.height=Math.round(cv.width*vp.height/vp.width); const sc=cv.width/vp.width; await pg.render({canvasContext:cv.getContext('2d'),viewport:pg.getViewport({scale:1.6*sc})}).promise; return cv.toDataURL('image/jpeg',0.82); }
+let _xlsx=null;
+function ensureXlsx(){ if(_xlsx) return _xlsx; _xlsx=new Promise(function(res,rej){ if(window.XLSX){return res(window.XLSX);} const s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; s.onload=function(){ res(window.XLSX); }; s.onerror=rej; document.head.appendChild(s); }); return _xlsx; }
+async function sheetParse(f){ const X=await ensureXlsx(); const buf=await f.arrayBuffer(); const wb=X.read(buf,{type:'array'}); const first=wb.SheetNames[0]; const ws=wb.Sheets[first]; const rows=X.utils.sheet_to_json(ws,{header:1,blankrows:false,defval:''}); return {head:(rows[0]||[]).map(x=>String(x)), body:rows.slice(1).map(r=>r.map(x=>String(x))), n:Math.max(rows.length-1,0), sheet:first, sheets:wb.SheetNames, X:X, wb:wb}; }
+async function sheetToText(f){ const X=await ensureXlsx(); const buf=await f.arrayBuffer(); const wb=X.read(buf,{type:'array'}); let t=''; wb.SheetNames.slice(0,4).forEach(function(n){ t+='### Feuille : '+n+'\n'+X.utils.sheet_to_csv(wb.Sheets[n])+'\n\n'; }); return t.slice(0,12000); }
 let gatherInfo={mode:'',chars:0,note:''};
 async function gatherContent(f){
   const nm=(f.type+' '+f.name).toLowerCase();
   gatherInfo={mode:'',chars:0,note:''};
   if(f.type.startsWith('image/')){ gatherInfo.mode='image'; return {image:await fileToDataURL(f)}; }
+  if(/spreadsheet|excel|officedocument\.spreadsheet|\.xlsx|\.xls\b|\.ods/.test(nm)){
+    try{ const t=await sheetToText(f); gatherInfo.mode='tableur Excel'; gatherInfo.chars=t.length; return {content:t}; }
+    catch(e){ gatherInfo.mode='tableur Excel'; gatherInfo.note='lecture Excel échouée (SheetJS)'; return {content:''}; }
+  }
   if(/pdf/.test(nm)){
     let t=''; try{ t=await pdfText(f); }catch(e){ gatherInfo.note='pdf.js indisponible'; }
     if((t||'').trim().length>=200){ gatherInfo.mode='texte PDF'; gatherInfo.chars=t.length; return {content:t}; }
@@ -1251,7 +1262,8 @@ function onFiles(files){
   document.getElementById('up_desc').value=''; document.getElementById('up_summary').value='';
   document.getElementById('up_extra').innerHTML=''; document.getElementById('up_related').innerHTML='';
   const nm=(f.type+' '+f.name).toLowerCase();
-  if(/csv|tsv|text\/plain|\.csv|\.tsv|\.txt/.test(nm)) enrichText(f);
+  if(/spreadsheet|excel|officedocument\.spreadsheet|\.xlsx|\.xls\b|\.ods/.test(nm)) enrichSheet(f);
+  else if(/csv|tsv|text\/plain|\.csv|\.tsv|\.txt/.test(nm)) enrichText(f);
   else if(f.type.startsWith('image/')) enrichImage(f);
   else if(f.type.startsWith('audio/')) enrichAudio(f);
   else enrichDoc(f);
@@ -1297,7 +1309,21 @@ function enrichAudio(f){
 }
 function enrichDoc(f){
   pendingMeta='Document';
-  document.getElementById('up_extra').innerHTML='<div class="muted" style="font-size:12px">📄 Renseignez la source et un résumé court. Le résumé automatique du contenu PDF/Word nécessite un LLM (à brancher via le proxy serveur).</div>';
+  document.getElementById('up_extra').innerHTML='<div class="muted" style="font-size:12px">📄 Renseignez la source et un résumé court. Le contenu est lu et analysé par l\'IA (proxy serveur).</div>';
+}
+function enrichSheet(f){
+  const ex=document.getElementById('up_extra');
+  ex.innerHTML='<div class="muted" style="font-size:12px">📊 Lecture du tableur Excel…</div>';
+  sheetParse(f).then(function(c){
+    pendingCsv={head:c.head,body:c.body,n:c.n,sep:','};
+    pendingMeta=c.n+' lignes × '+(c.head.length)+' colonnes'+(c.sheets.length>1?(' · '+c.sheets.length+' feuilles'):'');
+    setSummary('Tableur « '+c.sheet+' » : '+c.n+' lignes × '+c.head.length+' colonnes. Colonnes : '+c.head.slice(0,8).join(', ')+(c.head.length>8?'…':'')+'.');
+    ex.innerHTML='<div class="muted" style="font-size:12px;margin:8px 0 4px">Feuille « '+escapeHtml(c.sheet)+' » — aperçu (15 premières lignes) :</div>'+csvTable(pendingCsv,15);
+    setTimeout(postHeight,60);
+  }).catch(function(){
+    pendingMeta='Tableur Excel';
+    ex.innerHTML='<div class="muted" style="font-size:12px">📊 Tableur Excel — lecture impossible dans le navigateur (SheetJS). L\'IA tentera quand même l\'analyse.</div>';
+  });
 }
 /* keyword overlap → related assets */
 function tokens(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').match(/[a-z0-9]{4,}/g)||[]; }
@@ -1347,6 +1373,7 @@ function submitIntake(){
       csv: pendingCsv?{head:pendingCsv.head,body:pendingCsv.body.slice(0,200),n:pendingCsv.n}:null,
       sig:sigOf(f), previewKind:pk, fname:f.name, desc});
     if(pk && newId){ try{ PREVIEW[newId]=URL.createObjectURL(f); }catch(e){} }
+    if(newId){ try{ FILES[newId]={url:URL.createObjectURL(f), name:f.name}; }catch(e){} }
     const dupHost=document.getElementById('up_dup'); if(dupHost) dupHost.innerHTML='';
   } else if(intakeSrc==='api'){
     const name=val('api_name')||'Source API', url=val('api_url');
