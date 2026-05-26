@@ -238,6 +238,11 @@ tbody tr.sel{background:var(--green-50)}
     <h2 class="h" id="resTitle">Résultats</h2>
     <p class="lead" id="resSub"></p>
 
+    <div class="toolbar" style="justify-content:flex-end">
+      <button class="btn primary sm" onclick="saveSim()">💾 Enregistrer cette simulation</button>
+      <button class="btn ghost sm" onclick="exportCurrentCSV()">⤓ Exporter (CSV)</button>
+    </div>
+
     <div id="usageBox"></div>
 
     <div class="card">
@@ -268,6 +273,25 @@ tbody tr.sel{background:var(--green-50)}
       </table></div>
     </div>
     <div class="navbtns"><button class="btn ghost" onclick="goTab('inputs')">← Inputs</button><span></span></div>
+  </section>
+
+  <!-- ====== METIER 4: HISTORIQUE ====== -->
+  <section class="screen" id="sc-hist">
+    <span class="eyebrow">Historique des simulations</span>
+    <h2 class="h">Simulations enregistrées</h2>
+    <p class="lead">Retrouvez, rechargez ou exportez vos simulations. Sauvegarde locale (par navigateur) — utilisez l'export CSV pour partager.</p>
+    <div class="toolbar">
+      <button class="btn ghost sm" onclick="exportHistCSV()">⤓ Exporter tout (CSV)</button>
+      <button class="btn danger sm" onclick="clearHist()">Vider l'historique</button>
+      <span class="sp"></span>
+      <span class="muted" id="histCount"></span>
+    </div>
+    <div class="card" style="padding:0">
+      <div class="tblwrap"><table id="histTbl">
+        <thead><tr><th>Date</th><th>Produit</th><th>Ligne</th><th>Usage</th><th>Réf</th><th>Prix</th><th>CGM éq.</th><th>Statut</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
   </section>
 
   <!-- ====== ADMIN: REFERENTIEL ====== -->
@@ -396,10 +420,10 @@ function f(x,d){ if(!isFinite(x)) return '—'; return Number(x).toLocaleString(
 /* ============ profile + tabs ============ */
 let profile='metier';
 const TABS={
-  metier:[['config','1','Configuration'],['inputs','2','Inputs marché'],['results','3','Résultats']],
+  metier:[['config','1','Configuration'],['inputs','2','Inputs marché'],['results','3','Résultats'],['hist','','Historique']],
   admin:[['ref','','Référentiel'],['const','','Constantes']]
 };
-const TABSCREEN={config:'sc-config',inputs:'sc-inputs',results:'sc-results',ref:'sc-ref',const:'sc-const'};
+const TABSCREEN={config:'sc-config',inputs:'sc-inputs',results:'sc-results',hist:'sc-hist',ref:'sc-ref',const:'sc-const'};
 let curTab='config';
 function setProfile(p){
   profile=p;
@@ -421,6 +445,7 @@ function goTab(t){
   if(t==='ref') renderRefTable();
   if(t==='const') renderConst();
   if(t==='inputs') renderInputs();
+  if(t==='hist') renderHist();
   if(t==='config'){ const lines=[...new Set(products().map(p=>p.line))]; document.getElementById('line').innerHTML=lines.map(l=>`<option>${l}</option>`).join(''); refreshProdSelect(); syncConfig(); }
   window.scrollTo({top:0,behavior:'instant'});
 }
@@ -603,6 +628,56 @@ function toggleCmp(row){
   if(i>=0){ if(row!==curProduct().row) state.compare.splice(i,1); } else state.compare.push(row);
   renderCompare(curProduct());
 }
+
+/* ============ history: save / reload / export ============ */
+const LS_HIST='cgm_hist_v1';
+let HIST = (function(){ try{return JSON.parse(localStorage.getItem(LS_HIST))||[]}catch(e){return []} })();
+function saveHist(){ localStorage.setItem(LS_HIST, JSON.stringify(HIST)); }
+function snapshot(){
+  const p=curProduct(), D=metrics(p,'DAP'), T=metrics(p,'TSP'), active=state.ref==='TSP'?T:D;
+  return { ts:Date.now(), row:p.row, product:p.product, line:p.line, family:p.family, usage:state.usage,
+    ref:state.ref, price:state.price, rm:Object.assign({},state.rm),
+    refprice:Object.assign({},state.refprice), sens:Object.assign({},state.sens),
+    rmc:D.rmc, cgmDap:D.cgmAtPrice, cgmTsp:T.cgmAtPrice, floorDap:D.floor, floorTsp:T.floor,
+    nutriDap:D.nutri, nutriTsp:T.nutri, okDap:D.ok, okTsp:T.ok, cgmActive:active.cgmAtPrice, okActive:active.ok };
+}
+function saveSim(){ HIST.unshift(snapshot()); HIST=HIST.slice(0,200); saveHist(); alert('Simulation enregistrée dans l\'historique.'); if(curTab==='hist') renderHist(); }
+function renderHist(){
+  document.getElementById('histCount').textContent = HIST.length + ' simulation(s)';
+  const tb=document.querySelector('#histTbl tbody');
+  tb.innerHTML = HIST.length ? HIST.map((s,i)=>{
+    const col=s.okActive?'#15803D':'#B91C1C';
+    return `<tr><td>${new Date(s.ts).toLocaleString('fr-FR')}</td><td>${s.product}</td><td>${s.line||'—'}</td>
+      <td>${s.usage}</td><td>${s.ref}</td><td>${f(s.price,0)}</td>
+      <td style="color:${col};font-weight:700">${f(s.cgmActive,0)}</td>
+      <td><span class="badge ${s.okActive?'ok':'bad'}">${s.okActive?'OK':'Sous-pricé'}</span></td>
+      <td style="white-space:nowrap"><button class="btn ghost sm" onclick="loadSim(${i})">Recharger</button>
+      <button class="btn danger sm" onclick="delSim(${i})">✕</button></td></tr>`;
+  }).join('') : '<tr><td colspan="9" class="muted" style="text-align:center;padding:20px">Aucune simulation enregistrée.</td></tr>';
+}
+function loadSim(i){
+  const s=HIST[i]; if(!s) return;
+  if(!products().some(p=>p.row===s.row)){ alert('Le produit de cette simulation n\'existe plus dans le référentiel.'); return; }
+  state.row=s.row; state.ref=s.ref; state.usage=s.usage; state.price=s.price;
+  state.rm=Object.assign({},state.rm,s.rm); state.refprice=Object.assign({},state.refprice,s.refprice); state.sens=Object.assign({},state.sens,s.sens);
+  setUsage(state.usage); goTab('results');
+}
+function delSim(i){ HIST.splice(i,1); saveHist(); renderHist(); }
+function clearHist(){ if(confirm('Vider tout l\'historique ?')){ HIST=[]; saveHist(); renderHist(); } }
+function csvRows(list){
+  const head=['Date','Produit','Ligne','Famille','Usage','Reference','Prix','Cout MP','CGM eq DAP','CGM eq TSP','Plancher DAP','Plancher TSP','Prix nutri DAP','Statut DAP','Statut TSP','NH3','Soufre','Roche'];
+  const rows=list.map(s=>[new Date(s.ts).toLocaleString('fr-FR'),s.product,s.line||'',s.family||'',s.usage,s.ref,
+    Math.round(s.price),Math.round(s.rmc),Math.round(s.cgmDap),Math.round(s.cgmTsp),Math.round(s.floorDap),Math.round(s.floorTsp),
+    Math.round(s.nutriDap),s.okDap?'OK':'Sous-price',s.okTsp?'OK':'Sous-price',
+    Math.round(s.rm.nh3),Math.round(s.rm.sulphur),Math.round(s.rm.rock)]);
+  return [head,...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(';')).join('\n');
+}
+function downloadCSV(name,csv){
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click();
+}
+function exportCurrentCSV(){ downloadCSV('cgm_simulation.csv', csvRows([snapshot()])); }
+function exportHistCSV(){ if(!HIST.length){ alert('Historique vide.'); return; } downloadCSV('cgm_historique.csv', csvRows(HIST)); }
 
 /* ============ ADMIN: referential ============ */
 function renderRefTable(){
