@@ -129,6 +129,36 @@ h2.big{font-size:clamp(28px,4vw,44px);line-height:1.07;margin:12px 0 12px;font-w
 .selbar .seln{font:600 13.5px Inter,sans-serif}
 .selacts{display:flex;gap:8px}
 @media(max-width:560px){.mpgrid{grid-template-columns:1fr}.selbar{flex-direction:column;gap:10px;width:calc(100% - 32px)}}
+.usersel{position:relative}
+.uchip{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px 4px 4px;cursor:pointer}
+.uchip:hover{border-color:var(--green-300)}
+.uav{width:30px;height:30px;border-radius:50%;background:var(--green-700);color:#fff;font:700 11px Inter;display:flex;align-items:center;justify-content:center;flex:none}
+.uav.sm{width:26px;height:26px;font-size:10px}
+.uchip .uinfo,.urow .uinfo{display:flex;flex-direction:column;line-height:1.15;text-align:left}
+.uchip .uinfo b{font-size:12.5px;color:var(--ink)}
+.uchip .uinfo span,.urow .uinfo span{font-size:10.5px;color:var(--muted)}
+.ucar{color:var(--muted);font-size:11px}
+.umenu{position:absolute;right:0;top:46px;width:262px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 20px 50px -16px rgba(0,0,0,.4);padding:8px;display:none;z-index:200}
+.umenu.on{display:block}
+.umh{font:700 11px Inter;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:6px 8px}
+.urow{display:flex;align-items:center;gap:9px;width:100%;border:0;background:none;padding:7px 8px;border-radius:9px;cursor:pointer;text-align:left}
+.urow:hover{background:var(--green-50)}
+.urow.on{background:var(--green-50)}
+.urow .uinfo b{font-size:13px}
+.urow.gotodir{border-top:1px solid var(--line);margin-top:6px;border-radius:0 0 9px 9px;font-size:12.5px;color:var(--green-700);font-weight:600}
+.qrow{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+.qmain{flex:1;cursor:pointer;min-width:0}
+.qmain b{font-size:14.5px}
+.qsub{font-size:12px;color:var(--muted);margin-top:3px}
+.qlock{font-size:12px;color:var(--muted)}
+.udir{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:9px}
+.udir.adduser{gap:10px;background:var(--green-50);border-color:var(--green-100)}
+.udir.adduser input{flex:1;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13px}
+.uinfo2{flex:1;min-width:0}.uinfo2 b{font-size:14px}
+.uinfo2 .cur{font-size:11px;color:var(--green-700);font-weight:600}
+.uacts{display:flex;gap:6px;align-items:center}
+.rb{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;margin-top:4px;background:#eef1ef;color:#5a6b60}
+.rb.admin{background:#fde8e8;color:#9a2b2b}.rb.validator{background:#e7f0fb;color:#1b4f8a}.rb.contributor{background:#e7f5e9;color:#1B5E20}
 .back{font-size:13px;font-weight:600;color:var(--green-700);cursor:pointer;display:inline-flex;gap:6px;align-items:center;margin-bottom:18px}
 .adetail{overflow-x:hidden}
 .dgrid{display:grid;grid-template-columns:1fr 320px;gap:30px}
@@ -360,6 +390,7 @@ body.embed .botnav{display:none!important}
       </div>
       <div class="legend"><span class="lay open">OPEN</span><span class="lay core">OCP Nutricrops CORE</span></div>
       <button class="cta-mini contrib" onclick="openIntake()"><span class="pl">+</span> Contribuer</button>
+      <div class="usersel" id="usersel"></div>
     </div>
   </div>
 </header>
@@ -445,6 +476,10 @@ body.embed .botnav{display:none!important}
       <div class="panel"><h3 data-k="imp.chartTitle">Réutilisations par trimestre</h3><div class="chart" id="chart"></div></div>
       <div class="panel"><h3 data-k="imp.topTitle">Top assets réutilisés</h3><div class="toplist" id="top"></div></div>
     </div>
+    <div class="twocol" style="margin-top:24px">
+      <div class="panel"><h3>Activité de la plateforme</h3><div id="livekpis"></div></div>
+      <div class="panel"><h3>🏆 Classement des contributeurs</h3><div class="toplist" id="board"></div></div>
+    </div>
     <h2 class="big" style="margin-top:46px" data-k="imp.audH2">La valeur, par audience</h2>
     <p class="sub" data-k="imp.audSub">Chaque audience de l'écosystème construit <b>sur le standard d'OCP Nutricrops</b> — et y trouve sa valeur.</p>
     <div class="audience" id="aud"></div>
@@ -459,7 +494,17 @@ body.embed .botnav{display:none!important}
     <p data-k="com.p">Des contributions, des reviews et des groupes de travail actifs autour du standard d'OCP Nutricrops.</p>
   </div></div>
   <div class="wrap" style="padding:30px 24px 60px">
+    <h2 class="big" style="margin-top:0">🚦 File de validation</h2>
+    <p class="sub">Les assets en attente de revue. Les <b>Validateurs</b> et <b>Admins</b> peuvent approuver.</p>
+    <div id="valqueue"></div>
+
+    <h2 class="big" style="margin-top:42px">Activité récente</h2>
     <div class="feed" id="feed"></div>
+
+    <h2 class="big" style="margin-top:42px">👥 Annuaire des utilisateurs</h2>
+    <p class="sub">Rôles : <b>Admin</b> (tout) · <b>Validateur</b> (contribue + valide) · <b>Contributeur</b> (contribue).</p>
+    <div id="udir"></div>
+
     <h2 class="big" style="margin-top:42px" data-k="com.wgTitle">Groupes de travail</h2>
     <div class="wgroups" id="wg"></div>
   </div>
@@ -1096,53 +1141,101 @@ function isStarred(id){return STARS.indexOf(id)>=0;}
 function starCount(a){return (a.stars||0)+(isStarred(a.id)?1:0);}
 function toggleStar(id,ev){ if(ev){ev.stopPropagation();} const i=STARS.indexOf(id); if(i>=0)STARS.splice(i,1); else STARS.push(id); localStorage.setItem('nos_stars_v1',JSON.stringify(STARS)); renderGrid(); if(curAsset===id)openAsset(id); }
 
+/* ---- Utilisateurs & rôles (prototype, localStorage) ----
+ * admin       : tout
+ * validator   : hérite de contributor + peut valider (figure dans la liste des relecteurs)
+ * contributor : utilisateur principal — contribue, étoile, soumet à validation */
+const ROLE_L={admin:'Administrateur',validator:'Validateur',contributor:'Contributeur'};
+const DEFAULT_USERS=[
+  {name:'Admin OCP Nutricrops',role:'admin'},
+  {name:'Vous',role:'contributor'},
+  {name:'UM6P',role:'validator'},
+  {name:'INRA Maroc',role:'validator'},
+  {name:'D²nAI',role:'validator'},
+  {name:'AgriEdge',role:'validator'},
+  {name:'Al Moutmir',role:'validator'},
+  {name:'Ground Truth Analytics',role:'validator'}
+];
+let USERS=(function(){try{var u=JSON.parse(localStorage.getItem('nos_users_v1'));return (Array.isArray(u)&&u.length)?u:DEFAULT_USERS.slice();}catch(e){return DEFAULT_USERS.slice();}})();
+let CURRENT=(function(){try{return localStorage.getItem('nos_current_v1')||'Vous';}catch(e){return 'Vous';}})();
+function saveUsers(){localStorage.setItem('nos_users_v1',JSON.stringify(USERS));}
+function currentUser(){return USERS.find(u=>u.name===CURRENT)||USERS.find(u=>u.name==='Vous')||USERS[0];}
+function currentRole(){return (currentUser()||{}).role||'contributor';}
+function can(act){ const r=currentRole();
+  if(act==='manageUsers') return r==='admin';
+  if(act==='validate')   return r==='admin'||r==='validator';
+  if(act==='deleteAny')  return r==='admin';
+  return true; /* contribute/star/submit : tous */
+}
+function REVIEWERS(){ return USERS.filter(u=>u.role==='validator'||u.role==='admin').map(u=>u.name); }
+function setCurrent(name){ CURRENT=name; localStorage.setItem('nos_current_v1',name); renderUserChip(); renderGrid(); renderCommunity(); renderImpact(); if(curAsset)openAsset(curAsset); toast('Connecté : '+name+' ('+ROLE_L[currentRole()]+')'); }
+function renderUserChip(){
+  const host=document.getElementById('usersel'); if(!host) return;
+  const cu=currentUser();
+  host.innerHTML=`<button class="uchip" onclick="document.getElementById('umenu').classList.toggle('on')"><span class="uav">${(cu.name||'?').slice(0,2).toUpperCase()}</span><span class="uinfo"><b>${escapeHtml(cu.name)}</b><span>${ROLE_L[cu.role]}</span></span><span class="ucar">▾</span></button>
+    <div class="umenu" id="umenu">
+      <div class="umh">Changer d'utilisateur</div>
+      ${USERS.map(u=>`<button class="urow${u.name===CURRENT?' on':''}" onclick="setCurrent('${u.name.replace(/'/g,"\\'")}');document.getElementById('umenu').classList.remove('on')"><span class="uav sm">${u.name.slice(0,2).toUpperCase()}</span><span class="uinfo"><b>${escapeHtml(u.name)}</b><span>${ROLE_L[u.role]}</span></span></button>`).join('')}
+      <button class="urow gotodir" onclick="go('community');document.getElementById('umenu').classList.remove('on')">⚙️ Gérer les utilisateurs</button>
+    </div>`;
+}
+
 /* ---- Workflow de validation par les pairs ---- */
 let REVIEWS=(function(){try{return JSON.parse(localStorage.getItem('nos_reviews_v1'))||{}}catch(e){return {}}})();
-const REVIEWERS=['UM6P','INRA Maroc','D²nAI','AgriEdge','Al Moutmir','Ground Truth Analytics'];
 const REVIEW_THRESHOLD=2;
 function saveReviews(){localStorage.setItem('nos_reviews_v1',JSON.stringify(REVIEWS));}
 function getReview(id){return REVIEWS[id]||null;}
 function reviewStatus(a){ const r=getReview(a.id); if(r)return r.status; return (a.reviews>0?'validated':'open'); }
 function reviewApprovals(a){ const r=getReview(a.id); return r?r.approvals:(a.reviews||0); }
 function submitReview(id,reviewers){
-  REVIEWS[id]={status:'in_review',reviewers:reviewers&&reviewers.length?reviewers:REVIEWERS.slice(0,3),approvals:0,
-    events:[{who:'Vous',act:'a soumis l\'asset à validation',t:Date.now()}]};
+  REVIEWS[id]={status:'in_review',reviewers:reviewers&&reviewers.length?reviewers:REVIEWERS().slice(0,3),approvals:0,approvedBy:[],
+    events:[{who:currentUser().name,act:'a soumis l\'asset à validation',t:Date.now()}]};
   saveReviews();
 }
 function startReviewFromDetail(id){
   const picks=[...document.querySelectorAll('.rvpick:checked')].map(c=>c.value);
-  submitReview(id,picks); openAsset(id); toast('Cycle de validation lancé ✓');
+  submitReview(id,picks); renderGrid(); openAsset(id); toast('Cycle de validation lancé ✓');
 }
-function approveReview(id){
-  const who=(document.getElementById('rvWho')||{}).value||'Pair';
-  const r=REVIEWS[id]; if(!r)return; r.approvals++; r.events.push({who,act:'a approuvé',t:Date.now()});
+function approveReview(id,noNav){
+  if(!can('validate')){ toast('Réservé aux validateurs.'); return; }
+  const who=currentUser().name;
+  const r=REVIEWS[id]; if(!r)return; r.approvedBy=r.approvedBy||[];
+  if(r.approvedBy.indexOf(who)>=0){ toast('Tu as déjà approuvé cet asset.'); return; }
+  r.approvedBy.push(who); r.approvals=r.approvedBy.length; r.events.push({who,act:'a approuvé',t:Date.now()});
   if(r.approvals>=REVIEW_THRESHOLD) r.status='validated';
-  saveReviews(); renderGrid(); openAsset(id); toast(r.status==='validated'?'Asset validé par les pairs ✓':'Approbation enregistrée ✓');
+  saveReviews(); renderGrid(); renderCommunity(); renderImpact();
+  if(!noNav) openAsset(id);
+  toast(r.status==='validated'?'Asset validé par les pairs ✓':'Approbation enregistrée ✓');
 }
 function requestChanges(id){
-  const who=(document.getElementById('rvWho')||{}).value||'Pair';
+  if(!can('validate')){ toast('Réservé aux validateurs.'); return; }
+  const who=currentUser().name;
   const note=(document.getElementById('rvNote')||{}).value||'';
   const r=REVIEWS[id]; if(!r)return; r.events.push({who,act:'a demandé des modifications'+(note?(' : « '+note+' »'):''),t:Date.now()});
   saveReviews(); openAsset(id); toast('Demande de modifications envoyée');
 }
 function validationCard(a){
-  const stt=reviewStatus(a), r=getReview(a.id);
+  const stt=reviewStatus(a), r=getReview(a.id), revs=REVIEWERS();
   const badge=stt==='validated'?'<span class="vbadge ok">✅ Validé par les pairs</span>'
     :stt==='in_review'?'<span class="vbadge rev">🕓 En revue</span>'
     :'<span class="vbadge">⚪ Ouvert</span>';
   let body='';
   if(stt==='open'){
-    body='<p style="margin:0 0 8px;font-size:12.5px;color:var(--muted)">Lancez un cycle de validation : choisissez les pairs relecteurs.</p>'
-      +'<div class="rvlist">'+REVIEWERS.map(rv=>`<label class="rvopt"><input type="checkbox" class="rvpick" value="${escapeHtml(rv)}" ${REVIEWERS.indexOf(rv)<2?'checked':''}> ${escapeHtml(rv)}</label>`).join('')+'</div>'
+    body='<p style="margin:0 0 8px;font-size:12.5px;color:var(--muted)">Lancez un cycle de validation : choisissez les pairs relecteurs (validateurs).</p>'
+      +'<div class="rvlist">'+revs.map((rv,i)=>`<label class="rvopt"><input type="checkbox" class="rvpick" value="${escapeHtml(rv)}" ${i<2?'checked':''}> ${escapeHtml(rv)}</label>`).join('')+'</div>'
       +`<button class="btn primary sm" style="width:100%;margin-top:10px" onclick="startReviewFromDetail('${a.id}')">🚦 Soumettre à validation</button>`;
   } else {
     const rev=r?r.reviewers:[]; const appr=r?r.approvals:0;
     body='<p style="margin:0 0 6px;font-size:12.5px"><b>'+appr+'/'+REVIEW_THRESHOLD+'</b> approbation(s) · relecteurs : '+(rev.map(escapeHtml).join(', ')||'—')+'</p>';
     if(stt==='in_review'){
-      body+='<div style="margin:8px 0"><select id="rvWho" class="rvwho">'+(rev.length?rev:REVIEWERS).map(x=>`<option>${escapeHtml(x)}</option>`).join('')+'</select></div>'
-        +'<textarea id="rvNote" rows="2" placeholder="Commentaire (optionnel)" style="width:100%;margin-bottom:8px"></textarea>'
-        +`<div style="display:flex;gap:8px"><button class="btn primary sm" style="flex:1" onclick="approveReview('${a.id}')">✓ Approuver</button>`
-        +`<button class="btn ghost sm" style="flex:1" onclick="requestChanges('${a.id}')">✎ Modifs</button></div>`;
+      if(can('validate')){
+        body+='<p style="margin:6px 0 4px;font-size:12px;color:var(--muted)">Tu agis en tant que <b>'+escapeHtml(currentUser().name)+'</b> ('+ROLE_L[currentRole()]+')</p>'
+          +'<textarea id="rvNote" rows="2" placeholder="Commentaire (optionnel)" style="width:100%;margin-bottom:8px"></textarea>'
+          +`<div style="display:flex;gap:8px"><button class="btn primary sm" style="flex:1" onclick="approveReview('${a.id}')">✓ Approuver</button>`
+          +`<button class="btn ghost sm" style="flex:1" onclick="requestChanges('${a.id}')">✎ Modifs</button></div>`;
+      } else {
+        body+='<p style="margin:6px 0 0;font-size:12px;color:var(--muted)">Seuls les <b>Validateurs</b> peuvent approuver (tu es '+ROLE_L[currentRole()]+').</p>';
+      }
     }
     if(r&&r.events&&r.events.length){
       body+='<div class="rvlog">'+r.events.slice().reverse().map(e=>`<div class="rvev"><b>${escapeHtml(e.who)}</b> ${escapeHtml(e.act)}</div>`).join('')+'</div>';
@@ -1162,7 +1255,7 @@ function renderSelBar(){
 }
 function bulkValidate(){
   if(!SEL.size) return;
-  const ids=[...SEL]; ids.forEach(id=>{ if(reviewStatus(allAssets().find(x=>x.id===id)||{})!=='validated') submitReview(id,REVIEWERS.slice(0,3)); });
+  const ids=[...SEL]; ids.forEach(id=>{ if(reviewStatus(allAssets().find(x=>x.id===id)||{})!=='validated') submitReview(id,REVIEWERS().slice(0,3)); });
   clearSel(); renderGrid(); toast('Cycle de validation lancé pour '+ids.length+' asset'+(ids.length>1?'s':'')+' ✓');
 }
 
@@ -1180,6 +1273,17 @@ function renderImpact(){
   const top=[...open].sort((a,b)=>b.reuses-a.reuses).slice(0,5);
   document.getElementById('top').innerHTML=top.map((a,i)=>`<div class="item"><span class="rk">${i+1}</span><div><b>${a.title}</b><br><span style="font-size:12px;color:var(--muted)">${orgD(a.org)}</span></div><span class="m">${a.reuses}</span></div>`).join('');
   document.getElementById('aud').innerHTML=AUD.map(a=>`<div class="aud"><div class="i">${a.i}</div><h4>${a.h[LANG]}</h4><ul>${a.li[LANG].map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('');
+  // ---- Live activity KPIs ----
+  const validated=A.filter(x=>reviewStatus(x)==='validated').length;
+  const inReview=A.filter(x=>reviewStatus(x)==='in_review').length;
+  const totStars=A.reduce((s,x)=>s+starCount(x),0);
+  const live=[['Contributions (vous)',DELTA.length],['Assets validés',validated],['En revue',inReview],['Étoiles cumulées',totStars],['Utilisateurs',USERS.length]];
+  const lk=document.getElementById('livekpis'); if(lk) lk.innerHTML=live.map(r=>`<div class="kv"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('');
+  // ---- Contributor leaderboard ----
+  const board={};
+  A.forEach(x=>{ (x.contributors&&x.contributors.length?x.contributors:[x.org]).forEach(c=>{ if(!c)return; board[c]=board[c]||{n:0,stars:0,val:0}; board[c].n++; board[c].stars+=starCount(x); if(reviewStatus(x)==='validated')board[c].val++; }); });
+  const ranked=Object.keys(board).map(k=>[k,board[k]]).sort((p,o)=>o[1].n-p[1].n||o[1].stars-p[1].stars).slice(0,6);
+  const bd=document.getElementById('board'); if(bd) bd.innerHTML=ranked.map((e,i)=>`<div class="item"><span class="rk">${i+1}</span><div><b>${escapeHtml(orgD(e[0]))}</b><br><span style="font-size:12px;color:var(--muted)">${e[1].n} asset(s) · ⭐ ${e[1].stars} · ✅ ${e[1].val}</span></div><span class="m">${e[1].n}</span></div>`).join('');
 }
 
 /* ====================== COMMUNITY ====================== */
@@ -1204,12 +1308,39 @@ const WG=[
  {h:{fr:`Sols calcaires`,en:`Calcareous soils`,pt:`Solos calcários`},p:{fr:`Coefficients de disponibilité du P en sols calcaires.`,en:`P availability coefficients in calcareous soils.`,pt:`Coeficientes de disponibilidade do P em solos calcários.`},m:{fr:`UM6P · 5 membres`,en:`UM6P · 5 members`,pt:`UM6P · 5 membros`}},
  {h:{fr:`Durabilité & carbone`,en:`Sustainability & carbon`,pt:`Sustentabilidade e carbono`},p:{fr:`Scoring d'efficience azotée et empreinte.`,en:`Nitrogen efficiency scoring and footprint.`,pt:`Scoring de eficiência do azoto e pegada.`},m:{fr:`GreenField · D²nAI · 6 membres`,en:`GreenField · D²nAI · 6 members`,pt:`GreenField · D²nAI · 6 membros`}}
 ];
+let WGMEM=(function(){try{return JSON.parse(localStorage.getItem('nos_wg_v1'))||{}}catch(e){return {}}})();
+function wgJoined(i){ return (WGMEM[CURRENT]||[]).indexOf(i)>=0; }
+function wgExtra(i){ var n=0; for(var k in WGMEM){ if((WGMEM[k]||[]).indexOf(i)>=0) n++; } return n; }
+function wgToggle(i){ const m=WGMEM[CURRENT]||(WGMEM[CURRENT]=[]); const k=m.indexOf(i); if(k>=0)m.splice(k,1); else m.push(i); localStorage.setItem('nos_wg_v1',JSON.stringify(WGMEM)); renderCommunity(); toast(k>=0?'Vous avez quitté le groupe':'Vous avez rejoint le groupe ✓'); }
+function setRole(i,r){ if(!can('manageUsers')){toast('Réservé à l\'admin.');return;} USERS[i].role=r; saveUsers(); renderUserChip(); renderCommunity(); if(curAsset)openAsset(curAsset); toast('Rôle mis à jour ✓'); }
+function addUser(){ if(!can('manageUsers'))return; const n=(document.getElementById('newUserName').value||'').trim(); const r=document.getElementById('newUserRole').value; if(!n){alert('Nom requis');return;} if(USERS.some(u=>u.name===n)){alert('Ce nom existe déjà');return;} USERS.push({name:n,role:r}); saveUsers(); renderCommunity(); renderUserChip(); toast('Utilisateur ajouté ✓'); }
+function removeUser(i){ if(!can('manageUsers'))return; const u=USERS[i]; if(u.name===CURRENT){alert('Impossible de supprimer l\'utilisateur connecté.');return;} if(!confirm('Supprimer '+u.name+' ?'))return; USERS.splice(i,1); saveUsers(); renderCommunity(); renderUserChip(); }
 function renderCommunity(){
+  const canV=can('validate'), canM=can('manageUsers');
+  // 1) Validation queue
+  const q=allAssets().filter(a=>reviewStatus(a)==='in_review');
+  document.getElementById('valqueue').innerHTML = q.length ? q.map(a=>{
+    const r=getReview(a.id)||{approvals:0,reviewers:[]};
+    return `<div class="qrow"><div class="qmain" onclick="openAsset('${a.id}')"><b>${ICON[a.type]} ${escapeHtml(a.title)}</b><div class="qsub">${r.approvals}/${REVIEW_THRESHOLD} approbation(s) · relecteurs : ${escapeHtml((r.reviewers||[]).join(', ')||'—')}</div></div>${canV?`<button class="btn primary sm" onclick="approveReview('${a.id}',true)">✓ Approuver</button>`:'<span class="qlock">🔒 validateurs</span>'}</div>`;
+  }).join('') : '<p class="muted" style="font-size:13.5px">Aucun asset en attente de validation. Soumets-en un depuis sa fiche ou via la multi-sélection.</p>';
+  // 2) Activity feed
   document.getElementById('feed').innerHTML=FEED.map(f=>`<div class="fitem">
     <span class="av">${f.who.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</span>
     <div class="ct"><div class="h"><b>${f.who}</b> ${VB[f.vb][LANG]} <b>${f.obj}</b> <span class="tagm">${f.tag}</span></div><div class="t">${f.t[LANG]}</div></div>
     <span class="when">${ago(f.a)}</span></div>`).join('');
-  document.getElementById('wg').innerHTML=WG.map(w=>`<div class="wg"><h4>${w.h[LANG]}</h4><p>${w.p[LANG]}</p><div class="mem">👥 ${w.m[LANG]}</div></div>`).join('');
+  // 3) User directory
+  let dir=USERS.map((u,idx)=>`<div class="udir">
+      <span class="uav">${u.name.slice(0,2).toUpperCase()}</span>
+      <div class="uinfo2"><b>${escapeHtml(u.name)}</b>${u.name===CURRENT?' <span class="cur">· connecté</span>':''}
+        ${canM?`<select class="rvwho" style="margin-top:5px;max-width:200px" onchange="setRole(${idx},this.value)">${['admin','validator','contributor'].map(r=>`<option value="${r}" ${u.role===r?'selected':''}>${ROLE_L[r]}</option>`).join('')}</select>`:`<div><span class="rb ${u.role}">${ROLE_L[u.role]}</span></div>`}
+      </div>
+      <div class="uacts">${u.name!==CURRENT?`<button class="btn ghost sm" onclick="setCurrent('${u.name.replace(/'/g,"\\'")}')">Se connecter</button>`:''}${canM&&u.name!==CURRENT?`<button class="btn ghost sm" style="color:var(--bad)" onclick="removeUser(${idx})">🗑</button>`:''}</div>
+    </div>`).join('');
+  if(canM){ dir+=`<div class="udir adduser"><input id="newUserName" placeholder="Nom du nouvel utilisateur" style="flex:1"><select id="newUserRole" class="rvwho" style="max-width:170px"><option value="contributor">Contributeur</option><option value="validator">Validateur</option><option value="admin">Administrateur</option></select><button class="btn primary sm" onclick="addUser()">+ Ajouter</button></div>`; }
+  else { dir+='<p class="muted" style="font-size:12.5px">Connecte-toi en Admin pour gérer les utilisateurs et les rôles.</p>'; }
+  document.getElementById('udir').innerHTML=dir;
+  // 4) Working groups (join/leave)
+  document.getElementById('wg').innerHTML=WG.map((w,i)=>`<div class="wg"><h4>${w.h[LANG]}</h4><p>${w.p[LANG]}</p><div class="mem">👥 ${w.m[LANG]}${wgExtra(i)?(' · +'+wgExtra(i)+' membre(s)'):''}</div><button class="btn ${wgJoined(i)?'ghost':'primary'} sm" style="margin-top:10px;width:100%" onclick="wgToggle(${i})">${wgJoined(i)?'✓ Membre — quitter':'Rejoindre le groupe'}</button></div>`).join('');
 }
 
 /* ====================== CONSOLE (recommendation engine) ====================== */
@@ -1273,7 +1404,7 @@ function applyLang(){
   document.documentElement.lang=LANG;
   document.querySelectorAll('[data-k]').forEach(e=>{const v=T[LANG][e.dataset.k];if(v!==undefined)e.innerHTML=v;});
   document.querySelectorAll('[data-kph]').forEach(e=>{const v=T[LANG][e.dataset.kph];if(v!==undefined)e.placeholder=v;});
-  initFilters();renderGrid();renderImpact();renderCommunity();
+  initFilters();renderGrid();renderImpact();renderCommunity();renderUserChip();
   buildChips('cropChips',CROPS,CROP_L,'crop');buildChips('soilChips',SOILS,SOIL_L,'soil');buildChips('objChips',OBJ,OBJ_L,'obj');
   renderConsole();
   if(document.getElementById('view-asset').classList.contains('on')&&curAsset)openAsset(curAsset);
