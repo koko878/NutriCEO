@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name:       D²nAI CGM Simulator — MVP
- * Description:       MVP of the CGM Simulator (business UX: config / market inputs / results, with editable referential). Exposed as a shortcode [cgm_mvp] and as a direct, mobile-friendly URL. Calculation rules ported 1:1 from the CGM Excel; ships with placeholder data.
- * Version:           1.1.0
+ * Description:       MVP of the CGM Simulator (business UX: config / market inputs / results, with editable referential). Serves a FULL-SCREEN URL (no theme chrome) and a shortcode [cgm_mvp]. Calculation rules ported 1:1 from the CGM Excel; ships with placeholder data.
+ * Version:           1.2.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-cgm-mvp
@@ -10,23 +10,68 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_CGMMVP_VER', '1.1.0' );
+define( 'DNAI_CGMMVP_VER', '1.2.0' );
 define( 'DNAI_CGMMVP_URL', plugin_dir_url( __FILE__ ) );
+define( 'DNAI_CGMMVP_DIR', plugin_dir_path( __FILE__ ) );
 
-/**
- * Render a full-bleed iframe to the bundled MVP app.
- * Optional shortcode attribute: height (e.g. [cgm_mvp height="1100px"]).
- */
+/* -------------------------------------------------------------------------
+ * 1. FULL-SCREEN route — serves the app with NO theme around it.
+ *    Pretty URL:  https://YOURSITE/cgm-simulator
+ *    Fallback:    https://YOURSITE/?dnai_cgm_app=1   (works even if permalinks
+ *                 aren't flushed)
+ * ---------------------------------------------------------------------- */
+function dnai_cgmmvp_add_rewrite() {
+	add_rewrite_rule( '^cgm-simulator/?$', 'index.php?dnai_cgm_app=1', 'top' );
+}
+add_action( 'init', 'dnai_cgmmvp_add_rewrite' );
+
+add_filter( 'query_vars', function ( $vars ) {
+	$vars[] = 'dnai_cgm_app';
+	return $vars;
+} );
+
+add_action( 'template_redirect', function () {
+	if ( ! get_query_var( 'dnai_cgm_app' ) ) { return; }
+	$f = DNAI_CGMMVP_DIR . 'app/cgm-mvp.html';
+	if ( is_readable( $f ) ) {
+		status_header( 200 );
+		header( 'Content-Type: text/html; charset=utf-8' );
+		header( 'X-Robots-Tag: noindex, nofollow', true );
+		nocache_headers();
+		readfile( $f );
+	} else {
+		status_header( 404 );
+		echo 'CGM app not found.';
+	}
+	exit;
+} );
+
+/* Flush rewrite rules on activation/deactivation so /cgm-simulator works. */
+register_activation_hook( __FILE__, function () {
+	dnai_cgmmvp_add_rewrite();
+	flush_rewrite_rules();
+} );
+register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
+
+/* Helper: best full-screen URL (pretty if permalinks on, else query fallback). */
+function dnai_cgmmvp_fs_url() {
+	return ( get_option( 'permalink_structure' ) )
+		? home_url( '/cgm-simulator' )
+		: home_url( '/?dnai_cgm_app=1' );
+}
+
+/* -------------------------------------------------------------------------
+ * 2. Shortcode [cgm_mvp] — embed inside a page (auto-resizing iframe),
+ *    with a "Plein écran" link to the dedicated full-screen URL.
+ * ---------------------------------------------------------------------- */
 function dnai_cgmmvp_frame( $atts = array() ) {
-	$a      = shortcode_atts( array( 'height' => '100vh' ), (array) $atts );
-	$height = preg_replace( '/[^0-9a-z%.]/i', '', (string) $a['height'] );
-	if ( $height === '' ) { $height = '100vh'; }
 	$src = esc_url( DNAI_CGMMVP_URL . 'app/cgm-mvp.html' );
+	$fs  = esc_url( dnai_cgmmvp_fs_url() );
 	$id  = 'dnaiCgmFrame_' . wp_rand( 1000, 9999 );
 
-	// The app posts its content height; the iframe auto-resizes so the page
-	// scrolls naturally (no nested scrollbar) on desktop and mobile.
 	return '<div class="dnai-cgmmvp-wrap" style="width:100%;max-width:100%;margin:0;">'
+		. '<div style="text-align:right;margin:0 0 8px;"><a href="' . $fs . '" target="_blank" rel="noopener" '
+		. 'style="display:inline-flex;align-items:center;gap:6px;font:600 13px sans-serif;color:#2E7D32;text-decoration:none;">⛶ Ouvrir en plein écran</a></div>'
 		. '<iframe id="' . esc_attr( $id ) . '" src="' . $src . '" title="CGM Simulator — MVP" loading="lazy" scrolling="no" '
 		. 'style="display:block;width:100%;height:760px;min-height:680px;border:0;border-radius:12px;overflow:hidden;" '
 		. 'allow="fullscreen" allowfullscreen></iframe>'
@@ -37,10 +82,11 @@ function dnai_cgmmvp_frame( $atts = array() ) {
 }
 add_shortcode( 'cgm_mvp', 'dnai_cgmmvp_frame' );
 
-/* Show the direct URL on the Plugins page row. */
+/* Show both URLs on the Plugins page row. */
 add_filter( 'plugin_row_meta', function ( $links, $file ) {
 	if ( strpos( $file, 'dnai-cgm-mvp' ) !== false ) {
-		$links[] = '<a href="' . esc_url( DNAI_CGMMVP_URL . 'app/cgm-mvp.html' ) . '" target="_blank">Ouvrir le MVP</a>';
+		$links[] = '<a href="' . esc_url( dnai_cgmmvp_fs_url() ) . '" target="_blank"><strong>Ouvrir (plein écran)</strong></a>';
+		$links[] = '<a href="' . esc_url( DNAI_CGMMVP_URL . 'app/cgm-mvp.html' ) . '" target="_blank">Fichier direct</a>';
 	}
 	return $links;
 }, 10, 2 );

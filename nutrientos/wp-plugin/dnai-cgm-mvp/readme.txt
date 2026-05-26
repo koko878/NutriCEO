@@ -1,6 +1,6 @@
 === D²nAI CGM Simulator — MVP ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -12,21 +12,24 @@ MVP of the CGM Simulator following the business scoping:
   OK/under-priced status, sensitivity with main-driver, multi-product comparison).
 - Editable referential (admin profile): in-app product CRUD as a delta layer,
   "to complete" view, JSON export/import, editable technical constants.
-Calculation rules ported 1:1 from the CGM Excel. Ships with placeholder data
-(a representative subset) — the real workbook plugs in later, same schema.
+Calculation rules ported 1:1 from the CGM Excel. Ships with placeholder data.
 
 == Install ==
 1. Plugins → Add New → Upload Plugin → choose `dnai-cgm-mvp.zip` → Install → Activate.
+2. On activation the full-screen route is registered. If the pretty URL 404s,
+   go to Settings → Permalinks → Save (this flushes the rewrite rules).
 
-== Use — shortcode ==
-Create a Page and add:  [cgm_mvp]
-Optional height: [cgm_mvp height="1100px"]
-Publish and share the page URL. Fully interactive on mobile.
+== Use — FULL SCREEN (recommended) ==
+Open, on any device, edge-to-edge with NO theme around it:
+  https://YOURSITE/cgm-simulator
+  (fallback, always works:  https://YOURSITE/?dnai_cgm_app=1 )
+Share this URL with the business / CEO. This is the clean full-screen experience.
 
-== Use — direct URL ==
-https://YOURSITE/wp-content/plugins/dnai-cgm-mvp/app/cgm-mvp.html
+== Use — embed in a page (optional) ==
+Add the shortcode  [cgm_mvp]  to any Page. The iframe auto-resizes (no inner
+scrollbar) and shows an "Ouvrir en plein écran" link.
 
 == Notes ==
-- The referential edits (manual products, constants) are stored per-browser
-  (localStorage) for this MVP — no database. Use JSON export/import to share.
+- Referential edits (manual products, constants) are stored per-browser
+  (localStorage) for this MVP — use JSON export/import to share. No database.
 - Update content by replacing app/cgm-mvp.html and re-uploading the plugin.
