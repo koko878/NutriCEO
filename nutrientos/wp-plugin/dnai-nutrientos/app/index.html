@@ -1195,6 +1195,9 @@ async function runAI(auto){
     const payload=Object.assign({title:document.getElementById('up_title').value||f.name, ftype:(f.type||f.name)}, await gatherContent(f));
     const raw=await aiCurate(payload);
     if(!raw||raw.error) throw new Error((raw&&raw.error)||'réponse invalide');
+    if(raw && typeof raw.code==='string' && raw.message && raw.data && typeof raw.data.status==='number'){
+      throw new Error('Proxy WordPress : '+raw.message+' (HTTP '+raw.data.status+')');
+    }
     const r=normalizeAI(raw); r.insights=r.insights; r.topics=r.topics; pendingAI=r;
     const sumEl=document.getElementById('up_summary'), descEl=document.getElementById('up_desc'), srcEl=document.getElementById('up_source');
     const filled=[];

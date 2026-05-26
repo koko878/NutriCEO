@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutrientOS
  * Description:       Hosts the NutrientOS prototype, the executive one-pager and the executive summary. Full-screen URLs (no theme chrome) + shortcodes with full-bleed auto-resizing iframes. Includes a server-side AI proxy (curate) to the OCP AI Lab for auto-summaries/insights.
- * Version:           1.9.4
+ * Version:           1.9.5
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutrientos
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NOS_VER', '1.9.4' );
+define( 'DNAI_NOS_VER', '1.9.5' );
 define( 'DNAI_NOS_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NOS_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -118,7 +118,20 @@ add_action( 'rest_api_init', function () {
 		'methods'             => 'POST',
 		'callback'            => 'dnai_nos_curate',
 		'permission_callback' => function ( $req ) {
-			return (bool) wp_verify_nonce( $req->get_header( 'X-WP-Nonce' ), 'wp_rest' );
+			// Accept a valid REST nonce when present…
+			$nonce = $req->get_header( 'X-WP-Nonce' );
+			if ( $nonce && wp_verify_nonce( $nonce, 'wp_rest' ) ) { return true; }
+			// …or a same-origin browser request. Behind Azure Front Door the cookie-bound
+			// nonce can be cached/stale, so we also trust requests whose Origin/Referer host
+			// matches this site (the browser sets Origin on cross-context POSTs it controls).
+			$origin = $req->get_header( 'origin' );
+			if ( ! $origin ) { $origin = $req->get_header( 'referer' ); }
+			if ( $origin ) {
+				$oh = wp_parse_url( $origin, PHP_URL_HOST );
+				$sh = wp_parse_url( home_url(), PHP_URL_HOST );
+				if ( $oh && $sh && strcasecmp( $oh, $sh ) === 0 ) { return true; }
+			}
+			return false;
 		},
 	) );
 } );
