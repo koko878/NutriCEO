@@ -233,6 +233,50 @@ body.embed .botnav{display:none!important}
   .botnav button.on .bi{transform:translateY(-1px)}
 }
 @media(max-width:560px){.grid,.audience,.wgroups,.prog,.scores{grid-template-columns:1fr}.feat{grid-template-columns:1fr}.hero h1{font-size:34px}.acard h3{font-size:18px}}
+/* intake wizard */
+.cta-mini.contrib{background:var(--green-500);color:#05230f}
+.cta-mini.contrib:hover{background:var(--green-300)}
+.ibtn{display:inline-grid;place-items:center;width:38px;height:38px;border:1px solid var(--line);background:#fff;border-radius:9px;font-size:15px;color:var(--green-700);cursor:pointer}
+.ibtn:hover{border-color:var(--green-300);background:var(--green-50)}
+.modal{position:fixed;inset:0;background:rgba(7,20,12,.6);display:none;align-items:flex-start;justify-content:center;z-index:200;padding:20px;overflow:auto}
+.modal.on{display:flex}
+.modal .box{background:#fff;border-radius:18px;max-width:680px;width:100%;padding:24px;margin:auto}
+.mhead{display:flex;align-items:center;justify-content:space-between}
+.mhead h3{margin:0;font-size:24px;font-weight:700}
+.mhead .x{border:0;background:none;font-size:20px;color:var(--muted);cursor:pointer}
+.msub{font-size:13.5px;color:var(--muted);margin:6px 0 16px}
+.srcbar{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
+.src{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 13px;font:600 12.5px 'Inter';color:var(--muted);cursor:pointer}
+.src.on{background:var(--green-700);color:#fff;border-color:var(--green-700)}
+.spane{display:none}.spane.on{display:block}
+.spane label.fl,.common label.fl{display:block;font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
+.spane input[type=text],.spane select,.spane textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font:500 14px 'Inter';color:var(--ink)}
+.drop{border:2px dashed var(--green-300);border-radius:14px;padding:26px;text-align:center;background:var(--green-50);transition:.15s}
+.drop.over{background:var(--green-100);border-color:var(--green-600)}
+.drop .di{font-size:30px;color:var(--green-600)}
+.drop .dt{font-weight:700;margin-top:6px}
+.drop .dm{font-size:12px;color:var(--muted);margin:2px 0 12px}
+.dbtns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.cam{display:none}
+.fitem-prev{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-top:10px}
+.fitem-prev img{width:46px;height:46px;object-fit:cover;border-radius:8px}
+.fitem-prev .ic{width:46px;height:46px;border-radius:8px;background:var(--green-50);display:grid;place-items:center;font-size:20px}
+.fitem-prev .nm{font-weight:600;font-size:13.5px;word-break:break-all}
+.fitem-prev .me{font-size:11.5px;color:var(--muted)}
+.connmsg{font-size:12.5px;font-weight:600;margin-left:8px}
+.connmsg.ok{color:var(--green-700)}
+.common{margin-top:14px}
+.common .refsel{display:flex;gap:8px}
+.common .refsel button{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px;font-weight:700;color:var(--muted);cursor:pointer}
+.common .refsel button.on{background:var(--green-700);color:#fff;border-color:var(--green-700)}
+.mfoot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.mfoot .muted{font-size:12px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:7px;font-weight:700;border:0;border-radius:10px;cursor:pointer}
+.btn.sm{padding:9px 14px;font-size:13px}
+.btn.primary{background:var(--green-700);color:#fff}.btn.primary:hover{background:var(--green-800)}
+.btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+@media(max-width:700px){.cam{display:inline-flex}}
+@media(max-width:560px){.modal .box{padding:18px}.srcbar .src{flex:1}}
 </style>
 </head>
 <body>
@@ -253,7 +297,7 @@ body.embed .botnav{display:none!important}
         <button class="lng" data-l="pt" onclick="setLang('pt')">PT</button>
       </div>
       <div class="legend"><span class="lay open">OPEN</span><span class="lay core">OCP Nutricrops CORE</span></div>
-      <button class="cta-mini" data-k="nav.enter" onclick="go('explore')">Entrer dans la plateforme</button>
+      <button class="cta-mini contrib" onclick="openIntake()">＋ Contribuer</button>
     </div>
   </div>
 </header>
@@ -301,6 +345,9 @@ body.embed .botnav{display:none!important}
   <div class="wrap">
     <div class="toolbar">
       <div class="search"><span class="mag">🔍</span><input id="q" data-kph="exp.search" placeholder="Rechercher un dataset, un modèle, un standard…" oninput="renderGrid()"></div>
+      <button class="cta-mini contrib" onclick="openIntake()">＋ Contribuer un asset</button>
+      <button class="ibtn" onclick="exportDelta()" title="Exporter mes contributions">⤓</button>
+      <label class="ibtn" title="Importer des contributions (JSON)">⤒<input type="file" accept=".json" style="display:none" onchange="importDelta(this)"></label>
     </div>
     <div class="toolbar" style="margin-top:0">
       <div class="filters" id="typeFilters"></div>
@@ -640,9 +687,10 @@ function initFilters(){
 function setF(k,v,btn){FT[k]=v;[...btn.parentElement.children].forEach(c=>c.classList.remove('on'));btn.classList.add('on');renderGrid();}
 function renderGrid(){
   const u=UI[LANG],ty=TYPES_L[LANG],q=(document.getElementById('q').value||'').toLowerCase();
-  const list=ASSETS.filter(a=>(FT.type==='all'||a.type===FT.type)&&(FT.layer==='all'||a.layer===FT.layer)&&
+  const A=allAssets();
+  const list=A.filter(a=>(FT.type==='all'||a.type===FT.type)&&(FT.layer==='all'||a.layer===FT.layer)&&
     (a.title.toLowerCase().includes(q)||a.desc[LANG].toLowerCase().includes(q)||a.org.toLowerCase().includes(q)));
-  document.getElementById('count').innerHTML=fill(u.count,{n:list.length,o:ASSETS.filter(a=>a.layer==='open').length,c:ASSETS.filter(a=>a.layer==='core').length});
+  document.getElementById('count').innerHTML=fill(u.count,{n:list.length,o:A.filter(a=>a.layer==='open').length,c:A.filter(a=>a.layer==='core').length});
   document.getElementById('grid').innerHTML=list.map(a=>`
     <div class="acard" onclick="openAsset('${a.id}')">
       <div class="row1"><span class="ttype">${ICON[a.type]} ${ty[a.type]}</span><span class="lay ${a.layer}">${a.layer==='open'?'OPEN':'OCP Nutricrops CORE'}</span></div>
@@ -659,8 +707,8 @@ function renderGrid(){
 }
 function openAsset(id){
   curAsset=id;
-  const u=UI[LANG],ty=TYPES_L[LANG],a=ASSETS.find(x=>x.id===id);
-  const reusers=ASSETS.filter(x=>x.id!==id&&x.layer==='open').slice(0,4);
+  const u=UI[LANG],ty=TYPES_L[LANG],a=allAssets().find(x=>x.id===id);
+  const reusers=allAssets().filter(x=>x.id!==id&&x.layer==='open').slice(0,4);
   const isStd=a.type==='standard';
   const code=isStd
     ? `{\n  "<span class='k'>nutrient</span>": "<span class='s'>P2O5</span>",\n  "<span class='k'>unit</span>": "<span class='s'>kg/ha</span>",\n  "<span class='k'>soil_ref</span>": "<span class='s'>calcareous</span>",\n  "<span class='k'>availability_coef</span>": 0.62,\n  "<span class='k'>source</span>": "<span class='s'>nutrient-value-standard@1.0</span>"\n}`
@@ -711,11 +759,19 @@ const AUD=[
  {i:'🚀',h:{fr:`Startups AgTech`,en:`AgTech startups`,pt:`Startups AgTech`},li:{fr:[`Stack fondationnel gratuit`,`Vitesse & itération`,`Canal de distribution`],en:[`Free foundational stack`,`Speed & iteration`,`Distribution channel`],pt:[`Stack fundacional gratuito`,`Velocidade e iteração`,`Canal de distribuição`]}},
  {i:'🏛️',h:{fr:`Secteur public`,en:`Public sector`,pt:`Setor público`},li:{fr:[`Politiques renforcées`,`Souveraineté préservée`,`Devenir une référence`],en:[`Stronger policies`,`Sovereignty preserved`,`Become a reference`],pt:[`Políticas reforçadas`,`Soberania preservada`,`Tornar-se uma referência`]}}
 ];
+
+/* ====================== real contributions (delta layer) ====================== */
+const LS_NOS_DELTA='nos_delta_v1';
+let DELTA=(function(){try{return JSON.parse(localStorage.getItem(LS_NOS_DELTA))||[]}catch(e){return []}})();
+function saveDelta(){localStorage.setItem(LS_NOS_DELTA,JSON.stringify(DELTA));}
+function allAssets(){return DELTA.concat(ASSETS);}
+
 function renderImpact(){
-  const open=ASSETS.filter(a=>a.layer==='open');
-  const totReuse=ASSETS.reduce((s,a)=>s+a.reuses,0);
-  const orgs=new Set(ASSETS.flatMap(a=>a.contributors)).size;
-  const vals=[ASSETS.length,orgs,totReuse.toLocaleString(LOC[LANG]),'7'];
+  const A=allAssets();
+  const open=A.filter(a=>a.layer==='open');
+  const totReuse=A.reduce((s,a)=>s+(a.reuses||0),0);
+  const orgs=new Set(A.flatMap(a=>a.contributors||[])).size;
+  const vals=[A.length,orgs,totReuse.toLocaleString(LOC[LANG]),String(7+DELTA.length)];
   document.getElementById('kpis').innerHTML=KPI_L[LANG].map((k,i)=>`<div class="kpi"><div class="v">${vals[i]}</div><div class="k">${k.k}</div><div class="t">${k.t}</div></div>`).join('');
   const data=[{l:QLAB[LANG][0],v:120},{l:QLAB[LANG][1],v:210},{l:QLAB[LANG][2],v:360},{l:QLAB[LANG][3],v:totReuse}];
   const max=Math.max(...data.map(d=>d.v));
@@ -825,10 +881,172 @@ function applyLang(){
 }
 function setLang(l){LANG=l;document.querySelectorAll('.lng').forEach(b=>b.classList.toggle('on',b.dataset.l===l));applyLang();}
 
+/* ====================== INTAKE WIZARD ====================== */
+let intakeSrc='upload', intakeLayer='open', pendingFiles=[];
+function openIntake(){ document.getElementById('intake').classList.add('on'); }
+function closeIntake(){ document.getElementById('intake').classList.remove('on'); }
+function setSrc(s){ intakeSrc=s; document.querySelectorAll('.src').forEach(b=>b.classList.toggle('on',b.dataset.s===s)); document.querySelectorAll('.spane').forEach(p=>p.classList.toggle('on',p.id==='sp-'+s)); }
+function setLayer(l){ intakeLayer=l; document.querySelectorAll('#layerSel button').forEach(b=>b.classList.toggle('on',b.dataset.l===l)); }
+function typeFromName(n){
+  const e=(n.split('.').pop()||'').toLowerCase();
+  if(['pdf','doc','docx','ppt','pptx','txt','md'].includes(e)) return 'publication';
+  return 'dataset';
+}
+function humanSize(b){ if(b<1024)return b+' o'; if(b<1048576)return (b/1024).toFixed(0)+' Ko'; return (b/1048576).toFixed(1)+' Mo'; }
+function onFiles(files){
+  pendingFiles=[...files];
+  const host=document.getElementById('filePrev'); host.innerHTML='';
+  pendingFiles.forEach(f=>{
+    const row=document.createElement('div'); row.className='fitem-prev';
+    if(f.type.startsWith('image/')){ const img=document.createElement('img'); img.src=URL.createObjectURL(f); row.appendChild(img); }
+    else { const ic=document.createElement('div'); ic.className='ic'; ic.textContent = f.type.startsWith('audio/')?'🎙️':(/pdf|word|doc/.test(f.type)?'📄':'🗄️'); row.appendChild(ic); }
+    const meta=document.createElement('div'); meta.innerHTML=`<div class="nm">${f.name}</div><div class="me">${f.type||'fichier'} · ${humanSize(f.size)}</div>`;
+    row.appendChild(meta); host.appendChild(row);
+  });
+}
+function testConn(kind){
+  const el=document.getElementById(kind+'_msg');
+  el.textContent='Connexion en cours…'; el.className='connmsg';
+  setTimeout(()=>{ el.textContent='✓ Connexion réussie (démo)'; el.className='connmsg ok'; },700);
+}
+function addAsset(o){
+  o.id='u'+Date.now()+Math.floor(Math.random()*999);
+  o.layer=intakeLayer; o.reuses=0; o.stars=0; o.reviews=0; o.upd={n:0,u:'h'};
+  if(!o.desc||typeof o.desc==='string'){ const d=o.desc||''; o.desc={fr:d,en:d,pt:d}; }
+  if(!o.contributors) o.contributors=[o.org||'Contribution'];
+  DELTA.unshift(o); saveDelta();
+  // reflect in community feed
+  FEED.unshift({who:o.org||'Contribution',vb:'contributed',obj:o.title,tag:o.type,a:{n:0,u:'h'},
+    t:{fr:'ajouté via '+o.via,en:'added via '+o.via,pt:'adicionado via '+o.via}});
+  renderGrid(); renderImpact(); renderCommunity();
+  toast('Asset ajouté au catalogue ✓');
+}
+function submitIntake(){
+  if(intakeSrc==='upload'){
+    if(!pendingFiles.length){ alert('Choisissez au moins un fichier.'); return; }
+    const f=pendingFiles[0], base=f.name.replace(/\.[^.]+$/,'');
+    const extra=pendingFiles.length>1?(' (+'+(pendingFiles.length-1)+' fichiers)'):'';
+    addAsset({type:typeFromName(f.name),title:base+extra,org:'Contribution',via:'fichier',
+      desc:'Importé : '+pendingFiles.map(x=>x.name).join(', ')});
+  } else if(intakeSrc==='api'){
+    const name=val('api_name')||'Source API', url=val('api_url');
+    if(!url){ alert('Renseignez l\'endpoint.'); return; }
+    addAsset({type:'dataset',title:name,org:val('api_name')||'API',via:'API',
+      desc:'Source API connectée : '+url+' ('+val('api_fmt')+')'});
+  } else if(intakeSrc==='db'){
+    const name=val('db_name')||'Base de données', host=val('db_host');
+    if(!host){ alert('Renseignez l\'hôte.'); return; }
+    addAsset({type:'dataset',title:name,org:val('db_name')||'BDD',via:'base de données',
+      desc:val('db_type')+' · '+host+' · '+val('db_name2')+'.'+val('db_table')});
+  } else {
+    const title=val('m_title'); if(!title){ alert('Le titre est requis.'); return; }
+    addAsset({type:document.getElementById('m_type').value,title,org:val('m_org')||'Contribution',via:'saisie',desc:val('m_desc')});
+  }
+  pendingFiles=[]; document.getElementById('filePrev').innerHTML='';
+  closeIntake(); go('explore'); renderGrid();
+}
+function val(id){ return (document.getElementById(id).value||'').trim(); }
+function exportDelta(){
+  if(!DELTA.length){ alert('Aucune contribution à exporter.'); return; }
+  const blob=new Blob([JSON.stringify(DELTA,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='nutrientos-contributions.json'; a.click();
+}
+function importDelta(inp){
+  const file=inp.files[0]; if(!file) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ const d=JSON.parse(r.result); if(Array.isArray(d)){ DELTA=d.concat(DELTA); saveDelta(); renderGrid(); renderImpact(); renderCommunity(); toast('Contributions importées ✓'); } else alert('Format invalide.'); }catch(e){ alert('JSON invalide.'); } };
+  r.readAsText(file); inp.value='';
+}
+function toast(msg){
+  let t=document.getElementById('nosToast');
+  if(!t){ t=document.createElement('div'); t.id='nosToast'; t.style.cssText='position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#07140c;color:#fff;padding:12px 20px;border-radius:12px;font:600 14px Inter;z-index:300;box-shadow:0 12px 30px -10px rgba(0,0,0,.5);opacity:0;transition:opacity .25s'; document.body.appendChild(t); }
+  t.textContent=msg; requestAnimationFrame(()=>t.style.opacity='1');
+  clearTimeout(t._h); t._h=setTimeout(()=>t.style.opacity='0',2200);
+}
+function initIntake(){
+  const d=document.getElementById('drop'); if(!d) return;
+  ['dragenter','dragover'].forEach(ev=>d.addEventListener(ev,e=>{e.preventDefault();d.classList.add('over');}));
+  ['dragleave','drop'].forEach(ev=>d.addEventListener(ev,e=>{e.preventDefault();d.classList.remove('over');}));
+  d.addEventListener('drop',e=>{ if(e.dataTransfer&&e.dataTransfer.files.length) onFiles(e.dataTransfer.files); });
+}
+
 /* init */
+initIntake();
 setLang('fr');
 postHeight();
 setTimeout(postHeight,400);
 </script>
+<!-- ====================== INTAKE WIZARD ====================== -->
+<div class="modal" id="intake">
+  <div class="box">
+    <div class="mhead"><h3>Contribuer un asset</h3><button class="x" onclick="closeIntake()">✕</button></div>
+    <p class="msub">Ajoutez une donnée de plusieurs façons. Sur mobile vous pouvez prendre une photo ou un enregistrement directement.</p>
+    <div class="srcbar" id="srcbar">
+      <button class="src on" data-s="upload" onclick="setSrc('upload')">📁 Fichier / Photo / Audio</button>
+      <button class="src" data-s="api" onclick="setSrc('api')">🔌 API</button>
+      <button class="src" data-s="db" onclick="setSrc('db')">🗄️ Base de données</button>
+      <button class="src" data-s="manual" onclick="setSrc('manual')">✏️ Saisie manuelle</button>
+    </div>
+
+    <!-- UPLOAD -->
+    <div class="spane on" id="sp-upload">
+      <div class="drop" id="drop">
+        <input type="file" id="fileInput" multiple style="display:none" onchange="onFiles(this.files)">
+        <input type="file" id="camInput" accept="image/*" capture="environment" style="display:none" onchange="onFiles(this.files)">
+        <input type="file" id="micInput" accept="audio/*" capture style="display:none" onchange="onFiles(this.files)">
+        <div class="di">⤓</div>
+        <div class="dt">Glissez-déposez un fichier ici</div>
+        <div class="dm">CSV, Excel, JSON, PDF, image, audio…</div>
+        <div class="dbtns">
+          <button class="btn primary sm" onclick="document.getElementById('fileInput').click()">Choisir un fichier</button>
+          <button class="btn ghost sm cam" onclick="document.getElementById('camInput').click()">📷 Photo</button>
+          <button class="btn ghost sm cam" onclick="document.getElementById('micInput').click()">🎙️ Audio</button>
+        </div>
+      </div>
+      <div id="filePrev"></div>
+    </div>
+
+    <!-- API -->
+    <div class="spane" id="sp-api">
+      <label class="fl">Nom de la source</label><input type="text" id="api_name" placeholder="ex. Capteurs sol — IoT Maghreb">
+      <div class="grid2"><div><label class="fl">Endpoint (URL)</label><input type="text" id="api_url" placeholder="https://api.exemple.com/v1/soil"></div>
+      <div><label class="fl">Clé API (optionnel)</label><input type="text" id="api_key" placeholder="••••••••"></div></div>
+      <label class="fl">Format</label><select id="api_fmt"><option>JSON / REST</option><option>GeoJSON</option><option>CSV</option><option>GraphQL</option></select>
+      <button class="btn ghost sm" onclick="testConn('api')">Tester la connexion</button> <span class="connmsg" id="api_msg"></span>
+    </div>
+
+    <!-- DB -->
+    <div class="spane" id="sp-db">
+      <label class="fl">Nom de la source</label><input type="text" id="db_name" placeholder="ex. Entrepôt agronomique UM6P">
+      <div class="grid2"><div><label class="fl">Type</label><select id="db_type"><option>PostgreSQL</option><option>MySQL</option><option>BigQuery</option><option>Snowflake</option><option>MongoDB</option></select></div>
+      <div><label class="fl">Hôte</label><input type="text" id="db_host" placeholder="db.exemple.com:5432"></div></div>
+      <div class="grid2"><div><label class="fl">Base</label><input type="text" id="db_name2" placeholder="agronomy"></div>
+      <div><label class="fl">Table / collection</label><input type="text" id="db_table" placeholder="soil_profiles"></div></div>
+      <button class="btn ghost sm" onclick="testConn('db')">Tester la connexion</button> <span class="connmsg" id="db_msg"></span>
+    </div>
+
+    <!-- MANUAL -->
+    <div class="spane" id="sp-manual">
+      <label class="fl">Titre</label><input type="text" id="m_title" placeholder="ex. Essais nutrition tomate — Souss 2024">
+      <div class="grid2"><div><label class="fl">Type</label><select id="m_type"><option value="dataset">Dataset</option><option value="model">Modèle</option><option value="standard">Standard</option><option value="pipeline">Pipeline</option><option value="publication">Publication</option></select></div>
+      <div><label class="fl">Organisation</label><input type="text" id="m_org" placeholder="ex. OCP Nutricrops"></div></div>
+      <label class="fl">Description</label><textarea id="m_desc" rows="2" placeholder="Quelques mots sur le contenu…"></textarea>
+    </div>
+
+    <!-- common: layer + submit -->
+    <div class="common">
+      <div><label class="fl">Couche</label>
+        <div class="refsel" id="layerSel"><button class="on" data-l="open" onclick="setLayer('open')">Open</button><button data-l="core" onclick="setLayer('core')">OCP Nutricrops Core</button></div>
+      </div>
+    </div>
+    <div class="mfoot">
+      <span class="muted" id="intakeHint">Sauvegarde locale — exportez en JSON pour partager / publier.</span>
+      <span style="flex:1"></span>
+      <button class="btn ghost sm" onclick="closeIntake()">Annuler</button>
+      <button class="btn primary sm" onclick="submitIntake()">Ajouter au catalogue</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
