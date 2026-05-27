@@ -87,6 +87,9 @@ body.embed .tabs{position:static;top:auto}
 .unit{font-size:11px;color:var(--muted)}
 .varwrap{position:relative}
 .varwrap::after{content:"%";position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted)}
+.pbiwrap{position:relative;width:100%;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;aspect-ratio:16/10}
+.pbiwrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+@media(max-width:700px){.pbiwrap{aspect-ratio:3/4}}
 
 /* results */
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
@@ -300,6 +303,14 @@ tbody tr.sel{background:var(--green-50)}
     </div>
   </section>
 
+  <!-- ====== MARKET INTEL (Power BI embed) ====== -->
+  <section class="screen" id="sc-market">
+    <span class="eyebrow">Veille marché</span>
+    <h2 class="h">Market Intel</h2>
+    <p class="lead">Le rapport Power BI de veille marché, embarqué ici pour contextualiser les prix DAP/TSP et matières premières au moment de la simulation.</p>
+    <div id="mktArea"></div>
+  </section>
+
   <!-- ====== ADMIN: REFERENTIEL ====== -->
   <section class="screen" id="sc-ref">
     <span class="eyebrow">Admin · Référentiel</span>
@@ -426,10 +437,10 @@ function f(x,d){ if(!isFinite(x)) return '—'; return Number(x).toLocaleString(
 /* ============ profile + tabs ============ */
 let profile='metier';
 const TABS={
-  metier:[['config','1','Configuration'],['inputs','2','Inputs marché'],['results','3','Résultats'],['hist','','Historique']],
+  metier:[['config','1','Configuration'],['inputs','2','Inputs marché'],['results','3','Résultats'],['market','','Market Intel'],['hist','','Historique']],
   admin:[['ref','','Référentiel'],['const','','Constantes']]
 };
-const TABSCREEN={config:'sc-config',inputs:'sc-inputs',results:'sc-results',hist:'sc-hist',ref:'sc-ref',const:'sc-const'};
+const TABSCREEN={config:'sc-config',inputs:'sc-inputs',results:'sc-results',market:'sc-market',hist:'sc-hist',ref:'sc-ref',const:'sc-const'};
 let curTab='config';
 function setProfile(p){
   profile=p;
@@ -451,6 +462,7 @@ function goTab(t){
   if(t==='ref') renderRefTable();
   if(t==='const') renderConst();
   if(t==='inputs') renderInputs();
+  if(t==='market') renderMarket();
   if(t==='hist') renderHist();
   if(t==='config'){ const lines=[...new Set(products().map(p=>p.line))]; document.getElementById('line').innerHTML=lines.map(l=>`<option>${l}</option>`).join(''); refreshProdSelect(); syncConfig(); }
   window.scrollTo({top:0,behavior:'instant'});
@@ -649,6 +661,38 @@ function snapshot(){
     nutriDap:D.nutri, nutriTsp:T.nutri, okDap:D.ok, okTsp:T.ok, cgmActive:active.cgmAtPrice, okActive:active.ok };
 }
 function saveSim(){ HIST.unshift(snapshot()); HIST=HIST.slice(0,200); saveHist(); alert('Simulation enregistrée dans l\'historique.'); if(curTab==='hist') renderHist(); }
+/* ============ MARKET INTEL (Power BI embed) ============ */
+function mktUrl(){ try{ return localStorage.getItem('cgm_pbi_url')||(window.DNAI_CGM&&window.DNAI_CGM.pbi)||''; }catch(e){ return (window.DNAI_CGM&&window.DNAI_CGM.pbi)||''; } }
+function mktExtractSrc(v){ v=(v||'').trim(); const m=v.match(/src\s*=\s*["']([^"']+)["']/i); return m?m[1]:v; }
+function saveMktUrl(){
+  const raw=document.getElementById('mktInput').value;
+  const url=mktExtractSrc(raw);
+  if(url && !/^https:\/\/(app|[a-z]+\.)?powerbi\.com\//i.test(url) && !/fabric\.microsoft\.com\//i.test(url)){
+    if(!confirm('Cette URL ne ressemble pas à un lien Power BI/Fabric. L\'utiliser quand même ?')) return;
+  }
+  try{ localStorage.setItem('cgm_pbi_url',url); }catch(e){}
+  renderMarket();
+}
+function clearMktUrl(){ try{ localStorage.removeItem('cgm_pbi_url'); }catch(e){} renderMarket(); }
+function renderMarket(){
+  const host=document.getElementById('mktArea'); if(!host) return;
+  const url=mktUrl();
+  if(url){
+    host.innerHTML='<div class="toolbar" style="margin-bottom:10px"><span class="muted">Source : rapport Power BI embarqué</span><span class="sp"></span>'
+      +'<button class="btn ghost sm" onclick="clearMktUrl()">Changer le lien</button>'
+      +'<a class="btn ghost sm" href="'+url.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener">Ouvrir dans Power BI ↗</a></div>'
+      +'<div class="pbiwrap"><iframe title="Market Intel — Power BI" src="'+url.replace(/"/g,'&quot;')+'" frameborder="0" allowfullscreen></iframe></div>';
+  } else {
+    host.innerHTML='<div class="card" style="max-width:680px">'
+      +'<h4 style="margin:0 0 6px">Connecter ton rapport Power BI</h4>'
+      +'<p class="muted" style="font-size:13px;margin:0 0 12px">Dans Power BI : <b>Fichier → Intégrer un rapport → Publier sur le web</b> (ou <b>Intégrer</b> pour ton organisation), puis copie le <b>lien</b> ou le code <code>&lt;iframe&gt;</code> et colle-le ci-dessous. Le rapport s\'affichera ici.</p>'
+      +'<label class="fl">Lien d\'intégration (ou code iframe)</label>'
+      +'<input type="text" id="mktInput" placeholder="https://app.powerbi.com/view?r=… ou <iframe src=…>">'
+      +'<div style="margin-top:12px"><button class="btn primary" onclick="saveMktUrl()">Afficher le rapport</button></div>'
+      +'<p class="muted" style="font-size:11.5px;margin:12px 0 0">⚠️ « Publier sur le web » rend le rapport <b>public</b> — à n\'utiliser que pour des données non confidentielles. Pour des données internes, privilégie l\'intégration sécurisée « pour votre organisation ».</p>'
+      +'</div>';
+  }
+}
 function renderHist(){
   document.getElementById('histCount').textContent = HIST.length + ' simulation(s)';
   const tb=document.querySelector('#histTbl tbody');

@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI CGM Simulator — MVP
  * Description:       MVP of the CGM Simulator (business UX: config / market inputs / results, with editable referential). Serves a FULL-SCREEN URL (no theme chrome) and a shortcode [cgm_mvp]. Calculation rules ported 1:1 from the CGM Excel; ships with placeholder data.
- * Version:           1.5.1
+ * Version:           1.5.2
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-cgm-mvp
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_CGMMVP_VER', '1.5.1' );
+define( 'DNAI_CGMMVP_VER', '1.5.2' );
 define( 'DNAI_CGMMVP_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_CGMMVP_DIR', plugin_dir_path( __FILE__ ) );
 
