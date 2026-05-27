@@ -661,50 +661,14 @@ function snapshot(){
     nutriDap:D.nutri, nutriTsp:T.nutri, okDap:D.ok, okTsp:T.ok, cgmActive:active.cgmAtPrice, okActive:active.ok };
 }
 function saveSim(){ HIST.unshift(snapshot()); HIST=HIST.slice(0,200); saveHist(); alert('Simulation enregistrée dans l\'historique.'); if(curTab==='hist') renderHist(); }
-/* ============ MARKET INTEL (Power BI embed) ============ */
-function mktUrl(){ try{ return localStorage.getItem('cgm_pbi_url')||(window.DNAI_CGM&&window.DNAI_CGM.pbi)||''; }catch(e){ return (window.DNAI_CGM&&window.DNAI_CGM.pbi)||''; } }
-function mktExtractSrc(v){ v=(v||'').trim(); const m=v.match(/src\s*=\s*["']([^"']+)["']/i); return m?m[1]:v; }
-function saveMktUrl(){
-  const raw=document.getElementById('mktInput').value;
-  const url=mktExtractSrc(raw);
-  if(url && !/^https:\/\/(app|[a-z]+\.)?powerbi\.com\//i.test(url) && !/fabric\.microsoft\.com\//i.test(url)){
-    if(!confirm('Cette URL ne ressemble pas à un lien Power BI/Fabric. L\'utiliser quand même ?')) return;
-  }
-  try{ localStorage.setItem('cgm_pbi_url',url); }catch(e){}
-  renderMarket();
-}
-function clearMktUrl(){ try{ localStorage.removeItem('cgm_pbi_url'); }catch(e){} renderMarket(); }
-function mktIsPublic(u){ return /powerbi\.com\/view\?r=/i.test(u||''); }
+/* ============ MARKET INTEL (Power BI / Fabric) ============ */
+const MKT_PLATFORM_URL='https://app.fabric.microsoft.com/links/7PaG0K7M9w?ctid=eb5d9cdc-7d97-42ed-82de-41dbcbb698fb&pbi_source=linkShare';
 function renderMarket(){
   const host=document.getElementById('mktArea'); if(!host) return;
-  const url=mktUrl(); const esc=(url||'').replace(/"/g,'&quot;');
-  if(url && mktIsPublic(url)){
-    // Publish-to-web (public) link → safe to embed.
-    host.innerHTML='<div class="toolbar" style="margin-bottom:10px"><span class="muted">Rapport Power BI embarqué (lien public)</span><span class="sp"></span>'
-      +'<button class="btn ghost sm" onclick="clearMktUrl()">Changer le lien</button>'
-      +'<a class="btn ghost sm" href="'+esc+'" target="_blank" rel="noopener">Ouvrir ↗</a></div>'
-      +'<div class="pbiwrap"><iframe title="Market Intel — Power BI" src="'+esc+'" frameborder="0" allowfullscreen></iframe></div>';
-  } else if(url){
-    // Internal / secure link → do NOT embed; open in a new tab behind Microsoft SSO.
-    host.innerHTML='<div class="card" style="max-width:680px">'
-      +'<h4 style="margin:0 0 6px">🔒 Rapport Market Intel — accès sécurisé</h4>'
-      +'<p class="muted" style="font-size:13px;margin:0 0 14px">Lien interne configuré. Le rapport s\'ouvre dans Power BI / Fabric derrière l\'authentification Microsoft de ton organisation — aucune donnée n\'est exposée publiquement ni embarquée hors gouvernance.</p>'
-      +'<div class="toolbar"><a class="btn primary" href="'+esc+'" target="_blank" rel="noopener">Ouvrir le rapport (connexion Microsoft) ↗</a>'
-      +'<button class="btn ghost sm" onclick="clearMktUrl()">Changer le lien</button></div>'
-      +'<p class="muted" style="font-size:11.5px;margin:14px 0 0">Pour afficher le rapport <b>directement dans l\'app</b> sans exposition (Power BI Embedded « pour votre organisation »), il faut une app Azure AD + une capacité — me le dire pour brancher l\'intégration sécurisée.</p>'
-      +'</div>';
-  } else {
-    host.innerHTML='<div class="card" style="max-width:680px">'
-      +'<h4 style="margin:0 0 6px">Connecter ton rapport Market Intel</h4>'
-      +'<p class="muted" style="font-size:13px;margin:0 0 12px">Colle le lien de ton rapport <b>Power BI / Fabric</b> ci-dessous.</p>'
-      +'<ul class="muted" style="font-size:12.5px;margin:0 0 12px;padding-left:18px;line-height:1.6">'
-      +'<li><b>Lien interne</b> (ex. <code>app.fabric.microsoft.com/…</code> ou <code>app.powerbi.com/groups/…</code>) → bouton d\'ouverture sécurisé, derrière le SSO Microsoft. <b>Recommandé.</b></li>'
-      +'<li><b>Lien « Publier sur le web »</b> (<code>app.powerbi.com/view?r=…</code>) → rapport embarqué directement, mais ⚠️ <b>public</b>.</li></ul>'
-      +'<label class="fl">Lien du rapport (ou code iframe)</label>'
-      +'<input type="text" id="mktInput" placeholder="https://app.fabric.microsoft.com/… ou https://app.powerbi.com/view?r=…">'
-      +'<div style="margin-top:12px"><button class="btn primary" onclick="saveMktUrl()">Connecter</button></div>'
-      +'</div>';
-  }
+  host.innerHTML='<div class="card" style="max-width:680px">'
+    +'<p class="muted" style="font-size:13.5px;margin:0 0 16px">Accède à la plateforme de veille marché (Power BI / Fabric) — ouverture sécurisée derrière le SSO Microsoft de l\'organisation.</p>'
+    +'<a class="btn primary" style="font-size:15px;padding:14px 22px" href="'+MKT_PLATFORM_URL+'" target="_blank" rel="noopener">📊 Ouvrir la plateforme Market Intel ↗</a>'
+    +'</div>';
 }
 function renderHist(){
   document.getElementById('histCount').textContent = HIST.length + ' simulation(s)';
