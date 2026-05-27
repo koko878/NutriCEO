@@ -662,7 +662,7 @@ function snapshot(){
 }
 function saveSim(){ HIST.unshift(snapshot()); HIST=HIST.slice(0,200); saveHist(); alert('Simulation enregistrée dans l\'historique.'); if(curTab==='hist') renderHist(); }
 /* ============ MARKET INTEL (Power BI / Fabric) ============ */
-const MKT_PLATFORM_URL='https://app.fabric.microsoft.com/links/7PaG0K7M9w?ctid=eb5d9cdc-7d97-42ed-82de-41dbcbb698fb&pbi_source=linkShare';
+const MKT_PLATFORM_URL='https://app.fabric.microsoft.com/links/J0Afkgg1kT?ctid=eb5d9cdc-7d97-42ed-82de-41dbcbb698fb&pbi_source=linkShare';
 function renderMarket(){
   const host=document.getElementById('mktArea'); if(!host) return;
   host.innerHTML='<div class="card" style="max-width:680px">'
