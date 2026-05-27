@@ -674,22 +674,35 @@ function saveMktUrl(){
   renderMarket();
 }
 function clearMktUrl(){ try{ localStorage.removeItem('cgm_pbi_url'); }catch(e){} renderMarket(); }
+function mktIsPublic(u){ return /powerbi\.com\/view\?r=/i.test(u||''); }
 function renderMarket(){
   const host=document.getElementById('mktArea'); if(!host) return;
-  const url=mktUrl();
-  if(url){
-    host.innerHTML='<div class="toolbar" style="margin-bottom:10px"><span class="muted">Source : rapport Power BI embarqué</span><span class="sp"></span>'
+  const url=mktUrl(); const esc=(url||'').replace(/"/g,'&quot;');
+  if(url && mktIsPublic(url)){
+    // Publish-to-web (public) link → safe to embed.
+    host.innerHTML='<div class="toolbar" style="margin-bottom:10px"><span class="muted">Rapport Power BI embarqué (lien public)</span><span class="sp"></span>'
       +'<button class="btn ghost sm" onclick="clearMktUrl()">Changer le lien</button>'
-      +'<a class="btn ghost sm" href="'+url.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener">Ouvrir dans Power BI ↗</a></div>'
-      +'<div class="pbiwrap"><iframe title="Market Intel — Power BI" src="'+url.replace(/"/g,'&quot;')+'" frameborder="0" allowfullscreen></iframe></div>';
+      +'<a class="btn ghost sm" href="'+esc+'" target="_blank" rel="noopener">Ouvrir ↗</a></div>'
+      +'<div class="pbiwrap"><iframe title="Market Intel — Power BI" src="'+esc+'" frameborder="0" allowfullscreen></iframe></div>';
+  } else if(url){
+    // Internal / secure link → do NOT embed; open in a new tab behind Microsoft SSO.
+    host.innerHTML='<div class="card" style="max-width:680px">'
+      +'<h4 style="margin:0 0 6px">🔒 Rapport Market Intel — accès sécurisé</h4>'
+      +'<p class="muted" style="font-size:13px;margin:0 0 14px">Lien interne configuré. Le rapport s\'ouvre dans Power BI / Fabric derrière l\'authentification Microsoft de ton organisation — aucune donnée n\'est exposée publiquement ni embarquée hors gouvernance.</p>'
+      +'<div class="toolbar"><a class="btn primary" href="'+esc+'" target="_blank" rel="noopener">Ouvrir le rapport (connexion Microsoft) ↗</a>'
+      +'<button class="btn ghost sm" onclick="clearMktUrl()">Changer le lien</button></div>'
+      +'<p class="muted" style="font-size:11.5px;margin:14px 0 0">Pour afficher le rapport <b>directement dans l\'app</b> sans exposition (Power BI Embedded « pour votre organisation »), il faut une app Azure AD + une capacité — me le dire pour brancher l\'intégration sécurisée.</p>'
+      +'</div>';
   } else {
     host.innerHTML='<div class="card" style="max-width:680px">'
-      +'<h4 style="margin:0 0 6px">Connecter ton rapport Power BI</h4>'
-      +'<p class="muted" style="font-size:13px;margin:0 0 12px">Dans Power BI : <b>Fichier → Intégrer un rapport → Publier sur le web</b> (ou <b>Intégrer</b> pour ton organisation), puis copie le <b>lien</b> ou le code <code>&lt;iframe&gt;</code> et colle-le ci-dessous. Le rapport s\'affichera ici.</p>'
-      +'<label class="fl">Lien d\'intégration (ou code iframe)</label>'
-      +'<input type="text" id="mktInput" placeholder="https://app.powerbi.com/view?r=… ou <iframe src=…>">'
-      +'<div style="margin-top:12px"><button class="btn primary" onclick="saveMktUrl()">Afficher le rapport</button></div>'
-      +'<p class="muted" style="font-size:11.5px;margin:12px 0 0">⚠️ « Publier sur le web » rend le rapport <b>public</b> — à n\'utiliser que pour des données non confidentielles. Pour des données internes, privilégie l\'intégration sécurisée « pour votre organisation ».</p>'
+      +'<h4 style="margin:0 0 6px">Connecter ton rapport Market Intel</h4>'
+      +'<p class="muted" style="font-size:13px;margin:0 0 12px">Colle le lien de ton rapport <b>Power BI / Fabric</b> ci-dessous.</p>'
+      +'<ul class="muted" style="font-size:12.5px;margin:0 0 12px;padding-left:18px;line-height:1.6">'
+      +'<li><b>Lien interne</b> (ex. <code>app.fabric.microsoft.com/…</code> ou <code>app.powerbi.com/groups/…</code>) → bouton d\'ouverture sécurisé, derrière le SSO Microsoft. <b>Recommandé.</b></li>'
+      +'<li><b>Lien « Publier sur le web »</b> (<code>app.powerbi.com/view?r=…</code>) → rapport embarqué directement, mais ⚠️ <b>public</b>.</li></ul>'
+      +'<label class="fl">Lien du rapport (ou code iframe)</label>'
+      +'<input type="text" id="mktInput" placeholder="https://app.fabric.microsoft.com/… ou https://app.powerbi.com/view?r=…">'
+      +'<div style="margin-top:12px"><button class="btn primary" onclick="saveMktUrl()">Connecter</button></div>'
       +'</div>';
   }
 }
