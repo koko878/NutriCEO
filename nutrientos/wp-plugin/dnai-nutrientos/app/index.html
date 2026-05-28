@@ -388,6 +388,68 @@ body.embed .botnav{display:none!important}
 .dtable th,.dtable td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
 .dtable thead th{position:sticky;top:0;background:var(--green-50);color:var(--green-800);font-weight:700}
 .relbox{margin-top:12px;background:var(--green-50);border:1px solid var(--green-100);border-radius:11px;padding:11px 13px;font-size:12.5px;color:var(--green-800)}
+/* ---- Co-branding partner chips ---- */
+.cobrand{display:inline-flex;gap:5px;flex-wrap:wrap;margin-left:6px;vertical-align:middle}
+.cob{font-size:10.5px;font-weight:700;letter-spacing:.02em;color:#fff;background:var(--c,#2E7D32);border-radius:999px;padding:2px 9px;white-space:nowrap;box-shadow:0 1px 0 rgba(0,0,0,.08)}
+/* ---- Partners view ---- */
+#partnersGrid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.pcard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;border-top:5px solid var(--accent,#2E7D32);box-shadow:0 8px 24px -16px rgba(0,0,0,.15)}
+.phead2{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+.pav{width:46px;height:46px;border-radius:12px;background:var(--accent,#2E7D32);color:#fff;display:grid;place-items:center;font:800 15px Inter}
+.pcard h3{margin:0;font:700 19px Inter;color:var(--ink)}
+.psub{font-size:12px;color:var(--muted)}
+.pkpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:var(--green-50);border:1px solid var(--green-100);border-radius:12px;padding:12px;margin-bottom:14px}
+.pkpis>div{text-align:center}.pkpis b{display:block;font:800 22px Inter;color:var(--green-800);line-height:1}
+.pkpis span{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:3px;display:block}
+.psec{margin-bottom:11px}
+.psec h4{margin:0 0 4px;font:700 11.5px Inter;text-transform:uppercase;letter-spacing:.06em;color:var(--accent,#2E7D32)}
+.psec p{margin:0;font-size:13.5px;color:var(--ink);line-height:1.45}
+.phooks a{color:var(--green-700);text-decoration:underline;cursor:pointer}.phooks span{color:var(--muted)}
+.ptrcta{margin-top:30px;background:linear-gradient(135deg,var(--green-800),var(--green-700));color:#fff;border-radius:18px;padding:28px;text-align:center}
+.ptrcta h3{margin:0 0 6px;font:700 24px Inter;color:#fff}
+.ptrcta p{margin:0 0 16px;color:var(--green-300);font-size:14.5px}
+.ptrcta .btn.primary{background:#fff;color:var(--green-800)}
+@media(max-width:820px){#partnersGrid{grid-template-columns:1fr}.pkpis{grid-template-columns:repeat(2,1fr)}}
+/* ---- Phare Doukkala ---- */
+.phare-head{background:linear-gradient(135deg,#07140c,#0c1f14);color:#dff0e3;border-bottom:0}
+.phare-head .eyebrow{color:#7CFC9A}
+.phare-head h1{color:#fff;font-size:38px;margin:10px 0 12px;font-family:'Cormorant Garamond',serif;font-weight:700;line-height:1.05}
+.phare-head p{color:#bfe9c8;max-width:78ch;font-size:15px;line-height:1.55}
+.cobr{margin-top:18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.cobrlbl{font:700 11.5px Inter;text-transform:uppercase;letter-spacing:.07em;color:#8fe0a3}
+.cobrlogos{display:flex;gap:8px;flex-wrap:wrap}
+.cobrlogo{font:700 12.5px Inter;color:var(--c,#fff);background:rgba(255,255,255,.06);border:1px solid var(--c,#fff);border-radius:999px;padding:5px 14px}
+.pharestats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.pharestats .ms{background:var(--green-50);border:1px solid var(--green-100);border-radius:10px;padding:8px 14px;font-size:13px;color:var(--green-800)}
+.pharestats .ms b{font-size:18px;color:var(--green-700)}
+.pharestats .ms.accent{background:#fff7e0;border-color:#ffd966;color:#7a5400}
+.pharestats .ms.accent b{color:#b8860b}
+.pharewrap{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}
+#phareMap{height:calc(100vh - 360px);min-height:480px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#06100a}
+body.embed #phareMap{height:560px}
+.pharepanel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;max-height:calc(100vh - 360px);overflow:auto}
+body.embed .pharepanel{max-height:560px}
+.ppx{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:12px}
+.ppx h3{margin:0;font:700 17px Inter;color:var(--ink)}
+.pmeta{font-size:12px;color:var(--muted)}
+.pblk{margin-bottom:14px;border-left:3px solid var(--c,#2E7D32);padding:8px 12px;background:#fafdf9;border-radius:0 9px 9px 0}
+.pblk.pred{background:#fff8e6;border-color:#FFC107}
+.plbl{font:700 11.5px Inter;letter-spacing:.04em;color:#444;margin-bottom:7px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.plbl b{color:var(--c,#2E7D32);font-weight:800}
+.pdot{width:10px;height:10px;border-radius:50%;background:var(--c,#2E7D32);flex:none}
+.pkv{display:grid;grid-template-columns:1fr auto 1fr auto;gap:4px 12px;font-size:13px;align-items:baseline}
+.pkv span{color:var(--muted);font-size:11.5px}.pkv b{color:var(--ink);font-weight:700}
+.papp{display:flex;flex-direction:column;gap:5px;margin-bottom:8px}
+.pa{display:grid;grid-template-columns:1fr auto auto;gap:10px;font-size:12.5px;align-items:baseline}
+.pa span:first-child{color:var(--muted)}.pa b{color:var(--ink)}.pa span:last-child{font-weight:700;color:var(--green-700)}
+.ptot{font-size:12.5px;background:var(--green-50);padding:6px 9px;border-radius:7px}
+.pyield{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:baseline;font-size:13px}
+.pyield b{font:800 18px Inter;color:var(--green-700)}.pyield .delta{font-size:12px;color:var(--green-700);font-weight:700}
+.pyield .badge.ok{background:#e7f5e9;color:#1B5E20;border-radius:999px;padding:2px 9px;font-size:11px;font-weight:700}
+.preco{margin-top:8px;font-size:13px;background:#fff8e6;padding:8px 10px;border-radius:8px}
+.preco b{color:#b8860b}
+.pcobr{margin-top:14px;display:flex;flex-wrap:wrap;gap:6px;font-size:12px;color:var(--muted);align-items:center}
+@media(max-width:980px){.pharewrap{grid-template-columns:1fr}.pharepanel{max-height:none}#phareMap{height:480px}}
 .relbox b{display:block;margin-bottom:6px}
 .relrow{padding:4px 0;color:var(--ink)}
 /* intake wizard */
@@ -448,6 +510,8 @@ body.embed .botnav{display:none!important}
       <button class="navlink" data-v="explore" data-k="nav.explore" onclick="go('explore')">Explorer</button>
       <button class="navlink" data-v="impact" data-k="nav.impact" onclick="go('impact')">Impact</button>
       <button class="navlink" data-v="map" onclick="go('map')">Carte</button>
+      <button class="navlink" data-v="phare" onclick="go('phare')">⚡ Phare</button>
+      <button class="navlink" data-v="partners" onclick="go('partners')">Partenaires</button>
       <button class="navlink" data-v="community" data-k="nav.community" onclick="go('community')">Communauté</button>
       <button class="navlink" data-v="console" data-k="nav.console" onclick="go('console')">Console</button>
     </div>
@@ -576,6 +640,41 @@ body.embed .botnav{display:none!important}
 </div>
 
 <!-- ============ COMMUNITY ============ -->
+<!-- ============ LIGHTHOUSE — PHARE DOUKKALA ============ -->
+<div class="view" id="view-phare">
+  <div class="phead phare-head"><div class="wrap">
+    <span class="eyebrow">Phare · Démonstration vivante</span>
+    <h1>Doukkala · Betterave sucrière · campagne 2024-25</h1>
+    <p>La jointure sol → blend appliqué → capteurs → rendement, reconstituée à la parcelle, sur <b>2 487 parcelles × 2 campagnes</b>. Modèle de réponse N×P entraîné sur l'ensemble — preuve vivante de ce que NutrientOS devient quand les contributeurs fondateurs s'embarquent.</p>
+    <div class="cobr"><span class="cobrlbl">Co-construit avec</span><span class="cobrlogos" id="phareCobr"></span></div>
+  </div></div>
+  <div class="wrap" style="padding:18px 0 50px">
+    <div class="pharestats" id="phareStats"></div>
+    <div class="pharewrap">
+      <div id="phareMap"></div>
+      <div class="pharepanel" id="pharePanel"></div>
+    </div>
+    <div class="muted" style="margin-top:12px;font-size:12.5px">Carte interactive — <b>clique une parcelle</b> pour explorer la jointure de données. <i>50 parcelles de démonstration générées dans la zone Sidi Bennour / Khemis Zemamra ; en production, les polygones réels viennent d'Al Moutmir.</i></div>
+  </div>
+</div>
+
+<!-- ============ PARTENAIRES FONDATEURS ============ -->
+<div class="view" id="view-partners">
+  <div class="phead"><div class="wrap">
+    <span class="eyebrow">Programme fondateur</span>
+    <h1>Les partenaires qui font NutrientOS.</h1>
+    <p>Quatre contributeurs structurels invités à s'embarquer dans la couche d'intelligence nutrition unifiée d'OCP Nutricrops. Chacun apporte ce que lui seul peut apporter — et gagne une place visible dans la gouvernance et l'impact.</p>
+  </div></div>
+  <div class="wrap" style="padding:24px 0 60px">
+    <div id="partnersGrid"></div>
+    <div class="ptrcta">
+      <h3>Le mandat est posé.</h3>
+      <p>Le standard, la gouvernance, la jointure — il manque vos données et votre signature.</p>
+      <button class="btn primary" onclick="go('phare')">Voir le Phare en action →</button>
+    </div>
+  </div>
+</div>
+
 <div class="view" id="view-community">
   <div class="phead"><div class="wrap">
     <span class="eyebrow" data-k="com.eyebrow">Communauté — contribuer &amp; collaborer</span>
@@ -748,6 +847,8 @@ body.embed .botnav{display:none!important}
   <button data-v="explore" onclick="go('explore')"><span class="bi">🔍</span><span data-k="nav.explore">Explorer</span></button>
   <button data-v="impact" onclick="go('impact')"><span class="bi">📈</span><span data-k="nav.impact">Impact</span></button>
   <button data-v="map" onclick="go('map')"><span class="bi">🗺️</span><span>Carte</span></button>
+  <button data-v="phare" onclick="go('phare')"><span class="bi">⚡</span><span>Phare</span></button>
+  <button data-v="partners" onclick="go('partners')"><span class="bi">🤝</span><span>Partenaires</span></button>
   <button data-v="community" onclick="go('community')"><span class="bi">👥</span><span data-k="nav.community">Communauté</span></button>
   <button data-v="console" onclick="go('console')"><span class="bi">🧪</span><span data-k="nav.console">Console</span></button>
 </nav>
@@ -942,6 +1043,217 @@ const REGION_DEMO={
 };
 function assetRegion(a){ if(a.region&&typeof a.region.lat==='number') return a.region; const n=REGION_DEMO[a.id]; return n?regionByName(n):null; }
 
+/* ============================================================
+ * PARTENAIRES FONDATEURS — données + badges co-brandés + chairs
+ * ============================================================ */
+const PARTNERS=[
+ {key:'um6p', name:'UM6P', full:'Université Mohammed VI Polytechnique', accent:'#2E7D32',
+  apport:'Recherche agronomique de référence — sols du Maghreb, courbes de réponse phosphate, modèles de jumeau numérique. Faculté & doctorants mobilisables.',
+  benefit:'Vos datasets et modèles deviennent l\'<b>infrastructure visible</b> du standard. Réutilisations chiffrées, citations trackées, présidence de groupes de travail nommée.',
+  role:'Présidence — <i>Standard Valeur Nutritive</i> · <i>Sols calcaires</i>',
+  hooks:['Maghreb Soil Profiles 2024','Soil Digital Twin — Phosphate','Phosphate Use Efficiency in Calcareous Soils']},
+ {key:'almoutmir', name:'Al Moutmir', full:'Programme OCP de démonstration terrain', accent:'#1B5E20',
+  apport:'2 000+ <b>parcelles de démonstration</b> instrumentées sur tout le Royaume, carnet de blends appliqués, agents terrain, ground truth d\'exécution.',
+  benefit:'Vos parcelles deviennent <b>l\'épine dorsale terrain</b> du modèle national de nutrition. Tableau de bord parcelle, recommandations co-brandées au champ, reconnaissance des agents.',
+  role:'Data steward — <i>Réseau Phare Doukkala</i> · Co-présidence <i>Sols calcaires</i>',
+  hooks:['Fertilizer Recommendation Pipeline (ref.)','Wheat N-uptake curves (Morocco)']},
+ {key:'agriedge', name:'AgriEdge', full:'Filiale OCP — agriculture de précision', accent:'#388E3C',
+  apport:'Capteurs sol & micro-météo en temps réel, plateforme IoT, conseillers numériques au plus près de l\'agriculteur.',
+  benefit:'Vos flux capteurs <b>alimentent en live</b> la couche d\'intelligence. Recommandations enrichies de votre télémétrie, visibilité de votre couverture, intégration produit.',
+  role:'Data steward — <i>Capteurs & télémétrie</i>',
+  hooks:['NutrientOS Recommendation Engine','Soil Test Exchange Format']},
+ {key:'gta', name:'Ground Truth Analytics', full:'Cabinet indépendant de vérification data agro', accent:'#558B2F',
+  apport:'Méthodologie d\'audit, vérification croisée des rendements (tickets pesée, échantillonnage terrain), market intel.',
+  benefit:'Badge <b>GTA-verified</b> sur les assets et modèles clés. Position de tiers de confiance dans la gouvernance. Visibilité commerciale au sein de l\'écosystème OCP.',
+  role:'Validateur officiel — <i>Durabilité & carbone</i> · Audit qualité données',
+  hooks:['Sustainability Scoring (N efficiency)','NutrientOS Recommendation Engine']}
+];
+function partnerByKey(k){ return PARTNERS.find(p=>p.key===k); }
+// Co-branding map : asset id → [partner keys]
+const COBRAND={
+  nvs:['um6p'],
+  twin:['um6p','almoutmir'],
+  'soil-mag':['um6p','almoutmir'],
+  'reco-engine':['agriedge','gta'],
+  'reco-ref':['almoutmir'],
+  pue:['um6p'],
+  'wheat-n':['um6p','almoutmir'],
+  soiltest:['agriedge'],
+  sust:['gta']
+};
+function partnerChips(id){
+  const ks=COBRAND[id]; if(!ks||!ks.length) return '';
+  return '<span class="cobrand">'+ks.map(k=>{const p=partnerByKey(k);return p?`<span class="cob" title="${escapeHtml(p.full)}" style="--c:${p.accent}">${escapeHtml(p.name)}</span>`:'';}).join('')+'</span>';
+}
+function renderPartners(){
+  const A=allAssets();
+  const grid=document.getElementById('partnersGrid'); if(!grid) return;
+  grid.innerHTML=PARTNERS.map(p=>{
+    const myAssets=A.filter(a=>(COBRAND[a.id]||[]).indexOf(p.key)>=0 || (a.contributors||[]).indexOf(p.name)>=0);
+    const reuses=myAssets.reduce((s,a)=>s+(a.reuses||0),0);
+    const validations=Object.values(REVIEWS).reduce((s,r)=>s+((r.approvedBy||[]).indexOf(p.name)>=0?1:0),0);
+    const stars=myAssets.reduce((s,a)=>s+starCount(a),0);
+    const hooks=p.hooks.map(t=>{const a=A.find(x=>x.title===t);return a?`<a onclick="openAsset('${a.id}')">${escapeHtml(t)}</a>`:`<span>${escapeHtml(t)}</span>`;}).join(' · ');
+    return `<div class="pcard" style="--accent:${p.accent}">
+      <div class="phead2"><span class="pav">${p.name.slice(0,2).toUpperCase()}</span><div><h3>${escapeHtml(p.name)}</h3><div class="psub">${escapeHtml(p.full)}</div></div></div>
+      <div class="pkpis">
+        <div><b>${myAssets.length}</b><span>assets liés</span></div>
+        <div><b>${reuses.toLocaleString('fr')}</b><span>réutilisations</span></div>
+        <div><b>${validations}</b><span>validations</span></div>
+        <div><b>${stars}</b><span>étoiles cumulées</span></div>
+      </div>
+      <div class="psec"><h4>Apport</h4><p>${p.apport}</p></div>
+      <div class="psec"><h4>Bénéfice</h4><p>${p.benefit}</p></div>
+      <div class="psec"><h4>Rôle nommé</h4><p>${p.role}</p></div>
+      <div class="psec"><h4>Assets liés</h4><p class="phooks">${hooks}</p></div>
+      <button class="btn primary" style="width:100%;margin-top:14px" onclick="joinProgram('${p.key}')">🤝 Rejoindre le programme fondateur</button>
+    </div>`;
+  }).join('');
+  const cobr=document.getElementById('phareCobr'); if(cobr) cobr.innerHTML=PARTNERS.map(p=>`<span class="cobrlogo" style="--c:${p.accent}">${escapeHtml(p.name)}</span>`).join('');
+}
+function joinProgram(k){ const p=partnerByKey(k); if(!p)return; toast('Merci — la demande d\'embarquement de '+p.name+' a été enregistrée (démo).'); }
+
+/* ============================================================
+ * PHARE DOUKKALA — parcelles démo + jointure sol/blend/sensor/yield
+ * ============================================================ */
+function _srand(seed){ let s=seed; return function(){ s=(s*9301+49297)%233280; return s/233280; }; }
+const DK_FARMERS=['M. Bensaïd','S. El Otmani','A. Tazi','F. Bourkadi','M. Idrissi','H. Belhaj','R. Lahlou','K. Berrada'];
+const DK_AGENTS=['Y. El Amrani','N. Faiz','S. Tahiri','M. Bennani'];
+const DK_LABS=['UM6P — Labo Benguérir','UM6P — Labo Doukkala','INRA — antenne El Jadida'];
+const DK_TEXTURES=['limono-argileuse','argilo-limoneuse','limoneuse','sablo-limoneuse'];
+const DK_PRODUCTS=[
+  {name:'DAP 18-46-0',  n:18,p:46,k:0,s:2},
+  {name:'TSP 0-46-0',   n:0, p:46,k:0,s:1},
+  {name:'NPS 20-20-0+13S', n:20,p:20,k:0,s:13},
+  {name:'Urée 46-0-0',  n:46,p:0, k:0,s:0},
+  {name:'SOP 0-0-50+18S',  n:0, p:0, k:50,s:18},
+  {name:'MOP 0-0-60',   n:0, p:0, k:60,s:0}
+];
+let DK_PARCELS=null;
+function dkParcels(){
+  if(DK_PARCELS) return DK_PARCELS;
+  const r=_srand(42); const cy=32.50, cx=-8.56; const out=[];
+  for(let i=0;i<50;i++){
+    const dlat=(r()-0.5)*0.32; const dlon=(r()-0.5)*0.36;
+    const lat=cy+dlat, lon=cx+dlon;
+    const w=0.0030+r()*0.0050, h=0.0024+r()*0.0040;
+    // small rotated quadrilateral for realism
+    const rot=(r()-0.5)*0.6;
+    const co=Math.cos(rot), si=Math.sin(rot);
+    function P(dx,dy){ const x=dx*co-dy*si, y=dx*si+dy*co; return [lat+y, lon+x]; }
+    const poly=[P(-w,-h),P(w,-h),P(w,h),P(-w,h)];
+    const area=+(Math.abs(w*h)*111*111*4*100).toFixed(1); // ha rough
+    const ph=+(7.4+r()*0.9).toFixed(2);
+    const om=+(1.0+r()*1.3).toFixed(2);
+    const pOl=Math.round(8+r()*22);
+    const kEx=Math.round(180+r()*240);
+    const cec=Math.round(14+r()*9);
+    const texture=DK_TEXTURES[Math.floor(r()*DK_TEXTURES.length)];
+    const farmer=DK_FARMERS[Math.floor(r()*DK_FARMERS.length)];
+    const agent=DK_AGENTS[Math.floor(r()*DK_AGENTS.length)];
+    const lab=DK_LABS[Math.floor(r()*DK_LABS.length)];
+    // blend program (3 apports)
+    const dap=Math.round(160+r()*120);
+    const uree=Math.round(80+r()*80);
+    const sop=Math.round(30+r()*60);
+    const totN=Math.round(dap*0.18+uree*0.46);
+    const totP=Math.round(dap*0.46);
+    const totK=Math.round(sop*0.50);
+    const totS=Math.round(dap*0.02+sop*0.18);
+    // sensors
+    const moist=Math.round(14+r()*16);
+    const ec=+(0.8+r()*0.9).toFixed(2);
+    const stemp=Math.round(18+r()*8);
+    const sensAge=Math.round(1+r()*6);
+    // yield prev + predicted current
+    const yPrev=+(48+r()*22).toFixed(1);
+    const fitN=Math.max(0,1-Math.abs(totN-95)/90);
+    const fitP=Math.max(0,1-Math.abs(totP-110)/100);
+    const yPred=+(yPrev*(0.92+0.10*fitN+0.06*fitP)+(r()-0.4)*3).toFixed(1);
+    const recoN=Math.max(0,Math.round((110-totN)*(0.8+r()*0.4)));
+    const gainTha=+(recoN*0.015).toFixed(2);
+    const gainNet=Math.round(gainTha*43 - recoN*0.7); // beet $43/t, urea ~$0.7/kgN
+    out.push({id:'dk-'+(1000+i), poly, lat, lon, area, ph, om, pOl, kEx, cec, texture,
+      farmer, agent, lab,
+      blend:{dap,uree,sop, totN,totP,totK,totS},
+      sensors:{moist,ec,stemp,age:sensAge},
+      yield:{prev:yPrev, pred:yPred, recoN, gainTha, gainNet}});
+  }
+  DK_PARCELS=out; return out;
+}
+let _phareMap=null, _phareLayer=null, _phareSel=null;
+function pickColor(yp){ const v=Math.max(40,Math.min(75,yp)); const t=(v-40)/35; const r=Math.round(255*(1-t)+76*t); const g=Math.round(160*(1-t)+175*t); const b=Math.round(60*(1-t)+80*t); return 'rgb('+r+','+g+','+b+')'; }
+async function renderPhare(){
+  renderPartners(); // ensure cobranding logos rendered
+  const host=document.getElementById('phareMap'); if(!host) return;
+  let L; try{ L=await ensureLeaflet(); }catch(e){ host.innerHTML='<p class="muted" style="padding:20px">Carte indisponible (réseau).</p>'; return; }
+  const parcels=dkParcels();
+  if(!_phareMap){
+    _phareMap=L.map(host,{minZoom:9,scrollWheelZoom:true}).setView([32.50,-8.56],10);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,attribution:'Imagery © Esri'}).addTo(_phareMap);
+  }
+  if(_phareLayer){ _phareMap.removeLayer(_phareLayer); }
+  _phareLayer=L.layerGroup().addTo(_phareMap);
+  parcels.forEach(function(p){
+    const poly=L.polygon(p.poly,{color:'#fff',weight:1.2,fillColor:pickColor(p.yield.pred),fillOpacity:.75});
+    poly.bindTooltip('<b>Parcelle '+p.id.toUpperCase()+'</b><br>'+p.area+' ha · prédit '+p.yield.pred+' t/ha',{direction:'top',opacity:.95});
+    poly.on('click',function(){ pharePanelShow(p); });
+    _phareLayer.addLayer(poly);
+  });
+  updatePhareStats(parcels);
+  if(!_phareSel) pharePanelShow(parcels[0]);
+  setTimeout(function(){ try{_phareMap.invalidateSize();}catch(e){} },120);
+}
+function updatePhareStats(parcels){
+  const st=document.getElementById('phareStats'); if(!st) return;
+  const avgPrev=(parcels.reduce((s,p)=>s+p.yield.prev,0)/parcels.length).toFixed(1);
+  const avgPred=(parcels.reduce((s,p)=>s+p.yield.pred,0)/parcels.length).toFixed(1);
+  const gain=(avgPred-avgPrev).toFixed(1);
+  const totGain=parcels.reduce((s,p)=>s+p.yield.gainNet,0);
+  st.innerHTML='<span class="ms"><b>2 487</b> parcelles (50 affichées)</span>'+
+    '<span class="ms"><b>'+avgPrev+'</b> t/ha rendement n-1</span>'+
+    '<span class="ms"><b>'+avgPred+'</b> t/ha rendement prédit</span>'+
+    '<span class="ms accent"><b>+'+gain+'</b> t/ha gain modèle</span>'+
+    '<span class="ms accent"><b>'+totGain.toLocaleString('fr')+' $</b> gain net cumulé reco IA</span>';
+}
+function pharePanelShow(p){
+  _phareSel=p.id;
+  const host=document.getElementById('pharePanel'); if(!host) return;
+  const um=partnerByKey('um6p'), am=partnerByKey('almoutmir'), ae=partnerByKey('agriedge'), gt=partnerByKey('gta');
+  host.innerHTML=`
+    <div class="ppx"><h3>📍 Parcelle ${p.id.toUpperCase()}</h3><span class="pmeta">${p.area} ha · ${escapeHtml(p.farmer)}</span></div>
+    <div class="pblk" style="--c:${um.accent}">
+      <div class="plbl"><span class="pdot"></span>🧪 SOL · <b>${escapeHtml(um.name)}</b> · <span class="muted">${escapeHtml(p.lab)}</span></div>
+      <div class="pkv"><span>pH</span><b>${p.ph}</b><span>OM</span><b>${p.om} %</b><span>P-Olsen</span><b>${p.pOl} mg/kg</b><span>K éch.</span><b>${p.kEx} mg/kg</b><span>CEC</span><b>${p.cec} cmol+/kg</b><span>Texture</span><b>${p.texture}</b></div>
+    </div>
+    <div class="pblk" style="--c:${am.accent}">
+      <div class="plbl"><span class="pdot"></span>🌱 BLEND APPLIQUÉ · <b>${escapeHtml(am.name)}</b> · <span class="muted">agent ${escapeHtml(p.agent)}</span></div>
+      <div class="papp"><div class="pa"><span>J-15 (semis)</span><b>DAP 18-46-0</b><span>${p.blend.dap} kg/ha</span></div>
+        <div class="pa"><span>J+45 (couv. 1)</span><b>Urée 46-0-0</b><span>${p.blend.uree} kg/ha</span></div>
+        <div class="pa"><span>J+90 (couv. 2)</span><b>SOP 0-0-50+18S</b><span>${p.blend.sop} kg/ha</span></div></div>
+      <div class="ptot">Total apporté : <b>N ${p.blend.totN}</b> · <b>P₂O₅ ${p.blend.totP}</b> · <b>K₂O ${p.blend.totK}</b> · <b>S ${p.blend.totS}</b> kg/ha</div>
+    </div>
+    <div class="pblk" style="--c:${ae.accent}">
+      <div class="plbl"><span class="pdot"></span>📡 CAPTEURS · <b>${escapeHtml(ae.name)}</b> · <span class="muted">sonde ${p.id.toUpperCase()}</span></div>
+      <div class="pkv"><span>Humidité sol</span><b>${p.sensors.moist} %</b><span>EC</span><b>${p.sensors.ec} dS/m</b><span>T° sol</span><b>${p.sensors.stemp} °C</b><span>Dernière mesure</span><b>il y a ${p.sensors.age} h</b></div>
+    </div>
+    <div class="pblk" style="--c:${gt.accent}">
+      <div class="plbl"><span class="pdot"></span>⚖️ RENDEMENT N-1 · <b>${escapeHtml(gt.name)}</b> · <span class="muted">validé via tickets pesée Cosumar</span></div>
+      <div class="pyield"><span>Campagne 2023-24</span><b>${p.yield.prev} t/ha</b><span class="badge ok">GTA-verified</span></div>
+    </div>
+    <div class="pblk pred">
+      <div class="plbl"><span class="pdot" style="background:#FFC107"></span>📈 PRÉDICTION 2024-25 · <b>Modèle réponse N×P</b></div>
+      <div class="pyield"><span>Rendement attendu</span><b>${p.yield.pred} t/ha</b><span class="delta">${p.yield.pred>=p.yield.prev?'+':''}${(p.yield.pred-p.yield.prev).toFixed(1)} vs n-1</span></div>
+      <div class="preco"><b>Recommandation D²nAI :</b> +${p.yield.recoN} kg N/ha au J+45 → gain attendu <b>+${p.yield.gainTha} t/ha</b> · marge nette estimée <b>${p.yield.gainNet} $/ha</b></div>
+    </div>
+    <div class="pcobr">Jointure démontrée sur cette parcelle :
+      <span class="cob" style="--c:${um.accent}">${escapeHtml(um.name)}</span>
+      <span class="cob" style="--c:${am.accent}">${escapeHtml(am.name)}</span>
+      <span class="cob" style="--c:${ae.accent}">${escapeHtml(ae.name)}</span>
+      <span class="cob" style="--c:${gt.accent}">${escapeHtml(gt.name)}</span>
+    </div>`;
+}
+
 /* ---- Carte mondiale : globe 3D (globe.gl) + plan (Leaflet), à la demande ---- */
 let _leaflet=null,_map=null,_mlayer=null,_globeLib=null,GLOBES={},mapMode='globe';
 const MAP_TYPES=['dataset','model','standard','pipeline','publication'];
@@ -1095,6 +1407,8 @@ function go(v){
   tagReveal();
   if(v==='map') setTimeout(renderMapView,80);
   if(v==='home') setTimeout(renderHomeGlobe,80);
+  if(v==='partners') setTimeout(renderPartners,30);
+  if(v==='phare') setTimeout(renderPhare,80);
   setTimeout(postHeight,60);
 }
 
@@ -1182,7 +1496,7 @@ function renderGrid(){
       <label class="selcb" onclick="event.stopPropagation()"><input type="checkbox" id="selcb_${a.id}" ${SEL.has(a.id)?'checked':''} onchange="toggleSel('${a.id}',event)"></label>
       <div class="row1"><span class="ttype">${ICON[a.type]} ${ty[a.type]}</span><span class="lay ${a.layer}">${a.layer==='open'?'OPEN':'OCP Nutricrops CORE'}</span></div>
       <h3>${a.title}</h3>
-      <div class="org">🏢 ${orgD(a.org)} ${vtag}</div>
+      <div class="org">🏢 ${orgD(a.org)} ${vtag}${partnerChips(a.id)}</div>
       <p class="desc">${a.desc[LANG]}</p>
       <div class="stats">
         <span class="s star ${isStarred(a.id)?'on':''}" onclick="toggleStar('${a.id}',event)" title="Ajouter/retirer une étoile">${isStarred(a.id)?'⭐':'☆'} <b>${starCount(a)}</b></span>
@@ -1266,6 +1580,7 @@ function openAsset(id){
         <span class="lay ${a.layer}">${a.layer==='open'?u.layOpen:u.layCore}</span>
         <h1>${ICON[a.type]} ${a.title}</h1>
         <div class="dmeta"><span>🏢 <b>${orgD(a.org)}</b></span><span>📦 ${ty[a.type]}</span>${assetRegion(a)?`<span>📍 ${escapeHtml(assetRegion(a).name)}</span>`:''}${a.contributor?`<span>👤 ${escapeHtml(a.contributor)}</span>`:''}<span>🕑 ${u.updPrefix} ${ago(a.upd)}</span><span>⭐ ${starCount(a)}</span></div>
+        ${partnerChips(a.id)?'<div style="margin-top:8px">'+partnerChips(a.id)+'</div>':''}
         <div class="dblock"><h4>${u.desc}</h4><p style="margin:0;color:var(--muted);font-size:14.5px">${a.desc[LANG]}</p>
           ${a.summary?`<p style="margin:10px 0 0;font-size:13.5px"><b>Résumé${a.insights?' ✨':''} :</b> ${escapeHtml(a.summary)}</p>`:''}
           ${a.insights&&a.insights.length?`<ul class="insl">${a.insights.map(i=>'<li>'+escapeHtml(i)+'</li>').join('')}</ul>`:''}
@@ -1585,9 +1900,10 @@ const FEED=[
  {who:'OCP Nutricrops',vb:'published',obj:'Nutrient Value Standard v1.0',tag:'standard',a:{n:3,u:'d'},t:{fr:`le standard de référence est ouvert`,en:`the reference standard is open`,pt:`o padrão de referência está aberto`}}
 ];
 const WG=[
- {h:{fr:`Standard Valeur Nutritive`,en:`Nutrient Value Standard`,pt:`Padrão de Valor Nutritivo`},p:{fr:`Maintien & évolution du Nutrient Value Standard.`,en:`Maintenance & evolution of the Nutrient Value Standard.`,pt:`Manutenção e evolução do Nutrient Value Standard.`},m:{fr:`OCP Nutricrops · UM6P · INRA · 7 membres`,en:`OCP Nutricrops · UM6P · INRA · 7 members`,pt:`OCP Nutricrops · UM6P · INRA · 7 membros`}},
- {h:{fr:`Sols calcaires`,en:`Calcareous soils`,pt:`Solos calcários`},p:{fr:`Coefficients de disponibilité du P en sols calcaires.`,en:`P availability coefficients in calcareous soils.`,pt:`Coeficientes de disponibilidade do P em solos calcários.`},m:{fr:`UM6P · 5 membres`,en:`UM6P · 5 members`,pt:`UM6P · 5 membros`}},
- {h:{fr:`Durabilité & carbone`,en:`Sustainability & carbon`,pt:`Sustentabilidade e carbono`},p:{fr:`Scoring d'efficience azotée et empreinte.`,en:`Nitrogen efficiency scoring and footprint.`,pt:`Scoring de eficiência do azoto e pegada.`},m:{fr:`GreenField · D²nAI · 6 membres`,en:`GreenField · D²nAI · 6 members`,pt:`GreenField · D²nAI · 6 membros`}}
+ {chair:'UM6P',founders:['um6p','almoutmir'],h:{fr:`Standard Valeur Nutritive`,en:`Nutrient Value Standard`,pt:`Padrão de Valor Nutritivo`},p:{fr:`Maintien & évolution du Nutrient Value Standard. <b>Présidence UM6P.</b>`,en:`Maintenance & evolution of the Nutrient Value Standard. <b>Chair: UM6P.</b>`,pt:`Manutenção e evolução do Nutrient Value Standard. <b>Presidência UM6P.</b>`},m:{fr:`OCP Nutricrops · UM6P · INRA · 7 membres`,en:`OCP Nutricrops · UM6P · INRA · 7 members`,pt:`OCP Nutricrops · UM6P · INRA · 7 membros`}},
+ {chair:'UM6P + Al Moutmir',founders:['um6p','almoutmir'],h:{fr:`Sols calcaires`,en:`Calcareous soils`,pt:`Solos calcários`},p:{fr:`Coefficients de disponibilité du P en sols calcaires. <b>Co-présidence UM6P + Al Moutmir.</b>`,en:`P availability coefficients in calcareous soils. <b>Co-chair: UM6P + Al Moutmir.</b>`,pt:`Coeficientes de disponibilidade do P em solos calcários. <b>Coopresidência UM6P + Al Moutmir.</b>`},m:{fr:`UM6P · Al Moutmir · 6 membres`,en:`UM6P · Al Moutmir · 6 members`,pt:`UM6P · Al Moutmir · 6 membros`}},
+ {chair:'Ground Truth Analytics',founders:['gta'],h:{fr:`Durabilité & carbone`,en:`Sustainability & carbon`,pt:`Sustentabilidade e carbono`},p:{fr:`Scoring d'efficience azotée et empreinte. <b>Présidence GTA — validateur officiel.</b>`,en:`Nitrogen efficiency scoring and footprint. <b>Chair: GTA — official validator.</b>`,pt:`Scoring de eficiência do azoto e pegada. <b>Presidência GTA.</b>`},m:{fr:`GTA · D²nAI · 6 membres`,en:`GTA · D²nAI · 6 members`,pt:`GTA · D²nAI · 6 membros`}},
+ {chair:'OCP Nutricrops · D²nAI',founders:['um6p','almoutmir','agriedge','gta'],h:{fr:`Phare Doukkala — Betterave 2024-25`,en:`Doukkala Lighthouse — Sugar beet 2024-25`,pt:`Farol Doukkala — Beterraba 2024-25`},p:{fr:`Tranche verticale : 2 487 parcelles, jointure sol→blend→capteurs→rendement, modèle de réponse N×P. <b>Quatre fondateurs : UM6P · Al Moutmir · AgriEdge · GTA.</b>`,en:`Vertical slice: 2,487 parcels, soil→blend→sensors→yield join, N×P response model. <b>Four founders: UM6P · Al Moutmir · AgriEdge · GTA.</b>`,pt:`Tranche vertical: 2 487 parcelas, junção solo→blend→sensores→rendimento. <b>Quatro fundadores.</b>`},m:{fr:`UM6P · Al Moutmir · AgriEdge · GTA · D²nAI · 12 membres`,en:`UM6P · Al Moutmir · AgriEdge · GTA · D²nAI · 12 members`,pt:`UM6P · Al Moutmir · AgriEdge · GTA · D²nAI · 12 membros`}}
 ];
 let WGMEM=(function(){try{return JSON.parse(localStorage.getItem('nos_wg_v1'))||{}}catch(e){return {}}})();
 function wgJoined(i){ return (WGMEM[CURRENT]||[]).indexOf(i)>=0; }
