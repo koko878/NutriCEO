@@ -229,6 +229,24 @@ tbody tr.sel{background:var(--green-50)}
 .ck-ticker{overflow:hidden;border-bottom:1px solid rgba(124,252,154,.15);background:rgba(0,0,0,.35);padding:0!important;height:42px;position:relative;display:flex;align-items:center}
 .ck-tlabel{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:0 16px;font:700 10.5px 'Inter';text-transform:uppercase;letter-spacing:.08em;color:#7cfc9a;border-right:1px solid rgba(124,252,154,.15);height:100%;background:rgba(0,0,0,.4);white-space:nowrap}
 .ck-tlabel i{color:#7c9c87;font-style:normal;font-weight:600;text-transform:none;letter-spacing:0}
+.ck-tedit{margin-left:6px;border:0;background:rgba(255,255,255,.07);color:#bfd9c5;font-size:11px;width:22px;height:22px;border-radius:50%;cursor:pointer;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.ck-tedit:hover{background:rgba(124,252,154,.18);color:#fff}
+.ck-modal-wrap{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px}
+.ck-modal{background:#0c1f14;color:#dff0e3;border:1px solid rgba(124,252,154,.25);border-radius:16px;padding:22px 24px;max-width:560px;width:100%;box-shadow:0 30px 80px -20px rgba(0,0,0,.6)}
+.ck-modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.ck-modal-head h3{margin:0;font:700 17px 'Inter';color:#fff}
+.ck-modal-x{background:none;border:0;color:#9fb3a6;font-size:18px;cursor:pointer;padding:4px 8px;border-radius:6px}
+.ck-modal-x:hover{background:rgba(255,255,255,.07);color:#fff}
+.ck-modal-sub{font-size:12.5px;color:#9fb3a6;margin:0 0 18px;line-height:1.5}
+.ck-modal-lbl{display:block;font:700 11px 'Inter';text-transform:uppercase;letter-spacing:.06em;color:#7fb98e;margin-bottom:5px}
+.ck-modal input[type="date"],.ck-modal-fld input{width:100%;padding:9px 11px;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:8px;font:600 13.5px 'Inter';font-variant-numeric:tabular-nums}
+.ck-modal input[type="date"]{margin-bottom:16px;color-scheme:dark}
+.ck-modal-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px}
+.ck-modal-fld{display:flex;flex-direction:column;gap:4px}
+.ck-modal-fld span{font-size:10.5px;color:#9fb3a6;font-weight:600}
+.ck-modal-act{display:flex;align-items:center;gap:8px}
+.ck-modal-act .btn.primary{background:#7cfc9a;color:#04100a;border:0}
+@media(max-width:560px){.ck-modal-grid{grid-template-columns:1fr 1fr}.ck-modal{padding:18px}}
 .ck-tpulse{width:7px;height:7px;border-radius:50%;background:#7cfc9a;box-shadow:0 0 0 0 rgba(124,252,154,.7);animation:ckpulseDot 1.6s ease-out infinite}
 @keyframes ckpulseDot{0%{box-shadow:0 0 0 0 rgba(124,252,154,.7)}80%,100%{box-shadow:0 0 0 9px rgba(124,252,154,0)}}
 .ck-trail{display:inline-flex;gap:34px;padding:11px 24px;animation:ckmarq 38s linear infinite;white-space:nowrap;will-change:transform;flex:1;min-width:0}
@@ -685,6 +703,7 @@ fr:{
  'ck.simulate':'Simuler ce produit','ck.subBetter':'meilleur','ck.subWorse':'moins bon','ck.subSame':'iso','ck.subPick':'choisir','ck.noAlt':'Aucune alternative iso-grade trouvée.',
  'ck.cpThinking':'L\'IA analyse…','ck.cpError':'IA indisponible :','ck.cpHint':'Suggestions :',
  'ck.scn.calm':'Tout calme','ck.scn.s50':'Choc Soufre +50 %','ck.scn.s30n15':'Soufre +30 % & NH₃ +15 %','ck.scn.rock20':'Roche +20 % (sanction)','ck.scn.kcl':'KCl tendu (Bélarus −15 %)','ck.scn.recov':'Détente RM (post-pic)',
+ 'ck.baselineCalm':'baseline calme','ck.mktSet':'Mettre à jour la référence Market Intel','ck.mktTitle':'Référence Market Intel','ck.mktSub':'Prix de la période précédente (D-1, D-7, fin de mois…) à utiliser comme base de comparaison du ticker. Tant qu\'il n\'y a pas d\'API directe vers Fabric, mets à jour ici manuellement après chaque rafraîchissement Market Intel.','ck.mktDate':'Date de référence','ck.mktSave':'Enregistrer','ck.mktClear':'Effacer','ck.cancel':'Annuler',
  'sc1.eyebrow':'Écran 1 · Configuration de la simulation','sc1.h':'Quel produit, quelle référence, quel usage ?','sc1.lead':'Sélectionnez le couple Produit × Ligne de production, l\'usage métier visé, et la référence de comparaison (proposée par défaut selon la famille).',
  'card.product':'Produit × Ligne','lbl.targetProd':'Produit cible','lbl.line':'Ligne de production','card.ref':'Référence de comparaison','card.usage':'Usage métier',
  'btn.continue.inputs':'Continuer → Inputs marché',
@@ -722,6 +741,7 @@ en:{
  'ck.simulate':'Simulate this product','ck.subBetter':'better','ck.subWorse':'worse','ck.subSame':'iso','ck.subPick':'pick','ck.noAlt':'No iso-grade alternative found.',
  'ck.cpThinking':'AI is thinking…','ck.cpError':'AI unavailable:','ck.cpHint':'Try:',
  'ck.scn.calm':'Calm','ck.scn.s50':'Sulfur shock +50%','ck.scn.s30n15':'Sulfur +30% & NH₃ +15%','ck.scn.rock20':'Rock +20% (sanction)','ck.scn.kcl':'KCl tight (Belarus −15%)','ck.scn.recov':'RM relief (post-peak)',
+ 'ck.baselineCalm':'calm baseline','ck.mktSet':'Update the Market Intel reference','ck.mktTitle':'Market Intel reference','ck.mktSub':'Previous-period prices (D-1, D-7, month-end…) used as the ticker baseline. Until a direct Fabric API is wired in, refresh them here manually after each Market Intel update.','ck.mktDate':'Reference date','ck.mktSave':'Save','ck.mktClear':'Clear','ck.cancel':'Cancel',
  'sc1.eyebrow':'Step 1 · Simulation setup','sc1.h':'Which product, which reference, which use case?','sc1.lead':'Pick the Product × Production line pair, the business use case, and the comparison benchmark (defaulted by family).',
  'card.product':'Product × Line','lbl.targetProd':'Target product','lbl.line':'Production line','card.ref':'Benchmark reference','card.usage':'Business use case',
  'btn.continue.inputs':'Continue → Market inputs',
@@ -759,6 +779,7 @@ pt:{
  'ck.simulate':'Simular este produto','ck.subBetter':'melhor','ck.subWorse':'pior','ck.subSame':'iso','ck.subPick':'escolher','ck.noAlt':'Nenhuma alternativa iso-grade encontrada.',
  'ck.cpThinking':'IA analisando…','ck.cpError':'IA indisponível:','ck.cpHint':'Sugestões:',
  'ck.scn.calm':'Calmaria','ck.scn.s50':'Choque Enxofre +50%','ck.scn.s30n15':'Enxofre +30% & NH₃ +15%','ck.scn.rock20':'Rocha +20% (sanção)','ck.scn.kcl':'KCl tenso (Belarus −15%)','ck.scn.recov':'Distensão MP (pós-pico)',
+ 'ck.baselineCalm':'baseline calma','ck.mktSet':'Atualizar referência Market Intel','ck.mktTitle':'Referência Market Intel','ck.mktSub':'Preços do período anterior (D-1, D-7, fim de mês…) usados como base de comparação do ticker. Enquanto não há API direta para o Fabric, atualize aqui manualmente após cada atualização do Market Intel.','ck.mktDate':'Data de referência','ck.mktSave':'Salvar','ck.mktClear':'Limpar','ck.cancel':'Cancelar',
  'sc1.eyebrow':'Etapa 1 · Configuração da simulação','sc1.h':'Qual produto, qual referência, qual uso?','sc1.lead':'Selecione o par Produto × Linha de produção, o uso de negócio visado, e a referência de comparação (padrão por família).',
  'card.product':'Produto × Linha','lbl.targetProd':'Produto alvo','lbl.line':'Linha de produção','card.ref':'Referência de comparação','card.usage':'Uso de negócio',
  'btn.continue.inputs':'Continuar → Entradas de mercado',
@@ -1334,6 +1355,21 @@ const CRISIS_SCN=[
   {id:'recov', key:'ck.scn.recov', ico:'🟩', mult:{sulphur:0.85, nh3:0.92, acs:0.85}, tone:'cool'}
 ];
 let CK_BASELINE_RM=null; // saved snapshot of "natural" RM prices to revert
+const LS_MKT_REF='cgm_mkt_ref_v1';
+function mktRefLoad(){ try{return JSON.parse(localStorage.getItem(LS_MKT_REF))||null;}catch(e){return null;} }
+function mktRefSave(o){ try{localStorage.setItem(LS_MKT_REF, JSON.stringify(o));}catch(e){} }
+function mktRefClear(){ try{localStorage.removeItem(LS_MKT_REF);}catch(e){} }
+function tickerBaseline(){ const ref=mktRefLoad(); return (ref&&ref.prices)?ref.prices:(CK_BASELINE_RM||{}); }
+function tickerLabel(){
+  const sc=CRISIS_SCN.find(s=>s.id===CK_SCENARIO);
+  if(CK_SCENARIO!=='calm') return tr(sc.key);
+  const ref=mktRefLoad();
+  if(ref&&ref.ts){
+    try{ const d=new Date(ref.ts); return 'Market Intel · '+d.toLocaleDateString(LOC[LANG]||'fr-FR',{day:'2-digit',month:'short',year:'2-digit'}); }
+    catch(e){ return 'Market Intel'; }
+  }
+  return tr('ck.baselineCalm')||'baseline calme';
+}
 let CK_SCENARIO='calm';
 let CK_HEAT_MODE='exposed';
 function ckBaselineSnapshot(){ if(!CK_BASELINE_RM) CK_BASELINE_RM=Object.assign({}, DATA.defaults.rm_prices); }
@@ -1376,18 +1412,40 @@ function ckHeatList(){
 function renderCkTicker(){
   const host=document.getElementById('ckTicker'); if(!host) return;
   ckBaselineSnapshot();
+  const base=tickerBaseline();
   const items=['sulphur','nh3','rock','kcl','sam','acs'].map(k=>{
-    const cur=state.rm[k]||0, base=CK_BASELINE_RM[k]||0;
-    const d= base?((cur-base)/base*100):0;
+    const cur=state.rm[k]||0, baseV=base[k]||0;
+    const d= baseV?((cur-baseV)/baseV*100):0;
     const moved=Math.abs(d)>=0.1;
     const cls = d>0.1?'up':(d<-0.1?'down':'flat');
     const dStr = moved ? ((d>=0?'+':'')+d.toFixed(1)+'%') : '';
     return `<span class="ck-tik"><span class="ck-tnm">${RM_SHORT[k]||k.toUpperCase()}</span><b>${f(cur,0)} <i>$/t</i></b>${moved?`<span class="ck-td ${cls}">${dStr}</span>`:''}</span>`;
   }).join('');
-  const sc=CRISIS_SCN.find(s=>s.id===CK_SCENARIO);
-  const stateLbl = CK_SCENARIO==='calm' ? 'baseline calme' : (sc?tr(sc.key):'scénario actif');
-  host.innerHTML='<div class="ck-tlabel"><span class="ck-tpulse"></span>LIVE · <i>vs '+stateLbl+'</i></div><div class="ck-trail">'+items+items+'</div>';
+  host.innerHTML='<div class="ck-tlabel"><span class="ck-tpulse"></span>LIVE · <i>vs '+escapeHtml(tickerLabel())+'</i><button class="ck-tedit" onclick="ckOpenMktRef()" title="'+tr('ck.mktSet')+'">⚙</button></div><div class="ck-trail">'+items+items+'</div>';
 }
+function ckOpenMktRef(){
+  const ref=mktRefLoad()||{ts:new Date().toISOString().slice(0,10), prices:Object.assign({},state.rm)};
+  const RM=['sulphur','nh3','rock','kcl','sam','acs'];
+  const html='<div class="ck-modal-wrap" onclick="if(event.target===this)ckCloseMktRef()">'
+    +'<div class="ck-modal">'
+    +'<div class="ck-modal-head"><h3>'+tr('ck.mktTitle')+'</h3><button class="ck-modal-x" onclick="ckCloseMktRef()">✕</button></div>'
+    +'<p class="ck-modal-sub">'+tr('ck.mktSub')+'</p>'
+    +'<label class="ck-modal-lbl">'+tr('ck.mktDate')+'</label>'
+    +'<input type="date" id="ckRefDate" value="'+escapeHtml(ref.ts||'')+'">'
+    +'<div class="ck-modal-grid">'+RM.map(k=>'<label class="ck-modal-fld"><span>'+(RM_SHORT[k]||k.toUpperCase())+' ($/t)</span><input type="number" min="0" step="1" id="ckRef-'+k+'" value="'+(ref.prices&&ref.prices[k]||0)+'"></label>').join('')+'</div>'
+    +'<div class="ck-modal-act"><button class="btn ghost sm" onclick="ckClearMktRef()">'+tr('ck.mktClear')+'</button><span style="flex:1"></span><button class="btn ghost sm" onclick="ckCloseMktRef()">'+tr('ck.cancel')+'</button><button class="btn primary" onclick="ckSaveMktRef()">'+tr('ck.mktSave')+'</button></div>'
+    +'</div></div>';
+  const div=document.createElement('div'); div.id='ckMktModal'; div.innerHTML=html; document.body.appendChild(div);
+}
+function ckCloseMktRef(){ const m=document.getElementById('ckMktModal'); if(m)m.remove(); }
+function ckSaveMktRef(){
+  const RM=['sulphur','nh3','rock','kcl','sam','acs']; const prices={};
+  RM.forEach(k=>{ const el=document.getElementById('ckRef-'+k); prices[k]=el?(parseFloat(el.value)||0):0; });
+  const ts=(document.getElementById('ckRefDate').value)||new Date().toISOString().slice(0,10);
+  mktRefSave({ts:ts, prices:prices});
+  ckCloseMktRef(); renderCockpit();
+}
+function ckClearMktRef(){ mktRefClear(); ckCloseMktRef(); renderCockpit(); }
 function renderCkHero(){
   const host=document.getElementById('ckHero'); if(!host) return;
   const sc=CRISIS_SCN.find(s=>s.id===CK_SCENARIO)||CRISIS_SCN[0];

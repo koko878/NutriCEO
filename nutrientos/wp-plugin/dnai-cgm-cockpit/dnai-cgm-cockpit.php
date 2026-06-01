@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI CGM Cockpit — Crisis Center
  * Description:       Parallel plugin to dnai-cgm-mvp. Hosts the "Crisis Cockpit" version of the CGM Simulator (Netflix/Spotify-style command deck: live RM ticker, crisis playbook, S-pressure heatmap, substitution advisor, AI co-pilot). Coexists with the original plugin — different shortcode and route so the existing CGM page is untouched.
- * Version:           1.8.1
+ * Version:           1.8.2
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-cgm-cockpit
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_CGMCK_VER', '1.8.1' );
+define( 'DNAI_CGMCK_VER', '1.8.2' );
 define( 'DNAI_CGMCK_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_CGMCK_DIR', plugin_dir_path( __FILE__ ) );
 
