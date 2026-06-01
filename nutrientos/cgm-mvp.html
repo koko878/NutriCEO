@@ -226,8 +226,12 @@ tbody tr.sel{background:var(--green-50)}
 @media(max-width:560px){#sc-cockpit{margin:-20px -16px 0}#sc-cockpit > *{padding-left:16px;padding-right:16px}}
 
 /* ----- Ticker (Bloomberg-like marquee) ----- */
-.ck-ticker{overflow:hidden;border-bottom:1px solid rgba(124,252,154,.15);background:rgba(0,0,0,.35);padding:0!important;height:42px;position:relative}
-.ck-trail{display:inline-flex;gap:34px;padding:11px 24px;animation:ckmarq 38s linear infinite;white-space:nowrap;will-change:transform}
+.ck-ticker{overflow:hidden;border-bottom:1px solid rgba(124,252,154,.15);background:rgba(0,0,0,.35);padding:0!important;height:42px;position:relative;display:flex;align-items:center}
+.ck-tlabel{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:0 16px;font:700 10.5px 'Inter';text-transform:uppercase;letter-spacing:.08em;color:#7cfc9a;border-right:1px solid rgba(124,252,154,.15);height:100%;background:rgba(0,0,0,.4);white-space:nowrap}
+.ck-tlabel i{color:#7c9c87;font-style:normal;font-weight:600;text-transform:none;letter-spacing:0}
+.ck-tpulse{width:7px;height:7px;border-radius:50%;background:#7cfc9a;box-shadow:0 0 0 0 rgba(124,252,154,.7);animation:ckpulseDot 1.6s ease-out infinite}
+@keyframes ckpulseDot{0%{box-shadow:0 0 0 0 rgba(124,252,154,.7)}80%,100%{box-shadow:0 0 0 9px rgba(124,252,154,0)}}
+.ck-trail{display:inline-flex;gap:34px;padding:11px 24px;animation:ckmarq 38s linear infinite;white-space:nowrap;will-change:transform;flex:1;min-width:0}
 @keyframes ckmarq{from{transform:translateX(0)} to{transform:translateX(-50%)}}
 .ck-tik{display:inline-flex;align-items:center;gap:8px;font:600 13px 'Inter';font-variant-numeric:tabular-nums}
 .ck-tnm{color:#8fe0a3;font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
@@ -1375,11 +1379,14 @@ function renderCkTicker(){
   const items=['sulphur','nh3','rock','kcl','sam','acs'].map(k=>{
     const cur=state.rm[k]||0, base=CK_BASELINE_RM[k]||0;
     const d= base?((cur-base)/base*100):0;
-    const cls = d>0.5?'up':(d<-0.5?'down':'flat');
-    const dStr = (d>=0?'+':'')+d.toFixed(1)+'%';
-    return `<span class="ck-tik"><span class="ck-tnm">${RM_SHORT[k]||k.toUpperCase()}</span><b>${f(cur,0)} <i>$/t</i></b><span class="ck-td ${cls}">${dStr}</span></span>`;
+    const moved=Math.abs(d)>=0.1;
+    const cls = d>0.1?'up':(d<-0.1?'down':'flat');
+    const dStr = moved ? ((d>=0?'+':'')+d.toFixed(1)+'%') : '';
+    return `<span class="ck-tik"><span class="ck-tnm">${RM_SHORT[k]||k.toUpperCase()}</span><b>${f(cur,0)} <i>$/t</i></b>${moved?`<span class="ck-td ${cls}">${dStr}</span>`:''}</span>`;
   }).join('');
-  host.innerHTML='<div class="ck-trail">'+items+items+'</div>'; // duplicated for seamless marquee
+  const sc=CRISIS_SCN.find(s=>s.id===CK_SCENARIO);
+  const stateLbl = CK_SCENARIO==='calm' ? 'baseline calme' : (sc?tr(sc.key):'scénario actif');
+  host.innerHTML='<div class="ck-tlabel"><span class="ck-tpulse"></span>LIVE · <i>vs '+stateLbl+'</i></div><div class="ck-trail">'+items+items+'</div>';
 }
 function renderCkHero(){
   const host=document.getElementById('ckHero'); if(!host) return;
