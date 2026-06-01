@@ -892,8 +892,8 @@ function saveSim(){ HIST.unshift(snapshot()); HIST=HIST.slice(0,200); saveHist()
  * ============================================================ */
 const INGS=DATA.ingredients||[];
 function _ingFiller(){ return INGS.find(i=>/(filler|charge|inerte)/i.test(i.name))||{name:'Charge inerte',N:0,P:0,K:0,S:0}; }
-function _matInv(M){ // 5x5 Gauss-Jordan, returns inv or null
-  const n=M.length; const A=M.map(r=>r.slice().concat([0,0,0,0,0]));
+function _matInv(M){ // n×n Gauss-Jordan, returns inv or null
+  const n=M.length; const A=M.map(r=>r.slice().concat(new Array(n).fill(0)));
   for(let i=0;i<n;i++) A[i][n+i]=1;
   for(let i=0;i<n;i++){
     let pv=i; for(let r=i+1;r<n;r++) if(Math.abs(A[r][i])>Math.abs(A[pv][i])) pv=r;
@@ -906,22 +906,21 @@ function _matInv(M){ // 5x5 Gauss-Jordan, returns inv or null
 }
 function _mulMV(M,v){ return M.map(r=>r.reduce((s,x,i)=>s+x*v[i],0)); }
 function blendSolve(ings, target){
-  // ings : array of 5 ingredient objects {name,N,P,K,S}
-  // target: {N,P,K,S} in % (per 1000 kg → kg)
-  // System: rows = [N, P, K, S, mass] ; cols = quantities (kg per 1000 kg blend)
-  // Each ingredient contributes ing.X/100 (kg of nutrient per kg of ingredient).
-  while(ings.length<5) ings.push(_ingFiller());
-  ings=ings.slice(0,5);
-  const M=[
-    ings.map(i=>(i.N||0)/100), ings.map(i=>(i.P||0)/100), ings.map(i=>(i.K||0)/100), ings.map(i=>(i.S||0)/100),
-    [1,1,1,1,1]
-  ];
-  // Excel adds a tiny diagonal 0.0001 to avoid singularity when nutrients are 0 — same trick:
-  for(let i=0;i<5;i++) M[i][i]+=1e-4;
-  const b=[(target.N||0)*10,(target.P||0)*10,(target.K||0)*10,(target.S||0)*10,1000];
-  const inv=_matInv(M); if(!inv) return {qty:[0,0,0,0,0],ok:false};
-  let q=_mulMV(inv,b);
-  q=q.map(x=>x<0?0:x);
+  // Ridge least-squares à la Excel BlendCalc (scaling identique au fichier):
+  // X (5 × n)  : lignes = [N%, P%, K%, S%, mass=1]  (pourcentages BRUTS, pas /100)
+  // b (5)      : [target.N × 1000, … , 1000]  (target en % × masse totale)
+  // Résout (XᵀX + λI) q = Xᵀ b ; clamp q≥0 ; renormalise sum→1000 kg/t.
+  // Vérifié vs onglet BlendCalc : sortie identique au pivot près.
+  const n=ings.length; if(!n) return {qty:[],ok:false};
+  const X=[ ings.map(i=>i.N||0), ings.map(i=>i.P||0), ings.map(i=>i.K||0), ings.map(i=>i.S||0), ings.map(_=>1) ];
+  const b=[(target.N||0)*1000,(target.P||0)*1000,(target.K||0)*1000,(target.S||0)*1000,1000];
+  const lam=1e-4;
+  // A = XᵀX + λI  (n × n)
+  const A=[]; for(let i=0;i<n;i++){ const row=[]; for(let j=0;j<n;j++){ let s=0; for(let k=0;k<5;k++) s+=X[k][i]*X[k][j]; if(i===j) s+=lam; row.push(s); } A.push(row); }
+  // rhs = Xᵀ b
+  const rhs=[]; for(let i=0;i<n;i++){ let s=0; for(let k=0;k<5;k++) s+=X[k][i]*b[k]; rhs.push(s); }
+  const inv=_matInv(A); if(!inv) return {qty:new Array(n).fill(0), ok:false};
+  let q=_mulMV(inv,rhs).map(x=>x<0?0:x);
   const sum=q.reduce((a,b)=>a+b,0)||1;
   q=q.map(x=>x*1000/sum);
   return {qty:q, ok:true};
@@ -934,32 +933,36 @@ function gradeOf(ings,q){
   }
   return o;
 }
-function blendCost(ings,q,prices){ let c=0; for(let i=0;i<5;i++) c+=q[i]*(prices[i]||0)/1000; return c; }
+function blendCost(ings,q,prices){ let c=0; for(let i=0;i<q.length;i++) c+=(q[i]||0)*(prices[i]||0)/1000; return c; }
 
 /* state.sc3 — slots utilisateur */
 state.sc3 = state.sc3 || {
   grade:{N:2, P:20, K:20, S:5, tol:1, freight:25},
   left:[
-    {ingIdx:1, price:900},  // MAP
-    {ingIdx:3, price:503},  // SSP
-    {ingIdx:10, price:264}, // KCl
-    {ingIdx:15, price:350}, // Charge inerte
+    {ingIdx:1, price:900},  // MAP   (N11, P52)
+    {ingIdx:3, price:503},  // SSP   (P20, S11)
+    {ingIdx:10, price:264}, // KCl   (K60)
+    {ingIdx:15, price:350}, // Charge inerte (filler)
     {ingIdx:-1, price:0}
   ],
   right:[
-    {ingIdx:1, price:503},  // MAP (commodity to balance)
+    {ingIdx:-1, price:503}, // slot 0 = OCP product (ingIdx unused, set via prodRow)
     {ingIdx:10, price:264}, // KCl
-    {ingIdx:15, price:0},
+    {ingIdx:1,  price:503}, // MAP — pour ajuster P/N face au produit OCP
     {ingIdx:-1, price:0},
     {ingIdx:-1, price:0}
   ],
-  prodRow:null   // product row to use in right slot 0
+  prodRow:null
 };
 function _initSc3Product(){
   if(state.sc3.prodRow) return;
-  // pick a NPS or PHOSGOLD-type product by default
   const list=products();
-  const fav=list.find(p=>/NPS/i.test(p.family)) || list.find(p=>/PHOSGOLD/i.test(p.family)) || list[0];
+  // Default: pick a product compatible with the default grade 2-20-20-5 (low N, high P, with S)
+  const fav = list.find(p=>/PHOSGOLD/i.test(p.family) && p.n<=5 && p.p>=25 && p.s>=5)
+           || list.find(p=>/NPS/i.test(p.family) && p.s>=5 && p.p>=20 && p.n<=10)
+           || list.find(p=>/PHOSGOLD/i.test(p.family))
+           || list.find(p=>/NPS/i.test(p.family))
+           || list[0];
   if(fav) state.sc3.prodRow=fav.row;
 }
 function renderSc3(){
@@ -1035,6 +1038,20 @@ function sc3GetIngs(side){
   });
 }
 function sc3Prices(side){ return state.sc3[side].map(r=>r.price||0); }
+function sc3Active(side){
+  // Active = slot with a real ingredient (or, for right slot 0, the OCP product).
+  const rows=state.sc3[side]; const out=[];
+  rows.forEach((r,i)=>{
+    if(side==='right' && i===0){
+      const p=products().find(x=>x.row===state.sc3.prodRow);
+      if(p) out.push({slot:i, ing:{name:p.product,N:p.n,P:p.p,K:p.k,S:p.s}, price:r.price||0});
+      return;
+    }
+    if(r.ingIdx==null || r.ingIdx<0 || r.ingIdx>=INGS.length) return;
+    out.push({slot:i, ing:INGS[r.ingIdx], price:r.price||0});
+  });
+  return out;
+}
 function sc3CheckGrade(g,tgt,tol){
   const out={};
   ['N','P','K','S'].forEach(k=>{ out[k]=Math.abs(g[k]-(tgt[k]||0))<=(tol||0)+1e-6 ? 'OK' : 'OUT'; });
@@ -1042,17 +1059,22 @@ function sc3CheckGrade(g,tgt,tol){
 }
 function sc3Refresh(){
   const tgt=state.sc3.grade;
-  // LEFT
-  const Lings=sc3GetIngs('left'); const Lprices=sc3Prices('left');
-  const L=blendSolve(Lings,tgt); const Lg=gradeOf(Lings,L.qty); const Lc=blendCost(Lings,L.qty,Lprices);
-  // RIGHT — first solve with custom product price=0 to find quantities, then back-solve price
-  const Rings=sc3GetIngs('right'); const RpricesUser=sc3Prices('right').slice(); const Rzero=RpricesUser.slice(); Rzero[0]=0;
-  const R=blendSolve(Rings,tgt); const Rg=gradeOf(Rings,R.qty); const Rc0=blendCost(Rings,R.qty,Rzero);
-  let Pcustom=NaN; const qCust=R.qty[0];
+  // LEFT — solve over active ingredients only
+  const aL=sc3Active('left'); const aLings=aL.map(a=>a.ing); const aLprices=aL.map(a=>a.price);
+  const L=blendSolve(aLings,tgt); const Lg=gradeOf(aLings,L.qty); const Lc=blendCost(aLings,L.qty,aLprices);
+  // RIGHT — solve over active ingredients (slot 0 = OCP product), then back-solve its price
+  const aR=sc3Active('right'); const aRings=aR.map(a=>a.ing); const aRpricesUser=aR.map(a=>a.price);
+  const R=blendSolve(aRings,tgt); const Rg=gradeOf(aRings,R.qty);
+  const ocpIdx=aR.findIndex(a=>a.slot===0); // OCP product position in active array
+  const Rzero=aRpricesUser.slice(); if(ocpIdx>=0) Rzero[ocpIdx]=0;
+  const Rc0=blendCost(aRings,R.qty,Rzero);
+  let Pcustom=NaN; const qCust=ocpIdx>=0?R.qty[ocpIdx]:0;
   if(qCust>1e-6){ Pcustom = (Lc - Rc0) * 1000 / qCust; }
-  // update qty cells
-  state.sc3.left.forEach((r,i)=>{ const c=document.getElementById('lqty'+i); if(c) c.textContent=L.qty[i]?Math.round(L.qty[i])+' kg':'—'; });
-  state.sc3.right.forEach((r,i)=>{ const c=document.getElementById((i===0?'rqty0':'rqty'+i)); if(c) c.textContent=R.qty[i]?Math.round(R.qty[i])+' kg':'—'; });
+  // update qty cells: map slot → qty (using active slot map)
+  const lqByS={}; aL.forEach((a,i)=>lqByS[a.slot]=L.qty[i]);
+  const rqByS={}; aR.forEach((a,i)=>rqByS[a.slot]=R.qty[i]);
+  state.sc3.left.forEach((r,i)=>{ const c=document.getElementById('lqty'+i); if(c) c.textContent=(lqByS[i]&&lqByS[i]>0.5)?Math.round(lqByS[i])+' kg':'—'; });
+  state.sc3.right.forEach((r,i)=>{ const c=document.getElementById((i===0?'rqty0':'rqty'+i)); if(c) c.textContent=(rqByS[i]&&rqByS[i]>0.5)?Math.round(rqByS[i])+' kg':'—'; });
   // product label in right slot 0
   const pp=products().find(x=>x.row===state.sc3.prodRow);
   const rprod=document.getElementById('rprod0'); if(rprod && pp) rprod.textContent=pp.product+' · '+pp.line;
@@ -1081,11 +1103,16 @@ function sc3Refresh(){
 function resetSc3(){ state.sc3=null; renderSc3(); }
 function applySc3ToCgm(){
   const tgt=state.sc3.grade;
-  const Lings=sc3GetIngs('left'); const L=blendSolve(Lings,tgt); const Lc=blendCost(Lings,L.qty,sc3Prices('left'));
-  const Rings=sc3GetIngs('right'); const Rzero=sc3Prices('right').slice(); Rzero[0]=0;
-  const R=blendSolve(Rings,tgt); const Rc0=blendCost(Rings,R.qty,Rzero);
-  const Pcfr = R.qty[0]>1e-6 ? (Lc-Rc0)*1000/R.qty[0] : NaN;
-  const fob = isFinite(Pcfr) ? Pcfr - (tgt.freight||0) : NaN;
+  const aL=sc3Active('left'); const L=blendSolve(aL.map(a=>a.ing),tgt);
+  const Lc=blendCost(aL.map(a=>a.ing), L.qty, aL.map(a=>a.price));
+  const aR=sc3Active('right'); const R=blendSolve(aR.map(a=>a.ing),tgt);
+  const ocpIdx=aR.findIndex(a=>a.slot===0);
+  if(ocpIdx<0){ alert('Sélectionne un produit OCP dans le blend de droite.'); return; }
+  const Rzero=aR.map(a=>a.price); Rzero[ocpIdx]=0;
+  const Rc0=blendCost(aR.map(a=>a.ing), R.qty, Rzero);
+  const qCust=R.qty[ocpIdx];
+  if(!(qCust>1e-6)){ alert('Le produit OCP ne contribue pas au blend cible — change d\'ingrédients ou de grade.'); return; }
+  const Pcfr=(Lc-Rc0)*1000/qCust; const fob=Pcfr-(tgt.freight||0);
   if(!isFinite(fob)){ alert('Impossible d\'injecter — pas de prix back-solvé valide.'); return; }
   state.row=state.sc3.prodRow; state.price=Math.round(fob*10)/10;
   refreshProdSelect(); syncConfig(); goTab('results');
