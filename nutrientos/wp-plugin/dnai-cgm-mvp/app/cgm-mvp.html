@@ -347,6 +347,7 @@ tbody tr.sel{background:var(--green-50)}
 @keyframes ckpulse{0%,100%{opacity:.45}50%{opacity:1}}
 .ck-err{color:#ffae9c;font-style:italic}
 .ck-raw{font-size:11px;background:#06100a;padding:6px;border-radius:6px;overflow:auto;max-height:120px;color:#bfd9c5}
+.ck-usage{margin-top:8px;font:600 10px 'Inter';letter-spacing:.04em;text-transform:uppercase;color:#7c9c87;border-top:1px dashed rgba(255,255,255,.07);padding-top:6px}
 .ck-cpsugs{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0 6px;align-items:center}
 .ck-sugs-l{font:700 11px 'Inter';color:#7fb98e;text-transform:uppercase;letter-spacing:.06em;margin-right:6px}
 .ck-sug{background:rgba(124,252,154,.08);border:1px solid rgba(124,252,154,.2);color:#dff0e3;font:600 11.5px 'Inter';padding:5px 10px;border-radius:999px;cursor:pointer}
@@ -1552,13 +1553,24 @@ function ckChatPush(role, text){
   const div=document.createElement('div'); div.className='ck-msg '+role; div.innerHTML=role==='ai'?text:('<b>›</b> '+escapeHtml(text));
   c.appendChild(div); c.scrollTop=c.scrollHeight;
 }
+/* AI backend resolution: prefer Claude via Databricks (DNAI_CGMCK), fallback to NutrientOS curator. */
+function ckAiBackend(){
+  if(window.DNAI_CGMCK && window.DNAI_CGMCK.ai && window.DNAI_CGMCK.chat){
+    return {name:'Claude (Databricks)', url:window.DNAI_CGMCK.chat, nonce:window.DNAI_CGMCK.nonce||'', mode:'chat'};
+  }
+  if(window.DNAI_NOS && window.DNAI_NOS.curate){
+    return {name:'nutrientos-curator', url:window.DNAI_NOS.curate, nonce:window.DNAI_NOS.nonce||'', mode:'curate'};
+  }
+  return null;
+}
 async function ckCpAsk(){
   const inp=document.getElementById('ckCpInput'); const q=(inp.value||'').trim(); if(!q) return;
   ckChatPush('user', q); inp.value='';
-  if(!window.DNAI_NOS || !window.DNAI_NOS.curate){
-    ckChatPush('ai','<i class="ck-err">'+tr('ck.cpError')+' proxy IA non disponible (le simulateur n\'est pas embarqué dans le WordPress NutrientOS).</i>'); return;
+  const be=ckAiBackend();
+  if(!be){
+    ckChatPush('ai','<i class="ck-err">'+tr('ck.cpError')+' aucun backend IA configuré (Réglages → CGM Cockpit AI pour Claude via Databricks, ou installer NutrientOS).</i>'); return;
   }
-  const wait=document.createElement('div'); wait.className='ck-msg ai pending'; wait.innerHTML='<span class="ck-think">'+tr('ck.cpThinking')+'</span>';
+  const wait=document.createElement('div'); wait.className='ck-msg ai pending'; wait.innerHTML='<span class="ck-think">'+tr('ck.cpThinking')+' — <i style="opacity:.7">via '+escapeHtml(be.name)+'</i></span>';
   document.getElementById('ckChat').appendChild(wait); wait.scrollIntoView({block:'end'});
   // Build context payload
   const stats=ckPortfolioStats();
@@ -1571,22 +1583,35 @@ async function ckCpAsk(){
     current_product: curProduct()?.product
   };
   const sys='Tu es un assistant pricing pour OCP Nutricrops — expert engrais phosphatés (DAP/MAP/TSP/NPS/PHOSGOLD), CGM, et marché en crise du soufre. Réponds en '+LANG+', de façon courte et actionnable, avec chiffres. Si la question demande une simulation précise, indique-le et propose le scénario CGM à lancer.';
-  const payload={title:'CGM Co-pilot Q&A', ftype:'text/plain', content:'SYSTEM:\n'+sys+'\n\nCONTEXT:\n'+JSON.stringify(ctx,null,2)+'\n\nQUESTION:\n'+q+'\n\nRéponds en texte clair (markdown léger possible, pas de JSON), 3-6 phrases max.'};
   try{
-    const res=await fetch(window.DNAI_NOS.curate,{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':window.DNAI_NOS.nonce||''},body:JSON.stringify(payload)});
-    const raw=await res.json();
+    let res, raw;
+    if(be.mode==='chat'){
+      // OpenAI-compatible chat schema (Databricks Foundation Model APIs)
+      const payload={messages:[
+        {role:'system', content:sys+'\n\nCONTEXTE COURANT (JSON):\n'+JSON.stringify(ctx,null,2)+'\n\nRéponds en texte clair (markdown léger), 3-6 phrases max.'},
+        {role:'user', content:q}
+      ], temperature:0.2, max_tokens:700};
+      res=await fetch(be.url,{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':be.nonce},body:JSON.stringify(payload)});
+      raw=await res.json();
+    } else {
+      // Legacy single-blob path (NutrientOS curate, document-curation style)
+      const payload={title:'CGM Co-pilot Q&A', ftype:'text/plain', content:'SYSTEM:\n'+sys+'\n\nCONTEXT:\n'+JSON.stringify(ctx,null,2)+'\n\nQUESTION:\n'+q+'\n\nRéponds en texte clair (markdown léger possible, pas de JSON), 3-6 phrases max.'};
+      res=await fetch(be.url,{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':be.nonce},body:JSON.stringify(payload)});
+      raw=await res.json();
+    }
     wait.remove();
     let ans='';
     if(typeof raw==='string') ans=raw;
+    else if(raw && raw.text) ans=raw.text;
     else if(raw && raw.summary) ans=raw.summary;
     else if(raw && raw.description) ans=raw.description;
     else if(raw && raw.answer) ans=raw.answer;
-    else if(raw && raw.text) ans=raw.text;
     else if(raw && raw.message && raw.code) ans='<i class="ck-err">'+tr('ck.cpError')+' '+escapeHtml(raw.message)+'</i>';
+    else if(raw && raw.error) ans='<i class="ck-err">'+tr('ck.cpError')+' '+escapeHtml(raw.error)+'</i>';
     else ans = '<pre class="ck-raw">'+escapeHtml(JSON.stringify(raw,null,2))+'</pre>';
-    // simple markdown: **bold** and \n line breaks
     ans=String(ans).replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');
-    ckChatPush('ai', ans);
+    const usage = raw && raw.usage ? `<div class="ck-usage">${be.name}${raw.model?(' · '+escapeHtml(raw.model)):''}${raw.usage.total_tokens?(' · '+raw.usage.total_tokens+' tokens'):''}</div>` : `<div class="ck-usage">${be.name}</div>`;
+    ckChatPush('ai', ans+usage);
   }catch(e){ wait.remove(); ckChatPush('ai','<i class="ck-err">'+tr('ck.cpError')+' '+escapeHtml(e.message||e)+'</i>'); }
 }
 let _ckTickerTimer=null;
@@ -1770,6 +1795,14 @@ buildConfig();
 goTab('cockpit');
 applyLang();
 tagReveal();
+/* Discover the Cockpit AI proxy (Claude via Databricks) when embedded
+   via shortcode (no <head> injection): fetch /v1/config once. */
+if(!window.DNAI_CGMCK){
+  try{
+    fetch('/wp-json/dnai-cgm-cockpit/v1/config',{headers:{'Accept':'application/json'}})
+      .then(r=>r.ok?r.json():null).then(c=>{ if(c&&c.chat){ window.DNAI_CGMCK=c; } }).catch(function(){});
+  }catch(e){}
+}
 postHeight();
 </script>
 </body>
