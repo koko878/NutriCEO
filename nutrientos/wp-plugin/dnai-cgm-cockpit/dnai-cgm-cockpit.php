@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI CGM Cockpit — Crisis Center
  * Description:       Parallel plugin to dnai-cgm-mvp. Hosts the "Crisis Cockpit" version of the CGM Simulator (Netflix/Spotify-style command deck: live RM ticker, crisis playbook, S-pressure heatmap, substitution advisor, AI co-pilot). Coexists with the original plugin — different shortcode and route so the existing CGM page is untouched. Includes a server-side AI proxy that supports Anthropic Claude served via Azure Databricks Foundation Model APIs (OpenAI-compatible), with optional fallback to the NutrientOS curator.
- * Version:           1.9.0
+ * Version:           1.9.1
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-cgm-cockpit
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_CGMCK_VER', '1.9.0' );
+define( 'DNAI_CGMCK_VER', '1.9.1' );
 define( 'DNAI_CGMCK_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_CGMCK_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -199,7 +199,7 @@ function dnai_cgmck_chat( $req ) {
 		'body'    => wp_json_encode( $payload ),
 	) );
 	if ( is_wp_error( $resp ) ) {
-		return new WP_REST_Response( array( 'error' => 'Databricks: ' . $resp->get_error_message() ), 502 );
+		return new WP_REST_Response( array( 'error' => 'Backend: ' . $resp->get_error_message() ), 502 );
 	}
 	$code = wp_remote_retrieve_response_code( $resp );
 	$raw  = wp_remote_retrieve_body( $resp );
@@ -208,7 +208,7 @@ function dnai_cgmck_chat( $req ) {
 	if ( $code >= 400 ) {
 		$msg = is_array( $data ) && isset( $data['message'] ) ? $data['message']
 			 : ( is_array( $data ) && isset( $data['error']['message'] ) ? $data['error']['message'] : substr( $raw, 0, 400 ) );
-		return new WP_REST_Response( array( 'error' => 'Databricks HTTP ' . $code . ' — ' . $msg ), 502 );
+		return new WP_REST_Response( array( 'error' => 'Backend HTTP ' . $code . ' — ' . $msg ), 502 );
 	}
 
 	// Standard OpenAI shape: choices[0].message.content
@@ -227,12 +227,10 @@ function dnai_cgmck_chat( $req ) {
 		return new WP_REST_Response( array( 'error' => 'Réponse vide du modèle.', 'raw' => $data ), 502 );
 	}
 
-	$usage = ( is_array( $data ) && isset( $data['usage'] ) ) ? $data['usage'] : null;
-	return new WP_REST_Response( array(
-		'text'  => $text,
-		'model' => isset( $data['model'] ) ? $data['model'] : $endpoint,
-		'usage' => $usage,
-	), 200 );
+	// Only the answer text is returned to the client — backend identity and
+	// model name are kept on the server so the UI brands everything as
+	// "D²nAI bot" without leaking the underlying provider.
+	return new WP_REST_Response( array( 'text' => $text ), 200 );
 }
 
 /* -------------------------------------------------------------------------
