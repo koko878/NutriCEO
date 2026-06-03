@@ -229,8 +229,13 @@ tbody tr.sel{background:var(--green-50)}
 .ck-ticker{overflow:hidden;border-bottom:1px solid rgba(124,252,154,.15);background:rgba(0,0,0,.35);padding:0!important;height:42px;position:relative;display:flex;align-items:center}
 .ck-tlabel{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:0 16px;font:700 10.5px 'Inter';text-transform:uppercase;letter-spacing:.08em;color:#7cfc9a;border-right:1px solid rgba(124,252,154,.15);height:100%;background:rgba(0,0,0,.4);white-space:nowrap}
 .ck-tlabel i{color:#7c9c87;font-style:normal;font-weight:600;text-transform:none;letter-spacing:0}
-.ck-tedit{margin-left:6px;border:0;background:rgba(255,255,255,.07);color:#bfd9c5;font-size:11px;width:22px;height:22px;border-radius:50%;cursor:pointer;line-height:1;display:inline-flex;align-items:center;justify-content:center}
-.ck-tedit:hover{background:rgba(124,252,154,.18);color:#fff}
+.ck-tedit,.ck-tsync{margin-left:6px;border:0;background:rgba(255,255,255,.07);color:#bfd9c5;font-size:11px;width:22px;height:22px;border-radius:50%;cursor:pointer;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.ck-tedit:hover,.ck-tsync:hover{background:rgba(124,252,154,.18);color:#fff}
+.ck-tsync{background:rgba(124,252,154,.16);color:#7cfc9a;font-weight:700}
+.ck-tsync.spin{animation:ckSpin 1s linear infinite}
+@keyframes ckSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.ck-toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%) translateY(20px);background:#0a1812;color:#dff0e3;border:1px solid rgba(124,252,154,.4);border-radius:10px;padding:10px 18px;font:600 13.5px 'Inter';box-shadow:0 12px 30px -8px rgba(0,0,0,.5);opacity:0;transition:opacity .25s,transform .25s;z-index:9900}
+.ck-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .ck-modal-wrap{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px}
 .ck-modal{background:#0c1f14;color:#dff0e3;border:1px solid rgba(124,252,154,.25);border-radius:16px;padding:22px 24px;max-width:560px;width:100%;box-shadow:0 30px 80px -20px rgba(0,0,0,.6)}
 .ck-modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
@@ -751,7 +756,7 @@ fr:{
  'ck.simulate':'Simuler ce produit','ck.subBetter':'meilleur','ck.subWorse':'moins bon','ck.subSame':'iso','ck.subPick':'choisir','ck.noAlt':'Aucune alternative iso-grade trouvée.',
  'ck.cpThinking':'D²nAI bot is thinking…','ck.cpError':'D²nAI bot indisponible :','ck.cpHint':'Suggestions :',
  'ck.scn.calm':'Tout calme','ck.scn.s50':'Choc Soufre +50 %','ck.scn.s30n15':'Soufre +30 % & NH₃ +15 %','ck.scn.rock20':'Roche +20 % (sanction)','ck.scn.kcl':'KCl tendu (Bélarus −15 %)','ck.scn.recov':'Détente RM (post-pic)',
- 'ck.baselineCalm':'baseline calme','ck.mktSet':'Mettre à jour la référence Market Intel','ck.mktTitle':'Référence Market Intel','ck.mktSub':'Prix de la période précédente (D-1, D-7, fin de mois…) à utiliser comme base de comparaison du ticker. Tant qu\'il n\'y a pas d\'API directe vers Fabric, mets à jour ici manuellement après chaque rafraîchissement Market Intel.','ck.mktDate':'Date de référence','ck.mktSave':'Enregistrer','ck.mktClear':'Effacer','ck.cancel':'Annuler',
+ 'ck.baselineCalm':'baseline calme','ck.mktSet':'Mettre à jour la référence Market Intel','ck.mktTitle':'Référence Market Intel','ck.mktSub':'Prix de la période précédente (D-1, D-7, fin de mois…) à utiliser comme base de comparaison du ticker.','ck.mktDate':'Date de référence','ck.mktSave':'Enregistrer','ck.mktClear':'Effacer','ck.cancel':'Annuler','ck.miSync':'Synchroniser depuis Market Intel (Databricks)','ck.miOk':'Market Intel synchronisé ✓',
  'sc1.eyebrow':'Écran 1 · Configuration de la simulation','sc1.h':'Quel produit, quelle référence, quel usage ?','sc1.lead':'Sélectionnez le couple Produit × Ligne de production, l\'usage métier visé, et la référence de comparaison (proposée par défaut selon la famille).',
  'card.product':'Produit × Ligne','lbl.targetProd':'Produit cible','lbl.line':'Ligne de production','card.ref':'Référence de comparaison','card.usage':'Usage métier',
  'btn.continue.inputs':'Continuer → Inputs marché',
@@ -789,7 +794,7 @@ en:{
  'ck.simulate':'Simulate this product','ck.subBetter':'better','ck.subWorse':'worse','ck.subSame':'iso','ck.subPick':'pick','ck.noAlt':'No iso-grade alternative found.',
  'ck.cpThinking':'D²nAI bot is thinking…','ck.cpError':'D²nAI bot unavailable:','ck.cpHint':'Try:',
  'ck.scn.calm':'Calm','ck.scn.s50':'Sulfur shock +50%','ck.scn.s30n15':'Sulfur +30% & NH₃ +15%','ck.scn.rock20':'Rock +20% (sanction)','ck.scn.kcl':'KCl tight (Belarus −15%)','ck.scn.recov':'RM relief (post-peak)',
- 'ck.baselineCalm':'calm baseline','ck.mktSet':'Update the Market Intel reference','ck.mktTitle':'Market Intel reference','ck.mktSub':'Previous-period prices (D-1, D-7, month-end…) used as the ticker baseline. Until a direct Fabric API is wired in, refresh them here manually after each Market Intel update.','ck.mktDate':'Reference date','ck.mktSave':'Save','ck.mktClear':'Clear','ck.cancel':'Cancel',
+ 'ck.baselineCalm':'calm baseline','ck.mktSet':'Update the Market Intel reference','ck.mktTitle':'Market Intel reference','ck.mktSub':'Previous-period prices (D-1, D-7, month-end…) used as the ticker baseline.','ck.mktDate':'Reference date','ck.mktSave':'Save','ck.mktClear':'Clear','ck.cancel':'Cancel','ck.miSync':'Sync from Market Intel (Databricks)','ck.miOk':'Market Intel synced ✓',
  'sc1.eyebrow':'Step 1 · Simulation setup','sc1.h':'Which product, which reference, which use case?','sc1.lead':'Pick the Product × Production line pair, the business use case, and the comparison benchmark (defaulted by family).',
  'card.product':'Product × Line','lbl.targetProd':'Target product','lbl.line':'Production line','card.ref':'Benchmark reference','card.usage':'Business use case',
  'btn.continue.inputs':'Continue → Market inputs',
@@ -827,7 +832,7 @@ pt:{
  'ck.simulate':'Simular este produto','ck.subBetter':'melhor','ck.subWorse':'pior','ck.subSame':'iso','ck.subPick':'escolher','ck.noAlt':'Nenhuma alternativa iso-grade encontrada.',
  'ck.cpThinking':'D²nAI bot is thinking…','ck.cpError':'D²nAI bot indisponível:','ck.cpHint':'Sugestões:',
  'ck.scn.calm':'Calmaria','ck.scn.s50':'Choque Enxofre +50%','ck.scn.s30n15':'Enxofre +30% & NH₃ +15%','ck.scn.rock20':'Rocha +20% (sanção)','ck.scn.kcl':'KCl tenso (Belarus −15%)','ck.scn.recov':'Distensão MP (pós-pico)',
- 'ck.baselineCalm':'baseline calma','ck.mktSet':'Atualizar referência Market Intel','ck.mktTitle':'Referência Market Intel','ck.mktSub':'Preços do período anterior (D-1, D-7, fim de mês…) usados como base de comparação do ticker. Enquanto não há API direta para o Fabric, atualize aqui manualmente após cada atualização do Market Intel.','ck.mktDate':'Data de referência','ck.mktSave':'Salvar','ck.mktClear':'Limpar','ck.cancel':'Cancelar',
+ 'ck.baselineCalm':'baseline calma','ck.mktSet':'Atualizar referência Market Intel','ck.mktTitle':'Referência Market Intel','ck.mktSub':'Preços do período anterior (D-1, D-7, fim de mês…) usados como base do ticker.','ck.mktDate':'Data de referência','ck.mktSave':'Salvar','ck.mktClear':'Limpar','ck.cancel':'Cancelar','ck.miSync':'Sincronizar com Market Intel (Databricks)','ck.miOk':'Market Intel sincronizado ✓',
  'sc1.eyebrow':'Etapa 1 · Configuração da simulação','sc1.h':'Qual produto, qual referência, qual uso?','sc1.lead':'Selecione o par Produto × Linha de produção, o uso de negócio visado, e a referência de comparação (padrão por família).',
  'card.product':'Produto × Linha','lbl.targetProd':'Produto alvo','lbl.line':'Linha de produção','card.ref':'Referência de comparação','card.usage':'Uso de negócio',
  'btn.continue.inputs':'Continuar → Entradas de mercado',
@@ -1469,8 +1474,35 @@ function renderCkTicker(){
     const dStr = moved ? ((d>=0?'+':'')+d.toFixed(1)+'%') : '';
     return `<span class="ck-tik"><span class="ck-tnm">${RM_SHORT[k]||k.toUpperCase()}</span><b>${f(cur,0)} <i>$/t</i></b>${moved?`<span class="ck-td ${cls}">${dStr}</span>`:''}</span>`;
   }).join('');
-  host.innerHTML='<div class="ck-tlabel"><span class="ck-tpulse"></span>LIVE · <i>vs '+escapeHtml(tickerLabel())+'</i><button class="ck-tedit" onclick="ckOpenMktRef()" title="'+tr('ck.mktSet')+'">⚙</button></div><div class="ck-trail">'+items+items+'</div>';
+  const hasMi = window.DNAI_CGMCK && window.DNAI_CGMCK.mi && window.DNAI_CGMCK.prices;
+  const syncBtn = hasMi ? '<button class="ck-tsync" id="ckTSync" title="'+tr('ck.miSync')+'">⟳</button>' : '';
+  host.innerHTML='<div class="ck-tlabel"><span class="ck-tpulse"></span>LIVE · <i>vs '+escapeHtml(tickerLabel())+'</i>'+syncBtn+'<button class="ck-tedit" onclick="ckOpenMktRef()" title="'+tr('ck.mktSet')+'">⚙</button></div><div class="ck-trail">'+items+items+'</div>';
+  const sb=document.getElementById('ckTSync'); if(sb) sb.onclick=ckSyncMarketIntel;
 }
+async function ckSyncMarketIntel(){
+  if(!window.DNAI_CGMCK || !window.DNAI_CGMCK.prices){ alert('Market Intel non configuré'); return; }
+  const btn=document.getElementById('ckTSync'); if(btn){ btn.classList.add('spin'); btn.disabled=true; }
+  try{
+    const res=await fetch(window.DNAI_CGMCK.prices,{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':window.DNAI_CGMCK.nonce||''},body:'{}'});
+    const j=await res.json();
+    if(j && j.error){ alert('Market Intel : '+j.error); return; }
+    if(j && j.prices){
+      // Apply CURRENT prices to state.rm
+      Object.keys(j.prices).forEach(k=>{ if(j.prices[k]!=null && state.rm.hasOwnProperty(k)) state.rm[k]=+j.prices[k]; });
+      // Set the Market Intel baseline = previous-period prices (for the ticker delta)
+      const prev={}; Object.keys(j.previous||{}).forEach(k=>{ if(j.previous[k]!=null) prev[k]=+j.previous[k]; });
+      if(Object.keys(prev).length){
+        mktRefSave({ts:(j.as_of||new Date().toISOString().slice(0,10)), prices:Object.assign({},tickerBaseline(),prev)});
+      }
+      ckBaselineSnapshot();
+      if(typeof renderInputs==='function') renderInputs();
+      renderCockpit();
+      toast(typeof tr==='function'?(tr('ck.miOk')||'Market Intel synchronisé'):'Market Intel synchronisé');
+    }
+  }catch(e){ alert('Erreur Market Intel: '+e.message); }
+  finally{ if(btn){ btn.classList.remove('spin'); btn.disabled=false; } }
+}
+function toast(msg){ const t=document.createElement('div'); t.className='ck-toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>{t.classList.add('show')},10); setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300)},2500); }
 function ckOpenMktRef(){
   const ref=mktRefLoad()||{ts:new Date().toISOString().slice(0,10), prices:Object.assign({},state.rm)};
   const RM=['sulphur','nh3','rock','kcl','sam','acs'];
