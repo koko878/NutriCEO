@@ -87,7 +87,9 @@ body.embed .tabs{position:static;top:auto}
 .rmrow .nm{font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .req{font-size:9px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:#05230f;background:var(--green-300);border-radius:4px;padding:1px 5px}
 .opt{font-size:9px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);background:var(--soft);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
-.rmrow.dim{opacity:.5}
+/* Optional MP rows stay fully editable & readable — just signaled by the .opt chip. */
+.rmrow.dim{opacity:1}
+.rmrow.dim .nm{color:var(--muted)}
 .unit{font-size:11px;color:var(--muted)}
 .varwrap{position:relative}
 .varwrap::after{content:"%";position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted)}
@@ -779,6 +781,9 @@ fr:{
  'kpi.rmcost':'Coût MP','kpi.rmcostUnit':'$/t produit','kpi.cgmBrute':'CGM brute','kpi.cgmBruteUnit':'$/t (prix − coût MP)','kpi.cgmEq':'CGM éq.','kpi.cgmEqUnit':'$/t · réf','kpi.mcv':'MCV / t acide P₂O₅','kpi.mcvUnit':'$/t P₂O₅',
  'sc.scenario':'Scénario','sc.marginRef':'Marge réf. (CGM éq.','sc.cgmAtPrice':'CGM éq. à','sc.floor':'Prix plancher iso-marge','sc.nutri':'Prix valeur-nutriment',
  'usage1.t':'Usage 1 — CGM à partir d\'un prix','usage2.t':'Usage 2 — Prix minimum pour égaler la marge de la référence','usage3.t':'Usage 3 — Prix à valeur nutriment (alignement N-P-K-S)',
+ 'usage1.tt':'CGM à partir d\'un prix','usage1.dd':'À un prix de vente saisi : quelle CGM, et comment vs la référence / d\'autres produits.',
+ 'usage2.tt':'Prix minimum (iso-marge)','usage2.dd':'Quel prix de vente pour égaler la marge (CGM) de la référence DAP ou TSP.',
+ 'usage3.tt':'Prix à valeur nutriment','usage3.dd':'Quel prix pour rester aligné en valeur agronomique (N-P-K-S) sur la référence.',
  'usage.refMargin':'Marge de référence','usage.preserved':'✅ Marge préservée','usage.underPriced':'⚠️ Sous-pricé',
  'usage.isoDap':'Iso-marge DAP','usage.isoTsp':'Iso-marge TSP','usage.baseDap':'Base DAP','usage.baseTsp':'Base TSP',
  'sens.rmcStressed':'Coût MP stressé','sens.cgmStressed':'CGM éq. stressée','sens.vsBase':'vs base'
@@ -817,6 +822,9 @@ en:{
  'kpi.rmcost':'RM cost','kpi.rmcostUnit':'$/t product','kpi.cgmBrute':'Gross CGM','kpi.cgmBruteUnit':'$/t (price − RM cost)','kpi.cgmEq':'CGM eq.','kpi.cgmEqUnit':'$/t · ref','kpi.mcv':'MCV / t acid P₂O₅','kpi.mcvUnit':'$/t P₂O₅',
  'sc.scenario':'Scenario','sc.marginRef':'Ref margin (CGM eq.','sc.cgmAtPrice':'CGM eq. at','sc.floor':'Iso-margin floor price','sc.nutri':'Nutrient-value price',
  'usage1.t':'Use 1 — CGM from a given price','usage2.t':'Use 2 — Floor price to match the reference margin','usage3.t':'Use 3 — Nutrient-value price (N-P-K-S alignment)',
+ 'usage1.tt':'CGM from a given price','usage1.dd':'For a given selling price: what is the CGM, and how does it compare to the reference / other products.',
+ 'usage2.tt':'Floor price (iso-margin)','usage2.dd':'What selling price matches the reference (DAP or TSP) margin?',
+ 'usage3.tt':'Nutrient-value price','usage3.dd':'What price keeps the product aligned in agronomic value (N-P-K-S) with the reference?',
  'usage.refMargin':'Reference margin','usage.preserved':'✅ Margin preserved','usage.underPriced':'⚠️ Under-priced',
  'usage.isoDap':'Iso-margin DAP','usage.isoTsp':'Iso-margin TSP','usage.baseDap':'DAP base','usage.baseTsp':'TSP base',
  'sens.rmcStressed':'Stressed RM cost','sens.cgmStressed':'Stressed CGM eq.','sens.vsBase':'vs base'
@@ -855,6 +863,9 @@ pt:{
  'kpi.rmcost':'Custo MP','kpi.rmcostUnit':'$/t produto','kpi.cgmBrute':'CGM bruta','kpi.cgmBruteUnit':'$/t (preço − custo MP)','kpi.cgmEq':'CGM eq.','kpi.cgmEqUnit':'$/t · ref','kpi.mcv':'MCV / t ácido P₂O₅','kpi.mcvUnit':'$/t P₂O₅',
  'sc.scenario':'Cenário','sc.marginRef':'Margem ref. (CGM eq.','sc.cgmAtPrice':'CGM eq. a','sc.floor':'Preço piso iso-margem','sc.nutri':'Preço valor-nutriente',
  'usage1.t':'Uso 1 — CGM a partir de um preço','usage2.t':'Uso 2 — Preço mínimo para igualar a margem da referência','usage3.t':'Uso 3 — Preço por valor de nutriente (alinhamento N-P-K-S)',
+ 'usage1.tt':'CGM a partir de um preço','usage1.dd':'Para um preço de venda dado: qual CGM, e como vs a referência / outros produtos.',
+ 'usage2.tt':'Preço mínimo (iso-margem)','usage2.dd':'Que preço de venda iguala a margem (CGM) da referência DAP ou TSP?',
+ 'usage3.tt':'Preço por valor de nutriente','usage3.dd':'Que preço mantém o alinhamento em valor agronômico (N-P-K-S) com a referência?',
  'usage.refMargin':'Margem de referência','usage.preserved':'✅ Margem preservada','usage.underPriced':'⚠️ Subprecificado',
  'usage.isoDap':'Iso-margem DAP','usage.isoTsp':'Iso-margem TSP','usage.baseDap':'Base DAP','usage.baseTsp':'Base TSP',
  'sens.rmcStressed':'Custo MP estressado','sens.cgmStressed':'CGM eq. estressada','sens.vsBase':'vs base'
@@ -959,24 +970,37 @@ function goTab(t){
   if(t==='market') renderMarket();
   if(t==='sc3') renderSc3();
   if(t==='hist') renderHist();
-  if(t==='config'){ const lines=[...new Set(products().map(p=>p.line))]; document.getElementById('line').innerHTML=lines.map(l=>`<option>${l}</option>`).join(''); refreshProdSelect(); syncConfig(); }
+  if(t==='config'){
+    // Rebuild the line select if needed, then RESTORE the current state instead of resetting.
+    const lines=[...new Set(products().map(p=>p.line))];
+    const lineEl=document.getElementById('line');
+    if(lineEl.children.length!==lines.length) lineEl.innerHTML=lines.map(l=>`<option>${l}</option>`).join('');
+    const cur=curProduct();
+    if(cur){ lineEl.value=cur.line; }
+    refreshProdSelect();
+    if(cur){ document.getElementById('prod').value=cur.row; state.row=cur.row; }
+    // Re-render usage pills (their labels depend on the current language).
+    const pills=document.getElementById('usagePills');
+    if(pills){ pills.innerHTML=USAGES.map(u=>`<button class="pill" data-u="${u.n}" onclick="setUsage(${u.n})"><div class="t">${u.n}. ${tr(u.tk)}</div><div class="d">${tr(u.dk)}</div></button>`).join(''); setUsage(state.usage); }
+    syncConfig();
+  }
   window.scrollTo({top:0,behavior:'instant'});
 }
 
 /* ============ CONFIG screen ============ */
 const USAGES=[
-  {n:1,t:'CGM à partir d\'un prix',d:'À un prix de vente saisi : quelle CGM, et comment vs la référence / d\'autres produits.'},
-  {n:2,t:'Prix minimum (iso-marge)',d:'Quel prix de vente pour égaler la marge (CGM) de la référence DAP ou TSP.'},
-  {n:3,t:'Prix à valeur nutriment',d:'Quel prix pour rester aligné en valeur agronomique (N-P-K-S) sur la référence.'}
+  {n:1,tk:'usage1.tt',dk:'usage1.dd'},
+  {n:2,tk:'usage2.tt',dk:'usage2.dd'},
+  {n:3,tk:'usage3.tt',dk:'usage3.dd'}
 ];
 function buildConfig(){
   const lines=[...new Set(products().map(p=>p.line))];
   document.getElementById('line').innerHTML=lines.map(l=>`<option>${l}</option>`).join('');
   refreshProdSelect();
   document.getElementById('usagePills').innerHTML=USAGES.map(u=>
-    `<button class="pill" data-u="${u.n}" onclick="setUsage(${u.n})"><div class="t">${u.n}. ${u.t}</div><div class="d">${u.d}</div></button>`).join('');
-  document.querySelectorAll('#refSel button').forEach(b=>b.onclick=()=>{state.ref=b.dataset.r;syncConfig();});
-  document.getElementById('prod').addEventListener('change',e=>{ state.row=+e.target.value; const p=curProduct(); state.ref=guessRef(p.family); syncConfig(); });
+    `<button class="pill" data-u="${u.n}" onclick="setUsage(${u.n})"><div class="t">${u.n}. ${tr(u.tk)}</div><div class="d">${tr(u.dk)}</div></button>`).join('');
+  document.querySelectorAll('#refSel button').forEach(b=>b.onclick=()=>{ state.ref=b.dataset.r; state._refTouched=true; syncConfig(); });
+  document.getElementById('prod').addEventListener('change',e=>{ state.row=+e.target.value; const p=curProduct(); state._refTouched=false; state.ref=guessRef(p.family); syncConfig(); });
   document.getElementById('line').addEventListener('change',refreshProdSelect);
   if(state.row==null) state.row=products()[0].row;
   setUsage(state.usage); syncConfig();
@@ -985,17 +1009,22 @@ function refreshProdSelect(){
   const line=document.getElementById('line').value;
   const list=products().filter(p=>!line||p.line===line);
   document.getElementById('prod').innerHTML=list.map(p=>`<option value="${p.row}">${p.product}</option>`).join('');
-  if(!list.some(p=>p.row===state.row) && list[0]) state.row=list[0].row;
+  if(!list.some(p=>p.row===state.row) && list[0]){ state.row=list[0].row; state.ref=guessRef(list[0].family); }
   document.getElementById('prod').value=state.row;
+  syncConfig(); // keep prodMeta + ref + refHint in sync after any select change
 }
 function setUsage(n){ state.usage=n; document.querySelectorAll('#usagePills .pill').forEach(b=>b.classList.toggle('on',+b.dataset.u===n)); }
 function syncConfig(){
-  const p=curProduct();
+  const p=curProduct(); if(!p) return;
   document.getElementById('prod').value=p.row;
   document.getElementById('line').value=p.line;
-  document.getElementById('prodMeta').innerHTML=`Famille <b>${p.family}</b> · N ${f(p.n,0)} · P₂O₅ ${f(p.p,0)} · K₂O ${f(p.k,0)} · S ${f(p.s,0)} · total nutriments ${f(p.nutrient_total,0)} · cs_acp ${f(p.cs_acp,3)}`;
+  // Business-friendly meta: no internal coefficients exposed.
+  document.getElementById('prodMeta').innerHTML=`Famille <b>${escapeHtml(p.family)}</b> · grade <b>${f(p.n,0)}-${f(p.p,0)}-${f(p.k,0)}${p.s?(' + '+f(p.s,0)+'S'):''}</b> · total nutriments ${f(p.nutrient_total,0)} %`;
+  // Auto-default reference to the family-appropriate one (TSP for TSP-like families) the first time we see this product.
+  const def=guessRef(p.family);
+  if(!state._refTouched){ state.ref=def; }
   document.querySelectorAll('#refSel button').forEach(b=>b.classList.toggle('on',b.dataset.r===state.ref));
-  document.getElementById('refHint').innerHTML=`Référence proposée par défaut pour la famille <b>${p.family}</b> : <b>${guessRef(p.family)}</b>. Vous pouvez la changer.`;
+  document.getElementById('refHint').innerHTML=`Référence par défaut pour la famille <b>${escapeHtml(p.family)}</b> : <b>${def}</b>. Modifiable.`;
 }
 
 /* ============ INPUTS screen ============ */
