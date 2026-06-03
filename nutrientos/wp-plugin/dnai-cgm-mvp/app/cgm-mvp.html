@@ -348,6 +348,53 @@ tbody tr.sel{background:var(--green-50)}
 .ck-err{color:#ffae9c;font-style:italic}
 .ck-raw{font-size:11px;background:#06100a;padding:6px;border-radius:6px;overflow:auto;max-height:120px;color:#bfd9c5}
 .ck-usage{margin-top:8px;font:600 10px 'Inter';letter-spacing:.04em;text-transform:uppercase;color:#7c9c87;border-top:1px dashed rgba(255,255,255,.07);padding-top:6px}
+/* === FEEDBACK EDITION === */
+.fb-highlight{outline:3px dashed #FFC107!important;outline-offset:3px;border-radius:8px;animation:fbPulseHi 1s ease-in-out infinite alternate}
+@keyframes fbPulseHi{from{outline-color:#FFC107}to{outline-color:#ffe082}}
+.fb-badge{position:fixed;right:18px;bottom:18px;z-index:9500;background:linear-gradient(135deg,#FFC107,#FF8F00);color:#1a0f00;border:0;border-radius:999px;padding:11px 18px;font:800 13px 'Inter';cursor:pointer;box-shadow:0 12px 30px -8px rgba(255,143,0,.6);transition:transform .15s,box-shadow .15s}
+.fb-badge:hover{transform:translateY(-2px);box-shadow:0 16px 36px -10px rgba(255,143,0,.7)}
+.fb-badge.hot{background:linear-gradient(135deg,#FF6F00,#E53935);color:#fff}
+.fb-badge.flash{animation:fbFlash .7s ease-out}
+@keyframes fbFlash{0%{transform:scale(1.15);box-shadow:0 0 0 12px rgba(255,235,59,.4)}100%{transform:scale(1);box-shadow:0 12px 30px -8px rgba(255,143,0,.6)}}
+.fb-menu{position:fixed;z-index:9700;background:#0c1f14;border:1px solid rgba(255,193,7,.35);border-radius:11px;padding:5px;box-shadow:0 24px 60px -10px rgba(0,0,0,.7);min-width:230px}
+.fb-mi{display:block;width:100%;text-align:left;background:none;border:0;color:#dff0e3;font:600 13px 'Inter';padding:9px 12px;border-radius:7px;cursor:pointer}
+.fb-mi:hover{background:rgba(255,193,7,.15);color:#fff}
+.fb-modal-wrap{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:9800;display:flex;align-items:center;justify-content:center;padding:20px}
+.fb-modal{background:#0c1f14;color:#dff0e3;border:1px solid rgba(255,193,7,.4);border-radius:16px;padding:22px 24px;max-width:520px;width:100%;box-shadow:0 30px 80px -20px rgba(0,0,0,.7)}
+.fb-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.fb-head h3{margin:0;font:700 17px 'Inter';color:#fff}
+.fb-head .fb-x{background:none;border:0;color:#9fb3a6;font-size:18px;cursor:pointer;padding:4px 8px;border-radius:6px}
+.fb-head .fb-x:hover{background:rgba(255,255,255,.07);color:#fff}
+.fb-ctx{display:flex;flex-direction:column;gap:2px;background:rgba(255,193,7,.08);border:1px solid rgba(255,193,7,.22);border-radius:9px;padding:9px 12px;margin-bottom:14px}
+.fb-ctx .fb-lbl{font:700 10px 'Inter';letter-spacing:.08em;color:#ffc107;text-transform:uppercase}
+.fb-ctx b{color:#fff;font-size:14px}
+.fb-ctx .fb-bread{font-size:12px;color:#9fb3a6}
+.fb-flbl{display:block;font:700 11px 'Inter';text-transform:uppercase;letter-spacing:.06em;color:#7fb98e;margin:8px 0 4px}
+.fb-author,.fb-text{width:100%;padding:9px 11px;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:8px;font:500 13.5px 'Inter';box-sizing:border-box}
+.fb-text{resize:vertical;font-family:'Inter',sans-serif}
+.fb-act{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.fb-act button{border:0;padding:9px 16px;border-radius:9px;font:700 13px 'Inter';cursor:pointer}
+.fb-cancel{background:rgba(255,255,255,.08);color:#dff0e3}
+.fb-save{background:#FFC107;color:#1a0f00}
+.fb-save:hover{background:#ffd54f}
+.fb-panel{position:fixed;right:0;top:0;bottom:0;width:min(420px,92vw);z-index:9600;background:#0a1812;color:#dff0e3;border-left:1px solid rgba(255,193,7,.25);box-shadow:-20px 0 60px -20px rgba(0,0,0,.6);overflow:auto}
+.fb-pinner{padding:18px 18px 50px}
+.fb-phead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.fb-phead h3{margin:0;font:700 17px 'Inter';color:#fff}
+.fb-pacts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.fb-btn{background:rgba(255,193,7,.12);color:#ffd54f;border:1px solid rgba(255,193,7,.3);border-radius:8px;padding:6px 11px;font:700 11.5px 'Inter';cursor:pointer}
+.fb-btn:hover{background:rgba(255,193,7,.2)}
+.fb-btn.danger{background:rgba(229,57,53,.12);color:#ff9999;border-color:rgba(229,57,53,.4)}
+.fb-list{display:flex;flex-direction:column;gap:9px}
+.fb-empty{color:#9fb3a6;font-size:13px;padding:30px 0;text-align:center}
+.fb-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-left:3px solid #FFC107;border-radius:10px;padding:11px 13px}
+.fb-iblock{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.fb-iblock b{color:#fff;font-size:13px}
+.fb-iblock span{font-size:11px;color:#9fb3a6}
+.fb-itext{font-size:13.5px;color:#dff0e3;line-height:1.5;margin-bottom:7px;white-space:pre-wrap}
+.fb-imeta{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;color:#7c9c87}
+.fb-del{background:none;border:0;color:#9fb3a6;cursor:pointer;font-size:13px;padding:2px 6px;border-radius:5px}
+.fb-del:hover{background:rgba(229,57,53,.2);color:#ff9999}
 .ck-cpsugs{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0 6px;align-items:center}
 .ck-sugs-l{font:700 11px 'Inter';color:#7fb98e;text-transform:uppercase;letter-spacing:.06em;margin-right:6px}
 .ck-sug{background:rgba(124,252,154,.08);border:1px solid rgba(124,252,154,.2);color:#dff0e3;font:600 11.5px 'Inter';padding:5px 10px;border-radius:999px;cursor:pointer}
@@ -1788,6 +1835,148 @@ function grow(scope){
 
 const _goTab = goTab;
 goTab = function(t){ _goTab(t); tagReveal(); setTimeout(postHeight, 60); };
+
+/* ============================================================
+ * FEEDBACK EDITION — right-click any block to drop a comment
+ * tied to its context (view/tab/block/breadcrumb). All comments
+ * stay in localStorage; export JSON/CSV at the end.
+ * ============================================================ */
+const FB = (function(){
+  const LS='cgmck_feedback_v1', LS_AUTHOR='cgmck_feedback_author_v1';
+  let list = []; try{ list = JSON.parse(localStorage.getItem(LS))||[]; }catch(e){ list=[]; }
+  let author = ''; try{ author = localStorage.getItem(LS_AUTHOR)||''; }catch(e){}
+  function save(){ try{ localStorage.setItem(LS, JSON.stringify(list)); }catch(e){} renderBadge(); }
+  function setAuthor(a){ author=(a||'').trim(); try{ localStorage.setItem(LS_AUTHOR, author); }catch(e){} }
+  function uid(){ return 'fb-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+  function viewLabel(){
+    const on=document.querySelector('.screen.on'); if(!on) return '(global)';
+    const id = on.id || '';
+    const t = TABS[profile]||[];
+    const tab = t.find(x=>TABSCREEN[x[0]]===id);
+    return tab ? tr(tab[2]) : id;
+  }
+  function blockLabel(el){
+    if(!el) return '(zone)';
+    // 1) explicit data-fb-name on closest ancestor
+    let n=el.closest('[data-fb-name]'); if(n) return n.getAttribute('data-fb-name');
+    // 2) nearest container of interest
+    const known=el.closest('.ck-card, .ck-panel, .ck-row, .ck-hero-inner, .ck-ticker, .ck-modal, .card, .pcard, .sc3card, .sc3hero, .scol, .kpi, .panel, .scen2');
+    if(known){
+      const h=known.querySelector('h3,h4,h2'); if(h && h.textContent.trim()) return h.textContent.trim().slice(0,80);
+      const cls=(known.className||'').split(/\s+/).find(c=>/^(ck-|sc3|p)/.test(c)); if(cls) return cls;
+    }
+    // 3) fallback: nearest header text
+    let p=el; for(let i=0;i<8 && p;i++,p=p.parentElement){ const hh=p.querySelector && p.querySelector('h2,h3,h4'); if(hh) return hh.textContent.trim().slice(0,80); }
+    return '(zone non identifiée)';
+  }
+  function selectorOf(el){
+    if(!el) return '';
+    if(el.id) return '#'+el.id;
+    const path=[];
+    while(el && el.nodeType===1 && path.length<5){
+      let p=el.nodeName.toLowerCase();
+      if(el.className && typeof el.className==='string'){ const c=el.className.trim().split(/\s+/).slice(0,2).join('.'); if(c) p+='.'+c; }
+      path.unshift(p);
+      el=el.parentElement;
+    }
+    return path.join(' > ');
+  }
+  let hoveredEl=null, modal=null;
+  function addAt(el, x, y){
+    hoveredEl=el; closeMenu();
+    el && el.classList.add('fb-highlight');
+    const view=viewLabel(); const block=blockLabel(el); const sel=selectorOf(el);
+    modal=document.createElement('div'); modal.className='fb-modal-wrap';
+    modal.innerHTML='<div class="fb-modal" onclick="event.stopPropagation()">'
+      +'<div class="fb-head"><h3>💬 Ajouter un commentaire</h3><button class="fb-x">✕</button></div>'
+      +'<div class="fb-ctx"><span class="fb-lbl">SUR</span><b>'+escapeHtml(block)+'</b><span class="fb-bread">'+escapeHtml(view)+'</span></div>'
+      +'<label class="fb-flbl">Auteur</label><input class="fb-author" type="text" placeholder="ton prénom" value="'+escapeHtml(author)+'">'
+      +'<label class="fb-flbl">Commentaire</label><textarea class="fb-text" rows="4" placeholder="Que faut-il changer / ajouter / corriger ?"></textarea>'
+      +'<div class="fb-act"><button class="fb-cancel">Annuler</button><button class="fb-save">Enregistrer</button></div>'
+      +'</div>';
+    document.body.appendChild(modal);
+    const close=()=>{ if(modal){modal.remove();modal=null;} if(hoveredEl) hoveredEl.classList.remove('fb-highlight'); };
+    modal.addEventListener('click', e=>{ if(e.target===modal) close(); });
+    modal.querySelector('.fb-x').onclick=close;
+    modal.querySelector('.fb-cancel').onclick=close;
+    setTimeout(()=>{ const t=modal.querySelector('.fb-text'); if(t) t.focus(); },50);
+    modal.querySelector('.fb-save').onclick=function(){
+      const a=modal.querySelector('.fb-author').value.trim();
+      const text=modal.querySelector('.fb-text').value.trim();
+      if(!text){ alert('Le commentaire est vide.'); return; }
+      setAuthor(a);
+      list.unshift({id:uid(), ts:new Date().toISOString(), author:a, view:view, block:block, selector:sel, lang:LANG, scenario:CK_SCENARIO, comment:text});
+      save(); close(); flashBadge();
+    };
+  }
+  // CONTEXT MENU
+  let menu=null;
+  function closeMenu(){ if(menu){menu.remove();menu=null;} }
+  function openMenu(e){
+    closeMenu(); const target=e.target;
+    // ignore native form controls so users can still right-click in inputs
+    if(target.closest && target.closest('input, select, textarea, .fb-modal, .fb-panel')) return;
+    e.preventDefault();
+    menu=document.createElement('div'); menu.className='fb-menu';
+    menu.style.left=Math.min(e.clientX, window.innerWidth-220)+'px';
+    menu.style.top =Math.min(e.clientY, window.innerHeight-110)+'px';
+    menu.innerHTML='<button class="fb-mi" data-act="add">💬 Ajouter un commentaire ici</button>'
+      +'<button class="fb-mi" data-act="open">📋 Voir tous les commentaires ('+list.length+')</button>';
+    document.body.appendChild(menu);
+    menu.querySelector('[data-act=add]').onclick=()=>{ closeMenu(); addAt(target, e.clientX, e.clientY); };
+    menu.querySelector('[data-act=open]').onclick=()=>{ closeMenu(); openPanel(); };
+  }
+  document.addEventListener('contextmenu', openMenu);
+  document.addEventListener('click', e=>{ if(menu && !menu.contains(e.target)) closeMenu(); });
+  // BADGE + PANEL
+  let badge=null, panel=null;
+  function renderBadge(){ if(!badge) return; badge.innerHTML='💬 '+list.length+' commentaire'+(list.length>1?'s':''); badge.classList.toggle('hot', list.length>0); }
+  function flashBadge(){ if(!badge) return; badge.classList.add('flash'); setTimeout(()=>badge.classList.remove('flash'), 700); }
+  function openPanel(){
+    if(panel){ panel.remove(); panel=null; return; }
+    panel=document.createElement('div'); panel.className='fb-panel';
+    const head='<div class="fb-phead"><h3>📋 Commentaires ('+list.length+')</h3><button class="fb-x">✕</button></div>'
+      +'<div class="fb-pacts"><button class="fb-btn" data-act="exjson">⤓ JSON</button><button class="fb-btn" data-act="excsv">⤓ CSV</button><button class="fb-btn" data-act="excopy">📋 Copier markdown</button><span style="flex:1"></span><button class="fb-btn danger" data-act="clear">🗑 Tout effacer</button></div>';
+    const body=list.length?
+      '<div class="fb-list">'+list.map(c=>`<div class="fb-item" data-id="${c.id}">
+        <div class="fb-iblock"><b>${escapeHtml(c.block)}</b><span>${escapeHtml(c.view)}${c.scenario&&c.scenario!=='calm'?(' · '+escapeHtml(c.scenario)):''}</span></div>
+        <div class="fb-itext">${escapeHtml(c.comment)}</div>
+        <div class="fb-imeta"><span>${escapeHtml(c.author||'anonyme')}</span><span>${new Date(c.ts).toLocaleString('fr-FR')}</span><button class="fb-del" title="Supprimer">🗑</button></div>
+      </div>`).join('')+'</div>':
+      '<p class="fb-empty">Aucun commentaire pour le moment. Clic-droit sur n\'importe quel bloc pour en ajouter un.</p>';
+    panel.innerHTML='<div class="fb-pinner">'+head+body+'</div>';
+    document.body.appendChild(panel);
+    panel.querySelector('.fb-x').onclick=()=>{ panel.remove(); panel=null; };
+    panel.querySelectorAll('.fb-del').forEach(b=>b.onclick=function(e){ e.stopPropagation();
+      const id=this.closest('.fb-item').dataset.id; list=list.filter(x=>x.id!==id); save(); panel.remove(); panel=null; openPanel();
+    });
+    panel.querySelector('[data-act=clear]').onclick=function(){ if(!confirm('Effacer tous les commentaires ?')) return; list=[]; save(); panel.remove(); panel=null; openPanel(); };
+    panel.querySelector('[data-act=exjson]').onclick=()=>exportFile('cgm-cockpit-feedback-'+stamp()+'.json', JSON.stringify({exportedAt:new Date().toISOString(),count:list.length,comments:list},null,2), 'application/json');
+    panel.querySelector('[data-act=excsv]').onclick=()=>exportFile('cgm-cockpit-feedback-'+stamp()+'.csv', toCsv(), 'text/csv;charset=utf-8');
+    panel.querySelector('[data-act=excopy]').onclick=()=>{ navigator.clipboard.writeText(toMarkdown()).then(()=>alert('Copié en markdown — colle dans Teams/Slack/Notion.')); };
+  }
+  function stamp(){ const d=new Date(); return d.toISOString().slice(0,16).replace(/[:T]/g,'-'); }
+  function csvQ(s){ s=String(s==null?'':s); return '"'+s.replace(/"/g,'""')+'"'; }
+  function toCsv(){
+    const head=['ts','author','view','block','scenario','comment','selector','lang'];
+    const rows=list.map(c=>[c.ts,c.author||'',c.view,c.block,c.scenario||'',c.comment,c.selector||'',c.lang||''].map(csvQ).join(','));
+    return '﻿'+head.join(',')+'\n'+rows.join('\n');
+  }
+  function toMarkdown(){
+    if(!list.length) return '_(aucun commentaire)_';
+    return list.map((c,i)=>`### ${i+1}. ${c.block} *(${c.view})*\n- **Par** ${c.author||'anonyme'} — ${new Date(c.ts).toLocaleString('fr-FR')}${c.scenario&&c.scenario!=='calm'?(' — scénario `'+c.scenario+'`'):''}\n\n${c.comment}\n`).join('\n---\n\n');
+  }
+  function exportFile(name, content, mime){
+    const blob=new Blob([content],{type:mime}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); a.remove();
+  }
+  function mountBadge(){
+    badge=document.createElement('button'); badge.className='fb-badge'; badge.onclick=openPanel;
+    badge.title='Voir les commentaires · clic-droit sur un bloc pour en ajouter un';
+    document.body.appendChild(badge); renderBadge();
+  }
+  return {mount:mountBadge, openPanel:openPanel, count:()=>list.length};
+})();
+FB.mount();
 
 /* ============ init ============ */
 buildTabs();
