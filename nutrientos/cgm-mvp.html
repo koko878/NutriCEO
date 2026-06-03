@@ -274,6 +274,28 @@ tbody tr.sel{background:var(--green-50)}
 .cmp-famhead .cmp-fall:hover{background:var(--green-50);color:var(--green-800)}
 
 /* ============================================================
+ * Vague 3 — Sc3 v2 (per-nutrient tolerance, swap mode, price hero)
+ * ============================================================ */
+.sc3tol{display:flex;align-items:center;gap:5px;margin-top:4px}
+.sc3tol span{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-weight:700}
+.sc3tol input{padding:5px 8px;border:1px solid var(--line);border-radius:6px;font:600 11.5px 'Inter';background:#fff;color:var(--ink);width:62px;text-align:right}
+.sc3tol input:focus{outline:none;border-color:var(--green-500);background:#fff}
+.sc3swap{margin-top:14px;padding:11px 14px;background:linear-gradient(135deg,#eaf5ec,#f6faf7);border:1px dashed var(--green-300);border-radius:10px;font:600 12.5px 'Inter';color:var(--green-800);display:flex;align-items:center;gap:10px;line-height:1.4}
+.sc3swap .sc3swicon{font-size:18px;flex-shrink:0}
+.sc3swap b{color:var(--green-900)}
+.sc3swap.sc3swap-empty{background:var(--soft);border-color:var(--line);color:var(--muted)}
+.sc3row.locked{opacity:.92}
+.sc3row.locked .sc3sel,.sc3row.locked .sc3px{background:#f4f7f4;border-color:#dde6df;color:var(--muted);cursor:not-allowed}
+.sc3row.locked .sc3lbl{color:var(--muted)}
+.sc3lock{font:800 9px 'Inter';color:var(--muted);background:#f0f4f1;border:1px solid #dde6df;padding:1px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;margin-left:6px;vertical-align:1px}
+/* Hero PRICE card — clearer monetary framing (#fb-mpybcwyhwthb) */
+.sc3price{position:relative}
+.sc3price .sc3pmark{position:absolute;top:14px;right:18px;font:800 9.5px 'Inter';letter-spacing:.1em;text-transform:uppercase;color:#7cfc9a;background:rgba(124,252,154,.13);padding:3px 8px;border-radius:6px;border:1px solid rgba(124,252,154,.3)}
+.sc3price .sc3plbl{font:800 12px 'Inter';color:#7cfc9a;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sc3price .sc3plbl::before{content:"💰";font-size:14px}
+.sc3pval b::before{content:"$";font-size:24px;color:#9fd7ac;font-weight:700;margin-right:2px;vertical-align:5px}
+
+/* ============================================================
  * COCKPIT — Crisis Center (Netflix rails + Spotify nav + Uber actions)
  * ============================================================ */
 #sc-cockpit{padding:0;margin:-20px -32px 0;background:radial-gradient(1200px 600px at 70% -10%,rgba(76,175,80,.12),transparent 60%),linear-gradient(180deg,#0a1812 0%,#07140c 100%);color:#dff0e3;min-height:80vh}
@@ -696,13 +718,13 @@ tbody tr.sel{background:var(--green-50)}
       <div class="sc3target">
         <div class="sc3tlbl" data-k="bl.target">Grade cible</div>
         <div class="sc3trow">
-          <label><span>N %</span><input type="number" id="bgN" step="0.1" min="0"></label>
-          <label><span>P₂O₅ %</span><input type="number" id="bgP" step="0.1" min="0"></label>
-          <label><span>K₂O %</span><input type="number" id="bgK" step="0.1" min="0"></label>
-          <label><span>S %</span><input type="number" id="bgS" step="0.1" min="0"></label>
-          <label class="sm"><span data-k="bl.tol">Tolérance ±</span><input type="number" id="bgTol" step="0.1" min="0"></label>
+          <label><span>N %</span><input type="number" id="bgN" step="0.1" min="0"><div class="sc3tol"><span data-k="bl.tolNut">tol</span><input type="number" id="bgTolN" step="0.1" min="0" title="Tolérance N (±%)"></div></label>
+          <label><span>P₂O₅ %</span><input type="number" id="bgP" step="0.1" min="0"><div class="sc3tol"><span data-k="bl.tolNut">tol</span><input type="number" id="bgTolP" step="0.1" min="0" title="Tolérance P₂O₅ (±%)"></div></label>
+          <label><span>K₂O %</span><input type="number" id="bgK" step="0.1" min="0"><div class="sc3tol"><span data-k="bl.tolNut">tol</span><input type="number" id="bgTolK" step="0.1" min="0" title="Tolérance K₂O (±%)"></div></label>
+          <label><span>S %</span><input type="number" id="bgS" step="0.1" min="0"><div class="sc3tol"><span data-k="bl.tolNut">tol</span><input type="number" id="bgTolS" step="0.1" min="0" title="Tolérance S (±%)"></div></label>
           <label class="sm"><span data-k="bl.freight">Freight CFR→FOB ($/t)</span><input type="number" id="bgFr" step="1" min="0"></label>
         </div>
+        <div class="sc3swap" id="sc3SwapBanner"></div>
       </div>
       <div class="sc3pricewrap" id="sc3PriceCard"></div>
     </div>
@@ -787,25 +809,26 @@ tbody tr.sel{background:var(--green-50)}
 </main>
 
 <!-- product editor modal -->
-<div class="modal" id="prodModal"><div class="box">
+<div class="modal" id="prodModal"><div class="box" style="max-width:820px;max-height:90vh;overflow-y:auto">
   <h3 id="modalTitle">Nouveau produit</h3>
   <div class="fgrid">
     <div class="full"><label class="fl">Produit</label><input type="text" id="m_product"></div>
-    <div><label class="fl">Famille</label><input type="text" id="m_family"></div>
+    <div><label class="fl">Famille <span class="muted" style="font-weight:500;text-transform:none;font-size:11px">(référence)</span></label><select id="m_family"></select></div>
     <div><label class="fl">Ligne</label><input type="text" id="m_line"></div>
-    <div><label class="fl">cs_acp</label><input type="number" id="m_cs_acp" step="0.001"></div>
+    <div><label class="fl">Coût production /t</label><input type="number" id="m_variable_cost_total" step="0.1"></div>
+  </div>
+  <h4 style="margin:18px 0 8px;font-size:13px;color:var(--green-800);text-transform:uppercase;letter-spacing:.04em">Composition nutriment</h4>
+  <div class="fgrid">
     <div><label class="fl">N (%)</label><input type="number" id="m_n" step="0.1"></div>
     <div><label class="fl">P₂O₅ (%)</label><input type="number" id="m_p" step="0.1"></div>
     <div><label class="fl">K₂O (%)</label><input type="number" id="m_k" step="0.1"></div>
     <div><label class="fl">S (%)</label><input type="number" id="m_s" step="0.1"></div>
-    <div><label class="fl">cs_rock</label><input type="number" id="m_cs_rock" step="0.001"></div>
-    <div><label class="fl">cs_nh3</label><input type="number" id="m_cs_nh3" step="0.001"></div>
-    <div><label class="fl">s_total (soufre)</label><input type="number" id="m_s_total" step="0.001"></div>
-    <div><label class="fl">cs_kcl</label><input type="number" id="m_cs_kcl" step="0.001"></div>
-    <div><label class="fl">cs_sam</label><input type="number" id="m_cs_sam" step="0.001"></div>
-    <div><label class="fl">Coût production /t</label><input type="number" id="m_variable_cost_total" step="0.1"></div>
+    <div><label class="fl">cs_acp <span class="muted" style="font-weight:500;text-transform:none;font-size:11px">(coeff. acide phosphorique)</span></label><input type="number" id="m_cs_acp" step="0.001"></div>
   </div>
-  <p class="note">Laissez un champ vide = 0. Un produit reste « à compléter » tant que cs_acp, le coût de production et la composition ne sont pas renseignés.</p>
+  <h4 style="margin:18px 0 8px;font-size:13px;color:var(--green-800);text-transform:uppercase;letter-spacing:.04em">Consommations matières premières (cs_xxx, t MP / t produit)</h4>
+  <p class="muted" style="margin:-4px 0 10px;font-size:12px">Liste exhaustive — laissez 0 pour les MP non consommées par ce produit.</p>
+  <div class="fgrid" id="mpGrid"></div>
+  <p class="note">Un produit reste « à compléter » tant que cs_acp, le coût de production et la composition nutriment ne sont pas renseignés.</p>
   <div class="navbtns" style="margin-top:8px">
     <button class="btn danger sm" id="delBtn" onclick="deleteProd()" style="display:none">Supprimer</button>
     <span class="sp" style="flex:1"></span>
@@ -853,6 +876,7 @@ fr:{
  'hist.eyebrow':'Historique des simulations','hist.h':'Simulations enregistrées','hist.lead':'Retrouvez, rechargez ou exportez vos simulations. Sauvegarde locale (par navigateur) — utilisez l\'export CSV pour partager.','btn.exportAll':'⤓ Exporter tout (CSV)','btn.clearHist':'Vider l\'historique',
  'mi.eyebrow':'Veille marché','mi.h':'Market Intel','mi.lead':'Le rapport Power BI de veille marché, embarqué ici pour contextualiser les prix DAP/TSP et matières premières au moment de la simulation.','mi.btn':'📊 Ouvrir la plateforme Market Intel ↗','mi.note':'Accède à la plateforme de veille marché (Power BI / Fabric) — ouverture sécurisée derrière le SSO Microsoft de l\'organisation.',
  'bl.eyebrow':'Scénario 3 · Pricing par équivalence blend','bl.h':'Quel prix notre produit peut-il commander face aux commodities ?','bl.lead':'L\'agriculteur compose mentalement le même grade NPK à partir de commodities (DAP, MAP, Urée, KCl…). Sc3 résout les deux blends — commodity et avec notre produit — et back-solve le prix qui rend les deux <b>équivalents en coût/tonne</b>. C\'est le <b>plafond de prix défendable par le marché</b>.',
+ 'bl.tolNut':'tol ±%','bl.swapEmpty':'Renseigne d\'abord un ingrédient en <b>slot 1 du blend gauche</b> — c\'est le produit du client (concurrent) que notre OCP viendra remplacer.','bl.swapInto':'Mode swap','bl.swapMsg':'On remplace <b>{from}</b> (gauche · concurrent) par <b>{to}</b> (droite · OCP). Mêmes complémentaires, même masse 1000 kg/t, même cible NPK ± tolérance.','bl.lockedTitle':'Ingrédient hérité du blend gauche (lecture seule)','bl.priceTag':'PRIX',
  'bl.target':'Grade cible','bl.tol':'Tolérance ±','bl.freight':'Freight CFR→FOB ($/t)','bl.benchmark':'Benchmark commodity','bl.benchmarkSub':'ce que ferait l\'agriculteur sans nous','bl.ourprod':'Avec notre produit OCP','bl.ourprodSub':'on est dans le blend, on capture le mix','bl.product':'Produit OCP :','bl.blendCost':'Coût du blend','bl.blendCostTarget':'Coût du blend (cible)','bl.heroLbl':'Prix custom back-solvé','bl.cfr':'$/t CFR','bl.fobMor':'FOB Maroc (CFR − freight) :','bl.heroOk':'Au-dessus de ce prix, l\'agriculteur a financièrement intérêt à blender en commodity.','bl.heroWarn':'⚠ Un nutriment hors tolérance dans le blend de droite — ajuste les ingrédients pour atteindre le grade cible.','bl.heroEmpty':'Sélectionne un produit OCP compatible avec le grade cible.','bl.reset':'↺ Réinitialiser','bl.inject':'→ Injecter ce prix dans le moteur CGM','bl.note':'Solveur 5×5 (4 nutriments + masse) : Gauss-Jordan, clamp ≥ 0, renormalisation à 1000 kg/t. Math portée 1:1 du fichier de Tarik (onglet <code>BlendCalc</code>). Sc3 alimente ensuite les fonctions <code>rmCost</code>/<code>cgmEq</code>/<code>mcv</code> existantes — KPIs visibles dans l\'onglet Résultats.','bl.ingN':'Ingrédient','bl.prodSlot':'PRODUIT OCP','bl.emptySel':'— vide —',
  'ref.eyebrow':'Admin · Référentiel','ref.h':'Catalogue Produits × Lignes','ref.lead':'Maintenez le catalogue : consommations spécifiques, coûts de production, composition nutritive. Les nouveaux produits se saisissent <b>à la main</b> (couche delta) — pas besoin de ré-importer toute la base.',
  'const.eyebrow':'Admin · Constantes techniques','const.h':'Coefficients & indices','const.lead':'Coefficients techniques utilisés par le moteur (indices Soufre, Roche…), avec documentation de la source. Les règles de calcul restent celles du fichier Excel CGM.',
@@ -901,6 +925,7 @@ en:{
  'hist.eyebrow':'Simulation history','hist.h':'Saved simulations','hist.lead':'Find, reload or export your simulations. Local storage (per browser) — use CSV export to share.','btn.exportAll':'⤓ Export all (CSV)','btn.clearHist':'Clear history',
  'mi.eyebrow':'Market intel','mi.h':'Market Intel','mi.lead':'The Power BI market-intel report, embedded here to contextualise DAP/TSP and raw-material prices at simulation time.','mi.btn':'📊 Open the Market Intel platform ↗','mi.note':'Access the market intel platform (Power BI / Fabric) — secure opening behind the organisation\'s Microsoft SSO.',
  'bl.eyebrow':'Scenario 3 · Blend-equivalence pricing','bl.h':'What price can our product command against commodities?','bl.lead':'The farmer mentally builds the same NPK grade from commodities (DAP, MAP, Urea, KCl…). Sc3 solves both blends — commodity and with our product — and back-solves the price that makes them <b>equivalent in $/t</b>. That\'s the <b>market-defensible price ceiling</b>.',
+ 'bl.tolNut':'tol ±%','bl.swapEmpty':'First fill <b>slot 1 of the left blend</b> — that\'s the competitor product we are replacing with our OCP product.','bl.swapInto':'Swap mode','bl.swapMsg':'We replace <b>{from}</b> (left · competitor) with <b>{to}</b> (right · OCP). Same complements, same 1000 kg/t mass, same NPK target ± tolerance.','bl.lockedTitle':'Ingredient inherited from the left blend (read-only)','bl.priceTag':'PRICE',
  'bl.target':'Target grade','bl.tol':'Tolerance ±','bl.freight':'Freight CFR→FOB ($/t)','bl.benchmark':'Commodity benchmark','bl.benchmarkSub':'what the farmer would do without us','bl.ourprod':'With our OCP product','bl.ourprodSub':'we\'re in the blend, we capture the mix','bl.product':'OCP product:','bl.blendCost':'Blend cost','bl.blendCostTarget':'Blend cost (target)','bl.heroLbl':'Back-solved custom price','bl.cfr':'$/t CFR','bl.fobMor':'Morocco FOB (CFR − freight):','bl.heroOk':'Above this price, the farmer has a financial incentive to blend with commodities.','bl.heroWarn':'⚠ A nutrient is out of tolerance in the right blend — adjust ingredients to hit the target grade.','bl.heroEmpty':'Pick an OCP product compatible with the target grade.','bl.reset':'↺ Reset','bl.inject':'→ Inject this price into the CGM engine','bl.note':'5×5 solver (4 nutrients + mass): Gauss-Jordan, clamp ≥ 0, renormalisation to 1000 kg/t. Math ported 1:1 from Tarik\'s file (<code>BlendCalc</code> sheet). Sc3 then feeds the existing <code>rmCost</code>/<code>cgmEq</code>/<code>mcv</code> functions — KPIs visible in the Results tab.','bl.ingN':'Ingredient','bl.prodSlot':'OCP PRODUCT','bl.emptySel':'— empty —',
  'ref.eyebrow':'Admin · Reference','ref.h':'Product × Line catalogue','ref.lead':'Maintain the catalogue: specific consumptions, production costs, nutrient composition. New products are entered <b>manually</b> (delta layer) — no need to re-import the whole base.',
  'const.eyebrow':'Admin · Technical constants','const.h':'Coefficients & indices','const.lead':'Technical coefficients used by the engine (Sulfur / Rock indices…), with source documentation. Calculation rules remain those of the CGM Excel file.',
@@ -949,6 +974,7 @@ pt:{
  'hist.eyebrow':'Histórico das simulações','hist.h':'Simulações salvas','hist.lead':'Encontre, recarregue ou exporte suas simulações. Armazenamento local (por navegador) — use a exportação CSV para compartilhar.','btn.exportAll':'⤓ Exportar tudo (CSV)','btn.clearHist':'Limpar histórico',
  'mi.eyebrow':'Inteligência de mercado','mi.h':'Market Intel','mi.lead':'O relatório Power BI de inteligência de mercado, embarcado aqui para contextualizar preços DAP/TSP e matérias-primas no momento da simulação.','mi.btn':'📊 Abrir a plataforma Market Intel ↗','mi.note':'Acesse a plataforma de inteligência de mercado (Power BI / Fabric) — abertura segura via SSO Microsoft da organização.',
  'bl.eyebrow':'Cenário 3 · Pricing por equivalência de blend','bl.h':'Que preço nosso produto pode cobrar frente às commodities?','bl.lead':'O agricultor monta mentalmente o mesmo grade NPK a partir de commodities (DAP, MAP, Ureia, KCl…). Sc3 resolve os dois blends — commodity e com nosso produto — e back-solve o preço que torna ambos <b>equivalentes em $/t</b>. É o <b>teto de preço defensável pelo mercado</b>.',
+ 'bl.tolNut':'tol ±%','bl.swapEmpty':'Primeiro preencha o <b>slot 1 do blend da esquerda</b> — é o produto do concorrente que substituiremos pelo OCP.','bl.swapInto':'Modo swap','bl.swapMsg':'Substituímos <b>{from}</b> (esquerda · concorrente) por <b>{to}</b> (direita · OCP). Mesmos complementos, mesma massa 1000 kg/t, mesmo grade NPK ± tolerância.','bl.lockedTitle':'Ingrediente herdado do blend da esquerda (somente leitura)','bl.priceTag':'PREÇO',
  'bl.target':'Grade alvo','bl.tol':'Tolerância ±','bl.freight':'Frete CFR→FOB ($/t)','bl.benchmark':'Benchmark commodity','bl.benchmarkSub':'o que o agricultor faria sem nós','bl.ourprod':'Com nosso produto OCP','bl.ourprodSub':'estamos no blend, capturamos o mix','bl.product':'Produto OCP:','bl.blendCost':'Custo do blend','bl.blendCostTarget':'Custo do blend (alvo)','bl.heroLbl':'Preço custom back-solved','bl.cfr':'$/t CFR','bl.fobMor':'FOB Marrocos (CFR − frete):','bl.heroOk':'Acima deste preço, o agricultor tem incentivo financeiro a fazer blend com commodities.','bl.heroWarn':'⚠ Um nutriente fora da tolerância no blend da direita — ajuste os ingredientes para atingir o grade alvo.','bl.heroEmpty':'Selecione um produto OCP compatível com o grade alvo.','bl.reset':'↺ Redefinir','bl.inject':'→ Injetar este preço no motor CGM','bl.note':'Solver 5×5 (4 nutrientes + massa): Gauss-Jordan, clamp ≥ 0, renormalização a 1000 kg/t. Math portada 1:1 do arquivo de Tarik (aba <code>BlendCalc</code>). Sc3 alimenta as funções <code>rmCost</code>/<code>cgmEq</code>/<code>mcv</code> existentes — KPIs visíveis na aba Resultados.','bl.ingN':'Ingrediente','bl.prodSlot':'PRODUTO OCP','bl.emptySel':'— vazio —',
  'ref.eyebrow':'Admin · Catálogo','ref.h':'Catálogo Produtos × Linhas','ref.lead':'Mantenha o catálogo: consumos específicos, custos de produção, composição nutritiva. Novos produtos são inseridos <b>manualmente</b> (camada delta) — sem necessidade de reimportar toda a base.',
  'const.eyebrow':'Admin · Constantes técnicas','const.h':'Coeficientes e índices','const.lead':'Coeficientes técnicos usados pelo motor (índices Enxofre, Rocha…), com documentação da fonte. As regras de cálculo permanecem as do arquivo Excel CGM.',
@@ -1531,25 +1557,36 @@ function gradeOf(ings,q){
 }
 function blendCost(ings,q,prices){ let c=0; for(let i=0;i<q.length;i++) c+=(q[i]||0)*(prices[i]||0)/1000; return c; }
 
-/* state.sc3 — slots utilisateur */
-state.sc3 = state.sc3 || {
-  grade:{N:2, P:20, K:20, S:5, tol:1, freight:25},
-  left:[
-    {ingIdx:1, price:900},  // MAP   (N11, P52)
-    {ingIdx:3, price:503},  // SSP   (P20, S11)
-    {ingIdx:10, price:264}, // KCl   (K60)
-    {ingIdx:15, price:350}, // Charge inerte (filler)
-    {ingIdx:-1, price:0}
-  ],
-  right:[
-    {ingIdx:-1, price:503}, // slot 0 = OCP product (ingIdx unused, set via prodRow)
-    {ingIdx:10, price:264}, // KCl
-    {ingIdx:1,  price:503}, // MAP — pour ajuster P/N face au produit OCP
-    {ingIdx:-1, price:0},
-    {ingIdx:-1, price:0}
-  ],
-  prodRow:null
-};
+/* state.sc3 — slots utilisateur (Vague 3 — per-nutrient tolerance + swap mode)
+   Left = competitor blend (user-editable). Slot 0 = competitor "anchor product" — the one we propose to swap.
+   Right = OCP swap: slot 0 = OCP product, slots 1-4 = MIRROR of left[1..4] (read-only on right).
+   Backward-compat: legacy state.sc3 carrying single `tol` is migrated to {tolN..tolS} on load. */
+function _sc3DefaultState(){
+  return {
+    grade:{N:2, P:20, K:20, S:5, tolN:0.8, tolP:1.0, tolK:1.0, tolS:0.5, freight:25},
+    left:[
+      {ingIdx:1, price:900},  // MAP   (N11, P52)  ← "competitor product" anchor (slot 0)
+      {ingIdx:3, price:503},  // SSP   (P20, S11)
+      {ingIdx:10, price:264}, // KCl   (K60)
+      {ingIdx:15, price:350}, // Charge inerte (filler)
+      {ingIdx:-1, price:0}
+    ],
+    prodRow:null,                                  // OCP product row (slot 0 on right)
+    rightProdPrice:503                             // price of OCP product (right slot 0) — only editable input on the right card
+  };
+}
+state.sc3 = state.sc3 || _sc3DefaultState();
+// Migrate legacy {tol:X} → per-nutrient tolerances.
+if(state.sc3.grade && (state.sc3.grade.tol!=null) && state.sc3.grade.tolN==null){
+  const t=state.sc3.grade.tol;
+  state.sc3.grade.tolN=t; state.sc3.grade.tolP=t; state.sc3.grade.tolK=t; state.sc3.grade.tolS=t;
+  delete state.sc3.grade.tol;
+}
+// Migrate legacy `right` array → rightProdPrice (preserve OCP product price if it was set).
+if(state.sc3.right){
+  if(state.sc3.rightProdPrice==null) state.sc3.rightProdPrice=(state.sc3.right[0]&&state.sc3.right[0].price)||503;
+  delete state.sc3.right;
+}
 function _initSc3Product(){
   if(state.sc3.prodRow) return;
   const list=products();
@@ -1566,14 +1603,17 @@ function renderSc3(){
   const g=state.sc3.grade;
   document.getElementById('bgN').value=g.N; document.getElementById('bgP').value=g.P;
   document.getElementById('bgK').value=g.K; document.getElementById('bgS').value=g.S;
-  document.getElementById('bgTol').value=g.tol; document.getElementById('bgFr').value=g.freight;
-  ['bgN','bgP','bgK','bgS','bgTol','bgFr'].forEach(id=>{document.getElementById(id).oninput=function(){g[id.slice(2).toLowerCase().replace('fr','freight').replace('tol','tol')]=parseFloat(this.value)||0;sc3Refresh();};});
-  // workaround: explicit binds
+  document.getElementById('bgTolN').value=g.tolN; document.getElementById('bgTolP').value=g.tolP;
+  document.getElementById('bgTolK').value=g.tolK; document.getElementById('bgTolS').value=g.tolS;
+  document.getElementById('bgFr').value=g.freight;
   document.getElementById('bgN').oninput=function(){g.N=parseFloat(this.value)||0;sc3Refresh();};
   document.getElementById('bgP').oninput=function(){g.P=parseFloat(this.value)||0;sc3Refresh();};
   document.getElementById('bgK').oninput=function(){g.K=parseFloat(this.value)||0;sc3Refresh();};
   document.getElementById('bgS').oninput=function(){g.S=parseFloat(this.value)||0;sc3Refresh();};
-  document.getElementById('bgTol').oninput=function(){g.tol=parseFloat(this.value)||0;sc3Refresh();};
+  document.getElementById('bgTolN').oninput=function(){g.tolN=parseFloat(this.value)||0;sc3Refresh();};
+  document.getElementById('bgTolP').oninput=function(){g.tolP=parseFloat(this.value)||0;sc3Refresh();};
+  document.getElementById('bgTolK').oninput=function(){g.tolK=parseFloat(this.value)||0;sc3Refresh();};
+  document.getElementById('bgTolS').oninput=function(){g.tolS=parseFloat(this.value)||0;sc3Refresh();};
   document.getElementById('bgFr').oninput=function(){g.freight=parseFloat(this.value)||0;sc3Refresh();};
   // product picker
   const sel=document.getElementById('bgProd');
@@ -1581,7 +1621,7 @@ function renderSc3(){
   sel.innerHTML=list.map(p=>`<option value="${p.row}" ${p.row===state.sc3.prodRow?'selected':''}>${escapeHtml(p.product)} · ${p.line} (${p.family} · N${p.n} P${p.p} K${p.k} S${p.s})</option>`).join('');
   sel.onchange=function(){state.sc3.prodRow=parseInt(this.value,10);sc3Refresh();};
   renderSc3Rows('leftRows','left');
-  renderSc3Rows('rightRows','right',true);
+  renderSc3RowsRight();
   sc3Refresh();
 }
 function ingOptions(selectedIdx){
@@ -1589,68 +1629,75 @@ function ingOptions(selectedIdx){
   INGS.forEach((it,i)=>{ out+=`<option value="${i}" ${i===selectedIdx?'selected':''}>${escapeHtml(it.name)} (N${it.N} P${it.P} K${it.K} S${it.S})</option>`; });
   return out;
 }
-function renderSc3Rows(hostId, side, skipFirst){
+function renderSc3Rows(hostId, side){
+  // Left side only — fully user-editable (5 slots). Right side rendered by renderSc3RowsRight.
   const host=document.getElementById(hostId); if(!host) return;
   const rows=state.sc3[side];
   let html='';
   for(let i=0;i<5;i++){
-    if(skipFirst && i===0){
-      // right side first row = the OCP product (filled by renderSc3 product picker)
-      html+=`<div class="sc3row prim"><div class="sc3lbl">${tr('bl.prodSlot')}</div>
-        <div class="sc3ing" id="rprod0">—</div>
-        <input class="sc3px" type="number" min="0" step="1" id="rprice0" value="${rows[i].price||0}">
-        <div class="sc3qty" id="rqty0">—</div></div>`;
-      continue;
-    }
     const sid=(side==='left'?'l':'r');
-    html+=`<div class="sc3row"><div class="sc3lbl">${tr('bl.ingN')} ${i+1}</div>
+    const isAnchor = side==='left' && i===0;
+    const lbl = isAnchor ? `<div class="sc3lbl">⚓ ${tr('bl.ingN')} 1</div>` : `<div class="sc3lbl">${tr('bl.ingN')} ${i+1}</div>`;
+    html+=`<div class="sc3row${isAnchor?' prim':''}">${lbl}
       <select class="sc3sel" id="${sid}ing${i}">${ingOptions(rows[i].ingIdx)}</select>
       <input class="sc3px" type="number" min="0" step="1" id="${sid}price${i}" value="${rows[i].price||0}">
       <div class="sc3qty" id="${sid}qty${i}">—</div></div>`;
   }
   host.innerHTML=html;
-  // wire
   for(let i=0;i<5;i++){
-    if(skipFirst && i===0){
-      const pi=document.getElementById('rprice0');
-      if(pi) pi.oninput=function(){ state.sc3.right[0].price=parseFloat(this.value)||0; sc3Refresh(); };
-      continue;
-    }
     const sid=(side==='left'?'l':'r');
     const se=document.getElementById(sid+'ing'+i); const pi=document.getElementById(sid+'price'+i);
-    if(se) se.onchange=function(){ state.sc3[side][i].ingIdx=parseInt(this.value,10); sc3Refresh(); };
-    if(pi) pi.oninput=function(){ state.sc3[side][i].price=parseFloat(this.value)||0; sc3Refresh(); };
+    if(se) se.onchange=function(){ state.sc3[side][i].ingIdx=parseInt(this.value,10); renderSc3RowsRight(); sc3Refresh(); };
+    if(pi) pi.oninput=function(){ state.sc3[side][i].price=parseFloat(this.value)||0; renderSc3RowsRight(); sc3Refresh(); };
   }
 }
-function sc3GetIngs(side){
-  const rows=state.sc3[side];
-  return rows.map((r,i)=>{
-    if(side==='right' && i===0){
-      const p=products().find(x=>x.row===state.sc3.prodRow);
-      return p?{name:p.product,N:p.n,P:p.p,K:p.k,S:p.s}:_ingFiller();
-    }
-    if(r.ingIdx<0||r.ingIdx>=INGS.length) return _ingFiller();
-    return INGS[r.ingIdx];
-  });
+function renderSc3RowsRight(){
+  // Right side — slot 0 = OCP product (price editable). Slots 1-4 = MIRROR of left[1..4] (read-only).
+  // Implements business comment #fb-mpybof83n6kh ("Récupérer ce qui a été fait à gauche, non éditable sur cet écran").
+  const host=document.getElementById('rightRows'); if(!host) return;
+  let html=`<div class="sc3row prim"><div class="sc3lbl">${tr('bl.prodSlot')}</div>
+      <div class="sc3ing" id="rprod0">—</div>
+      <input class="sc3px" type="number" min="0" step="1" id="rprice0" value="${state.sc3.rightProdPrice||0}">
+      <div class="sc3qty" id="rqty0">—</div></div>`;
+  for(let i=1;i<5;i++){
+    const lr=state.sc3.left[i];
+    const ing=(lr.ingIdx>=0&&lr.ingIdx<INGS.length)?INGS[lr.ingIdx]:_ingFiller();
+    const label=(lr.ingIdx>=0&&lr.ingIdx<INGS.length)?ing.name:tr('bl.emptySel');
+    html+=`<div class="sc3row locked" title="${escapeHtml(tr('bl.lockedTitle'))}"><div class="sc3lbl">${tr('bl.ingN')} ${i+1}<span class="sc3lock">🔒</span></div>
+      <div class="sc3sel" style="padding:7px 8px;border:1px solid #dde6df;border-radius:7px;background:#f4f7f4;color:var(--muted);font:600 12.5px 'Inter'">${escapeHtml(label)}</div>
+      <div class="sc3px" style="background:#f4f7f4;color:var(--muted);border-color:#dde6df">${f(lr.price||0,0)}</div>
+      <div class="sc3qty" id="rqty${i}">—</div></div>`;
+  }
+  host.innerHTML=html;
+  const pi=document.getElementById('rprice0');
+  if(pi) pi.oninput=function(){ state.sc3.rightProdPrice=parseFloat(this.value)||0; sc3Refresh(); };
 }
-function sc3Prices(side){ return state.sc3[side].map(r=>r.price||0); }
 function sc3Active(side){
-  // Active = slot with a real ingredient (or, for right slot 0, the OCP product).
-  const rows=state.sc3[side]; const out=[];
-  rows.forEach((r,i)=>{
-    if(side==='right' && i===0){
-      const p=products().find(x=>x.row===state.sc3.prodRow);
-      if(p) out.push({slot:i, ing:{name:p.product,N:p.n,P:p.p,K:p.k,S:p.s}, price:r.price||0});
-      return;
-    }
-    if(r.ingIdx==null || r.ingIdx<0 || r.ingIdx>=INGS.length) return;
-    out.push({slot:i, ing:INGS[r.ingIdx], price:r.price||0});
-  });
+  // Active = slot with a real ingredient.
+  // Left: read state.sc3.left.
+  // Right: slot 0 = OCP product (from prodRow) at price=rightProdPrice. Slots 1-4 mirror state.sc3.left[1..4] (same ingIdx, same price).
+  const out=[];
+  if(side==='left'){
+    state.sc3.left.forEach((r,i)=>{
+      if(r.ingIdx==null||r.ingIdx<0||r.ingIdx>=INGS.length) return;
+      out.push({slot:i, ing:INGS[r.ingIdx], price:r.price||0});
+    });
+    return out;
+  }
+  // side==='right'
+  const p=products().find(x=>x.row===state.sc3.prodRow);
+  if(p) out.push({slot:0, ing:{name:p.product,N:p.n,P:p.p,K:p.k,S:p.s}, price:state.sc3.rightProdPrice||0});
+  for(let i=1;i<5;i++){
+    const lr=state.sc3.left[i]; if(!lr || lr.ingIdx==null||lr.ingIdx<0||lr.ingIdx>=INGS.length) continue;
+    out.push({slot:i, ing:INGS[lr.ingIdx], price:lr.price||0});
+  }
   return out;
 }
-function sc3CheckGrade(g,tgt,tol){
+function sc3CheckGrade(g, tgt){
+  // Per-nutrient tolerance (Vague 3 — #fb-mpybe6darzw8).
+  const tols = {N:tgt.tolN||0, P:tgt.tolP||0, K:tgt.tolK||0, S:tgt.tolS||0};
   const out={};
-  ['N','P','K','S'].forEach(k=>{ out[k]=Math.abs(g[k]-(tgt[k]||0))<=(tol||0)+1e-6 ? 'OK' : 'OUT'; });
+  ['N','P','K','S'].forEach(k=>{ out[k]=Math.abs(g[k]-(tgt[k]||0))<=tols[k]+1e-6 ? 'OK' : 'OUT'; });
   return out;
 }
 function sc3Refresh(){
@@ -1658,7 +1705,7 @@ function sc3Refresh(){
   // LEFT — solve over active ingredients only
   const aL=sc3Active('left'); const aLings=aL.map(a=>a.ing); const aLprices=aL.map(a=>a.price);
   const L=blendSolve(aLings,tgt); const Lg=gradeOf(aLings,L.qty); const Lc=blendCost(aLings,L.qty,aLprices);
-  // RIGHT — solve over active ingredients (slot 0 = OCP product), then back-solve its price
+  // RIGHT — same complements as left[1..4] but slot 0 swapped to OCP product
   const aR=sc3Active('right'); const aRings=aR.map(a=>a.ing); const aRpricesUser=aR.map(a=>a.price);
   const R=blendSolve(aRings,tgt); const Rg=gradeOf(aRings,R.qty);
   const ocpIdx=aR.findIndex(a=>a.slot===0); // OCP product position in active array
@@ -1670,33 +1717,48 @@ function sc3Refresh(){
   const lqByS={}; aL.forEach((a,i)=>lqByS[a.slot]=L.qty[i]);
   const rqByS={}; aR.forEach((a,i)=>rqByS[a.slot]=R.qty[i]);
   state.sc3.left.forEach((r,i)=>{ const c=document.getElementById('lqty'+i); if(c) c.textContent=(lqByS[i]&&lqByS[i]>0.5)?Math.round(lqByS[i])+' kg':'—'; });
-  state.sc3.right.forEach((r,i)=>{ const c=document.getElementById((i===0?'rqty0':'rqty'+i)); if(c) c.textContent=(rqByS[i]&&rqByS[i]>0.5)?Math.round(rqByS[i])+' kg':'—'; });
+  for(let i=0;i<5;i++){ const c=document.getElementById('rqty'+i); if(c) c.textContent=(rqByS[i]&&rqByS[i]>0.5)?Math.round(rqByS[i])+' kg':'—'; }
   // product label in right slot 0
   const pp=products().find(x=>x.row===state.sc3.prodRow);
   const rprod=document.getElementById('rprod0'); if(rprod && pp) rprod.textContent=pp.product+' · '+pp.line;
   // costs
   const lc=document.getElementById('leftCost'); if(lc) lc.textContent=f(Lc,1)+' $/t';
   const rc=document.getElementById('rightCost'); if(rc) rc.textContent=f(Lc,1)+' $/t';
-  // grades pills
-  const lchk=sc3CheckGrade(Lg,tgt,tgt.tol);
-  const rchk=sc3CheckGrade(Rg,tgt,tgt.tol);
-  const renderGrade=(host,chk,grd)=>{ const el=document.getElementById(host); if(!el) return;
-    el.innerHTML=['N','P','K','S'].map(k=>`<span class="gpill ${chk[k]==='OK'?'ok':'bad'}">${k} ${grd[k].toFixed(1)} ${chk[k]}</span>`).join('');
+  // grades pills — per-nutrient tolerance
+  const lchk=sc3CheckGrade(Lg,tgt);
+  const rchk=sc3CheckGrade(Rg,tgt);
+  const renderGrade=(host,chk,grd,tgt)=>{ const el=document.getElementById(host); if(!el) return;
+    const tols={N:tgt.tolN||0,P:tgt.tolP||0,K:tgt.tolK||0,S:tgt.tolS||0};
+    el.innerHTML=['N','P','K','S'].map(k=>`<span class="gpill ${chk[k]==='OK'?'ok':'bad'}" title="cible ${(tgt[k]||0).toFixed(1)}% ± ${tols[k].toFixed(1)}%">${k} ${grd[k].toFixed(1)} ${chk[k]}</span>`).join('');
   };
-  renderGrade('leftGrade',lchk,Lg); renderGrade('rightGrade',rchk,Rg);
-  // hero price card
+  renderGrade('leftGrade',lchk,Lg,tgt); renderGrade('rightGrade',rchk,Rg,tgt);
+  // Swap-mode banner — explain the use case crystal clear (#fb-mpybnty2gegc)
+  const banner=document.getElementById('sc3SwapBanner');
+  if(banner){
+    const anchor=aL.find(a=>a.slot===0);
+    if(anchor && pp){
+      banner.classList.remove('sc3swap-empty');
+      const msg = tr('bl.swapMsg').replace('{from}', escapeHtml(anchor.ing.name)).replace('{to}', escapeHtml(pp.product));
+      banner.innerHTML = `<span class="sc3swicon">🔁</span><div><b>${tr('bl.swapInto')}</b> · ${msg}</div>`;
+    } else {
+      banner.classList.add('sc3swap-empty');
+      banner.innerHTML = `<span class="sc3swicon">ℹ️</span><div>${tr('bl.swapEmpty')}</div>`;
+    }
+  }
+  // hero price card — Vague 3: make it crystal clear this is a PRICE (#fb-mpybcwyhwthb)
   const fr=tgt.freight||0; const fob=isFinite(Pcustom)?(Pcustom-fr):NaN;
   const cardHost=document.getElementById('sc3PriceCard');
   const status = isFinite(Pcustom) && Pcustom>0 ? 'ok' : 'bad';
   const allOk = Object.values(rchk).every(v=>v==='OK');
   if(cardHost) cardHost.innerHTML=`<div class="sc3price ${status} ${allOk?'':'warn'}">
+    <span class="sc3pmark">${tr('bl.priceTag')}</span>
     <div class="sc3plbl">${tr('bl.heroLbl')}</div>
     <div class="sc3pval"><b>${isFinite(Pcustom)?f(Pcustom,1):'—'}</b><span>${tr('bl.cfr')}</span></div>
     <div class="sc3pfob">${tr('bl.fobMor')} <b>${isFinite(fob)?f(fob,1):'—'} $/t</b></div>
     <div class="sc3pmsg">${isFinite(Pcustom)? (allOk?tr('bl.heroOk'):tr('bl.heroWarn')) :tr('bl.heroEmpty')}</div>
   </div>`;
 }
-function resetSc3(){ state.sc3=null; renderSc3(); }
+function resetSc3(){ state.sc3=_sc3DefaultState(); renderSc3(); }
 function applySc3ToCgm(){
   const tgt=state.sc3.grade;
   const aL=sc3Active('left'); const L=blendSolve(aL.map(a=>a.ing),tgt);
@@ -2085,27 +2147,66 @@ function renderRefTable(){
   }).join('') || '<tr><td colspan="9" class="muted" style="text-align:center;padding:20px">Aucun produit.</td></tr>';
 }
 let editingRow=null;
+// Vague 3 — Lot 6.1 / 6.2: family is a reference (#fb-mpybpzl1n8gc), and the modal
+// exposes ALL cs_xxx raw-material fields (#fb-mpybrm3srcnl) so a new product can declare
+// every consumption a real industrial fertiliser would have.
+const MP_FIELDS=[
+  ['cs_rock','Roche (cs_rock)'],
+  ['cs_nh3','Ammoniac NH₃ (cs_nh3)'],
+  ['s_total','Soufre total (s_total)'],
+  ['cs_acs','ACS / H₂SO₄ (cs_acs)'],
+  ['cs_kcl','KCl (cs_kcl)'],
+  ['cs_sam','SAM (cs_sam)'],
+  ['cs_borax','Borax (cs_borax)'],
+  ['cs_zno','ZnO (cs_zno)'],
+  ['cs_cuso4','CuSO₄ (cs_cuso4)'],
+  ['cs_caso4','CaSO₄ (cs_caso4)'],
+  ['cs_caco3','CaCO₃ (cs_caco3)'],
+  ['cs_gypse','Gypse (cs_gypse)']
+];
+function _renderMpGrid(p){
+  const host=document.getElementById('mpGrid'); if(!host) return;
+  host.innerHTML = MP_FIELDS.map(([k,label])=>`<div><label class="fl">${label}</label><input type="number" id="m_${k}" step="0.001" value="${(p&&p[k]!=null)?p[k]:''}"></div>`).join('');
+}
+function _renderFamilyDropdown(currentFamily){
+  const sel=document.getElementById('m_family'); if(!sel) return;
+  // Reference list = all families currently in the merged catalogue (base + manual delta).
+  const fams=[...new Set(catalogue().map(p=>p.family).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  if(currentFamily && !fams.includes(currentFamily)) fams.push(currentFamily);
+  const customVal='__custom__';
+  sel.innerHTML = fams.map(f=>`<option value="${escapeHtml(f)}" ${f===currentFamily?'selected':''}>${escapeHtml(f)}</option>`).join('') + `<option value="${customVal}">+ Nouvelle famille…</option>`;
+  sel.onchange=function(){
+    if(this.value===customVal){
+      const nf=(prompt('Nom de la nouvelle famille produit :','')||'').trim();
+      if(nf){ _renderFamilyDropdown(nf); }
+      else { _renderFamilyDropdown(currentFamily||fams[0]); }
+    }
+  };
+}
 function openProd(row){
   editingRow = (row!==undefined)?row:null;
   const p = editingRow!=null ? catalogue().find(x=>x.row===editingRow) : {};
   document.getElementById('modalTitle').textContent = editingRow!=null ? 'Éditer le produit' : 'Nouveau produit';
   document.getElementById('delBtn').style.display = editingRow!=null ? '' : 'none';
-  ['product','family','line'].forEach(k=>document.getElementById('m_'+k).value=p[k]||'');
-  ['cs_acp','n','p','k','s','cs_rock','cs_nh3','s_total','cs_kcl','cs_sam','variable_cost_total'].forEach(k=>document.getElementById('m_'+k).value=(p[k]!==undefined?p[k]:''));
+  ['product','line'].forEach(k=>document.getElementById('m_'+k).value=p[k]||'');
+  _renderFamilyDropdown(p.family||'');
+  ['cs_acp','n','p','k','s','variable_cost_total'].forEach(k=>document.getElementById('m_'+k).value=(p[k]!==undefined?p[k]:''));
+  _renderMpGrid(p||{});
   document.getElementById('prodModal').classList.add('on');
 }
 function closeProd(){ document.getElementById('prodModal').classList.remove('on'); }
-function num(id){ const v=parseFloat(document.getElementById(id).value); return isFinite(v)?v:0; }
+function num(id){ const el=document.getElementById(id); if(!el) return 0; const v=parseFloat(el.value); return isFinite(v)?v:0; }
 function saveProd(){
   const product=document.getElementById('m_product').value.trim();
   if(!product){ alert('Le nom du produit est requis.'); return; }
   const n=num('m_n'),p2=num('m_p'),k=num('m_k'),s=num('m_s');
   const row = editingRow!=null ? editingRow : (Math.max(0,...catalogue().map(x=>x.row))+1);
-  const obj={ row, product, family:document.getElementById('m_family').value.trim(), line:document.getElementById('m_line').value.trim(),
-    cs_acp:num('m_cs_acp'), cs_rock:num('m_cs_rock'), cs_nh3:num('m_cs_nh3'), s_total:num('m_s_total'),
-    cs_kcl:num('m_cs_kcl'), cs_sam:num('m_cs_sam'),
-    cs_acs:0,cs_borax:0,cs_zno:0,cs_cuso4:0,cs_caso4:0,cs_caco3:0,cs_gypse:0,
-    n,p:p2,k,s, nutrient_total:n+p2+k+s, variable_cost_total:num('m_variable_cost_total'), priority:'manuel' };
+  const family=document.getElementById('m_family').value.trim();
+  const obj={ row, product, family: (family==='__custom__'?'':family), line:document.getElementById('m_line').value.trim(),
+    cs_acp:num('m_cs_acp'),
+    n, p:p2, k, s, nutrient_total:n+p2+k+s,
+    variable_cost_total:num('m_variable_cost_total'), priority:'manuel' };
+  MP_FIELDS.forEach(([fld])=>{ obj[fld]=num('m_'+fld); });
   const i=DELTA.findIndex(x=>x.row===row);
   if(i>=0) DELTA[i]=obj; else DELTA.push(obj);
   saveDelta(); closeProd(); renderRefTable();
