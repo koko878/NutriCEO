@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NutriPlan — Pitch · OCP Nutricrops · D²nAI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-900:#103d17;--green-800:#1B5E20;--green-700:#2E7D32;--green-600:#2f8a39;
+  --green-500:#4CAF50;--green-300:#66BB6A;--green-100:#D6EADb;--green-50:#EAF4EC;
+  --ink:#10231a;--ink-2:#1f3a2a;--muted:#5c6b62;--muted-2:#8aa195;
+  --line:#e3ebe5;--line-2:#cfdcd4;
+  --bad:#B91C1C;--bad-bg:#fdeced;--ok:#15803D;--ok-bg:#dcfce7;
+  --warn:#B45309;--warn-bg:#fef3c7;--info:#0e4f6e;--info-bg:#dff1fb;
+  --soft:#f5f9f6;--bg-deep:#07140c;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--soft);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.55}
+h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em}
+.bar{position:sticky;top:0;z-index:50;background:#07140c;color:#dff0e3;border-bottom:1px solid rgba(124,252,154,.15)}
+.bar .wrap{max-width:1120px;margin:0 auto;padding:0 28px;height:54px;display:flex;align-items:center;gap:14px}
+.bar .nm{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:20px;color:#fff;display:flex;align-items:baseline;gap:6px}
+.bar .nm b{color:#7cfc9a}
+.bar .nm small{font:600 10px 'Inter';color:#7c9c87;text-transform:uppercase;letter-spacing:.1em;margin-left:8px}
+.bar .sp{flex:1}
+.bar .print{font:700 12px 'Inter';color:#04100a;background:#7cfc9a;padding:7px 14px;border-radius:8px;border:0;cursor:pointer}
+.bar .demo{font:700 12px 'Inter';color:#dff0e3;background:transparent;border:1px solid rgba(124,252,154,.32);padding:7px 14px;border-radius:8px;cursor:pointer;text-decoration:none}
+.bar .demo:hover{background:rgba(124,252,154,.13);color:#fff}
+
+.slide{max-width:1120px;margin:0 auto;padding:48px 28px;page-break-after:always;min-height:calc(100vh - 54px);display:flex;flex-direction:column;justify-content:center}
+.slide.compact{min-height:auto;padding:36px 28px}
+.slide-h{display:flex;align-items:baseline;gap:12px;margin-bottom:24px}
+.slide-h .num{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:46px;color:var(--green-300);line-height:1;opacity:.45}
+.slide-h .ttl{flex:1}
+.slide-h .eye{font:700 11px 'Inter';color:var(--green-700);text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px}
+.slide-h h2{font-size:38px;font-weight:700;margin:0;color:var(--ink);line-height:1.1;letter-spacing:-.02em}
+.slide-h h2 b{color:var(--green-700)}
+.lead{font-size:17px;color:var(--muted);max-width:78ch;margin:0 0 22px;line-height:1.55}
+
+/* ============== SLIDE 1 — HERO ============== */
+.hero{background:radial-gradient(1200px 600px at 80% -10%,rgba(124,252,154,.22),transparent 60%),linear-gradient(180deg,#07140c 0%,#0c1f14 60%,#103d17 100%);color:#dff0e3;border-radius:0;padding:80px 28px;min-height:100vh;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;left:-100px;bottom:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(76,175,80,.16),transparent 70%)}
+.hero .inner{max-width:1120px;margin:0 auto;width:100%;position:relative;z-index:2}
+.hero .eye{display:inline-flex;align-items:center;gap:8px;font:700 11px 'Inter';color:#7cfc9a;background:rgba(124,252,154,.13);border:1px solid rgba(124,252,154,.32);padding:6px 12px;border-radius:999px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:24px}
+.hero .eye .dot{width:7px;height:7px;border-radius:50%;background:#7cfc9a;box-shadow:0 0 0 0 rgba(124,252,154,.7);animation:pulse 1.8s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(124,252,154,.7)}80%,100%{box-shadow:0 0 0 8px rgba(124,252,154,0)}}
+.hero h1{font-size:78px;font-weight:700;color:#fff;margin:0 0 18px;letter-spacing:-.03em;line-height:1.02;max-width:18ch}
+.hero h1 b{color:#7cfc9a;font-weight:700}
+.hero p{font-size:21px;color:#bcd4c2;max-width:62ch;margin:0 0 32px;line-height:1.45}
+.hero p b{color:#fff}
+.hero .ftr{display:flex;align-items:flex-end;gap:32px;flex-wrap:wrap;margin-top:auto}
+.hero .ftr .it{font:500 13px 'Inter';color:#9fb3a6}
+.hero .ftr .it b{display:block;font:700 14.5px 'Inter';color:#fff;margin-bottom:2px}
+@media(max-width:780px){.hero h1{font-size:46px}.hero p{font-size:17px}}
+
+/* ============== Cards / Grids ============== */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:880px){.grid-3{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:0 1px 2px rgba(16,35,26,.04)}
+.card h3{margin:0 0 10px;font-family:'Inter';font-size:18px;font-weight:700;color:var(--ink)}
+.card p{margin:0;font-size:14px;color:var(--muted);line-height:1.6}
+.card .ico{font-size:30px;margin-bottom:10px;display:block}
+.card.deep{background:linear-gradient(180deg,#0a1812 0%,#07140c 100%);color:#dff0e3;border-color:rgba(124,252,154,.18)}
+.card.deep h3{color:#fff}
+.card.deep p{color:#9fb3a6}
+.card.warn{background:linear-gradient(135deg,#fef3c7,#fef9e6);border-color:#fcd34d}
+.card.warn h3{color:#7c5b07}
+.card.bad{background:linear-gradient(135deg,#fde2e2,#fdeded);border-color:#f0c9c9}
+.card.bad h3{color:#7a1313}
+.card.good{background:linear-gradient(135deg,#dcfce7,#ecfdf2);border-color:#86efac}
+.card.good h3{color:#0c5b27}
+
+/* badge */
+.badge{display:inline-flex;align-items:center;gap:5px;font:700 11px 'Inter';padding:3px 9px;border-radius:5px;text-transform:uppercase;letter-spacing:.05em}
+.badge.ok{background:var(--ok-bg);color:var(--ok)}
+.badge.bad{background:var(--bad-bg);color:var(--bad)}
+.badge.warn{background:var(--warn-bg);color:var(--warn)}
+.badge.info{background:var(--info-bg);color:var(--info)}
+
+/* ============== Diagram — Current state vs Vision ============== */
+.diag{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:stretch}
+@media(max-width:780px){.diag{grid-template-columns:1fr}}
+.diag-col{display:flex;flex-direction:column;gap:10px}
+.diag-arrow{display:flex;align-items:center;justify-content:center;font-size:38px;color:var(--green-500);font-weight:200;line-height:1}
+.diag-tile{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:13px}
+.diag-tile.silo{border-color:#f0c9c9;background:#fef6f6}
+.diag-tile.silo .nm{color:#7a1313;font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+.diag-tile.silo .dd{color:#a01f1f;margin-top:2px;font-size:12px}
+.diag-tile.platform{border-color:var(--green-200);background:var(--green-50)}
+.diag-tile.platform .nm{color:var(--green-800);font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+.diag-tile.platform .dd{color:var(--green-700);margin-top:2px;font-size:12px}
+.diag-tile.miss{border:2px dashed var(--bad);background:#fff;color:var(--bad);font-style:italic;text-align:center;font-weight:600}
+.diag-tile.upst{border:2px solid var(--green-700);background:linear-gradient(135deg,#fff,#f4faf5);box-shadow:0 0 0 1px var(--green-500) inset}
+.diag-tile.upst .nm{color:var(--green-800);font-weight:800}
+
+/* ============== Process map (10 steps) ============== */
+.process{display:flex;align-items:stretch;overflow-x:auto;gap:0;border-radius:14px;background:#fff;border:1px solid var(--line);padding:12px}
+.process .step{flex:1;min-width:108px;padding:10px 12px;font-size:11.5px;line-height:1.35;position:relative;text-align:center}
+.process .step::after{content:"▸";position:absolute;right:-7px;top:50%;transform:translateY(-50%);color:var(--line-2);font-size:18px}
+.process .step:last-child::after{display:none}
+.process .step .lyr{font:700 9.5px 'Inter';text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
+.process .step .nm{font:700 12px 'Inter';color:var(--ink);margin-bottom:2px}
+.process .step.np{background:#f4faf5;border-radius:8px}
+.process .step.np .lyr{color:var(--green-700)}
+.process .step.nt{background:#fbfdfb;border-radius:8px}
+.process .step.nt .lyr{color:var(--info)}
+
+/* ============== Architecture ============== */
+.arch{display:flex;flex-direction:column;gap:16px}
+.arch-lyr{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 22px;display:grid;grid-template-columns:200px 1fr;gap:18px;align-items:center}
+.arch-lyr .ttl{font:800 12px 'Inter';color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.arch-lyr .ttl b{display:block;font:700 18px 'Cormorant Garamond',serif;color:var(--ink);margin-top:2px;letter-spacing:-.01em}
+.arch-lyr .items{display:flex;flex-wrap:wrap;gap:8px}
+.arch-lyr .it{font:600 12px 'Inter';color:var(--ink);background:var(--soft);border:1px solid var(--line);padding:6px 11px;border-radius:7px}
+.arch-lyr.np{background:linear-gradient(135deg,#f4faf5,#fff);border-color:var(--green-200)}
+.arch-lyr.np .ttl b{color:var(--green-800)}
+.arch-lyr.np .it{background:var(--green-50);border-color:var(--green-100);color:var(--green-800)}
+.arch-lyr.nt{background:linear-gradient(135deg,#f5f9fb,#fff);border-color:#bed9e8}
+.arch-lyr.nt .ttl b{color:var(--info)}
+.arch-lyr.nt .it{background:#eaf3f8;border-color:#cde2ed;color:var(--info)}
+.arch-lyr.shared{background:linear-gradient(135deg,#0a1812,#103d17);color:#dff0e3;border-color:rgba(124,252,154,.3)}
+.arch-lyr.shared .ttl{color:#7fb98e}
+.arch-lyr.shared .ttl b{color:#fff}
+.arch-lyr.shared .it{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:#dff0e3}
+@media(max-width:680px){.arch-lyr{grid-template-columns:1fr;gap:10px}}
+
+/* ============== Roadmap ============== */
+.rm{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:880px){.rm{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.rm{grid-template-columns:1fr}}
+.rm-it{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:8px}
+.rm-it .when{font:700 10.5px 'Inter';color:var(--green-700);text-transform:uppercase;letter-spacing:.06em}
+.rm-it h4{margin:0;font:700 16px 'Inter';color:var(--ink)}
+.rm-it ul{margin:6px 0 0 14px;padding:0;font-size:13px;color:var(--muted);line-height:1.5}
+.rm-it li{margin-bottom:3px}
+.rm-it .pill{align-self:flex-start;font:700 9.5px 'Inter';padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.05em}
+.rm-it.now{border-color:var(--green-500);background:linear-gradient(180deg,#fff,#f4faf5)}
+.rm-it.now .pill{background:var(--green-700);color:#fff}
+.rm-it.next .pill{background:#fef3c7;color:#7c5b07}
+.rm-it.later .pill{background:#e7eef0;color:#37526a}
+.rm-it.future .pill{background:#ede5f8;color:#583c8d}
+
+/* ============== Numbers / KPIs row ============== */
+.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:8px}
+@media(max-width:780px){.nums{grid-template-columns:1fr 1fr}}
+.num{padding:0}
+.num .v{font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:700;color:var(--green-700);line-height:1;letter-spacing:-.02em}
+.num .v small{font-family:'Inter';font-size:18px;font-weight:600;color:var(--muted);margin-left:3px}
+.num .l{font:600 12.5px 'Inter';color:var(--muted);margin-top:6px;line-height:1.45}
+.num .l b{color:var(--ink);font-weight:700}
+
+/* ============== Ask / CTA ============== */
+.ask{background:linear-gradient(135deg,#07140c,#103d17);color:#dff0e3;border-radius:14px;padding:36px 32px;display:grid;grid-template-columns:1.4fr 1fr;gap:26px;align-items:center}
+@media(max-width:780px){.ask{grid-template-columns:1fr}}
+.ask h3{margin:0 0 8px;font-family:'Cormorant Garamond',serif;font-size:32px;color:#fff;font-weight:700;line-height:1.1}
+.ask p{margin:0;font-size:14.5px;color:#bcd4c2;line-height:1.55}
+.ask ul{margin:14px 0 0 18px;padding:0;font-size:14px;color:#dff0e3;line-height:1.7}
+.ask ul li b{color:#7cfc9a}
+.ask .cta{display:flex;flex-direction:column;gap:10px}
+.ask .cta .btn{display:flex;align-items:center;gap:8px;background:#7cfc9a;color:#04100a;font:800 14px 'Inter';padding:14px 18px;border-radius:10px;text-decoration:none;justify-content:center}
+.ask .cta .btn:hover{background:#a8ffbe}
+.ask .cta .btn.ghost{background:transparent;color:#7cfc9a;border:1px solid rgba(124,252,154,.32)}
+.ask .cta .btn.ghost:hover{background:rgba(124,252,154,.13);color:#fff}
+
+/* ============== Quote ============== */
+.quote{background:#fff;border-left:5px solid var(--green-500);border-radius:0 12px 12px 0;padding:22px 28px;font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:var(--ink);line-height:1.4;margin:14px 0 0;position:relative}
+.quote::before{content:"\201C";position:absolute;left:14px;top:6px;font-size:60px;color:var(--green-300);font-weight:700;line-height:1}
+.quote .src{display:block;font-family:'Inter';font-size:12.5px;font-style:normal;color:var(--muted);margin-top:10px;font-weight:600}
+
+/* ============== Footnote ============== */
+.fn{font:500 11px 'Inter';color:var(--muted-2);text-align:center;padding:14px 28px;border-top:1px solid var(--line);background:#fbfdfb}
+.fn b{color:var(--ink);font-weight:700}
+
+/* ============== Print — 1 slide per A4 page ============== */
+@media print{
+  html,body{background:#fff}
+  .bar{display:none}
+  .slide{min-height:auto;padding:18mm 16mm;page-break-after:always;display:block;max-width:none}
+  .hero{padding:30mm 16mm;min-height:auto;background:linear-gradient(180deg,#07140c,#103d17)}
+  .hero h1{font-size:48px}
+  .hero p{font-size:16px}
+  .card{box-shadow:none;break-inside:avoid}
+  .arch-lyr,.rm-it,.diag-tile{break-inside:avoid}
+  .fn{position:fixed;bottom:0;left:0;right:0}
+  a{color:var(--green-800)}
+  a::after{content:""}
+}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="nm">Nutri<b>Plan</b> <small>· Pitch · OCP Nutricrops · D²nAI</small></div>
+    <div class="sp"></div>
+    <a class="demo" href="../nutriplan" target="_blank" rel="noopener">↗ Lancer la démo live</a>
+    <button class="print" onclick="window.print()">⤓ Export PDF</button>
+  </div>
+</div>
+
+<!-- ====== SLIDE 1 — HERO ====== -->
+<section class="hero">
+  <div class="inner">
+    <span class="eye"><span class="dot"></span>Pitch · Cycle 2026 · Call de lundi</span>
+    <h1>Stop la <b>tambouille</b>.<br>NutriTrials, mais <b>end-to-end</b>.</h1>
+    <p>Deux équipes business sont sur le point de partir chacune dans leur silo — SharePoint d'un côté, Salesforce de l'autre — pour gérer l'amont des trials.<br><br><b>NutriTrials est déjà live et en cours de généralisation comme single reference platform.</b> Il lui manque juste l'amont. <b>NutriPlan</b> le branche dessus en 4 semaines.</p>
+    <div class="ftr">
+      <div class="it"><b>D²nAI</b>Data · Digital · AI · OCP Nutricrops</div>
+      <div class="it"><b>Powered by</b>Claude 4.6 via Azure Databricks · NutriTrials API</div>
+      <div class="it"><b>Status</b>MVP démo · prêt à brancher · juin 2026</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SLIDE 2 — THE PROBLEM ====== -->
+<section class="slide">
+  <div class="slide-h">
+    <div class="num">01</div>
+    <div class="ttl">
+      <div class="eye">Le problème</div>
+      <h2>Deux équipes business, deux <b>silos</b> en construction — et <b>la fragmentation data</b> qui s'installe.</h2>
+    </div>
+  </div>
+  <p class="lead">L'amont du Trial Management (cycle annuel, intake, gouvernance, Fast Track) n'a pas d'outil unifié. Résultat : chaque équipe bricole de son côté, on perd la traçabilité, on duplique les saisies, et NutriTrials — la plateforme officielle d'exécution — reçoit des données fragmentées en entrée.</p>
+  <div class="grid-3">
+    <div class="card bad">
+      <span class="ico">📁</span>
+      <h3>Équipe A · SharePoint</h3>
+      <p>Templates Word + Excel partagés en arborescence libre. Pas de workflow, pas de RACI auto, pas d'historique de décisions.</p>
+    </div>
+    <div class="card bad">
+      <span class="ico">☁️</span>
+      <h3>Équipe B · Salesforce</h3>
+      <p>Objets custom branchés sur le CRM. Bon pour le pipeline commercial, mais inadapté pour la gouvernance scientifique et les MDS.</p>
+    </div>
+    <div class="card warn">
+      <span class="ico">⚠️</span>
+      <h3>Risque</h3>
+      <p>Dans 6 mois, deux référentiels parallèles à réconcilier, double saisie pour les BUs, et <b>NutriTrials ne reçoit plus que des données fragmentées</b> — exactement le contraire de son ambition.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SLIDE 3 — THE INSIGHT ====== -->
+<section class="slide">
+  <div class="slide-h">
+    <div class="num">02</div>
+    <div class="ttl">
+      <div class="eye">L'insight</div>
+      <h2>NutriTrials fait déjà l'<b>aval</b>. Pas besoin de réinventer — il faut juste <b>brancher l'amont</b>.</h2>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <p class="lead" style="margin-bottom:14px">NutriTrials est <b>live</b> à nutritrials.ma, opérationnel, et en cours de rollout pilote multi-BUs. Sa promesse : <i>single reference platform for agronomic evidence management within OCP Nutricrops</i>.</p>
+      <div class="quote">Over the past 2 years, one gap has become increasingly visible: our agronomic value is strong but our data remains fragmented.
+        <span class="src">— Mail interne récent · annonce de la généralisation de NutriTrials</span>
+      </div>
+    </div>
+    <div>
+      <div class="card good">
+        <h3>✓ Ce que NutriTrials fait (l'aval)</h3>
+        <p style="margin-top:10px"><b>Trial creation</b> structuré + validation workflows<br><b>Regional &amp; global dashboards</b><br><b>Claims consolidation</b> formalisée<br><b>Rollout pilote</b> en cours multi-BUs</p>
+      </div>
+      <div class="card bad" style="margin-top:14px">
+        <h3>✗ Ce qui manque (l'amont)</h3>
+        <p style="margin-top:10px">Cycle annuel structuré · Use Case intake forcé · Steering Committee digitalisé · CEO portfolio approval · Fast Track lane · Closure &amp; KB · <b>AI Q&amp;A sur les données</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SLIDE 4 — THE VISION ====== -->
+<section class="slide">
+  <div class="slide-h">
+    <div class="num">03</div>
+    <div class="ttl">
+      <div class="eye">La vision</div>
+      <h2>Une seule plateforme, <b>end-to-end</b>, pour le Trial Management.</h2>
+    </div>
+  </div>
+  <p class="lead">NutriPlan branche l'amont au-dessus de NutriTrials. Un Use Case validé par le CEO devient automatiquement un Trial dans NutriTrials. Les résultats remontent en sens inverse pour alimenter Monitoring Committee + KB. Zéro re-saisie, traçabilité totale.</p>
+  <div class="diag">
+    <div class="diag-col">
+      <div class="diag-tile silo"><div class="nm">Aujourd'hui · l'amont</div><div class="dd">SharePoint &nbsp;·&nbsp; Salesforce &nbsp;·&nbsp; emails &nbsp;·&nbsp; Word/Excel</div></div>
+      <div class="diag-tile silo"><div class="nm">Handoff manuel</div><div class="dd">Re-saisie · perte d'info · pas de traçabilité gates</div></div>
+      <div class="diag-tile platform"><div class="nm">NutriTrials</div><div class="dd">Execution · monitoring · claims · dashboards · LIVE</div></div>
+    </div>
+    <div class="diag-arrow">⇒</div>
+    <div class="diag-col">
+      <div class="diag-tile upst"><div class="nm">NutriPlan · Plan &amp; Govern</div><div class="dd">Cycle annuel · intake · Steering · CEO gates · Fast Track · AI chat-with-data</div></div>
+      <div class="diag-tile platform"><div class="nm">↓ Auto handoff API</div><div class="dd">UC approved → Trial provisionné (protocole · MDS · partenaire · KPIs)</div></div>
+      <div class="diag-tile platform"><div class="nm">NutriTrials · Execute</div><div class="dd">Execution · monitoring · claims · dashboards · LIVE</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SLIDE 5 — PROCESS MAP ====== -->
+<section class="slide">
+  <div class="slide-h">
+    <div class="num">04</div>
+    <div class="ttl">
+      <div class="eye">Mapping process</div>
+      <h2>Les <b>10 étapes</b> du Trial Management Framework, et qui les opère.</h2>
+    </div>
+  </div>
+  <p class="lead">Le framework officiel sera respecté ligne par ligne. NutriPlan opère les étapes 1 à 5 et 9 à 10 ; NutriTrials opère 6 à 8. Le handoff entre les deux est automatique et auditable.</p>
+  <div class="process">
+    <div class="step np"><div class="lyr">NutriPlan</div><div class="nm">1 · Launch Annual Cycle</div></div>
+    <div class="step np"><div class="lyr">NutriPlan</div><div class="nm">2 · Use Case Intake</div></div>
+    <div class="step np"><div class="lyr">NutriPlan</div><div class="nm">3 · Trial Design</div></div>
+    <div class="step np"><div class="lyr">NutriPlan</div><div class="nm">4 · Steering · Gate 1</div></div>
+    <div class="step np"><div class="lyr">NutriPlan</div><div class="nm">5 · CEO · Gate 2</div></div>
+    <div class="step nt"><div class="lyr">NutriTrials</div><div class="nm">6 · Readiness &amp; Contracting</div></div>
+    <div class="step nt"><div class="lyr">NutriTrials</div><div class="nm">7 · Execution &amp; Data</div></div>
+    <div class="step nt"><div class="lyr">NutriTrials</div><div class="nm">8 · Analysis &amp; Results</div></div>
+    <div class="step np"><div class="lyr">NutriPlan</div><div class="nm">9 · Monitoring · Gate 3</div></div>
+    <div class="step np"><div class="lyr">NutriPlan</div><div class="nm">10 · Closure &amp; KB</div></div>
+  </div>
+  <div class="grid-2" style="margin-top:24px">
+    <div class="card">
+      <h3>NutriPlan — l'orchestrateur</h3>
+      <p>Cycle annuel · Intake structuré (force le MDS) · 3 gates digitalisés (Steering / CEO / Monitoring) · Fast Track lane · Closure &amp; KB · AI chat-with-data · RACI auto-routing.</p>
+    </div>
+    <div class="card">
+      <h3>NutriTrials — l'exécution</h3>
+      <p>Trial creation post-handoff · Field operations · Data capture · Validation workflows · Regional &amp; global dashboards · Claims consolidation. <b>Inchangé.</b></p>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SLIDE 6 — THE AI ANGLE ====== -->
+<section class="slide">
+  <div class="slide-h">
+    <div class="num">05</div>
+    <div class="ttl">
+      <div class="eye">L'angle IA · D²nAI</div>
+      <h2>3 cas d'usage AI <b>concrets</b>, pas du chat décoratif.</h2>
+    </div>
+  </div>
+  <div class="grid-3">
+    <div class="card">
+      <span class="ico">🔍</span>
+      <h3>Portfolio Q&amp;A</h3>
+      <p><i>« Quels demos NPK en Afrique sont à risque ce mois ? »</i><br><i>« Quels Use Cases ont un MDS incomplet ? »</i><br><i>« Compare le portefeuille Brazil vs India. »</i><br>Langage naturel, réponse en 2 sec, citations IDs.</p>
+    </div>
+    <div class="card">
+      <span class="ico">✍️</span>
+      <h3>Use Case copilot</h3>
+      <p>Au moment où une BU rédige son intake, l'AI suggère KPIs et protocole inspirés de trials similaires passés, signale les MDS manquants, propose un budget benchmark. <b>Réduit le ping-pong avec SA&amp;I de 60 %.</b></p>
+    </div>
+    <div class="card">
+      <span class="ico">📋</span>
+      <h3>Governance briefing</h3>
+      <p>Auto-génération du dossier Steering / Monitoring : synthèse des UCs du cycle, alertes risques, comparaison vs cycle N-1, recommandations Go/Hold/Kill chiffrées. <b>Brief comité en 1 clic.</b></p>
+    </div>
+  </div>
+  <div class="card deep" style="margin-top:18px">
+    <h3>🛡️ Pas de chat décoratif — ça raisonne sur tes vraies données</h3>
+    <p style="margin-top:6px">Claude 4.6 servi par Azure Databricks (déjà en place pour le CGM Cockpit, on réutilise le proxy server-side). Les Use Cases du portefeuille sont stuffés dans le contexte ou indexés via Vector Search. PAT Databricks jamais exposé au navigateur. <b>Branding D²nAI bot uniquement</b> — aucune mention provider visible.</p>
+  </div>
+</section>
+
+<!-- ====== SLIDE 7 — DEMO / PROOF ====== -->
+<section class="slide">
+  <div class="slide-h">
+    <div class="num">06</div>
+    <div class="ttl">
+      <div class="eye">Demo live · MVP cliquable</div>
+      <h2>Pas une slide. Un <b>MVP</b> qu'on ouvre en réunion.</h2>
+    </div>
+  </div>
+  <p class="lead">Le MVP est <b>opérationnel</b>. 35 Use Cases seedés, vues Cockpit / Portfolio Kanban+Table / Use Case detail / Calendar annuel / Governance + RACI / Fast Track / Closure KB / Référentiels admin. Chat AI branché sur Databricks Claude 4.6.</p>
+  <div class="nums">
+    <div class="num"><div class="v">35<small>UCs</small></div><div class="l"><b>Seed portfolio</b> · cycle 2026 réaliste, multi-BU/régions/cultures</div></div>
+    <div class="num"><div class="v">10<small>étapes</small></div><div class="l"><b>Framework officiel</b> du doc Trial Management ligne par ligne</div></div>
+    <div class="num"><div class="v">3<small>gates</small></div><div class="l">Steering · CEO · Monitoring — Go/Hold/Kill tracé</div></div>
+    <div class="num"><div class="v">FR<small>EN PT</small></div><div class="l">Tri-lingue prévu V1 (déjà supporté côté brand)</div></div>
+  </div>
+  <div class="card" style="margin-top:24px;background:linear-gradient(135deg,#fbfdfb,#f4faf5);border-color:var(--green-200)">
+    <h3>👉 À montrer en réunion</h3>
+    <p style="margin-top:6px"><b>1.</b> Cockpit landing — KPIs · alertes · heatmap BU×culture · bridge NutriTrials &nbsp;·&nbsp; <b>2.</b> Portfolio Kanban — drag-style des UCs par gate &nbsp;·&nbsp; <b>3.</b> Use Case detail — KPIs, MDS, gates, handoff → NutriTrials &nbsp;·&nbsp; <b>4.</b> AI chat — pose 2-3 questions live ("UCs à risque MDS", "brief steering") &nbsp;·&nbsp; <b>5.</b> Cycle annuel — Gantt 12 mois</p>
+  </div>
+</section>
+
+<!-- ====== SLIDE 8 — ARCHITECTURE ====== -->
+<section class="slide">
+  <div class="slide-h">
+    <div class="num">07</div>
+    <div class="ttl">
+      <div class="eye">Architecture</div>
+      <h2>Stack <b>simple</b>, infra <b>déjà en place</b>.</h2>
+    </div>
+  </div>
+  <div class="arch">
+    <div class="arch-lyr np">
+      <div class="ttl">Frontend<b>NutriPlan</b></div>
+      <div class="items">
+        <span class="it">Single-file SPA</span>
+        <span class="it">WordPress plugin</span>
+        <span class="it">Plein-écran /nutriplan</span>
+        <span class="it">Shortcode [nutriplan]</span>
+        <span class="it">Tri-lingue FR/EN/PT</span>
+        <span class="it">No build step</span>
+      </div>
+    </div>
+    <div class="arch-lyr nt">
+      <div class="ttl">Frontend<b>NutriTrials</b></div>
+      <div class="items">
+        <span class="it">Existant · nutritrials.ma</span>
+        <span class="it">Bridge via API</span>
+        <span class="it">Lien handoff dans NutriPlan</span>
+      </div>
+    </div>
+    <div class="arch-lyr shared">
+      <div class="ttl">Backend<b>API + Workflow</b></div>
+      <div class="items">
+        <span class="it">REST endpoints (WP plugin)</span>
+        <span class="it">Workflow engine BPMN-light</span>
+        <span class="it">Auth same-origin + nonce</span>
+        <span class="it">Bridge handoff API ↔ NutriTrials</span>
+      </div>
+    </div>
+    <div class="arch-lyr shared">
+      <div class="ttl">AI · D²nAI<b>Co-pilot</b></div>
+      <div class="items">
+        <span class="it">Claude 4.6</span>
+        <span class="it">Azure Databricks Foundation Models</span>
+        <span class="it">Vector Search (RAG)</span>
+        <span class="it">PAT server-side · jamais exposé</span>
+        <span class="it">Branding D²nAI bot only</span>
+      </div>
+    </div>
+    <div class="arch-lyr">
+      <div class="ttl">Data layer<b>Source of truth</b></div>
+      <div class="items">
+        <span class="it">Unity Catalog (Databricks)</span>
+        <span class="it">NutriTrials DB (existante)</span>
+        <span class="it">Référentiels partagés (BUs · cultures · MDS · KPIs)</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SLIDE 9 — ROADMAP ====== -->
+<section class="slide">
+  <div class="slide-h">
+    <div class="num">08</div>
+    <div class="ttl">
+      <div class="eye">Roadmap</div>
+      <h2>Phasage <b>4 vagues</b>, ship-to-prod en <b>10-12 semaines</b>.</h2>
+    </div>
+  </div>
+  <div class="rm">
+    <div class="rm-it now">
+      <span class="pill">V0 · maintenant</span>
+      <h4>MVP démo</h4>
+      <ul>
+        <li>Cockpit · Portfolio Kanban+Table</li>
+        <li>Use Case detail · MDS</li>
+        <li>Calendar · Governance RACI</li>
+        <li>Chat AI mock + Claude 4.6</li>
+        <li><b>Prêt pour lundi</b></li>
+      </ul>
+    </div>
+    <div class="rm-it next">
+      <span class="pill">V1 · semaines 1-4</span>
+      <h4>Plan &amp; Govern core</h4>
+      <ul>
+        <li>Intake form fonctionnel + MDS dynamique</li>
+        <li>Workflow gates real (Steering / CEO / Monitoring)</li>
+        <li>RACI auto-routing aux acteurs</li>
+        <li>Fast Track lane fonctionnel</li>
+        <li>Pilote 2-3 BUs volontaires</li>
+      </ul>
+    </div>
+    <div class="rm-it later">
+      <span class="pill">V2 · semaines 5-8</span>
+      <h4>Bridge + AI Q&amp;A</h4>
+      <ul>
+        <li>Auto-provisioning UC → Trial dans NutriTrials (API)</li>
+        <li>Vector Search RAG sur portfolio</li>
+        <li>Governance briefing auto-généré</li>
+        <li>Multilingue FR/EN/PT-BR live</li>
+        <li>Notifications (email/Teams)</li>
+      </ul>
+    </div>
+    <div class="rm-it future">
+      <span class="pill">V3 · semaines 9-12</span>
+      <h4>Copilot + KB · GA</h4>
+      <ul>
+        <li>Use Case copilot (suggestions IA en cours de saisie)</li>
+        <li>Closure KB indexée + searchable</li>
+        <li>Dashboards CEO Office</li>
+        <li>SSO Azure AD intégré</li>
+        <li>Generalization toutes BUs</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SLIDE 10 — THE ASK ====== -->
+<section class="slide">
+  <div class="slide-h">
+    <div class="num">09</div>
+    <div class="ttl">
+      <div class="eye">Next steps</div>
+      <h2>Ce dont on a besoin pour passer du MVP à la <b>V1 pilote</b>.</h2>
+    </div>
+  </div>
+  <div class="ask">
+    <div>
+      <h3>3 décisions, à prendre lundi.</h3>
+      <p>Tout le reste découle :</p>
+      <ul>
+        <li><b>Sponsor exécutif</b> — qui porte le projet côté COMEX / CEO Office (la gouvernance touche le CEO, donc le sponsor doit l'être aussi).</li>
+        <li><b>Alignement avec NutriTrials</b> — accès API + sessions co-design avec l'équipe filiale qui le maintient. C'est <b>elle qui ouvre la porte du bridge</b>, sans elle on duplique.</li>
+        <li><b>2-3 BUs pilotes</b> volontaires pour la V1 (préférable : une mix régions différentes). Pas tout-le-monde-d'un-coup.</li>
+      </ul>
+    </div>
+    <div class="cta">
+      <a class="btn" href="../nutriplan" target="_blank" rel="noopener">▶ Lancer la démo NutriPlan</a>
+      <a class="btn ghost" href="https://nutritrials.ma" target="_blank" rel="noopener">↗ Voir NutriTrials</a>
+      <a class="btn ghost" href="javascript:window.print()">⤓ Export PDF de ce pitch</a>
+    </div>
+  </div>
+  <div class="card" style="margin-top:20px;background:#fbfdfb">
+    <h3>Ce que ça change concrètement, dès le mois prochain</h3>
+    <p style="margin-top:6px">→ Les deux équipes business <b>arrêtent</b> SharePoint/Salesforce et bâtissent ensemble dans NutriPlan · → Le cycle 2026 démarre avec un <b>intake digitalisé</b> · → Les Steering Committees ont un <b>brief AI</b> en 1 clic · → NutriTrials reçoit des UCs <b>complets et validés</b> · → La promesse <i>single reference platform for agronomic evidence management</i> devient <b>tenable</b>.</p>
+  </div>
+</section>
+
+<div class="fn">
+  NutriPlan · Pitch · cycle 2026 · D²nAI · OCP Nutricrops · MVP · à brancher sur NutriTrials · <b>Confidentiel — usage interne</b>
+</div>
+
+</body>
+</html>

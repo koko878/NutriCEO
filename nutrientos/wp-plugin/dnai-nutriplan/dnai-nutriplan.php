@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutriPlan — Trial Management Cockpit
  * Description:       Sister-app of NutriTrials covering the full upstream Trial Management cycle (annual planning, Use Case intake, Steering / CEO / Monitoring gates, Fast Track lane, closure & knowledge base). Includes a chat-with-data AI co-pilot powered by Anthropic Claude (Sonnet 4.6) served via Azure Databricks Foundation Model APIs (OpenAI-compatible). All branded D²nAI bot — no underlying provider mention.
- * Version:           0.2.0
+ * Version:           0.3.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutriplan
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NPLAN_VER', '0.2.0' );
+define( 'DNAI_NPLAN_VER', '0.3.0' );
 define( 'DNAI_NPLAN_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NPLAN_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -38,7 +38,8 @@ function dnai_nplan_ai_ready() {
  * FULL-SCREEN route — pretty URL /nutriplan + fallback /?dnai_nplan_app=1
  * ---------------------------------------------------------------------- */
 function dnai_nplan_add_rewrite() {
-	add_rewrite_rule( '^nutriplan/?$', 'index.php?dnai_nplan_app=1', 'top' );
+	add_rewrite_rule( '^nutriplan/?$',       'index.php?dnai_nplan_app=1',  'top' );
+	add_rewrite_rule( '^nutriplan-pitch/?$', 'index.php?dnai_nplan_app=2',  'top' );
 }
 add_action( 'init', 'dnai_nplan_add_rewrite' );
 
@@ -51,8 +52,10 @@ register_activation_hook( __FILE__, function () {
 register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
 
 add_action( 'template_redirect', function () {
-	if ( ! intval( get_query_var( 'dnai_nplan_app' ) ) ) { return; }
-	$f = DNAI_NPLAN_DIR . 'app/nutriplan.html';
+	$which = intval( get_query_var( 'dnai_nplan_app' ) );
+	if ( ! $which ) { return; }
+	$file = $which === 2 ? 'app/nutriplan-pitch.html' : 'app/nutriplan.html';
+	$f = DNAI_NPLAN_DIR . $file;
 	if ( file_exists( $f ) ) {
 		nocache_headers();
 		header( 'Content-Type: text/html; charset=utf-8' );
@@ -74,6 +77,15 @@ add_action( 'template_redirect', function () {
 /* -------------------------------------------------------------------------
  * Shortcode [nutriplan] — embeds the app full-bleed with auto-resize.
  * ---------------------------------------------------------------------- */
+add_shortcode( 'nutriplan_pitch', function () {
+	$src = esc_url( DNAI_NPLAN_URL . 'app/nutriplan-pitch.html?v=' . DNAI_NPLAN_VER );
+	$id  = 'dnaiNplanPitch_' . wp_generate_password( 6, false, false );
+	return '<div style="position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;width:100vw;max-width:100vw;background:#fff">'
+		.'<iframe id="'.esc_attr( $id ).'" src="'.$src.'" loading="lazy" style="display:block;width:100%;border:0;min-height:100vh"></iframe>'
+		.'<a href="'.esc_url( home_url( '/nutriplan-pitch' ) ).'" target="_blank" rel="noopener" style="display:inline-block;margin:8px 16px;color:#2E7D32;font-size:13px;text-decoration:underline">↗ Open the pitch full-screen (for projection)</a>'
+		.'</div>';
+} );
+
 add_shortcode( 'nutriplan', function () {
 	$src = esc_url( DNAI_NPLAN_URL . 'app/nutriplan.html?v=' . DNAI_NPLAN_VER );
 	$id  = 'dnaiNplanFrame_' . wp_generate_password( 6, false, false );
