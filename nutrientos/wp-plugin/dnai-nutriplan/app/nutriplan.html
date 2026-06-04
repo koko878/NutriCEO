@@ -467,10 +467,10 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
     <div class="sb-brand">
       <div class="by">OCP Nutricrops · D²nAI</div>
       <div class="nm">Nutri<b>Plan</b></div>
-      <span class="tag">Trial mgmt · MVP</span>
+      <span class="tag">Plan & Govern · ↗ NutriTrials</span>
     </div>
     <nav class="sb-nav" id="sbNav"></nav>
-    <div class="sb-foot"><span class="dot"></span>Cycle <b style="color:#fff;margin:0 4px">2026</b> · live</div>
+    <div class="sb-foot"><span class="dot"></span>Cycle <b style="color:#fff;margin:0 4px">2026</b> · synchronisé avec NutriTrials</div>
   </aside>
 
   <!-- ====== TOPBAR ====== -->
@@ -841,10 +841,10 @@ function renderCockpit(){
       <div class="ck-hero-meta">
         <span class="pill">⚡ Cycle 2026 · ${active} trials actifs</span>
         <span class="pill ghost">${BUS.length} BUs · ${Object.values(REGIONS).flat().length} régions</span>
-        <span class="pill ghost">QBR refresh : Q3 2026</span>
+        <span class="pill ghost">↗ Branché à NutriTrials</span>
       </div>
-      <h1>Le portefeuille Trials & Demos OCP Nutricrops, en un coup d'œil</h1>
-      <p>Cockpit unifié pour SA&I, BUs, comités de gouvernance et CEO Office. Intake structuré · Gates digitalisés · AI Q&A sur tes données.</p>
+      <h1>Plan &amp; Govern, l'amont qui ferme la boucle NutriTrials</h1>
+      <p>Cycle annuel · Use Case intake · Steering &amp; CEO gates · Fast Track · AI Q&amp;A — tout ce qui se passe <b>avant</b> que les trials atterrissent dans NutriTrials. Single reference platform, vraiment end-to-end.</p>
       <div class="ck-hero-stats">
         <div class="ck-hs"><div class="l">Portefeuille actif</div><div class="v">${active}<small>/ ${total}</small></div><div class="d">${inPipe} en cours de validation</div></div>
         <div class="ck-hs"><div class="l">Budget cycle 2026</div><div class="v">${fmtMoney(totalBudget)}</div><div class="d">Allocation pondérée par BU</div></div>
@@ -873,6 +873,17 @@ function renderCockpit(){
     <div class="card">
       <h3>🌍 Couverture portefeuille — BU × Culture <span class="sub">— intensité = nb de Use Cases</span></h3>
       ${renderHeatmap()}
+    </div>
+
+    <div class="card" style="background:linear-gradient(135deg,#fbfdfb,#f0f6f1);border-color:var(--green-200)">
+      <h3 style="margin-bottom:6px">↗ Bridge NutriTrials <span class="sub">— handoff automatique vers la plateforme d'exécution</span></h3>
+      <p class="muted" style="margin:0 0 14px;font-size:13px">Dès qu'un Use Case passe le Gate CEO, NutriPlan provisionne automatiquement le trial dans <b style="color:var(--green-800)">NutriTrials</b> (protocole, MDS, partenaire, KPIs). Aucune re-saisie. Les résultats remontent en sens inverse pour alimenter le Monitoring Committee et la KB.</p>
+      <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:0">
+        <div class="kpi" style="cursor:default"><div class="k">📤 Handoff envoyés (cycle)</div><div class="v">${DATA.filter(u=>['execution','monitoring','closed-go','closed-hold','closed-kill'].includes(u.status)).length}</div><div class="d flat">→ provisionnés dans NutriTrials</div></div>
+        <div class="kpi" style="cursor:default"><div class="k">⏳ En attente handoff</div><div class="v">${DATA.filter(u=>u.status==='approved').length}</div><div class="d flat">approved · prêts pour NutriTrials</div></div>
+        <div class="kpi" style="cursor:default"><div class="k">🔄 Résultats reçus</div><div class="v">${DATA.filter(u=>u.status==='monitoring' || /^closed-/.test(u.status)).length}</div><div class="d flat">data + KPIs depuis NutriTrials</div></div>
+        <div class="kpi" style="cursor:default"><div class="k">🌐 Plateforme</div><div class="v" style="font-size:18px;line-height:1.2"><a href="https://nutritrials.ma" target="_blank" rel="noopener" style="color:var(--green-800)">nutritrials.ma ↗</a></div><div class="d flat">single reference platform</div></div>
+      </div>
     </div>
 
     <div class="card">
@@ -951,7 +962,7 @@ function renderPortfolio(){
   document.getElementById('sc-portfolio').innerHTML = `
     <div class="eyebrow">Portefeuille</div>
     <h2 class="h-pg">${list.length} Use Cases du cycle 2026</h2>
-    <p class="lead">Sélectionne, filtre, drill-down sur n'importe quel Use Case. Bascule entre vue Kanban (par statut) et vue Tableau (par BU / culture / budget).</p>
+    <p class="lead">Sélectionne, filtre, drill-down. Vue Kanban (par statut de gate) ou Tableau (par BU / culture / budget). Les UCs <b>approved</b>+ sont auto-provisionnés dans <a href="https://nutritrials.ma" target="_blank" rel="noopener">NutriTrials</a>.</p>
 
     <div class="tool-bar">
       <div class="subnav">
@@ -1122,6 +1133,7 @@ function openUc(id){
     <div class="modal-foot">
       <button class="btn ghost sm" onclick="closeUc()">Fermer</button>
       <span class="sp"></span>
+      ${['execution','monitoring','closed-go','closed-hold','closed-kill','approved'].includes(u.status) ? `<a class="btn ghost sm" href="https://nutritrials.ma" target="_blank" rel="noopener" style="text-decoration:none">↗ Ouvrir dans NutriTrials</a>` : ''}
       <button class="btn ghost sm" onclick="askAIAbout('${u.id}')">🤖 Demander à D²nAI bot</button>
       <button class="btn primary sm" onclick="toast('🛠 V2 — édition Use Case (non implémenté dans le MVP)')">✎ Éditer</button>
     </div>
@@ -1147,7 +1159,7 @@ function toggleChat(){
 }
 function chatGreet(){
   CHAT_HIST.push({ role:'assistant', text:
-    `👋 Salut ! Je suis le **D²nAI bot** dédié à ton portefeuille Trial Management.\n\nJe peux :\n- Filtrer / résumer tes Use Cases (par BU, culture, statut, TRL…)\n- Détecter les risques (MDS incomplet, gates en retard, partenaires non confirmés)\n- Préparer un brief Steering / Monitoring Committee\n- Comparer trials passés vs cycle en cours\n\nDemande-moi tout en langage naturel — je raisonne sur les **${DATA.length} Use Cases** du cycle 2026.` });
+    `👋 Salut ! Je suis le **D²nAI bot** dédié à NutriPlan — l'amont de **NutriTrials**.\n\nJe peux :\n- Filtrer / résumer tes Use Cases (par BU, culture, statut, TRL…)\n- Détecter les risques (MDS incomplet, gates en retard, partenaires non confirmés)\n- Préparer un brief Steering / Monitoring Committee\n- Tracer le handoff vers NutriTrials (ce qui est passé en exécution, ce qui attend)\n- Comparer trials passés vs cycle en cours\n\nDemande-moi tout en langage naturel — je raisonne sur les **${DATA.length} Use Cases** du cycle 2026.` });
   renderChatBody();
 }
 function renderChatBody(){
@@ -1182,6 +1194,7 @@ function renderChatSugs(){
     'Quels Use Cases ont un MDS incomplet ?',
     'Donne-moi un brief du Steering Committee de la semaine prochaine.',
     'Quels demos NPK en Afrique sont à risque ?',
+    'Quels Use Cases sont prêts au handoff NutriTrials ?',
     'Compare le portefeuille Brazil vs India.',
     'Quels trials Soufre sont en exécution ce trimestre ?'
   ];
@@ -1250,7 +1263,13 @@ function _buildSystemPrompt(){
     start:u.start_date, end:u.end_date, mds_covered:(u.mds_covered||[]).length,
     obj:u.objective_primary
   }));
-  return `Tu es **D²nAI bot**, le copilote IA dédié à NutriPlan — l'outil de Trial Management upstream d'OCP Nutricrops.
+  return `Tu es **D²nAI bot**, le copilote IA dédié à **NutriPlan** — le module Plan & Govern qui s'articule avec **NutriTrials** (la plateforme d'exécution live à nutritrials.ma) pour couvrir le cycle complet de Trial Management chez OCP Nutricrops.
+
+Positionnement à toujours porter :
+- **NutriPlan = l'amont** : cycle annuel, Use Case intake, Steering Committee, CEO portfolio approval, Fast Track, Monitoring Committee, Closure & KB
+- **NutriTrials = l'aval** : exécution terrain, data capture, dashboards, claims consolidation
+- Le **handoff** est automatique : un Use Case validé par le CEO devient un Trial dans NutriTrials (protocole, MDS, partenaire, KPIs pré-provisionnés)
+- Ensemble = **single reference platform end-to-end** pour l'evidence management agronomique
 
 Tu raisonnes EXCLUSIVEMENT sur le portefeuille de Use Cases fourni ci-dessous (cycle 2026). Tu ne dois jamais mentionner les technologies sous-jacentes (Claude, Anthropic, Databricks, modèle, etc) — tu te présentes comme « D²nAI bot ».
 
@@ -1259,6 +1278,7 @@ Style :
 - Cite TOUJOURS les IDs des Use Cases concernés (format UC-2026-XXX).
 - Utilise du markdown léger : **gras**, listes -, ## titres, tableaux si pertinent.
 - Sois concis et orienté action (recommandations claires).
+- Quand pertinent, mentionne explicitement le **handoff vers NutriTrials** (pour les UCs approved / in execution / monitoring).
 
 Contexte process : 10 étapes (Annual Cycle → Use Case → Steering Gate 1 → CEO Gate 2 → Readiness → Execution → Monitoring → Adoption Go/Hold/Kill → Closure). Comités : Trial Steering Committee + Scientific Monitoring Committee. MDS = Minimum Data Set (12 items obligatoires). Trois types : Scientific (TRL 2-4), Applied (TRL 5-8), Demo (TRL 7-9).
 
@@ -1288,6 +1308,11 @@ function _localFallback(q){
     const list = DATA.filter(u=>/sulph|sulfur|soufre/i.test(u.name));
     return `☀️ Trials Soufre actifs :\n\n${list.map(u=>`- **${u.id}** — ${u.name} _(${u.status})_`).join('\n')}`;
   }
+  if(/nutritrials|handoff|provisionn/.test(lc)){
+    const ready = DATA.filter(u=>u.status==='approved');
+    const sent  = DATA.filter(u=>['execution','monitoring'].includes(u.status));
+    return `↗ **Handoff NutriTrials** :\n\n- **${ready.length} UCs approved** prêts à être provisionnés sur nutritrials.ma\n- **${sent.length} UCs déjà actifs** dans NutriTrials (execution + monitoring)\n\nUCs en attente de handoff :\n${ready.slice(0,5).map(u=>`- **${u.id}** — ${u.name}`).join('\n')}`;
+  }
   return `Je suis en mode dégradé (le backend AI n'est pas branché sur ce déploiement). Configure-le dans **Réglages → NutriPlan AI** pour libérer le vrai chat-with-data.\n\nEn attendant, je vois **${DATA.length} Use Cases** dans le portefeuille — utilise le portfolio ou les filtres pour les explorer.`;
 }
 
@@ -1298,7 +1323,7 @@ function renderIntake(){
   document.getElementById('sc-intake').innerHTML = `
     <div class="eyebrow">Workflow · Soumission</div>
     <h2 class="h-pg">Nouveau Use Case</h2>
-    <p class="lead">Formulaire structuré qui force la complétude (objectifs, KPIs, MDS, budget, partenaire) — fini les Word/PDF reçus à moitié remplis. Validation auto avant soumission au Steering Committee.</p>
+    <p class="lead">Formulaire structuré qui force la complétude (objectifs, KPIs, MDS, budget, partenaire) — fini les Word/PDF/SharePoint/Salesforce reçus à moitié remplis. Validation auto avant soumission au Steering Committee, puis handoff <b>automatique vers NutriTrials</b> après CEO approval.</p>
     <div class="steps-bar">
       <div class="s on"><span class="n"><span class="num">1</span></span>Objectifs & rationale</div>
       <span class="conn"></span>
