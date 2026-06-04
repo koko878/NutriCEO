@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NutriPlan — Trial Management · OCP Nutricrops · D²nAI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-900:#103d17;--green-800:#1B5E20;--green-700:#2E7D32;--green-600:#2f8a39;--green-500:#4CAF50;
+  --green-300:#66BB6A;--green-200:#A5D6A7;--green-100:#D6EADb;--green-50:#EAF4EC;
+  --ink:#10231a;--ink-2:#1f3a2a;--muted:#5c6b62;--muted-2:#8aa195;
+  --line:#e3ebe5;--line-2:#cfdcd4;
+  --bad:#B91C1C;--bad-bg:#fdeced;--ok:#15803D;--ok-bg:#dcfce7;--warn:#B45309;--warn-bg:#fef3c7;
+  --info:#0e4f6e;--info-bg:#dff1fb;
+  --soft:#f5f9f6;--bg-deep:#07140c;
+  --shadow-sm:0 1px 2px rgba(16,35,26,.06);
+  --shadow-md:0 6px 18px -6px rgba(16,35,26,.18);
+  --shadow-lg:0 24px 60px -20px rgba(16,35,26,.30);
+  --rad-sm:8px;--rad-md:12px;--rad-lg:16px;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--soft);line-height:1.5;overflow:hidden}
+h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.01em}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select,textarea{font-family:inherit;color:inherit}
+a{color:var(--green-700);text-decoration:none}
+
+/* ==========================================================================
+ * APP SHELL — sidenav (left) + main + chat panel (right, slide-in)
+ * ========================================================================== */
+.app{display:grid;grid-template-columns:240px 1fr;grid-template-rows:56px 1fr;height:100vh;
+     grid-template-areas:'sidebar topbar' 'sidebar main'}
+.app.chat-open{grid-template-columns:240px 1fr 420px;
+     grid-template-areas:'sidebar topbar chat' 'sidebar main chat'}
+@media(max-width:980px){.app,.app.chat-open{grid-template-columns:56px 1fr;grid-template-areas:'sidebar topbar' 'sidebar main'}
+  .app.chat-open .chat{position:fixed;top:56px;right:0;bottom:0;width:min(420px,90vw);z-index:80;box-shadow:var(--shadow-lg)}}
+
+/* ----- sidenav ----- */
+.sidebar{grid-area:sidebar;background:linear-gradient(180deg,#0a1812 0%,#07140c 100%);color:#dff0e3;display:flex;flex-direction:column;border-right:1px solid rgba(255,255,255,.06)}
+.sb-brand{padding:14px 18px 18px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sb-brand .by{font:600 9px 'Inter';letter-spacing:.14em;text-transform:uppercase;color:#8fae97;margin-bottom:4px}
+.sb-brand .nm{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:22px;color:#fff;letter-spacing:.01em;display:flex;align-items:baseline;gap:6px}
+.sb-brand .nm b{color:var(--green-300);font-weight:700}
+.sb-brand .tag{font:600 10px 'Inter';color:#7cfc9a;background:rgba(124,252,154,.13);padding:2px 7px;border-radius:5px;letter-spacing:.06em;text-transform:uppercase;margin-top:6px;display:inline-block}
+.sb-nav{flex:1;overflow-y:auto;padding:14px 8px}
+.sb-section{font:700 10px 'Inter';color:#5d7a68;letter-spacing:.12em;text-transform:uppercase;padding:14px 10px 6px}
+.sb-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border-radius:8px;color:#bcd4c2;font:600 13px 'Inter';margin-bottom:2px;transition:background .15s,color .15s;text-align:left}
+.sb-item:hover{background:rgba(255,255,255,.05);color:#fff}
+.sb-item.on{background:rgba(124,252,154,.13);color:#fff}
+.sb-item .ico{font-size:16px;width:20px;text-align:center;flex-shrink:0;line-height:1}
+.sb-item .lbl{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-item .badge{font:800 9.5px 'Inter';background:rgba(124,252,154,.18);color:#7cfc9a;padding:1px 6px;border-radius:999px}
+.sb-item .badge.warn{background:rgba(255,193,7,.18);color:#FFCC55}
+.sb-item .badge.bad{background:rgba(255,82,82,.18);color:#ff8a8a}
+.sb-foot{padding:10px 12px;border-top:1px solid rgba(255,255,255,.06);font:500 11.5px 'Inter';color:#7c9c87;display:flex;align-items:center;gap:8px}
+.sb-foot .dot{width:7px;height:7px;border-radius:50%;background:#7cfc9a;box-shadow:0 0 0 0 rgba(124,252,154,.7);animation:pulseDot 1.8s ease-out infinite}
+@keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(124,252,154,.7)}80%,100%{box-shadow:0 0 0 7px rgba(124,252,154,0)}}
+@media(max-width:980px){.sb-brand,.sb-section,.sb-foot,.sb-item .lbl,.sb-item .badge{display:none}.sb-nav{padding:10px 4px}.sb-item{justify-content:center;padding:10px 0}.sidebar{padding-top:8px}}
+
+/* ----- topbar ----- */
+.topbar{grid-area:topbar;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 22px;z-index:5}
+.tb-crumbs{display:flex;align-items:center;gap:6px;font:600 13px 'Inter';color:var(--muted)}
+.tb-crumbs b{color:var(--ink);font-weight:700}
+.tb-crumbs span.sep{color:var(--line-2)}
+.tb-sp{flex:1}
+.tb-search{display:flex;align-items:center;gap:8px;background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:7px 12px;width:280px;max-width:35vw;transition:border-color .15s,background .15s}
+.tb-search:focus-within{border-color:var(--green-500);background:#fff}
+.tb-search input{flex:1;border:0;outline:0;background:none;font:500 13px 'Inter'}
+.tb-search .kbd{font:700 10.5px 'Inter';color:var(--muted);background:#fff;border:1px solid var(--line);padding:1px 5px;border-radius:4px}
+.tb-btn{display:inline-flex;align-items:center;gap:7px;font:700 12.5px 'Inter';padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink-2);transition:background .15s,border-color .15s}
+.tb-btn:hover{background:var(--soft);border-color:var(--line-2)}
+.tb-btn.primary{background:var(--green-700);color:#fff;border-color:var(--green-700)}
+.tb-btn.primary:hover{background:var(--green-800)}
+.tb-btn.ai{background:linear-gradient(135deg,#0a1812,#0c1f14);color:#7cfc9a;border-color:rgba(124,252,154,.32)}
+.tb-btn.ai:hover{background:linear-gradient(135deg,#0c1f14,#103d17);color:#fff}
+.tb-btn.ai .dot{width:6px;height:6px;border-radius:50%;background:#7cfc9a;box-shadow:0 0 0 0 rgba(124,252,154,.7);animation:pulseDot 1.6s ease-out infinite}
+.tb-prof{display:flex;align-items:center;gap:8px;background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:4px 6px 4px 10px}
+.tb-prof .av{width:26px;height:26px;border-radius:50%;background:var(--green-700);color:#fff;display:grid;place-items:center;font:800 11px 'Inter'}
+.tb-prof .nm{font:700 12px 'Inter';color:var(--ink)}
+.tb-prof .ro{font:500 10.5px 'Inter';color:var(--muted)}
+@media(max-width:780px){.tb-search{display:none}.tb-prof .nm,.tb-prof .ro{display:none}}
+
+/* ----- main ----- */
+.main{grid-area:main;overflow-y:auto;background:var(--soft);padding:24px 28px 60px}
+@media(max-width:560px){.main{padding:18px 16px 40px}}
+.screen{display:none;animation:fadeIn .25s ease}
+.screen.on{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* eyebrow + page title */
+.eyebrow{font:700 11px 'Inter';color:var(--green-700);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.h-pg{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:var(--ink);margin:0 0 6px}
+.lead{color:var(--muted);font-size:14px;margin:0 0 22px;max-width:78ch}
+
+/* ==========================================================================
+ * KPI tiles (Stripe-style)
+ * ========================================================================== */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+@media(max-width:1180px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.kpi-grid{grid-template-columns:1fr}}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--rad-md);padding:16px 18px;transition:transform .15s,box-shadow .15s,border-color .15s;cursor:pointer;position:relative;overflow:hidden}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:var(--green-200)}
+.kpi .k{font:600 11px 'Inter';color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.kpi .k .ico{font-size:14px;opacity:.7}
+.kpi .v{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:700;color:var(--green-800);line-height:1;letter-spacing:-.02em;display:flex;align-items:baseline;gap:6px}
+.kpi .v small{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;color:var(--muted)}
+.kpi .d{font:700 11.5px 'Inter';margin-top:6px;display:flex;align-items:center;gap:5px}
+.kpi .d.up{color:var(--ok)}
+.kpi .d.down{color:var(--bad)}
+.kpi .d.flat{color:var(--muted);font-weight:500}
+.kpi .bar{margin-top:10px;height:4px;background:var(--soft);border-radius:999px;overflow:hidden}
+.kpi .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--green-500),var(--green-700));border-radius:999px;transition:width .55s ease}
+
+/* ==========================================================================
+ * Card / Panel
+ * ========================================================================== */
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--rad-md);padding:18px 20px;margin-bottom:18px}
+.card.flat{padding:0;overflow:hidden}
+.card h3{margin:0 0 14px;font:700 16px 'Inter';color:var(--ink);display:flex;align-items:center;gap:8px}
+.card h3 .sub{font:500 12px 'Inter';color:var(--muted);font-style:italic}
+.card .card-act{margin-left:auto;display:flex;gap:6px;align-items:center}
+
+.row-2c{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-bottom:18px}
+@media(max-width:1100px){.row-2c{grid-template-columns:1fr}}
+
+/* ==========================================================================
+ * Tables (Airtable-style)
+ * ========================================================================== */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--rad-md);background:#fff}
+table.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{font:700 10.5px 'Inter';text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:11px 12px;text-align:left;background:#fbfdfb;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:1;white-space:nowrap}
+.tbl td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tr:hover td{background:#fafdfa}
+.tbl tr.sel td{background:var(--green-50)}
+.tbl .t-num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.tbl .t-cell-prim{font-weight:700;color:var(--ink);max-width:340px}
+.tbl .t-cell-prim .meta{font:500 11px 'Inter';color:var(--muted);margin-top:2px;font-weight:500}
+.tbl .t-link{cursor:pointer}
+.tbl .t-link:hover .t-cell-prim{color:var(--green-700)}
+
+/* status pills */
+.pill{display:inline-flex;align-items:center;gap:5px;font:700 10.5px 'Inter';padding:3px 9px;border-radius:999px;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap}
+.pill .dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.85}
+.pill-st-draft{background:#eef0ef;color:#5c6b62}
+.pill-st-submitted{background:#e0eef9;color:#1f6c9c}
+.pill-st-steering{background:#fff1cd;color:#7c5b07}
+.pill-st-ceo{background:#fde2c8;color:#8d4a04}
+.pill-st-approved{background:#dcfce7;color:#15803D}
+.pill-st-execution{background:#e7f0eb;color:var(--green-700)}
+.pill-st-monitoring{background:#e0ecf6;color:#0e4f6e}
+.pill-st-go{background:#c5f0d4;color:#0c5b27}
+.pill-st-hold{background:#fde7c7;color:#8c5a06}
+.pill-st-kill{background:#fde0e0;color:#8b1a1a}
+.pill-typ-scientific{background:#ede5f8;color:#583c8d}
+.pill-typ-applied{background:#e5f0fa;color:#1d5e94}
+.pill-typ-demo{background:#dff5e7;color:#106a32}
+.pill-prio-high{background:#fde2e2;color:#a01f1f}
+.pill-prio-med{background:#fdf1c8;color:#7c5b07}
+.pill-prio-low{background:#e7eef0;color:#37526a}
+
+/* avatar */
+.av{width:24px;height:24px;border-radius:50%;background:var(--green-700);color:#fff;display:inline-grid;place-items:center;font:800 10px 'Inter';margin-right:-6px;border:2px solid #fff;flex-shrink:0}
+.av.alt-1{background:#7c5b07}.av.alt-2{background:#583c8d}.av.alt-3{background:#0e4f6e}.av.alt-4{background:#8d4a04}.av.alt-5{background:#a01f1f}.av.alt-6{background:#15803D}
+.av-stack{display:inline-flex;align-items:center;padding-right:6px}
+
+/* tabs (within a screen) */
+.subnav{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px;margin-bottom:14px}
+.subnav button{font:700 12.5px 'Inter';color:var(--muted);padding:7px 14px;border-radius:8px;transition:background .15s,color .15s}
+.subnav button:hover{color:var(--ink)}
+.subnav button.on{background:var(--green-700);color:#fff}
+
+.tool-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.tool-bar .sp{flex:1}
+.chip{display:inline-flex;align-items:center;gap:6px;font:600 12px 'Inter';color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:7px;padding:6px 10px;cursor:pointer;transition:border-color .15s,background .15s}
+.chip:hover{border-color:var(--line-2);background:var(--soft)}
+.chip.on{background:var(--green-50);border-color:var(--green-500);color:var(--green-800)}
+.chip .x{font:800 11px 'Inter';color:var(--muted);margin-left:3px}
+
+/* generic btn */
+.btn{display:inline-flex;align-items:center;gap:7px;font:700 13px 'Inter';padding:9px 16px;border-radius:9px;border:0;transition:background .15s,border-color .15s,color .15s,transform .1s}
+.btn.primary{background:var(--green-700);color:#fff}
+.btn.primary:hover{background:var(--green-800)}
+.btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink-2)}
+.btn.ghost:hover{background:var(--soft);border-color:var(--line-2)}
+.btn.danger{background:#fff;border:1px solid #f0c9c9;color:var(--bad)}
+.btn.danger:hover{background:var(--bad-bg)}
+.btn.sm{padding:6px 11px;font-size:12px}
+.btn:active{transform:translateY(1px)}
+
+/* ==========================================================================
+ * COCKPIT — Stripe meets Linear: hero KPIs, alerts, recent activity, heatmap
+ * ========================================================================== */
+.ck-hero{background:linear-gradient(135deg,#07140c 0%,#0c1f14 60%,#103d17 100%);color:#dff0e3;border-radius:var(--rad-lg);padding:24px 28px;margin-bottom:22px;position:relative;overflow:hidden}
+.ck-hero::after{content:"";position:absolute;right:-80px;top:-80px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(124,252,154,.18),transparent 70%);pointer-events:none}
+.ck-hero-meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.ck-hero-meta .pill{background:rgba(124,252,154,.15);color:#7cfc9a;border:1px solid rgba(124,252,154,.3)}
+.ck-hero-meta .pill.ghost{background:transparent;border-color:rgba(255,255,255,.18);color:#9fb3a6}
+.ck-hero h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:34px;margin:0 0 6px;color:#fff;letter-spacing:-.02em}
+.ck-hero p{margin:0;font-size:14px;color:#9fb3a6;max-width:60ch}
+.ck-hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:18px;position:relative;z-index:1}
+@media(max-width:780px){.ck-hero-stats{grid-template-columns:1fr;gap:14px}}
+.ck-hs{padding:0}
+.ck-hs .l{font:600 11px 'Inter';color:#7fb98e;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.ck-hs .v{font:800 36px 'Inter';color:#fff;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em;display:flex;align-items:baseline;gap:4px}
+.ck-hs .v small{font-size:13px;color:#9fb3a6;font-weight:600}
+.ck-hs .d{margin-top:5px;font:700 12px 'Inter';color:#9fb3a6}
+
+/* alerts */
+.alert{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:var(--rad-sm);padding:11px 14px;margin-bottom:8px;transition:background .15s}
+.alert:hover{background:#fafdfa}
+.alert .ico{font-size:16px;line-height:1;margin-top:2px}
+.alert.warn{border-left-color:var(--warn)}
+.alert.bad{border-left-color:var(--bad)}
+.alert.ok{border-left-color:var(--ok)}
+.alert .b{flex:1;min-width:0}
+.alert .b b{font:700 13px 'Inter';color:var(--ink);display:block;margin-bottom:1px}
+.alert .b span{font:500 12px 'Inter';color:var(--muted)}
+.alert .act{font:700 11.5px 'Inter';color:var(--green-700);padding:3px 8px;border-radius:6px}
+.alert .act:hover{background:var(--green-50)}
+
+/* activity timeline */
+.act-line{position:relative;padding-left:24px}
+.act-line::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.act-it{position:relative;padding:8px 0 8px 4px;font-size:13px}
+.act-it::before{content:"";position:absolute;left:-20px;top:14px;width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid var(--green-500)}
+.act-it.bad::before{border-color:var(--bad)}
+.act-it.warn::before{border-color:var(--warn)}
+.act-it.info::before{border-color:#1f6c9c}
+.act-it b{font-weight:700;color:var(--ink)}
+.act-it .ts{font:500 11px 'Inter';color:var(--muted-2)}
+.act-it .ctx{font:500 12px 'Inter';color:var(--muted);margin-top:2px}
+
+/* heatmap */
+.heat{display:grid;gap:2px}
+.heat-head{display:grid;grid-template-columns:160px repeat(7,1fr);gap:2px;font:700 10px 'Inter';color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.heat-head .h-cell{text-align:center;padding:4px 0}
+.heat-row{display:grid;grid-template-columns:160px repeat(7,1fr);gap:2px;align-items:stretch}
+.heat-row .h-lbl{font:600 12px 'Inter';color:var(--ink);padding:8px 10px;background:var(--soft);border-radius:6px;display:flex;align-items:center}
+.heat-row .h-cell{height:30px;display:flex;align-items:center;justify-content:center;font:700 11px 'Inter';color:var(--ink);border-radius:6px;cursor:pointer;transition:transform .12s;background:#f1f4f1;color:var(--muted)}
+.heat-row .h-cell:hover{transform:scale(1.1);z-index:2;box-shadow:var(--shadow-md)}
+.heat-row .h-cell.h-1{background:#e6f3e9;color:var(--green-800)}
+.heat-row .h-cell.h-2{background:#bfe2c7;color:var(--green-800)}
+.heat-row .h-cell.h-3{background:#7cc795;color:#fff}
+.heat-row .h-cell.h-4{background:#3f9c5d;color:#fff}
+.heat-row .h-cell.h-5{background:var(--green-800);color:#fff}
+
+/* ==========================================================================
+ * KANBAN (Linear-style)
+ * ========================================================================== */
+.kanban{display:flex;gap:14px;overflow-x:auto;padding:4px 4px 18px;scroll-snap-type:x mandatory}
+.kn-col{flex:0 0 280px;background:#f3f6f4;border:1px solid var(--line);border-radius:var(--rad-md);padding:10px 10px 12px;scroll-snap-align:start;display:flex;flex-direction:column;max-height:calc(100vh - 220px);min-height:0}
+.kn-col-h{display:flex;align-items:center;gap:8px;padding:4px 6px 10px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.kn-col-h .nm{font:700 12px 'Inter';text-transform:uppercase;letter-spacing:.05em;color:var(--ink)}
+.kn-col-h .cnt{font:700 10.5px 'Inter';color:var(--muted);background:#fff;border:1px solid var(--line);padding:1px 6px;border-radius:999px}
+.kn-col-h .dot{width:8px;height:8px;border-radius:50%}
+.kn-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:2px}
+.kn-card{background:#fff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;cursor:pointer;transition:transform .12s,box-shadow .15s,border-color .15s}
+.kn-card:hover{transform:translateY(-1px);box-shadow:var(--shadow-md);border-color:var(--green-200)}
+.kn-card .ttl{font:700 13px 'Inter';color:var(--ink);margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.kn-card .meta{font:500 11px 'Inter';color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.kn-card .pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px}
+.kn-card .foot{display:flex;align-items:center;gap:8px;font:500 11px 'Inter';color:var(--muted)}
+.kn-card .foot .sp{flex:1}
+
+/* ==========================================================================
+ * AI CHAT panel (slide-in from right)
+ * ========================================================================== */
+.chat{grid-area:chat;background:linear-gradient(180deg,#0a1812 0%,#07140c 100%);color:#dff0e3;display:flex;flex-direction:column;border-left:1px solid rgba(124,252,154,.15);position:relative;overflow:hidden}
+.chat-h{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.chat-h .ai-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#7cfc9a,#3f9c5d);display:grid;place-items:center;font:900 14px 'Inter';color:#04100a}
+.chat-h .nm{font:700 14px 'Inter';color:#fff}
+.chat-h .sub{font:500 11.5px 'Inter';color:#7cfc9a}
+.chat-h .x{margin-left:auto;color:#9fb3a6;padding:6px 10px;border-radius:6px}
+.chat-h .x:hover{background:rgba(255,255,255,.07);color:#fff}
+.chat-body{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
+.chat-msg{display:flex;gap:10px;animation:msgIn .25s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.chat-msg .av{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.08);display:grid;place-items:center;font:800 11px 'Inter';color:#bcd4c2;flex-shrink:0}
+.chat-msg.you .av{background:var(--green-700);color:#fff}
+.chat-msg.ai .av{background:linear-gradient(135deg,#7cfc9a,#3f9c5d);color:#04100a}
+.chat-msg .bub{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:9px 12px;font-size:13.5px;line-height:1.55;min-width:0;white-space:pre-wrap;word-wrap:break-word}
+.chat-msg.you .bub{background:rgba(124,252,154,.08);border-color:rgba(124,252,154,.18)}
+.chat-msg .bub b{color:#fff}
+.chat-msg .bub h1,.chat-msg .bub h2,.chat-msg .bub h3,.chat-msg .bub h4{font-family:'Inter',sans-serif;color:#fff;margin:8px 0 4px;font-weight:700;font-size:14px}
+.chat-msg .bub ul,.chat-msg .bub ol{padding-left:18px;margin:4px 0}
+.chat-msg .bub li{margin:2px 0}
+.chat-msg .bub code{background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;font:600 12px var(--mono);color:#7cfc9a}
+.chat-msg .bub a{color:#7cfc9a;text-decoration:underline}
+.chat-msg .bub table{border-collapse:collapse;margin:6px 0;font-size:12px}
+.chat-msg .bub th,.chat-msg .bub td{padding:4px 8px;border:1px solid rgba(255,255,255,.1);text-align:left}
+.chat-msg .bub th{background:rgba(255,255,255,.05);font-weight:700;color:#fff}
+.chat-msg.thinking .bub{color:#7cfc9a;font-style:italic}
+.chat-msg.thinking .bub::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#7cfc9a;margin-left:4px;animation:dot 1s infinite}
+@keyframes dot{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.chat-sugs{padding:10px 18px;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.chat-sugs .l{font:700 10px 'Inter';color:#5d7a68;letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px}
+.chat-sugs button{text-align:left;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:7px 10px;color:#bcd4c2;font:500 12px 'Inter';transition:background .15s,color .15s;cursor:pointer}
+.chat-sugs button:hover{background:rgba(124,252,154,.1);color:#fff;border-color:rgba(124,252,154,.25)}
+.chat-input-wrap{padding:12px 18px 14px;border-top:1px solid rgba(255,255,255,.06);background:#04100a;flex-shrink:0}
+.chat-input{display:flex;align-items:flex-end;gap:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:6px 6px 6px 12px;transition:border-color .15s}
+.chat-input:focus-within{border-color:rgba(124,252,154,.4)}
+.chat-input textarea{flex:1;background:none;border:0;outline:0;color:#fff;font:500 13.5px 'Inter';resize:none;padding:6px 0;max-height:140px;line-height:1.4}
+.chat-input textarea::placeholder{color:#5d7a68}
+.chat-input .send{background:#7cfc9a;color:#04100a;width:32px;height:32px;border-radius:7px;display:grid;place-items:center;font-size:14px;font-weight:800;cursor:pointer;transition:background .15s}
+.chat-input .send:hover{background:#a8ffbe}
+.chat-input .send:disabled{background:#3f4a44;color:#7c9c87;cursor:not-allowed}
+.chat-meta{font:500 10.5px 'Inter';color:#5d7a68;margin-top:6px;text-align:center}
+
+/* ==========================================================================
+ * MODAL (Use Case detail)
+ * ========================================================================== */
+.modal-bg{position:fixed;inset:0;background:rgba(7,20,12,.55);display:none;align-items:flex-start;justify-content:center;z-index:90;padding:30px;overflow-y:auto;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.modal-bg.on{display:flex}
+.modal{background:#fff;border-radius:var(--rad-lg);max-width:880px;width:100%;box-shadow:var(--shadow-lg);overflow:hidden;animation:modalIn .22s ease}
+@keyframes modalIn{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
+.modal-h{padding:18px 24px 14px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:14px}
+.modal-h .ttl{flex:1;min-width:0}
+.modal-h .ttl .eye{font:700 10.5px 'Inter';text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:3px}
+.modal-h .ttl h2{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;margin:0;color:var(--ink);line-height:1.15}
+.modal-h .ttl .meta{font:500 12.5px 'Inter';color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.modal-h .x{color:var(--muted);width:32px;height:32px;border-radius:8px;display:grid;place-items:center;font-size:16px;flex-shrink:0}
+.modal-h .x:hover{background:var(--soft);color:var(--ink)}
+.modal-body{padding:20px 24px;display:grid;grid-template-columns:1.4fr 1fr;gap:24px;max-height:calc(100vh - 220px);overflow-y:auto}
+@media(max-width:780px){.modal-body{grid-template-columns:1fr;gap:14px}}
+.modal-foot{padding:14px 24px;border-top:1px solid var(--line);display:flex;align-items:center;gap:8px;background:#fbfdfb}
+.modal-foot .sp{flex:1}
+.uc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 18px}
+.uc-cell{font-size:13px}
+.uc-cell .lbl{font:700 10.5px 'Inter';text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:3px}
+.uc-cell .val{font-weight:700;color:var(--ink)}
+.uc-cell .val.muted{color:var(--muted);font-weight:500;font-style:italic}
+.uc-sect{margin-top:18px}
+.uc-sect h4{font:700 12px 'Inter';color:var(--green-800);text-transform:uppercase;letter-spacing:.07em;margin:0 0 8px;display:flex;align-items:center;gap:6px}
+.uc-sect h4::before{content:"";width:14px;height:2px;background:var(--green-500);border-radius:2px}
+.uc-sect p{font-size:13.5px;color:var(--ink-2);margin:0 0 8px;line-height:1.55}
+.uc-kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.uc-kpi .it{background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:9px 11px}
+.uc-kpi .it .k{font:700 10px 'Inter';color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.uc-kpi .it .v{font:700 14px 'Inter';color:var(--ink);margin-top:1px}
+.gate-list{display:flex;flex-direction:column;gap:8px}
+.gate-it{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fbfdfb}
+.gate-it.done{border-color:var(--green-200);background:var(--green-50)}
+.gate-it.cur{border-color:var(--warn);background:var(--warn-bg);box-shadow:0 0 0 2px rgba(180,83,9,.12)}
+.gate-it .ico{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#fff;border:2px solid var(--line);font:800 11px 'Inter';color:var(--muted);flex-shrink:0}
+.gate-it.done .ico{background:var(--green-700);border-color:var(--green-700);color:#fff}
+.gate-it.cur .ico{background:var(--warn);border-color:var(--warn);color:#fff}
+.gate-it .b{flex:1;min-width:0}
+.gate-it .b b{font:700 12.5px 'Inter';color:var(--ink);display:block}
+.gate-it .b span{font:500 11.5px 'Inter';color:var(--muted)}
+.gate-it .b .dec{font:700 11px 'Inter';margin-top:3px;display:inline-flex;align-items:center;gap:4px}
+.gate-it .b .dec.go{color:var(--ok)}
+.gate-it .b .dec.hold{color:var(--warn)}
+.gate-it .b .dec.kill{color:var(--bad)}
+
+/* ==========================================================================
+ * Intake form
+ * ========================================================================== */
+.form-section{background:#fff;border:1px solid var(--line);border-radius:var(--rad-md);padding:20px 22px;margin-bottom:14px}
+.form-section h3{font:700 14px 'Inter';color:var(--green-800);text-transform:uppercase;letter-spacing:.07em;margin:0 0 6px}
+.form-section .sub{font:500 12.5px 'Inter';color:var(--muted);margin:0 0 14px}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 18px}
+.form-grid .full{grid-column:1/-1}
+@media(max-width:680px){.form-grid{grid-template-columns:1fr}}
+.fld label{display:block;font:700 11px 'Inter';text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 5px}
+.fld label .req{color:var(--bad);margin-left:3px}
+.fld label .opt{color:var(--muted-2);font-weight:500;text-transform:none;margin-left:6px;letter-spacing:0}
+.fld input,.fld select,.fld textarea{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font:500 13.5px 'Inter';background:#fff;color:var(--ink);transition:border-color .15s,background .15s}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--green-500);background:#fafdfa}
+.fld textarea{min-height:84px;resize:vertical;line-height:1.5}
+.fld .help{font:500 11.5px 'Inter';color:var(--muted);margin-top:5px}
+.fld.bad input,.fld.bad select,.fld.bad textarea{border-color:var(--bad);background:var(--bad-bg)}
+.fld.bad .help{color:var(--bad)}
+.opt-grid{display:flex;gap:8px;flex-wrap:wrap}
+.opt-grid .opt{flex:1;min-width:140px;border:1px solid var(--line);background:#fff;border-radius:9px;padding:10px 12px;cursor:pointer;text-align:left;transition:border-color .15s,background .15s}
+.opt-grid .opt:hover{border-color:var(--green-300)}
+.opt-grid .opt.on{border-color:var(--green-500);background:var(--green-50);box-shadow:0 0 0 1px var(--green-500) inset}
+.opt-grid .opt .nm{font:700 13px 'Inter';color:var(--ink)}
+.opt-grid .opt .dd{font:500 11.5px 'Inter';color:var(--muted);margin-top:2px}
+.steps-bar{display:flex;align-items:center;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.steps-bar .s{display:flex;align-items:center;gap:8px;font:600 12px 'Inter';color:var(--muted)}
+.steps-bar .s .n{width:24px;height:24px;border-radius:50%;background:#fff;border:1px solid var(--line);display:grid;place-items:center;font:800 11px 'Inter'}
+.steps-bar .s.on{color:var(--ink)}.steps-bar .s.on .n{background:var(--green-700);border-color:var(--green-700);color:#fff}
+.steps-bar .s.done{color:var(--green-700)}.steps-bar .s.done .n{background:var(--green-50);border-color:var(--green-500);color:var(--green-800)}
+.steps-bar .s.done .n::before{content:"✓"}
+.steps-bar .s.done .n .num{display:none}
+.steps-bar .conn{flex:0 0 26px;height:1px;background:var(--line)}
+.mds-row{display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:#fbfdfb;font-size:12.5px;margin-bottom:4px}
+.mds-row.ok{border-color:var(--green-200);background:var(--green-50)}
+.mds-row.miss{border-color:#f0c9c9;background:var(--bad-bg)}
+.mds-row .ico{width:18px;text-align:center}
+.mds-row .nm{flex:1;font-weight:600;color:var(--ink)}
+.mds-row.miss .ico{color:var(--bad)}
+.mds-row.ok .ico{color:var(--ok)}
+
+/* ==========================================================================
+ * CALENDAR (Gantt-style annual cycle)
+ * ========================================================================== */
+.cal-wrap{background:#fff;border:1px solid var(--line);border-radius:var(--rad-md);padding:18px;overflow-x:auto}
+.cal-grid{display:grid;grid-template-columns:200px repeat(12,1fr);gap:1px;min-width:880px}
+.cal-h{font:700 10.5px 'Inter';color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:6px 0;text-align:center;border-bottom:1px solid var(--line)}
+.cal-h.lbl{text-align:left;padding-left:8px}
+.cal-h.today{color:var(--green-700);background:var(--green-50);border-radius:6px}
+.cal-row{display:contents}
+.cal-row .cal-lbl{font:600 12.5px 'Inter';color:var(--ink);padding:9px 8px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;justify-content:center}
+.cal-row .cal-lbl small{font:500 10.5px 'Inter';color:var(--muted);margin-top:1px}
+.cal-row .cal-cell{position:relative;border-bottom:1px solid var(--line);min-height:42px;border-right:1px dashed var(--line)}
+.cal-bar{position:absolute;top:7px;height:24px;border-radius:6px;display:flex;align-items:center;padding:0 8px;font:700 11px 'Inter';color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;transition:transform .12s,box-shadow .15s;background:linear-gradient(90deg,var(--green-600),var(--green-700))}
+.cal-bar:hover{transform:translateY(-1px);box-shadow:var(--shadow-md);z-index:2}
+.cal-bar.b-gate{background:linear-gradient(90deg,#7c5b07,#a06b04)}
+.cal-bar.b-cycle{background:linear-gradient(90deg,#0c5b27,#103d17)}
+.cal-bar.b-fast{background:linear-gradient(90deg,#a01f1f,#7a1313)}
+.cal-bar.b-qbr{background:linear-gradient(90deg,#1d5e94,#0e4f6e)}
+
+/* ==========================================================================
+ * RACI matrix
+ * ========================================================================== */
+.raci{font-size:12.5px}
+.raci-cell{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:5px;font:800 10.5px 'Inter';color:#fff}
+.raci-cell.r{background:#15803D}
+.raci-cell.a{background:#a01f1f}
+.raci-cell.c{background:#7c5b07}
+.raci-cell.i{background:#37526a}
+
+/* Closure KB cards */
+.kb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.kb-card{background:#fff;border:1px solid var(--line);border-radius:var(--rad-md);padding:16px 18px;transition:transform .12s,box-shadow .15s,border-color .15s;cursor:pointer}
+.kb-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:var(--green-200)}
+.kb-card .h{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.kb-card .h .pill{font-size:10px}
+.kb-card h4{font:700 14.5px 'Inter';color:var(--ink);margin:0 0 6px;line-height:1.3}
+.kb-card .ll{font:500 12px 'Inter';color:var(--muted);margin-bottom:8px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.kb-card .ft{display:flex;align-items:center;gap:8px;font:500 11.5px 'Inter';color:var(--muted-2)}
+
+/* generic */
+.muted{color:var(--muted)}
+.sp-y-lg{margin:24px 0}
+.empty{padding:36px 20px;text-align:center;color:var(--muted);font-size:13.5px}
+.empty .big{font-size:38px;margin-bottom:10px;opacity:.5}
+
+/* tiny toast */
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);background:#07140c;color:#dff0e3;border:1px solid rgba(124,252,154,.4);border-radius:10px;padding:11px 18px;font:600 13px 'Inter';box-shadow:var(--shadow-lg);opacity:0;transition:opacity .25s,transform .25s;z-index:9000;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* scrollbars */
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--muted-2)}
+.chat-body::-webkit-scrollbar-thumb,.chat-body::-webkit-scrollbar-thumb{background:#2c3a32}
+.sidebar ::-webkit-scrollbar-thumb{background:#2c3a32}
+
+/* responsive */
+@media(max-width:780px){.h-pg{font-size:24px}}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- ====== SIDEBAR ====== -->
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="by">OCP Nutricrops · D²nAI</div>
+      <div class="nm">Nutri<b>Plan</b></div>
+      <span class="tag">Trial mgmt · MVP</span>
+    </div>
+    <nav class="sb-nav" id="sbNav"></nav>
+    <div class="sb-foot"><span class="dot"></span>Cycle <b style="color:#fff;margin:0 4px">2026</b> · live</div>
+  </aside>
+
+  <!-- ====== TOPBAR ====== -->
+  <header class="topbar">
+    <div class="tb-crumbs" id="crumbs"><b>Cockpit</b></div>
+    <div class="tb-sp"></div>
+    <div class="tb-search">
+      <span style="opacity:.5">🔍</span>
+      <input type="text" placeholder="Rechercher un Use Case, partenaire, BU…" id="globalSearch">
+      <span class="kbd">⌘K</span>
+    </div>
+    <button class="tb-btn primary" onclick="goView('intake')">+ Nouveau Use Case</button>
+    <button class="tb-btn ai" onclick="toggleChat()"><span class="dot"></span> D²nAI bot</button>
+    <div class="tb-prof"><span class="av">HK</span><div><div class="nm">Hamza K.</div><div class="ro">Global Head Data & AI</div></div></div>
+  </header>
+
+  <!-- ====== MAIN ====== -->
+  <main class="main" id="main">
+
+    <!-- ----- COCKPIT SCREEN ----- -->
+    <section class="screen on" id="sc-cockpit"></section>
+
+    <!-- ----- PORTFOLIO SCREEN ----- -->
+    <section class="screen" id="sc-portfolio"></section>
+
+    <!-- ----- INTAKE SCREEN ----- -->
+    <section class="screen" id="sc-intake"></section>
+
+    <!-- ----- CALENDAR SCREEN ----- -->
+    <section class="screen" id="sc-calendar"></section>
+
+    <!-- ----- FAST TRACK SCREEN ----- -->
+    <section class="screen" id="sc-fasttrack"></section>
+
+    <!-- ----- GOVERNANCE SCREEN ----- -->
+    <section class="screen" id="sc-governance"></section>
+
+    <!-- ----- CLOSURE / KB SCREEN ----- -->
+    <section class="screen" id="sc-kb"></section>
+
+    <!-- ----- ADMIN / REFERENCES ----- -->
+    <section class="screen" id="sc-admin"></section>
+  </main>
+
+  <!-- ====== AI CHAT PANEL ====== -->
+  <aside class="chat" id="chatPanel" style="display:none">
+    <div class="chat-h">
+      <div class="ai-av">⚡</div>
+      <div>
+        <div class="nm">D²nAI bot</div>
+        <div class="sub">Chat with your Trial data</div>
+      </div>
+      <button class="x" onclick="toggleChat()" title="Fermer">✕</button>
+    </div>
+    <div class="chat-body" id="chatBody"></div>
+    <div class="chat-sugs" id="chatSugs"></div>
+    <div class="chat-input-wrap">
+      <div class="chat-input">
+        <textarea id="chatInput" rows="1" placeholder="Demande en langage naturel — ex : « Quels demos NPK en Afrique sont à risque ? »" onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();chatSend();}"></textarea>
+        <button class="send" onclick="chatSend()" id="chatSendBtn">↑</button>
+      </div>
+      <div class="chat-meta">D²nAI bot · répond sur les données du portefeuille de trials</div>
+    </div>
+  </aside>
+</div>
+
+<!-- ====== MODAL — Use Case detail ====== -->
+<div class="modal-bg" id="ucModal" onclick="if(event.target===this)closeUc()">
+  <div class="modal" id="ucModalBox"></div>
+</div>
+
+<!-- ====== TOAST ====== -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================================
+ * NutriPlan — Trial Management Cockpit · D²nAI · OCP Nutricrops
+ * Single-file SPA · mock data in localStorage · AI chat via Databricks proxy.
+ * ============================================================================ */
+
+/* -----------------------------------------------------------------
+ * 1. NAVIGATION CONFIG
+ * --------------------------------------------------------------- */
+const NAV = [
+  { sec: 'Pilotage' },
+  { id:'cockpit',    ico:'⚡', lbl:'Cockpit',         crumb:'Cockpit'                  },
+  { id:'portfolio',  ico:'📚', lbl:'Portefeuille',    crumb:'Portefeuille trials'      },
+  { id:'calendar',   ico:'📅', lbl:'Cycle annuel',    crumb:'Cycle annuel · Calendrier'},
+  { id:'governance', ico:'⚖️', lbl:'Gouvernance',     crumb:'Comités & gouvernance'    },
+  { sec: 'Workflows' },
+  { id:'intake',     ico:'➕', lbl:'Nouveau Use Case',crumb:'Nouveau Use Case'         },
+  { id:'fasttrack',  ico:'🚀', lbl:'Fast Track',      crumb:'Fast Track requests'      },
+  { sec: 'Capitalisation' },
+  { id:'kb',         ico:'💡', lbl:'Closure & KB',    crumb:'Closure & Knowledge Base' },
+  { id:'admin',      ico:'⚙️', lbl:'Référentiels',    crumb:'Référentiels · Admin'     }
+];
+
+/* -----------------------------------------------------------------
+ * 2. MOCK DATA — realistic OCP Nutricrops portfolio for the demo.
+ * --------------------------------------------------------------- */
+const BUS = [
+  { id:'AFR', nm:'Africa BU',        color:'alt-1' },
+  { id:'BRA', nm:'Brazil BU',        color:'alt-2' },
+  { id:'IND', nm:'India BU',         color:'alt-3' },
+  { id:'EUR', nm:'Europe BU',        color:'alt-4' },
+  { id:'NAM', nm:'North America BU', color:'alt-5' },
+  { id:'APAC',nm:'Asia-Pacific BU',  color:'alt-6' },
+  { id:'SAI', nm:'SA&I Corporate',   color:'' }
+];
+const REGIONS = {
+  AFR: ['Morocco','Egypt','Ethiopia','Kenya','Ivory Coast','Senegal','Tanzania','Nigeria'],
+  BRA: ['Mato Grosso','Goiás','Paraná','Bahia','Minas Gerais'],
+  IND: ['Punjab','Maharashtra','Karnataka','Andhra Pradesh','Uttar Pradesh'],
+  EUR: ['France','Spain','Italy','Germany','Poland','Romania'],
+  NAM: ['Iowa','Illinois','Texas','California','Ontario'],
+  APAC:['Indonesia','Vietnam','Thailand','Australia','Philippines'],
+  SAI: ['Morocco — Jorf Lab','Morocco — Khouribga R&D Center']
+};
+const CROPS = ['Wheat','Maize','Rice','Soybean','Cotton','Coffee','Sugar Cane','Potato','Tomato','Citrus','Cocoa','Cashew'];
+const PRODUCTS = ['TSP','TSP+','DAP','MAP','NPS','NPK 11-22-22','PHOSGOLD','PHOSGOLD Duo','PHOSRISE','Phosfusion','PK Custom','SOP blend'];
+const PARTNERS = [
+  { nm:'ICRISAT',         typ:'Research institute' },
+  { nm:'EMBRAPA',         typ:'Research institute' },
+  { nm:'AfricaRice',      typ:'CGIAR center' },
+  { nm:'IFDC',            typ:'NGO' },
+  { nm:'INRA Maroc',      typ:'National research' },
+  { nm:'CIMMYT',          typ:'CGIAR center' },
+  { nm:'Cooperativa La Ribera', typ:'Cooperative' },
+  { nm:'Agrinova Brasil', typ:'Distributor' },
+  { nm:'Kenya AgTech Forum', typ:'Cluster' },
+  { nm:'Yara Pilot Farm', typ:'Industrial partner' }
+];
+const STATUSES = [
+  { id:'draft',      lbl:'Draft',          pill:'pill-st-draft',      color:'#5c6b62' },
+  { id:'submitted',  lbl:'Submitted',      pill:'pill-st-submitted',  color:'#1f6c9c' },
+  { id:'steering',   lbl:'In Steering',    pill:'pill-st-steering',   color:'#7c5b07' },
+  { id:'ceo',        lbl:'CEO Pending',    pill:'pill-st-ceo',        color:'#8d4a04' },
+  { id:'approved',   lbl:'Approved',       pill:'pill-st-approved',   color:'#15803D' },
+  { id:'execution',  lbl:'In Execution',   pill:'pill-st-execution',  color:'#2E7D32' },
+  { id:'monitoring', lbl:'Monitoring',     pill:'pill-st-monitoring', color:'#0e4f6e' },
+  { id:'closed-go',  lbl:'Closed · Go',    pill:'pill-st-go',         color:'#0c5b27' },
+  { id:'closed-hold',lbl:'Closed · Hold',  pill:'pill-st-hold',       color:'#8c5a06' },
+  { id:'closed-kill',lbl:'Closed · Kill',  pill:'pill-st-kill',       color:'#8b1a1a' }
+];
+const TYPES = [
+  { id:'scientific', lbl:'Scientific', pill:'pill-typ-scientific', dd:'Generate new scientific knowledge (TRL 2–4)' },
+  { id:'applied',    lbl:'Applied',    pill:'pill-typ-applied',    dd:'Validate product performance (TRL 5–8)' },
+  { id:'demo',       lbl:'Demo',       pill:'pill-typ-demo',       dd:'Demonstrate value under farmer conditions (TRL 7–9)' }
+];
+const PRIORITIES = [
+  { id:'high',lbl:'High',   pill:'pill-prio-high' },
+  { id:'med', lbl:'Medium', pill:'pill-prio-med'  },
+  { id:'low', lbl:'Low',    pill:'pill-prio-low'  }
+];
+const MDS_ITEMS = [
+  'Scientific rationale',
+  'Treatment hypothesis',
+  'Primary KPI defined',
+  'Secondary KPIs (≥2)',
+  'Crop & variety',
+  'Site characterization',
+  'Replication plan (≥3)',
+  'Measurement schedule',
+  'Baseline data plan',
+  'Statistical method',
+  'Data capture tool',
+  'Economic model'
+];
+const SEED_USECASES_RAW = [
+  ['UC-2026-001','Sulphur deficiency correction on irrigated maize','AFR','Morocco','Maize','PHOSGOLD','demo','high','execution',  185000,'INRA Maroc','2026-03-15','2026-09-30'],
+  ['UC-2026-002','PHOSGOLD performance on potato — Egypt staple','AFR','Egypt','Potato','PHOSGOLD','applied','high','monitoring',   240000,'IFDC','2026-02-01','2026-08-15'],
+  ['UC-2026-003','NPS blend optimization for coffee yield','AFR','Ethiopia','Coffee','NPS','applied','high','approved',            310000,'AfricaRice','2026-04-01','2026-11-30'],
+  ['UC-2026-004','Sulphur supplementation timing on Bt cotton','BRA','Mato Grosso','Cotton','TSP+','applied','med','execution',    420000,'EMBRAPA','2026-01-20','2026-07-15'],
+  ['UC-2026-005','Custom NPK 11-22-22 vs commodity on soybean','BRA','Goiás','Soybean','NPK 11-22-22','demo','high','submitted',   195000,'Agrinova Brasil','2026-05-15','2026-12-15'],
+  ['UC-2026-006','TSP+ micro-dosing on smallholder maize','AFR','Kenya','Maize','TSP+','demo','med','ceo',                         140000,'Kenya AgTech Forum','2026-04-01','2026-10-30'],
+  ['UC-2026-007','Phosfusion early stage on rice paddies','IND','Punjab','Rice','Phosfusion','applied','high','steering',          280000,'ICRISAT','2026-06-01','2026-12-30'],
+  ['UC-2026-008','DAP vs MAP comparative on durum wheat','EUR','Spain','Wheat','DAP','applied','med','approved',                   165000,'Cooperativa La Ribera','2026-09-15','2027-06-30'],
+  ['UC-2026-009','Climate-smart fertilization on rainfed maize','AFR','Ivory Coast','Maize','NPK 11-22-22','demo','high','draft',  220000,'CIMMYT','2026-05-01','2026-11-15'],
+  ['UC-2026-010','PHOSRISE acidification response on cashew','AFR','Tanzania','Cashew','PHOSRISE','scientific','low','submitted',  95000,'IFDC','2026-07-01','2027-04-30'],
+  ['UC-2026-011','PK Custom on irrigated cotton — saline soils','IND','Maharashtra','Cotton','PK Custom','applied','med','steering',310000,'ICRISAT','2026-08-01','2027-03-30'],
+  ['UC-2026-012','Yield-quality trade-off on Mato Grosso soy','BRA','Mato Grosso','Soybean','TSP+','scientific','med','approved',  150000,'EMBRAPA','2026-09-01','2027-05-15'],
+  ['UC-2026-013','Drip-line P delivery on Iowa corn belt','NAM','Iowa','Maize','MAP','demo','high','submitted',                    260000,'Yara Pilot Farm','2026-04-15','2026-10-30'],
+  ['UC-2026-014','Phosfusion under monsoon stress on rice','APAC','Indonesia','Rice','Phosfusion','demo','med','draft',            175000,'IFDC','2026-06-01','2026-12-30'],
+  ['UC-2026-015','Sulphur uptake calibration trial','SAI','Morocco — Jorf Lab','Wheat','NPS','scientific','low','execution',       85000,'INRA Maroc','2026-02-15','2026-08-15'],
+  ['UC-2026-016','DAP vs PHOSGOLD on sugar cane ratoon','BRA','Paraná','Sugar Cane','PHOSGOLD','applied','high','closed-go',       380000,'EMBRAPA','2025-09-01','2026-05-15'],
+  ['UC-2026-017','NPK custom on Karnataka horticulture','IND','Karnataka','Tomato','NPK 11-22-22','applied','med','closed-go',     145000,'ICRISAT','2025-10-01','2026-04-30'],
+  ['UC-2026-018','PK Custom on Polish wheat — N-stress recovery','EUR','Poland','Wheat','PK Custom','scientific','low','closed-hold',105000,'IFDC','2025-08-01','2026-03-30'],
+  ['UC-2026-019','PHOSGOLD Duo on Vietnam rice triple-cycle','APAC','Vietnam','Rice','PHOSGOLD Duo','demo','high','monitoring',    320000,'IFDC','2026-01-15','2026-10-30'],
+  ['UC-2026-020','Citrus phosphate response — Italian groves','EUR','Italy','Citrus','MAP','applied','low','draft',                115000,'INRA Maroc','2026-10-01','2027-08-30'],
+  ['UC-2026-021','TSP+ vs commodity TSP on Senegal millet','AFR','Senegal','Maize','TSP+','demo','med','submitted',                95000,'AfricaRice','2026-06-01','2026-12-30'],
+  ['UC-2026-022','Cocoa pod yield with PHOSRISE in Ivory Coast','AFR','Ivory Coast','Cocoa','PHOSRISE','scientific','med','steering',180000,'CIMMYT','2026-08-15','2027-08-30'],
+  ['UC-2026-023','NPK custom on Nigerian rice intensification','AFR','Nigeria','Rice','NPK 11-22-22','demo','high','approved',     225000,'AfricaRice','2026-05-15','2026-12-15'],
+  ['UC-2026-024','Sulphur deficiency map calibration — N. Plains','IND','Punjab','Wheat','NPS','scientific','low','execution',      75000,'ICRISAT','2026-04-01','2026-09-30'],
+  ['UC-2026-025','Phosfusion micro-dose on Thai sugar cane','APAC','Thailand','Sugar Cane','Phosfusion','applied','med','submitted',195000,'IFDC','2026-07-01','2027-04-30'],
+  ['UC-2026-026','MAP-based starter on Iowa soybean','NAM','Iowa','Soybean','MAP','demo','med','draft',                            135000,'Yara Pilot Farm','2026-04-15','2026-10-15'],
+  ['UC-2026-027','PK Custom on Filipino coconut intercrops','APAC','Philippines','Cocoa','PK Custom','demo','low','draft',         95000,'IFDC','2026-08-01','2027-06-30'],
+  ['UC-2026-028','SAM-based blend trial on California citrus','NAM','California','Citrus','SOP blend','applied','med','steering',  180000,'Yara Pilot Farm','2026-09-15','2027-07-30'],
+  ['UC-2026-029','TSP+ recovery dose on Cordoba olive','AFR','Morocco','Citrus','TSP+','demo','low','closed-go',                   85000,'INRA Maroc','2025-11-01','2026-05-15'],
+  ['UC-2026-030','PHOSGOLD trial on Sahel pearl millet','AFR','Senegal','Maize','PHOSGOLD','scientific','med','closed-kill',       70000,'IFDC','2025-09-01','2026-03-30'],
+  ['UC-2026-031','MAP starter timing study — Argentine maize','BRA','Bahia','Maize','MAP','applied','med','execution',             175000,'EMBRAPA','2026-03-01','2026-09-30'],
+  ['UC-2026-032','Drought-tolerant rice × Phosfusion India','IND','Andhra Pradesh','Rice','Phosfusion','demo','high','monitoring', 240000,'ICRISAT','2026-02-01','2026-10-30'],
+  ['UC-2026-033','TSP+ on Ontario soybean cover-crop rotations','NAM','Ontario','Soybean','TSP+','applied','low','submitted',     120000,'Yara Pilot Farm','2026-04-01','2026-10-15'],
+  ['UC-2026-034','Phosfate calibration on French wheat',     'EUR','France','Wheat','DAP','scientific','low','execution',          90000,'INRA Maroc','2026-03-01','2026-08-30'],
+  ['UC-2026-035','PHOSGOLD on Italian tomato — Sangiovese terroir','EUR','Italy','Tomato','PHOSGOLD','demo','med','approved',     135000,'Cooperativa La Ribera','2026-05-01','2026-09-30']
+];
+const SEED_USECASES = SEED_USECASES_RAW.map((r,i)=>{
+  const [id,name,bu,region,crop,prod,type,prio,status,budget,partner,start,end] = r;
+  // Derive realistic objectives + KPIs + MDS coverage from a hash of name.
+  const mdsCount = ((id.charCodeAt(8)+id.charCodeAt(9))%4) + 9; // 9-12 / 12 MDS items covered
+  const mdsCovered = MDS_ITEMS.slice(0, mdsCount);
+  const objPrimary = type==='scientific'
+    ? `Quantifier la réponse de ${crop.toLowerCase()} à ${prod} en conditions ${region}.`
+    : type==='applied'
+      ? `Démontrer un uplift rendement ≥ 5 % de ${prod} vs référence ${PRODUCTS[(i*3)%PRODUCTS.length]} sur ${crop.toLowerCase()}.`
+      : `Démontrer l'intérêt agronomique et économique de ${prod} en conditions farmer en ${region}.`;
+  const fastTrack = (i % 11 === 7); // ~9% fast track
+  const treatments = 4 + (i % 3); // 4-6 traitements
+  const replications = 3 + (i % 2); // 3-4 répétitions
+  return {
+    id, name, bu, region, crop, product:prod, type, priority:prio, status, budget, partner,
+    start_date:start, end_date:end,
+    fast_track:fastTrack,
+    objective_primary: objPrimary,
+    objectives_secondary: [
+      `Caractériser la cinétique d'absorption N-P-K sur ${replications} sites.`,
+      `Valider la méthodologie MDS sur ${crop.toLowerCase()}.`,
+      `Documenter l'économie d'usage vs pratique standard.`
+    ],
+    kpis_primary: [
+      { k:'Rendement (t/ha)', target: type==='demo'?'+5 % vs réf.':'mesure absolue' },
+      { k:'Marge brute partielle ($/ha)', target:'+$80/ha vs réf.' }
+    ],
+    kpis_secondary: [
+      { k:'Teneur protéique grains (%)' },
+      { k:'Indice de récolte' },
+      { k:'NUE — Use Efficiency (kg yield / kg N)' }
+    ],
+    treatments, replications,
+    mds_covered: mdsCovered,
+    risks: [
+      type==='demo'?'Variabilité fermes (faible contrôle expérimental)':'Variabilité météo entre sites',
+      'Délai contractualisation partenaire'
+    ],
+    gates: _gatesFor(status),
+    created_at: _backDate(40 + i*2),
+    submitted_at: status==='draft'?null:_backDate(30 + i*2),
+    owner_bu: bu,
+    sai_lead: ['Anaïs M.','Karim T.','Sarah B.','David L.'][i % 4],
+    comments: 1 + (i % 7),
+    last_update: _backDate((i*3) % 20)
+  };
+});
+function _backDate(d){ const x=new Date(); x.setDate(x.getDate()-d); return x.toISOString().slice(0,10); }
+function _gatesFor(status){
+  const order = ['submitted','steering','ceo','execution','monitoring','closed'];
+  const idx = order.indexOf(status.replace(/^closed-.*$/,'closed'));
+  const gates = [
+    { id:'steering', nm:'Trial Steering Committee', when:'2026-01-20', kind:'Gate 1 — Design & readiness' },
+    { id:'ceo',      nm:'CEO Portfolio Approval',   when:'2026-02-10', kind:'Gate 2 — Annual portfolio' },
+    { id:'monitoring',nm:'Monitoring Committee',    when:'TBD',        kind:'Gate 3 — Evidence review' }
+  ];
+  return gates.map((g,i)=>{
+    let st='upcoming', dec=null;
+    if(idx<=0){ st = i===0?'current':'upcoming'; }
+    else if(idx===1){ st = i===0?'done':(i===1?'current':'upcoming'); if(i===0) dec='go'; }
+    else if(idx===2){ st = i<2?'done':(i===2?'current':'upcoming'); if(i<2) dec='go'; }
+    else if(idx>=3){ st = i<3?'done':'upcoming'; if(i<3) dec='go'; }
+    if(status==='closed-hold' && i===2){ dec='hold'; }
+    if(status==='closed-kill' && i===2){ dec='kill'; }
+    if(status==='closed-go'   && i===2){ dec='go'; }
+    return Object.assign({}, g, { status:st, decision:dec });
+  });
+}
+
+/* -----------------------------------------------------------------
+ * 3. STATE
+ * --------------------------------------------------------------- */
+const LS_DATA = 'nplan_usecases_v1';
+const LS_PREFS = 'nplan_prefs_v1';
+let DATA = loadData();
+let PREFS = loadPrefs();
+let CHAT_BACKEND = null; // { chat, nonce, ai } populated from window.DNAI_NPLAN
+let CHAT_HIST = [];
+
+function loadData(){
+  try{ const v=JSON.parse(localStorage.getItem(LS_DATA)); if(Array.isArray(v)&&v.length) return v; }catch(e){}
+  return SEED_USECASES.slice();
+}
+function saveData(){ try{ localStorage.setItem(LS_DATA, JSON.stringify(DATA)); }catch(e){} }
+function loadPrefs(){
+  try{ const v=JSON.parse(localStorage.getItem(LS_PREFS)); if(v) return v; }catch(e){}
+  return { view:'cockpit', portfolioView:'kanban', filters:{}, chatOpen:false };
+}
+function savePrefs(){ try{ localStorage.setItem(LS_PREFS, JSON.stringify(PREFS)); }catch(e){} }
+
+function ucById(id){ return DATA.find(u=>u.id===id); }
+function statusOf(id){ return STATUSES.find(s=>s.id===id) || STATUSES[0]; }
+function typeOf(id){ return TYPES.find(t=>t.id===id) || TYPES[0]; }
+function prioOf(id){ return PRIORITIES.find(p=>p.id===id) || PRIORITIES[1]; }
+function buOf(id){ return BUS.find(b=>b.id===id) || BUS[6]; }
+function fmtMoney(n){ return '$'+(n||0).toLocaleString('en-US',{maximumFractionDigits:0}); }
+function fmtDate(s){ if(!s) return '—'; try{ return new Date(s).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'2-digit'}); }catch(e){ return s; } }
+function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);}
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2400); }
+
+/* -----------------------------------------------------------------
+ * 4. SIDENAV + VIEW ROUTING
+ * --------------------------------------------------------------- */
+function renderSidebar(){
+  const host = document.getElementById('sbNav');
+  const counts = portfolioCounts();
+  const inSteering = DATA.filter(u=>u.status==='steering').length;
+  const draft      = DATA.filter(u=>u.status==='draft').length;
+  const fastTrack  = DATA.filter(u=>u.fast_track && u.status!=='closed-go' && u.status!=='closed-kill' && u.status!=='closed-hold').length;
+  const closed     = DATA.filter(u=>/^closed-/.test(u.status)).length;
+  const badges = { portfolio: DATA.length, intake: draft||null, fasttrack: fastTrack||null, kb: closed||null, governance: inSteering||null };
+  host.innerHTML = NAV.map(it => {
+    if(it.sec) return `<div class="sb-section">${it.sec}</div>`;
+    const bd = badges[it.id];
+    const bdCls = it.id==='governance' && bd ? 'warn' : '';
+    return `<button class="sb-item ${PREFS.view===it.id?'on':''}" data-v="${it.id}" onclick="goView('${it.id}')"><span class="ico">${it.ico}</span><span class="lbl">${it.lbl}</span>${bd?`<span class="badge ${bdCls}">${bd}</span>`:''}</button>`;
+  }).join('');
+}
+function goView(id){
+  PREFS.view = id; savePrefs();
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById('sc-'+id).classList.add('on');
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.toggle('on', b.dataset.v===id));
+  const nav = NAV.find(n=>n.id===id);
+  document.getElementById('crumbs').innerHTML = `<span>NutriPlan</span><span class="sep">/</span><b>${nav?nav.crumb:id}</b>`;
+  if(id==='cockpit')    renderCockpit();
+  if(id==='portfolio')  renderPortfolio();
+  if(id==='intake')     renderIntake();
+  if(id==='calendar')   renderCalendar();
+  if(id==='governance') renderGovernance();
+  if(id==='fasttrack')  renderFastTrack();
+  if(id==='kb')         renderKB();
+  if(id==='admin')      renderAdmin();
+  document.getElementById('main').scrollTo({top:0,behavior:'instant'});
+}
+
+/* -----------------------------------------------------------------
+ * 5. COCKPIT — KPIs, hero, alerts, recent activity, heatmap
+ * --------------------------------------------------------------- */
+function portfolioCounts(){
+  const c = {};
+  STATUSES.forEach(s=>c[s.id]=0);
+  DATA.forEach(u=>c[u.status]=(c[u.status]||0)+1);
+  return c;
+}
+function renderCockpit(){
+  const c = portfolioCounts();
+  const total = DATA.length;
+  const active = DATA.filter(u=>!/^closed-/.test(u.status)).length;
+  const inPipe = DATA.filter(u=>['submitted','steering','ceo'].includes(u.status)).length;
+  const goRate = (function(){
+    const closed = DATA.filter(u=>/^closed-/.test(u.status));
+    if(!closed.length) return 0;
+    return Math.round(closed.filter(u=>u.status==='closed-go').length / closed.length * 100);
+  })();
+  const totalBudget = DATA.reduce((s,u)=>s+(u.budget||0),0);
+  const buBreakdown = BUS.map(b=>({...b, n: DATA.filter(u=>u.bu===b.id).length})).filter(b=>b.n>0);
+  const alerts = buildAlerts();
+  const activity = buildActivity();
+
+  document.getElementById('sc-cockpit').innerHTML = `
+    <div class="ck-hero">
+      <div class="ck-hero-meta">
+        <span class="pill">⚡ Cycle 2026 · ${active} trials actifs</span>
+        <span class="pill ghost">${BUS.length} BUs · ${Object.values(REGIONS).flat().length} régions</span>
+        <span class="pill ghost">QBR refresh : Q3 2026</span>
+      </div>
+      <h1>Le portefeuille Trials & Demos OCP Nutricrops, en un coup d'œil</h1>
+      <p>Cockpit unifié pour SA&I, BUs, comités de gouvernance et CEO Office. Intake structuré · Gates digitalisés · AI Q&A sur tes données.</p>
+      <div class="ck-hero-stats">
+        <div class="ck-hs"><div class="l">Portefeuille actif</div><div class="v">${active}<small>/ ${total}</small></div><div class="d">${inPipe} en cours de validation</div></div>
+        <div class="ck-hs"><div class="l">Budget cycle 2026</div><div class="v">${fmtMoney(totalBudget)}</div><div class="d">Allocation pondérée par BU</div></div>
+        <div class="ck-hs"><div class="l">Go rate (closed)</div><div class="v">${goRate}<small>%</small></div><div class="d">${DATA.filter(u=>u.status==='closed-go').length} décisions Go cumulées</div></div>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      ${kpiTile('📚', 'Submitted', c.submitted, 'En attente Steering', 'bar', Math.min(100,(c.submitted/Math.max(1,total))*100))}
+      ${kpiTile('⚖️', 'In Steering', c.steering, 'Gate 1 review', 'bar', Math.min(100,(c.steering/Math.max(1,total))*100))}
+      ${kpiTile('🏛️', 'CEO Pending', c.ceo, 'Gate 2 portfolio', 'bar', Math.min(100,(c.ceo/Math.max(1,total))*100))}
+      ${kpiTile('🌱', 'In Execution', c.execution + c.monitoring, 'Field + monitoring', 'bar', Math.min(100,((c.execution+c.monitoring)/Math.max(1,total))*100))}
+    </div>
+
+    <div class="row-2c">
+      <div class="card">
+        <h3>🔥 Alertes & escalations <span class="sub">— issues détectées sur ton portefeuille</span></h3>
+        ${alerts.map(a=>`<div class="alert ${a.kind}"><span class="ico">${a.ico}</span><div class="b"><b>${escapeHtml(a.title)}</b><span>${escapeHtml(a.ctx)}</span></div><button class="act" onclick="${a.action}">${a.cta} →</button></div>`).join('') || '<div class="muted">Tout est sous contrôle ✓</div>'}
+      </div>
+      <div class="card">
+        <h3>📝 Activité récente</h3>
+        <div class="act-line">${activity.map(a=>`<div class="act-it ${a.kind||''}"><b>${escapeHtml(a.title)}</b> <span class="ts">· ${a.when}</span><div class="ctx">${escapeHtml(a.ctx)}</div></div>`).join('')}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🌍 Couverture portefeuille — BU × Culture <span class="sub">— intensité = nb de Use Cases</span></h3>
+      ${renderHeatmap()}
+    </div>
+
+    <div class="card">
+      <h3>🏢 Top BUs émettrices</h3>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>BU</th><th>Use Cases</th><th>Budget total</th><th>Statut majoritaire</th><th>SA&I lead</th></tr></thead>
+        <tbody>${buBreakdown.map(b=>{
+          const list = DATA.filter(u=>u.bu===b.id);
+          const bdg = list.reduce((s,u)=>s+(u.budget||0),0);
+          const stCnt = {}; list.forEach(u=>stCnt[u.status]=(stCnt[u.status]||0)+1);
+          const top = Object.entries(stCnt).sort((a,b)=>b[1]-a[1])[0];
+          const topSt = top?statusOf(top[0]):null;
+          const leads = [...new Set(list.map(u=>u.sai_lead))];
+          return `<tr class="t-link" onclick="PREFS.filters={bu:'${b.id}'};goView('portfolio')"><td><span class="av ${b.color}">${b.id}</span> <b>${escapeHtml(b.nm)}</b></td>
+            <td class="t-num">${b.n}</td><td class="t-num">${fmtMoney(bdg)}</td>
+            <td>${topSt?`<span class="pill ${topSt.pill}">${topSt.lbl}</span>`:'—'}</td>
+            <td class="muted">${leads.slice(0,2).join(', ')}${leads.length>2?` +${leads.length-2}`:''}</td></tr>`;
+        }).join('')}</tbody>
+      </table></div>
+    </div>
+  `;
+}
+function kpiTile(ico,k,v,d,_,pct){
+  return `<div class="kpi" onclick="goView('portfolio')">
+    <div class="k"><span class="ico">${ico}</span>${escapeHtml(k)}</div>
+    <div class="v">${v}<small>UCs</small></div>
+    <div class="d flat">${escapeHtml(d)}</div>
+    <div class="bar"><i style="width:0"></i></div>
+  </div>`.replace('width:0',`width:${pct||0}%`);
+}
+function buildAlerts(){
+  const out = [];
+  const lateGates = DATA.filter(u=>u.status==='steering').slice(0,3);
+  lateGates.forEach(u=>{
+    out.push({ kind:'warn', ico:'⏳', title:`${u.id} en attente de Steering Committee depuis 14 jours`, ctx:`${u.name} — ${buOf(u.bu).nm} · prioriser`, cta:'Ouvrir', action:`openUc('${u.id}')` });
+  });
+  const mds = DATA.filter(u=>u.mds_covered && u.mds_covered.length<11 && u.status!=='draft').slice(0,2);
+  mds.forEach(u=>{
+    out.push({ kind:'bad', ico:'⚠️', title:`${u.id} — MDS incomplet (${u.mds_covered.length}/12)`, ctx:`Risque de blocage Gate 1 — ${MDS_ITEMS.filter(m=>!u.mds_covered.includes(m)).slice(0,2).join(' · ')} manquants`, cta:'Compléter', action:`openUc('${u.id}')` });
+  });
+  const ftPending = DATA.filter(u=>u.fast_track && u.status==='submitted').slice(0,1);
+  ftPending.forEach(u=>{
+    out.push({ kind:'warn', ico:'🚀', title:`Fast Track en attente — ${u.id}`, ctx:`${u.name} · Justification Note à valider par le Scientific Monitoring Committee`, cta:'Réviser', action:`goView('fasttrack')` });
+  });
+  return out.slice(0,5);
+}
+function buildActivity(){
+  return DATA.slice().sort((a,b)=>(b.last_update||'').localeCompare(a.last_update||''))
+    .slice(0,8).map(u=>{
+      const st = statusOf(u.status);
+      const kind = u.status==='draft'?'':(u.status==='approved'||u.status.startsWith('closed-go')?'':(u.status==='closed-kill'?'bad':(u.status==='steering'||u.status==='ceo'?'warn':'info')));
+      return { title:`${u.id} · ${st.lbl}`, when:fmtDate(u.last_update), ctx:u.name, kind };
+    });
+}
+function renderHeatmap(){
+  const cropsTop = CROPS.slice(0,7);
+  const head = `<div class="heat-head"><div></div>${cropsTop.map(c=>`<div class="h-cell">${c}</div>`).join('')}</div>`;
+  const rows = BUS.filter(b=>b.id!=='SAI').map(b=>{
+    const cells = cropsTop.map(c=>{
+      const n = DATA.filter(u=>u.bu===b.id && u.crop===c).length;
+      const lvl = n===0?0:Math.min(5, n);
+      return `<div class="h-cell h-${lvl}" title="${b.nm} · ${c} · ${n} UCs">${n||''}</div>`;
+    }).join('');
+    return `<div class="heat-row"><div class="h-lbl"><span class="av ${b.color}" style="margin-right:6px">${b.id}</span>${escapeHtml(b.nm)}</div>${cells}</div>`;
+  }).join('');
+  return `<div class="heat">${head}${rows}</div>`;
+}
+
+/* -----------------------------------------------------------------
+ * 6. PORTFOLIO — Kanban + Table views with filters
+ * --------------------------------------------------------------- */
+function renderPortfolio(){
+  const flt = PREFS.filters||{};
+  const view = PREFS.portfolioView||'kanban';
+  const list = filteredUCs();
+  document.getElementById('sc-portfolio').innerHTML = `
+    <div class="eyebrow">Portefeuille</div>
+    <h2 class="h-pg">${list.length} Use Cases du cycle 2026</h2>
+    <p class="lead">Sélectionne, filtre, drill-down sur n'importe quel Use Case. Bascule entre vue Kanban (par statut) et vue Tableau (par BU / culture / budget).</p>
+
+    <div class="tool-bar">
+      <div class="subnav">
+        <button class="${view==='kanban'?'on':''}" onclick="PREFS.portfolioView='kanban';savePrefs();renderPortfolio()">⊟ Kanban</button>
+        <button class="${view==='table'?'on':''}"  onclick="PREFS.portfolioView='table';savePrefs();renderPortfolio()">⊞ Tableau</button>
+      </div>
+      <div class="sp"></div>
+      ${chipFilter('Type','type', TYPES.map(t=>[t.id,t.lbl]))}
+      ${chipFilter('BU','bu', BUS.map(b=>[b.id,b.nm]))}
+      ${chipFilter('Statut','status', STATUSES.map(s=>[s.id,s.lbl]))}
+      <button class="btn ghost sm" onclick="PREFS.filters={};savePrefs();renderPortfolio()">↺ Reset</button>
+    </div>
+
+    ${view==='kanban' ? renderKanban(list) : renderTable(list)}
+  `;
+}
+function chipFilter(label, key, options){
+  const v = (PREFS.filters||{})[key];
+  const cur = options.find(o=>o[0]===v);
+  return `<div class="chip" onclick="cycleFilter('${key}', ${JSON.stringify(options.map(o=>o[0])).replace(/"/g,'&quot;')})">
+    <span style="color:var(--muted)">${label}:</span> <b>${cur?escapeHtml(cur[1]):'tous'}</b>
+    ${v?'<span class="x" onclick="event.stopPropagation();clearFilter(\''+key+'\')">×</span>':''}
+  </div>`;
+}
+function cycleFilter(key, options){
+  const v = (PREFS.filters||{})[key];
+  const idx = options.indexOf(v);
+  const next = idx<options.length-1 ? options[idx+1] : null;
+  PREFS.filters = PREFS.filters||{}; if(next) PREFS.filters[key]=next; else delete PREFS.filters[key];
+  savePrefs(); renderPortfolio();
+}
+function clearFilter(key){ if(PREFS.filters) delete PREFS.filters[key]; savePrefs(); renderPortfolio(); }
+function filteredUCs(){
+  const f = PREFS.filters||{};
+  return DATA.filter(u=>{
+    if(f.type && u.type!==f.type) return false;
+    if(f.bu && u.bu!==f.bu) return false;
+    if(f.status && u.status!==f.status) return false;
+    return true;
+  });
+}
+function renderKanban(list){
+  const cols = [
+    { ids:['draft'],                lbl:'Draft',           dot:'#5c6b62' },
+    { ids:['submitted'],            lbl:'Submitted',       dot:'#1f6c9c' },
+    { ids:['steering','ceo'],       lbl:'Gates',           dot:'#7c5b07' },
+    { ids:['approved'],             lbl:'Approved',        dot:'#15803D' },
+    { ids:['execution','monitoring'],lbl:'In flight',      dot:'#2E7D32' },
+    { ids:['closed-go','closed-hold','closed-kill'], lbl:'Closed', dot:'#103d17' }
+  ];
+  return `<div class="kanban">${cols.map(c=>{
+    const items = list.filter(u=>c.ids.includes(u.status));
+    return `<div class="kn-col">
+      <div class="kn-col-h"><span class="dot" style="background:${c.dot}"></span><span class="nm">${c.lbl}</span><span class="cnt">${items.length}</span></div>
+      <div class="kn-list">${items.map(kanbanCard).join('') || '<div class="empty" style="padding:14px 6px"><div class="big">∅</div>vide</div>'}</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+function kanbanCard(u){
+  const st = statusOf(u.status), ty = typeOf(u.type), pr = prioOf(u.priority), bu = buOf(u.bu);
+  return `<div class="kn-card" onclick="openUc('${u.id}')">
+    <div class="ttl">${escapeHtml(u.name)}</div>
+    <div class="meta"><b>${u.id}</b> · ${escapeHtml(bu.nm)} · ${escapeHtml(u.region)}</div>
+    <div class="pills">
+      <span class="pill ${ty.pill}">${ty.lbl}</span>
+      <span class="pill ${pr.pill}">${pr.lbl}</span>
+      ${u.fast_track?`<span class="pill" style="background:#fde7e7;color:#a01f1f">🚀 Fast Track</span>`:''}
+    </div>
+    <div class="foot"><span>🌾 ${escapeHtml(u.crop)} · ${escapeHtml(u.product)}</span><span class="sp"></span><span>${fmtMoney(u.budget)}</span></div>
+  </div>`;
+}
+function renderTable(list){
+  return `<div class="tbl-wrap"><table class="tbl">
+    <thead><tr><th>ID</th><th>Use Case</th><th>BU · Région</th><th>Culture · Produit</th><th>Type</th><th>Statut</th><th>Budget</th><th>Partenaire</th><th>SA&I</th><th>Maj.</th></tr></thead>
+    <tbody>${list.map(u=>{
+      const st = statusOf(u.status), ty = typeOf(u.type), bu = buOf(u.bu);
+      return `<tr class="t-link" onclick="openUc('${u.id}')">
+        <td><b>${u.id}</b>${u.fast_track?' 🚀':''}</td>
+        <td class="t-cell-prim">${escapeHtml(u.name)}<div class="meta">${escapeHtml(u.objective_primary)}</div></td>
+        <td><span class="av ${bu.color}">${bu.id}</span> ${escapeHtml(u.region)}</td>
+        <td>${escapeHtml(u.crop)} <span class="muted">· ${escapeHtml(u.product)}</span></td>
+        <td><span class="pill ${ty.pill}">${ty.lbl}</span></td>
+        <td><span class="pill ${st.pill}">${st.lbl}</span></td>
+        <td class="t-num">${fmtMoney(u.budget)}</td>
+        <td>${escapeHtml(u.partner||'—')}</td>
+        <td class="muted">${escapeHtml(u.sai_lead||'—')}</td>
+        <td class="muted">${fmtDate(u.last_update)}</td>
+      </tr>`;
+    }).join('') || '<tr><td colspan="10" class="empty">Aucun Use Case ne correspond aux filtres.</td></tr>'}</tbody>
+  </table></div>`;
+}
+
+/* -----------------------------------------------------------------
+ * 7. USE CASE DETAIL MODAL
+ * --------------------------------------------------------------- */
+function openUc(id){
+  const u = ucById(id); if(!u) return;
+  const st = statusOf(u.status), ty = typeOf(u.type), pr = prioOf(u.priority), bu = buOf(u.bu);
+  const mdsList = MDS_ITEMS.map(m=>{
+    const ok = u.mds_covered && u.mds_covered.includes(m);
+    return `<div class="mds-row ${ok?'ok':'miss'}"><span class="ico">${ok?'✓':'!'}</span><span class="nm">${escapeHtml(m)}</span></div>`;
+  }).join('');
+  document.getElementById('ucModalBox').innerHTML = `
+    <div class="modal-h">
+      <div class="ttl">
+        <div class="eye">${u.id} · ${escapeHtml(bu.nm)}${u.fast_track?' · <b style="color:#a01f1f">🚀 Fast Track</b>':''}</div>
+        <h2>${escapeHtml(u.name)}</h2>
+        <div class="meta">
+          <span class="pill ${st.pill}">${st.lbl}</span>
+          <span class="pill ${ty.pill}">${ty.lbl}</span>
+          <span class="pill ${pr.pill}">${pr.lbl}</span>
+          <span>🌍 ${escapeHtml(u.region)}</span>
+          <span>🌾 ${escapeHtml(u.crop)}</span>
+          <span>🧪 ${escapeHtml(u.product)}</span>
+        </div>
+      </div>
+      <button class="x" onclick="closeUc()" title="Fermer">✕</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <div class="uc-grid">
+          <div class="uc-cell"><div class="lbl">Lancement prévu</div><div class="val">${fmtDate(u.start_date)}</div></div>
+          <div class="uc-cell"><div class="lbl">Clôture prévue</div><div class="val">${fmtDate(u.end_date)}</div></div>
+          <div class="uc-cell"><div class="lbl">Budget alloué</div><div class="val">${fmtMoney(u.budget)}</div></div>
+          <div class="uc-cell"><div class="lbl">Partenaire</div><div class="val">${escapeHtml(u.partner||'—')}</div></div>
+          <div class="uc-cell"><div class="lbl">SA&I Lead</div><div class="val">${escapeHtml(u.sai_lead||'—')}</div></div>
+          <div class="uc-cell"><div class="lbl">Plan expérimental</div><div class="val">${u.treatments} traitements × ${u.replications} répétitions</div></div>
+        </div>
+
+        <div class="uc-sect">
+          <h4>Objectif primaire</h4>
+          <p>${escapeHtml(u.objective_primary)}</p>
+        </div>
+        <div class="uc-sect">
+          <h4>Objectifs secondaires</h4>
+          <ul style="margin:4px 0 0 16px;padding:0">${(u.objectives_secondary||[]).map(o=>`<li style="font-size:13.5px;color:var(--ink-2);margin-bottom:4px">${escapeHtml(o)}</li>`).join('')}</ul>
+        </div>
+        <div class="uc-sect">
+          <h4>KPIs primaires</h4>
+          <div class="uc-kpi">${(u.kpis_primary||[]).map(k=>`<div class="it"><div class="k">${escapeHtml(k.k)}</div><div class="v">${escapeHtml(k.target||'—')}</div></div>`).join('')}</div>
+        </div>
+        <div class="uc-sect">
+          <h4>KPIs secondaires</h4>
+          <div class="uc-kpi">${(u.kpis_secondary||[]).map(k=>`<div class="it"><div class="k">${escapeHtml(k.k)}</div><div class="v muted">—</div></div>`).join('')}</div>
+        </div>
+        <div class="uc-sect">
+          <h4>Risques identifiés</h4>
+          <ul style="margin:4px 0 0 16px;padding:0">${(u.risks||[]).map(r=>`<li style="font-size:13.5px;color:var(--ink-2);margin-bottom:4px">${escapeHtml(r)}</li>`).join('')}</ul>
+        </div>
+      </div>
+      <div>
+        <div class="uc-sect" style="margin-top:0">
+          <h4>Gates de gouvernance</h4>
+          <div class="gate-list">${(u.gates||[]).map(g=>{
+            const cls = g.status==='done'?'done':(g.status==='current'?'cur':'');
+            const decCls = g.decision==='go'?'go':(g.decision==='hold'?'hold':(g.decision==='kill'?'kill':''));
+            const decLbl = g.decision==='go'?'✓ GO':(g.decision==='hold'?'⏸ HOLD':(g.decision==='kill'?'✗ KILL':''));
+            const icoTxt = g.status==='done'?'✓':(g.status==='current'?'•':' ');
+            return `<div class="gate-it ${cls}"><div class="ico">${icoTxt}</div><div class="b"><b>${escapeHtml(g.nm)}</b><span>${escapeHtml(g.kind)} · ${escapeHtml(g.when)}</span>${decLbl?`<div class="dec ${decCls}">${decLbl}</div>`:''}</div></div>`;
+          }).join('')}</div>
+        </div>
+        <div class="uc-sect">
+          <h4>Minimum Data Set (${(u.mds_covered||[]).length}/12)</h4>
+          ${mdsList}
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost sm" onclick="closeUc()">Fermer</button>
+      <span class="sp"></span>
+      <button class="btn ghost sm" onclick="askAIAbout('${u.id}')">🤖 Demander à D²nAI bot</button>
+      <button class="btn primary sm" onclick="toast('🛠 V2 — édition Use Case (non implémenté dans le MVP)')">✎ Éditer</button>
+    </div>
+  `;
+  document.getElementById('ucModal').classList.add('on');
+}
+function closeUc(){ document.getElementById('ucModal').classList.remove('on'); }
+
+/* -----------------------------------------------------------------
+ * 8. AI CHAT — Claude Sonnet 4.6 via Databricks proxy
+ *    Mock data is stuffed into the system prompt so the chat
+ *    can answer real questions on the portfolio without RAG.
+ * --------------------------------------------------------------- */
+function toggleChat(){
+  PREFS.chatOpen = !PREFS.chatOpen; savePrefs();
+  document.getElementById('app').classList.toggle('chat-open', PREFS.chatOpen);
+  document.getElementById('chatPanel').style.display = PREFS.chatOpen?'flex':'none';
+  if(PREFS.chatOpen){
+    if(CHAT_HIST.length===0) chatGreet();
+    renderChatSugs();
+    setTimeout(()=>document.getElementById('chatInput').focus(),120);
+  }
+}
+function chatGreet(){
+  CHAT_HIST.push({ role:'assistant', text:
+    `👋 Salut ! Je suis le **D²nAI bot** dédié à ton portefeuille Trial Management.\n\nJe peux :\n- Filtrer / résumer tes Use Cases (par BU, culture, statut, TRL…)\n- Détecter les risques (MDS incomplet, gates en retard, partenaires non confirmés)\n- Préparer un brief Steering / Monitoring Committee\n- Comparer trials passés vs cycle en cours\n\nDemande-moi tout en langage naturel — je raisonne sur les **${DATA.length} Use Cases** du cycle 2026.` });
+  renderChatBody();
+}
+function renderChatBody(){
+  const host = document.getElementById('chatBody');
+  host.innerHTML = CHAT_HIST.map(m=>`<div class="chat-msg ${m.role==='user'?'you':'ai'}${m.thinking?' thinking':''}"><div class="av">${m.role==='user'?'You':'⚡'}</div><div class="bub">${m.thinking?'D²nAI bot is thinking…':_mdToHtml(m.text)}</div></div>`).join('');
+  host.scrollTop = host.scrollHeight;
+}
+function _mdToHtml(s){
+  // Very light markdown → HTML (bold, lists, paragraphs, inline code, headings).
+  let h = escapeHtml(s);
+  h = h.replace(/`([^`]+)`/g,'<code>$1</code>');
+  h = h.replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');
+  h = h.replace(/^### (.+)$/gm,'<h4>$1</h4>');
+  h = h.replace(/^## (.+)$/gm,'<h3>$1</h3>');
+  // bullet lists
+  h = h.replace(/(^|\n)((?:- .+(?:\n|$))+)/g, (_, pfx, blk)=>{
+    const items = blk.trim().split(/\n/).map(l=>l.replace(/^- /,'')).map(x=>`<li>${x}</li>`).join('');
+    return `${pfx}<ul>${items}</ul>`;
+  });
+  // numbered lists
+  h = h.replace(/(^|\n)((?:\d+\. .+(?:\n|$))+)/g, (_, pfx, blk)=>{
+    const items = blk.trim().split(/\n/).map(l=>l.replace(/^\d+\. /,'')).map(x=>`<li>${x}</li>`).join('');
+    return `${pfx}<ol>${items}</ol>`;
+  });
+  h = h.replace(/\n\n+/g,'<br><br>');
+  h = h.replace(/\n/g,'<br>');
+  return h;
+}
+function renderChatSugs(){
+  const host = document.getElementById('chatSugs');
+  const sugs = [
+    'Quels Use Cases ont un MDS incomplet ?',
+    'Donne-moi un brief du Steering Committee de la semaine prochaine.',
+    'Quels demos NPK en Afrique sont à risque ?',
+    'Compare le portefeuille Brazil vs India.',
+    'Quels trials Soufre sont en exécution ce trimestre ?'
+  ];
+  host.innerHTML = `<div class="l">💡 Suggestions</div>` + sugs.map(s=>`<button onclick="chatAsk(${JSON.stringify(s).replace(/"/g,'&quot;')})">${escapeHtml(s)}</button>`).join('');
+}
+function chatAsk(q){
+  document.getElementById('chatInput').value = q;
+  chatSend();
+}
+function askAIAbout(id){
+  const u = ucById(id); if(!u) return;
+  if(!PREFS.chatOpen) toggleChat();
+  chatAsk(`Analyse le Use Case ${id} (${u.name}) : risques, points forts, alignement avec le portefeuille, recommandation pour le prochain gate.`);
+  closeUc();
+}
+async function chatSend(){
+  const inp = document.getElementById('chatInput');
+  const text = inp.value.trim(); if(!text) return;
+  inp.value=''; inp.style.height='auto';
+  CHAT_HIST.push({ role:'user', text });
+  CHAT_HIST.push({ role:'assistant', thinking:true });
+  renderChatBody();
+  document.getElementById('chatSendBtn').disabled = true;
+  try{
+    const reply = await chatCall(text);
+    CHAT_HIST.pop(); // remove thinking
+    CHAT_HIST.push({ role:'assistant', text: reply });
+  } catch(e){
+    CHAT_HIST.pop();
+    CHAT_HIST.push({ role:'assistant', text: `⚠️ D²nAI bot indisponible : ${e.message}\n\n_Astuce_ : vérifie que la configuration AI est branchée (Réglages → NutriPlan AI ou CGM Cockpit AI).` });
+  } finally {
+    document.getElementById('chatSendBtn').disabled = false;
+    renderChatBody();
+    renderChatSugs();
+  }
+}
+async function chatCall(q){
+  const cfg = CHAT_BACKEND || window.DNAI_NPLAN || null;
+  if(!cfg || !cfg.chat || !cfg.ai){
+    // Fallback — local synthetic response so the demo never breaks if the backend isn't wired.
+    return _localFallback(q);
+  }
+  const sysPrompt = _buildSystemPrompt();
+  const messages = [
+    { role:'system',   content: sysPrompt },
+    { role:'user',     content: q }
+  ];
+  // Include short rolling history (last 4 exchanges) for context.
+  const hist = CHAT_HIST.filter(m=>!m.thinking && m.text).slice(-8);
+  hist.forEach(m=>{ if(m.role==='user' && m.text!==q) messages.splice(1,0,{role:'user',content:m.text}); });
+  const res = await fetch(cfg.chat, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','X-WP-Nonce':cfg.nonce||''},
+    body: JSON.stringify({ messages, temperature:0.2, max_tokens:1200 })
+  });
+  const j = await res.json();
+  if(j && j.error) throw new Error(j.error);
+  if(j && j.text)  return j.text;
+  throw new Error('Réponse vide du backend.');
+}
+function _buildSystemPrompt(){
+  const rows = DATA.map(u=>({
+    id:u.id, name:u.name, bu:u.bu, region:u.region, crop:u.crop, product:u.product,
+    type:u.type, priority:u.priority, status:u.status, budget:u.budget,
+    partner:u.partner, fast_track:u.fast_track, sai_lead:u.sai_lead,
+    start:u.start_date, end:u.end_date, mds_covered:(u.mds_covered||[]).length,
+    obj:u.objective_primary
+  }));
+  return `Tu es **D²nAI bot**, le copilote IA dédié à NutriPlan — l'outil de Trial Management upstream d'OCP Nutricrops.
+
+Tu raisonnes EXCLUSIVEMENT sur le portefeuille de Use Cases fourni ci-dessous (cycle 2026). Tu ne dois jamais mentionner les technologies sous-jacentes (Claude, Anthropic, Databricks, modèle, etc) — tu te présentes comme « D²nAI bot ».
+
+Style :
+- Réponds en français par défaut (mais switche en anglais ou portugais si la question l'est).
+- Cite TOUJOURS les IDs des Use Cases concernés (format UC-2026-XXX).
+- Utilise du markdown léger : **gras**, listes -, ## titres, tableaux si pertinent.
+- Sois concis et orienté action (recommandations claires).
+
+Contexte process : 10 étapes (Annual Cycle → Use Case → Steering Gate 1 → CEO Gate 2 → Readiness → Execution → Monitoring → Adoption Go/Hold/Kill → Closure). Comités : Trial Steering Committee + Scientific Monitoring Committee. MDS = Minimum Data Set (12 items obligatoires). Trois types : Scientific (TRL 2-4), Applied (TRL 5-8), Demo (TRL 7-9).
+
+Données — ${rows.length} Use Cases du portefeuille :
+
+\`\`\`json
+${JSON.stringify(rows)}
+\`\`\`
+
+BUs : ${BUS.map(b=>b.id+'='+b.nm).join(' · ')}.
+Statuses : ${STATUSES.map(s=>s.id+'='+s.lbl).join(' · ')}.
+
+Réponds maintenant à la question utilisateur.`;
+}
+function _localFallback(q){
+  // Tiny "smart" fallback when AI backend is unreachable, so the demo always shows something useful.
+  const lc = q.toLowerCase();
+  if(/risque|mds|incomplet/.test(lc)){
+    const list = DATA.filter(u=>(u.mds_covered||[]).length<11 && u.status!=='draft').slice(0,5);
+    return `⚠️ Use Cases avec MDS incomplet (risque de blocage au Gate 1) :\n\n${list.map(u=>`- **${u.id}** — ${u.name} _(MDS ${u.mds_covered.length}/12)_`).join('\n')}\n\n_(Mode dégradé — backend AI non joint.)_`;
+  }
+  if(/brazil|bresil|brésil/.test(lc)){
+    const list = DATA.filter(u=>u.bu==='BRA');
+    return `🇧🇷 Portefeuille Brazil BU : **${list.length} Use Cases**, budget total **${fmtMoney(list.reduce((s,u)=>s+u.budget,0))}**.\n\n${list.slice(0,5).map(u=>`- **${u.id}** — ${u.name} _(${u.status})_`).join('\n')}`;
+  }
+  if(/soufre|sulphur|sulfur/.test(lc)){
+    const list = DATA.filter(u=>/sulph|sulfur|soufre/i.test(u.name));
+    return `☀️ Trials Soufre actifs :\n\n${list.map(u=>`- **${u.id}** — ${u.name} _(${u.status})_`).join('\n')}`;
+  }
+  return `Je suis en mode dégradé (le backend AI n'est pas branché sur ce déploiement). Configure-le dans **Réglages → NutriPlan AI** pour libérer le vrai chat-with-data.\n\nEn attendant, je vois **${DATA.length} Use Cases** dans le portefeuille — utilise le portfolio ou les filtres pour les explorer.`;
+}
+
+/* -----------------------------------------------------------------
+ * 9. INTAKE FORM (placeholder for MVP V1 — full form coming next iteration)
+ * --------------------------------------------------------------- */
+function renderIntake(){
+  document.getElementById('sc-intake').innerHTML = `
+    <div class="eyebrow">Workflow · Soumission</div>
+    <h2 class="h-pg">Nouveau Use Case</h2>
+    <p class="lead">Formulaire structuré qui force la complétude (objectifs, KPIs, MDS, budget, partenaire) — fini les Word/PDF reçus à moitié remplis. Validation auto avant soumission au Steering Committee.</p>
+    <div class="steps-bar">
+      <div class="s on"><span class="n"><span class="num">1</span></span>Objectifs & rationale</div>
+      <span class="conn"></span>
+      <div class="s"><span class="n"><span class="num">2</span></span>Périmètre & site</div>
+      <span class="conn"></span>
+      <div class="s"><span class="n"><span class="num">3</span></span>KPIs & MDS</div>
+      <span class="conn"></span>
+      <div class="s"><span class="n"><span class="num">4</span></span>Budget & partenaire</div>
+      <span class="conn"></span>
+      <div class="s"><span class="n"><span class="num">5</span></span>Soumission</div>
+    </div>
+
+    <div class="form-section">
+      <h3>1 · Objectifs & rationale</h3>
+      <p class="sub">Pourquoi ce Use Case ? Quels résultats attendus ?</p>
+      <div class="form-grid">
+        <div class="fld full"><label>Nom du Use Case <span class="req">*</span></label><input type="text" placeholder="Ex : Sulphur deficiency correction on irrigated maize"></div>
+        <div class="fld"><label>BU émettrice <span class="req">*</span></label>
+          <select>${BUS.map(b=>`<option>${b.nm}</option>`).join('')}</select></div>
+        <div class="fld"><label>Type de trial <span class="req">*</span></label>
+          <select>${TYPES.map(t=>`<option>${t.lbl} — TRL ${t.id==='scientific'?'2-4':(t.id==='applied'?'5-8':'7-9')}</option>`).join('')}</select></div>
+        <div class="fld full"><label>Objectif primaire <span class="req">*</span></label><textarea placeholder="Quantifier la réponse de…"></textarea></div>
+        <div class="fld full"><label>Objectifs secondaires <span class="opt">(≥2 recommandés)</span></label><textarea placeholder="1. …\n2. …\n3. …"></textarea></div>
+        <div class="fld full"><label>Rationale scientifique / business <span class="req">*</span></label><textarea placeholder="Quel problème adressé ? Pourquoi maintenant ?"></textarea></div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>2 · Périmètre & site</h3>
+      <p class="sub">Où, sur quelle culture, avec quel produit ?</p>
+      <div class="form-grid">
+        <div class="fld"><label>Région cible <span class="req">*</span></label>
+          <select>${Object.values(REGIONS).flat().map(r=>`<option>${r}</option>`).join('')}</select></div>
+        <div class="fld"><label>Culture <span class="req">*</span></label>
+          <select>${CROPS.map(c=>`<option>${c}</option>`).join('')}</select></div>
+        <div class="fld"><label>Produit OCP testé <span class="req">*</span></label>
+          <select>${PRODUCTS.map(p=>`<option>${p}</option>`).join('')}</select></div>
+        <div class="fld"><label>Référence comparée</label>
+          <select>${PRODUCTS.map(p=>`<option>${p}</option>`).join('')}</select></div>
+        <div class="fld"><label>Nb traitements <span class="req">*</span></label><input type="number" placeholder="4" min="1"></div>
+        <div class="fld"><label>Nb répétitions <span class="req">*</span></label><input type="number" placeholder="3" min="3"></div>
+        <div class="fld"><label>Date de lancement</label><input type="date"></div>
+        <div class="fld"><label>Date de clôture estimée</label><input type="date"></div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>3 · KPIs & Minimum Data Set</h3>
+      <p class="sub">Le MDS est obligatoire — 12 items pour garantir la comparabilité cross-cycles.</p>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px">${MDS_ITEMS.map(m=>`<div class="mds-row miss"><span class="ico">!</span><span class="nm">${m}</span></div>`).join('')}</div>
+      <p class="help" style="margin-top:10px;color:var(--muted)">À mesure que tu remplis les sections, les items MDS basculent en vert ✓.</p>
+    </div>
+
+    <div class="form-section">
+      <h3>4 · Budget & partenaire</h3>
+      <div class="form-grid">
+        <div class="fld"><label>Budget prévisionnel ($) <span class="req">*</span></label><input type="number" placeholder="180000"></div>
+        <div class="fld"><label>Priorité business</label>
+          <select>${PRIORITIES.map(p=>`<option>${p.lbl}</option>`).join('')}</select></div>
+        <div class="fld full"><label>Partenaire pressenti <span class="req">*</span></label>
+          <select>${PARTNERS.map(p=>`<option>${p.nm} — ${p.typ}</option>`).join('')}</select></div>
+        <div class="fld"><label>Mode Fast Track</label>
+          <select><option>Standard cycle</option><option>Fast Track — urgent</option></select></div>
+        <div class="fld"><label>SA&I lead</label><input type="text" placeholder="Anaïs M., Karim T., …"></div>
+      </div>
+    </div>
+
+    <div class="tool-bar">
+      <button class="btn ghost" onclick="goView('portfolio')">← Annuler</button>
+      <span class="sp"></span>
+      <button class="btn ghost" onclick="toast('💾 Brouillon enregistré (mock)')">💾 Enregistrer en brouillon</button>
+      <button class="btn primary" onclick="toast('📨 Soumis au Steering Committee (mock)')">📨 Soumettre au Steering Committee</button>
+    </div>
+    <p class="muted" style="text-align:center;margin:10px 0 0">_MVP — la sauvegarde réelle + validation MDS dynamique arrivent en V1.1._</p>
+  `;
+}
+
+/* -----------------------------------------------------------------
+ * 10. CALENDAR (annual cycle Gantt) — placeholder for V1
+ * --------------------------------------------------------------- */
+function renderCalendar(){
+  const months = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+  const cur = (new Date().getMonth());
+  const bars = [
+    { lbl:'Annual Trial Cycle launch',    sub:'SA&I notification + templates', start:0, end:0, cls:'b-cycle' },
+    { lbl:'Use Case submission window',    sub:'Toutes BUs · entrée portefeuille', start:0, end:1, cls:'b-cycle' },
+    { lbl:'Trial Steering Committee · Gate 1', sub:'Design & readiness review', start:1, end:1, cls:'b-gate' },
+    { lbl:'CEO Portfolio Approval · Gate 2',   sub:'Annual portfolio + budget', start:1, end:1, cls:'b-gate' },
+    { lbl:'Trial readiness & contractualization',sub:'Protocols, sites, partner contracts', start:2, end:3, cls:'b-cycle' },
+    { lbl:'Execution — Season 1 trials',  sub:'Field operations, monitoring', start:3, end:9, cls:'' },
+    { lbl:'Monitoring Committee · Monthly rolling', sub:'Evidence review · BU rotation', start:4, end:11, cls:'b-gate' },
+    { lbl:'QBR portfolio refresh',         sub:'Mid-cycle agility check', start:5, end:5, cls:'b-qbr' },
+    { lbl:'Fast Track lane',               sub:'Exceptional urgent requests', start:0, end:11, cls:'b-fast' },
+    { lbl:'Adoption decision + Closure',   sub:'Go/Hold/Kill + knowledge capture', start:10, end:11, cls:'b-cycle' }
+  ];
+  document.getElementById('sc-calendar').innerHTML = `
+    <div class="eyebrow">Cycle annuel</div>
+    <h2 class="h-pg">Calendrier du cycle 2026</h2>
+    <p class="lead">Timeline opérationnelle : phases obligatoires, gates de gouvernance, QBR, Fast Track lane. Vue Gantt 12 mois.</p>
+    <div class="cal-wrap">
+      <div class="cal-grid">
+        <div class="cal-h lbl">Phase</div>
+        ${months.map((m,i)=>`<div class="cal-h ${i===cur?'today':''}">${m}</div>`).join('')}
+        ${bars.map(b=>`<div class="cal-row">
+          <div class="cal-lbl">${escapeHtml(b.lbl)}<small>${escapeHtml(b.sub)}</small></div>
+          ${months.map((_,m)=>`<div class="cal-cell">${m===b.start?`<div class="cal-bar ${b.cls}" style="left:6px;right:6px;width:calc(${(b.end-b.start+1)*100}% - 12px)">${escapeHtml(b.lbl)}</div>`:''}</div>`).join('')}
+        </div>`).join('')}
+      </div>
+    </div>
+    <p class="muted" style="margin-top:10px">Aujourd'hui : ${new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})}.</p>
+  `;
+}
+
+/* -----------------------------------------------------------------
+ * 11. GOVERNANCE — committees, RACI matrix
+ * --------------------------------------------------------------- */
+function renderGovernance(){
+  const inSteering = DATA.filter(u=>u.status==='steering');
+  const ceoPending = DATA.filter(u=>u.status==='ceo');
+  const monitoring = DATA.filter(u=>u.status==='monitoring');
+  document.getElementById('sc-governance').innerHTML = `
+    <div class="eyebrow">Gouvernance</div>
+    <h2 class="h-pg">Comités & RACI</h2>
+    <p class="lead">Visibilité sur les comités à venir, ce qui les attend, et la matrice de responsabilité officielle du Trial Management Framework.</p>
+
+    <div class="row-2c">
+      <div class="card">
+        <h3>⚖️ Trial Steering Committee <span class="sub">— Gate 1 · Design & readiness</span></h3>
+        <p class="muted" style="margin:0 0 12px">Prochaine session : <b style="color:var(--ink)">jeudi 25 juin 2026 · 14:00–16:30</b></p>
+        <h4 style="font:700 12px 'Inter';color:var(--green-800);text-transform:uppercase;letter-spacing:.06em;margin:0 0 8px">${inSteering.length} dossiers à l'ordre du jour</h4>
+        ${inSteering.slice(0,5).map(u=>`<div class="alert ok"><span class="ico">📄</span><div class="b"><b>${escapeHtml(u.name)}</b><span>${u.id} · ${buOf(u.bu).nm} · ${escapeHtml(u.partner||'—')}</span></div><button class="act" onclick="openUc('${u.id}')">Ouvrir →</button></div>`).join('')}
+        ${inSteering.length>5?`<p class="muted" style="margin:10px 0 0;text-align:center">+ ${inSteering.length-5} autres dossiers</p>`:''}
+      </div>
+      <div class="card">
+        <h3>🏛️ CEO Portfolio Approval <span class="sub">— Gate 2 · Annual portfolio</span></h3>
+        <p class="muted" style="margin:0 0 12px">Prochaine décision : <b style="color:var(--ink)">vendredi 3 juillet 2026</b></p>
+        ${ceoPending.slice(0,5).map(u=>`<div class="alert warn"><span class="ico">⏳</span><div class="b"><b>${escapeHtml(u.name)}</b><span>${u.id} · ${fmtMoney(u.budget)}</span></div><button class="act" onclick="openUc('${u.id}')">Ouvrir →</button></div>`).join('') || '<div class="muted">Pas de dossier en attente.</div>'}
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🔁 Scientific Monitoring Committee <span class="sub">— Gate 3 · Monthly rolling, BU rotation</span></h3>
+      <p class="muted" style="margin:0 0 12px">${monitoring.length} trials en revue continue · rotation BU mensuelle.</p>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Mois</th><th>BU présentatrice</th><th>UCs présentés</th><th>Décisions attendues</th></tr></thead>
+        <tbody>
+          ${[['Janvier','Africa BU',5,'2 Go-decisions attendues'],['Février','Brazil BU',6,'1 Hold review'],['Mars','India BU',4,'Cross-site consolidation'],['Avril','Europe BU',3,'Closure 2025 — final reports'],['Mai','North America BU',4,'Pilot Iowa drip-line'],['Juin','Asia-Pacific BU',3,'Monsoon stress trials']].map(r=>`<tr><td><b>${r[0]} 2026</b></td><td>${r[1]}</td><td class="t-num">${r[2]}</td><td class="muted">${r[3]}</td></tr>`).join('')}
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="card">
+      <h3>🎯 RACI Matrix <span class="sub">— extrait du Trial Management Framework</span></h3>
+      <div class="tbl-wrap"><table class="tbl raci">
+        <thead><tr><th>Étape</th><th style="text-align:center">SA&I</th><th style="text-align:center">BUs / Régions</th><th style="text-align:center">Support Fns</th><th style="text-align:center">Governance</th><th style="text-align:center">CEO</th></tr></thead>
+        <tbody>
+          ${[
+            ['1 · Launch Annual Trial Cycle','r','','','',''],
+            ['2 · Use Case definition & drafting','c','r','','',''],
+            ['3 · Final Proposal Consolidation','r','c','','',''],
+            ['4 · Trial Steering Committee','c','c','','r',''],
+            ['5 · CEO Validation','','','','','a'],
+            ['6 · Trial Readiness & Contracting','c','c','r','',''],
+            ['7 · Execution & Data Collection','c','r','','',''],
+            ['8 · Analysis & Result Validation','r','c','','',''],
+            ['9 · Monitoring Committee','c','c','','r',''],
+            ['10 · Adoption Decision','','','','','a'],
+            ['11 · Closure & Knowledge Sharing','r','c','','','']
+          ].map(r=>`<tr><td><b>${r[0]}</b></td>${r.slice(1).map(c=>`<td style="text-align:center">${c?`<span class="raci-cell ${c}">${c.toUpperCase()}</span>`:''}</td>`).join('')}</tr>`).join('')}
+        </tbody>
+      </table></div>
+      <p class="muted" style="margin-top:10px;font-size:11.5px"><span class="raci-cell r">R</span> Responsible &nbsp; <span class="raci-cell a">A</span> Accountable &nbsp; <span class="raci-cell c">C</span> Consulted &nbsp; <span class="raci-cell i">I</span> Informed</p>
+    </div>
+  `;
+}
+
+/* -----------------------------------------------------------------
+ * 12. FAST TRACK lane
+ * --------------------------------------------------------------- */
+function renderFastTrack(){
+  const fts = DATA.filter(u=>u.fast_track);
+  document.getElementById('sc-fasttrack').innerHTML = `
+    <div class="eyebrow">Exception · Fast Track</div>
+    <h2 class="h-pg">🚀 Fast Track requests</h2>
+    <p class="lead">Demandes urgentes hors cycle annuel — Chief/EVP approval + acknowledgment du Scientific Monitoring Committee. SLA accéléré, traçabilité renforcée.</p>
+
+    <div class="kpi-grid">
+      ${kpiTile('🚀','Fast Track actifs', fts.filter(u=>!/^closed-/.test(u.status)).length, 'Hors cycle annuel','bar',60)}
+      ${kpiTile('⏱','SLA moyen', '12 j', 'vs 90 j cycle standard','bar',80)}
+      ${kpiTile('💰','Budget engagé', fmtMoney(fts.reduce((s,u)=>s+u.budget,0)), 'Cycle 2026','bar',45)}
+      ${kpiTile('✓','Go rate', Math.round(fts.filter(u=>u.status==='closed-go').length/Math.max(1,fts.filter(u=>/^closed-/.test(u.status)).length)*100)+'%', 'Closed FT decisions','bar',70)}
+    </div>
+
+    <div class="card">
+      <h3>Workflow Fast Track <span class="sub">— exception au cycle annuel</span></h3>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">
+        ${['1 · Identification urgence','2 · Chief/EVP validation','3 · Monitoring Committee ack','4 · Protocol & readiness','5 · Execution → Decision'].map((s,i)=>`<div style="background:linear-gradient(135deg,#fde7e7,#fdf2e0);border:1px solid #f0c9c9;border-radius:9px;padding:11px 12px;text-align:center;font:700 11.5px 'Inter';color:#7a1313">${s}</div>`).join('')}
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Fast Track requests — cycle 2026 (${fts.length})</h3>
+      ${fts.length ? renderTable(fts) : '<div class="empty">Aucun Fast Track actuel.</div>'}
+    </div>
+  `;
+}
+
+/* -----------------------------------------------------------------
+ * 13. KB CLOSURE — lessons learned
+ * --------------------------------------------------------------- */
+function renderKB(){
+  const closed = DATA.filter(u=>/^closed-/.test(u.status));
+  const lessons = closed.map((u,i)=>{
+    const out = u.status==='closed-go'?'Go — adoption validée':(u.status==='closed-hold'?'Hold — conditions de relance':'Kill — apprentissages négatifs');
+    const lesson = u.status==='closed-go'
+      ? `Uplift rendement confirmé (+${5+i%4} %). Protocole MDS robuste, recommandation : déploiement régional.`
+      : u.status==='closed-hold'
+        ? `Effet de site marqué — variance entre sites > 20 %. À reprendre avec design en blocs équilibrés.`
+        : `Hypothèse non confirmée. Inputs : variabilité météo + non-respect protocole partenaire. À ne PAS répliquer en l'état.`;
+    return Object.assign({}, u, { _outcome:out, _lesson:lesson });
+  });
+  document.getElementById('sc-kb').innerHTML = `
+    <div class="eyebrow">Capitalisation</div>
+    <h2 class="h-pg">Closure & Knowledge Base</h2>
+    <p class="lead">Toutes les fiches de clôture du cycle précédent — apprentissages, méthodologies validées, lectures à reprendre. Indexées pour le prochain cycle.</p>
+
+    <div class="tool-bar">
+      <div class="chip on">Tous (${closed.length})</div>
+      <div class="chip">Go (${closed.filter(u=>u.status==='closed-go').length})</div>
+      <div class="chip">Hold (${closed.filter(u=>u.status==='closed-hold').length})</div>
+      <div class="chip">Kill (${closed.filter(u=>u.status==='closed-kill').length})</div>
+      <div class="sp"></div>
+      <button class="btn ghost sm">⤓ Export PDF</button>
+    </div>
+
+    <div class="kb-grid">${lessons.map(u=>{
+      const st = statusOf(u.status); const ty = typeOf(u.type);
+      return `<div class="kb-card" onclick="openUc('${u.id}')">
+        <div class="h"><span class="pill ${st.pill}">${st.lbl}</span><span class="pill ${ty.pill}">${ty.lbl}</span></div>
+        <h4>${escapeHtml(u.name)}</h4>
+        <div class="ll">${escapeHtml(u._lesson)}</div>
+        <div class="ft"><span>${u.id}</span> · <span>${escapeHtml(u.crop)}</span> · <span>${escapeHtml(buOf(u.bu).nm)}</span></div>
+      </div>`;
+    }).join('') || '<div class="empty">Pas encore de clôtures sur ce cycle.</div>'}</div>
+  `;
+}
+
+/* -----------------------------------------------------------------
+ * 14. ADMIN — references
+ * --------------------------------------------------------------- */
+function renderAdmin(){
+  document.getElementById('sc-admin').innerHTML = `
+    <div class="eyebrow">Référentiels</div>
+    <h2 class="h-pg">Admin · Référentiels</h2>
+    <p class="lead">Bases de référence partagées : BUs, régions, cultures, produits, partenaires, MDS, statuses, types de trial. Source de vérité pour tout le système.</p>
+
+    <div class="row-2c">
+      <div class="card"><h3>🏢 Business Units (${BUS.length})</h3>
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Code</th><th>Nom</th><th>Régions</th></tr></thead><tbody>${BUS.map(b=>`<tr><td><b>${b.id}</b></td><td>${b.nm}</td><td class="muted">${(REGIONS[b.id]||[]).join(', ')||'—'}</td></tr>`).join('')}</tbody></table></div>
+      </div>
+      <div class="card"><h3>🌾 Cultures (${CROPS.length})</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">${CROPS.map(c=>`<span class="chip">${escapeHtml(c)}</span>`).join('')}</div>
+      </div>
+    </div>
+    <div class="row-2c">
+      <div class="card"><h3>🧪 Produits OCP (${PRODUCTS.length})</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">${PRODUCTS.map(p=>`<span class="chip">${escapeHtml(p)}</span>`).join('')}</div>
+      </div>
+      <div class="card"><h3>🤝 Partenaires (${PARTNERS.length})</h3>
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Partenaire</th><th>Type</th></tr></thead><tbody>${PARTNERS.map(p=>`<tr><td><b>${escapeHtml(p.nm)}</b></td><td class="muted">${escapeHtml(p.typ)}</td></tr>`).join('')}</tbody></table></div>
+      </div>
+    </div>
+    <div class="card"><h3>📋 Minimum Data Set (12 items)</h3>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">${MDS_ITEMS.map(m=>`<div class="mds-row ok"><span class="ico">✓</span><span class="nm">${escapeHtml(m)}</span></div>`).join('')}</div>
+    </div>
+  `;
+}
+
+/* -----------------------------------------------------------------
+ * 15. INIT + WP postMessage bridge for shortcode embed
+ * --------------------------------------------------------------- */
+window.addEventListener('message', function(e){
+  if(e && e.data && e.data.type==='DNAI_NPLAN_CONFIG' && e.data.config){
+    CHAT_BACKEND = e.data.config;
+  }
+});
+// Auto-resize when embedded
+function postHeight(){
+  try{
+    if(window.parent && window.parent !== window){
+      const h = document.body.scrollHeight;
+      window.parent.postMessage({type:'DNAI_NPLAN_HEIGHT', h}, '*');
+    }
+  }catch(e){}
+}
+window.addEventListener('resize', postHeight);
+setInterval(postHeight, 800);
+
+renderSidebar();
+goView(PREFS.view || 'cockpit');
+if(PREFS.chatOpen) toggleChat();
+
+// Global shortcut: ⌘K / Ctrl+K focus search
+document.addEventListener('keydown', e=>{
+  if((e.metaKey||e.ctrlKey) && e.key==='k'){ e.preventDefault(); document.getElementById('globalSearch').focus(); }
+  if(e.key==='Escape'){ closeUc(); }
+});
+
+postHeight();
+</script>
+</body>
+</html>
