@@ -28,6 +28,10 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
 .bar .print{font:700 12px 'Inter';color:#04100a;background:#7cfc9a;padding:7px 14px;border-radius:8px;border:0;cursor:pointer}
 .bar .demo{font:700 12px 'Inter';color:#dff0e3;background:transparent;border:1px solid rgba(124,252,154,.32);padding:7px 14px;border-radius:8px;cursor:pointer;text-decoration:none}
 .bar .demo:hover{background:rgba(124,252,154,.13);color:#fff}
+.langsel{display:flex;gap:2px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:3px;margin-right:6px}
+.langsel button{border:0;background:none;font-size:17px;line-height:1;padding:5px 8px;border-radius:6px;cursor:pointer;opacity:.55;transition:opacity .15s,background .15s}
+.langsel button:hover{opacity:.85}
+.langsel button.on{opacity:1;background:rgba(255,255,255,.13)}
 
 .slide{max-width:1120px;margin:0 auto;padding:48px 28px;page-break-after:always;min-height:calc(100vh - 54px);display:flex;flex-direction:column;justify-content:center}
 .slide.compact{min-height:auto;padding:36px 28px}
@@ -39,23 +43,21 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
 .slide-h h2 b{color:var(--green-700)}
 .lead{font-size:17px;color:var(--muted);max-width:78ch;margin:0 0 22px;line-height:1.55}
 
-/* ============== SLIDE 1 — HERO ============== */
 .hero{background:radial-gradient(1200px 600px at 80% -10%,rgba(124,252,154,.22),transparent 60%),linear-gradient(180deg,#07140c 0%,#0c1f14 60%,#103d17 100%);color:#dff0e3;border-radius:0;padding:80px 28px;min-height:100vh;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
 .hero::before{content:"";position:absolute;left:-100px;bottom:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(76,175,80,.16),transparent 70%)}
 .hero .inner{max-width:1120px;margin:0 auto;width:100%;position:relative;z-index:2}
 .hero .eye{display:inline-flex;align-items:center;gap:8px;font:700 11px 'Inter';color:#7cfc9a;background:rgba(124,252,154,.13);border:1px solid rgba(124,252,154,.32);padding:6px 12px;border-radius:999px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:24px}
 .hero .eye .dot{width:7px;height:7px;border-radius:50%;background:#7cfc9a;box-shadow:0 0 0 0 rgba(124,252,154,.7);animation:pulse 1.8s ease-out infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(124,252,154,.7)}80%,100%{box-shadow:0 0 0 8px rgba(124,252,154,0)}}
-.hero h1{font-size:78px;font-weight:700;color:#fff;margin:0 0 18px;letter-spacing:-.03em;line-height:1.02;max-width:18ch}
+.hero h1{font-size:72px;font-weight:700;color:#fff;margin:0 0 18px;letter-spacing:-.03em;line-height:1.04;max-width:18ch}
 .hero h1 b{color:#7cfc9a;font-weight:700}
 .hero p{font-size:21px;color:#bcd4c2;max-width:62ch;margin:0 0 32px;line-height:1.45}
 .hero p b{color:#fff}
 .hero .ftr{display:flex;align-items:flex-end;gap:32px;flex-wrap:wrap;margin-top:auto}
 .hero .ftr .it{font:500 13px 'Inter';color:#9fb3a6}
 .hero .ftr .it b{display:block;font:700 14.5px 'Inter';color:#fff;margin-bottom:2px}
-@media(max-width:780px){.hero h1{font-size:46px}.hero p{font-size:17px}}
+@media(max-width:780px){.hero h1{font-size:44px}.hero p{font-size:17px}}
 
-/* ============== Cards / Grids ============== */
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 @media(max-width:880px){.grid-3{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}}
@@ -73,30 +75,20 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
 .card.good{background:linear-gradient(135deg,#dcfce7,#ecfdf2);border-color:#86efac}
 .card.good h3{color:#0c5b27}
 
-/* badge */
-.badge{display:inline-flex;align-items:center;gap:5px;font:700 11px 'Inter';padding:3px 9px;border-radius:5px;text-transform:uppercase;letter-spacing:.05em}
-.badge.ok{background:var(--ok-bg);color:var(--ok)}
-.badge.bad{background:var(--bad-bg);color:var(--bad)}
-.badge.warn{background:var(--warn-bg);color:var(--warn)}
-.badge.info{background:var(--info-bg);color:var(--info)}
-
-/* ============== Diagram — Current state vs Vision ============== */
 .diag{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:stretch}
 @media(max-width:780px){.diag{grid-template-columns:1fr}}
 .diag-col{display:flex;flex-direction:column;gap:10px}
 .diag-arrow{display:flex;align-items:center;justify-content:center;font-size:38px;color:var(--green-500);font-weight:200;line-height:1}
 .diag-tile{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:13px}
-.diag-tile.silo{border-color:#f0c9c9;background:#fef6f6}
-.diag-tile.silo .nm{color:#7a1313;font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
-.diag-tile.silo .dd{color:#a01f1f;margin-top:2px;font-size:12px}
+.diag-tile.gap{border-color:#fcd34d;background:#fef9e6}
+.diag-tile.gap .nm{color:#7c5b07;font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+.diag-tile.gap .dd{color:#8c5a06;margin-top:2px;font-size:12px}
 .diag-tile.platform{border-color:var(--green-200);background:var(--green-50)}
 .diag-tile.platform .nm{color:var(--green-800);font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
 .diag-tile.platform .dd{color:var(--green-700);margin-top:2px;font-size:12px}
-.diag-tile.miss{border:2px dashed var(--bad);background:#fff;color:var(--bad);font-style:italic;text-align:center;font-weight:600}
 .diag-tile.upst{border:2px solid var(--green-700);background:linear-gradient(135deg,#fff,#f4faf5);box-shadow:0 0 0 1px var(--green-500) inset}
 .diag-tile.upst .nm{color:var(--green-800);font-weight:800}
 
-/* ============== Process map (10 steps) ============== */
 .process{display:flex;align-items:stretch;overflow-x:auto;gap:0;border-radius:14px;background:#fff;border:1px solid var(--line);padding:12px}
 .process .step{flex:1;min-width:108px;padding:10px 12px;font-size:11.5px;line-height:1.35;position:relative;text-align:center}
 .process .step::after{content:"▸";position:absolute;right:-7px;top:50%;transform:translateY(-50%);color:var(--line-2);font-size:18px}
@@ -108,7 +100,6 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
 .process .step.nt{background:#fbfdfb;border-radius:8px}
 .process .step.nt .lyr{color:var(--info)}
 
-/* ============== Architecture ============== */
 .arch{display:flex;flex-direction:column;gap:16px}
 .arch-lyr{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 22px;display:grid;grid-template-columns:200px 1fr;gap:18px;align-items:center}
 .arch-lyr .ttl{font:800 12px 'Inter';color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
@@ -127,7 +118,6 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
 .arch-lyr.shared .it{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:#dff0e3}
 @media(max-width:680px){.arch-lyr{grid-template-columns:1fr;gap:10px}}
 
-/* ============== Roadmap ============== */
 .rm{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 @media(max-width:880px){.rm{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.rm{grid-template-columns:1fr}}
@@ -143,7 +133,6 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
 .rm-it.later .pill{background:#e7eef0;color:#37526a}
 .rm-it.future .pill{background:#ede5f8;color:#583c8d}
 
-/* ============== Numbers / KPIs row ============== */
 .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:8px}
 @media(max-width:780px){.nums{grid-template-columns:1fr 1fr}}
 .num{padding:0}
@@ -152,7 +141,6 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
 .num .l{font:600 12.5px 'Inter';color:var(--muted);margin-top:6px;line-height:1.45}
 .num .l b{color:var(--ink);font-weight:700}
 
-/* ============== Ask / CTA ============== */
 .ask{background:linear-gradient(135deg,#07140c,#103d17);color:#dff0e3;border-radius:14px;padding:36px 32px;display:grid;grid-template-columns:1.4fr 1fr;gap:26px;align-items:center}
 @media(max-width:780px){.ask{grid-template-columns:1fr}}
 .ask h3{margin:0 0 8px;font-family:'Cormorant Garamond',serif;font-size:32px;color:#fff;font-weight:700;line-height:1.1}
@@ -165,16 +153,9 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
 .ask .cta .btn.ghost{background:transparent;color:#7cfc9a;border:1px solid rgba(124,252,154,.32)}
 .ask .cta .btn.ghost:hover{background:rgba(124,252,154,.13);color:#fff}
 
-/* ============== Quote ============== */
-.quote{background:#fff;border-left:5px solid var(--green-500);border-radius:0 12px 12px 0;padding:22px 28px;font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:var(--ink);line-height:1.4;margin:14px 0 0;position:relative}
-.quote::before{content:"\201C";position:absolute;left:14px;top:6px;font-size:60px;color:var(--green-300);font-weight:700;line-height:1}
-.quote .src{display:block;font-family:'Inter';font-size:12.5px;font-style:normal;color:var(--muted);margin-top:10px;font-weight:600}
-
-/* ============== Footnote ============== */
 .fn{font:500 11px 'Inter';color:var(--muted-2);text-align:center;padding:14px 28px;border-top:1px solid var(--line);background:#fbfdfb}
 .fn b{color:var(--ink);font-weight:700}
 
-/* ============== Print — 1 slide per A4 page ============== */
 @media print{
   html,body{background:#fff}
   .bar{display:none}
@@ -194,52 +175,57 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
 
 <div class="bar">
   <div class="wrap">
-    <div class="nm">Nutri<b>Plan</b> <small>· Pitch · OCP Nutricrops · D²nAI</small></div>
+    <div class="nm">Nutri<b>Plan</b> <small data-k="bar.tag">· Pitch · OCP Nutricrops · D²nAI</small></div>
     <div class="sp"></div>
-    <a class="demo" href="../nutriplan" target="_blank" rel="noopener">↗ Lancer la démo live</a>
-    <button class="print" onclick="window.print()">⤓ Export PDF</button>
+    <div class="langsel">
+      <button data-l="fr" title="Français">🇫🇷</button>
+      <button data-l="en" title="English">🇬🇧</button>
+      <button data-l="pt" title="Português (Brasil)">🇧🇷</button>
+    </div>
+    <a class="demo" href="../nutriplan" target="_blank" rel="noopener" data-k="bar.demo">↗ Lancer la démo live</a>
+    <button class="print" onclick="window.print()" data-k="bar.pdf">⤓ Export PDF</button>
   </div>
 </div>
 
 <!-- ====== SLIDE 1 — HERO ====== -->
 <section class="hero">
   <div class="inner">
-    <span class="eye"><span class="dot"></span>Pitch · Cycle 2026 · Call de lundi</span>
-    <h1>Stop la <b>tambouille</b>.<br>NutriTrials, mais <b>end-to-end</b>.</h1>
-    <p>Deux équipes business sont sur le point de partir chacune dans leur silo — SharePoint d'un côté, Salesforce de l'autre — pour gérer l'amont des trials.<br><br><b>NutriTrials est déjà live et en cours de généralisation comme single reference platform.</b> Il lui manque juste l'amont. <b>NutriPlan</b> le branche dessus en 4 semaines.</p>
+    <span class="eye"><span class="dot"></span><span data-k="s1.eye">Pitch · Cycle 2026</span></span>
+    <h1 data-k="s1.h">NutriPlan. L'amont structuré de <b>NutriTrials</b>.</h1>
+    <p data-k="s1.p">NutriTrials est en cours de généralisation comme <b>single reference platform</b> pour l'evidence management agronomique. Il lui manque la couche amont — cycle annuel, intake, gouvernance, IA. <b>NutriPlan la branche en 4 semaines</b>, sans rien réinventer.</p>
     <div class="ftr">
-      <div class="it"><b>D²nAI</b>Data · Digital · AI · OCP Nutricrops</div>
-      <div class="it"><b>Powered by</b>Claude 4.6 via Azure Databricks · NutriTrials API</div>
-      <div class="it"><b>Status</b>MVP démo · prêt à brancher · juin 2026</div>
+      <div class="it"><b data-k="s1.f1l">D²nAI</b><span data-k="s1.f1v">Data · Digital · AI · OCP Nutricrops</span></div>
+      <div class="it"><b data-k="s1.f2l">Powered by</b><span data-k="s1.f2v">Claude 4.6 via Azure Databricks · NutriTrials API</span></div>
+      <div class="it"><b data-k="s1.f3l">Status</b><span data-k="s1.f3v">MVP démo · prêt à brancher · juin 2026</span></div>
     </div>
   </div>
 </section>
 
-<!-- ====== SLIDE 2 — THE PROBLEM ====== -->
+<!-- ====== SLIDE 2 — THE GAP ====== -->
 <section class="slide">
   <div class="slide-h">
     <div class="num">01</div>
     <div class="ttl">
-      <div class="eye">Le problème</div>
-      <h2>Deux équipes business, deux <b>silos</b> en construction — et <b>la fragmentation data</b> qui s'installe.</h2>
+      <div class="eye" data-k="s2.eye">Le constat</div>
+      <h2 data-k="s2.h">Un cadre amont <b>structuré</b> manque — et chaque jour il coûte de la <b>traçabilité</b>.</h2>
     </div>
   </div>
-  <p class="lead">L'amont du Trial Management (cycle annuel, intake, gouvernance, Fast Track) n'a pas d'outil unifié. Résultat : chaque équipe bricole de son côté, on perd la traçabilité, on duplique les saisies, et NutriTrials — la plateforme officielle d'exécution — reçoit des données fragmentées en entrée.</p>
+  <p class="lead" data-k="s2.lead">Le Trial Management Framework définit 10 étapes, 3 comités de gouvernance et un RACI précis. À ce jour, ce flux amont (cycle annuel, intake, Steering, CEO, Monitoring) n'a pas d'outil unifié — il s'opère par documents et processus parallèles, avec un coût en complétude, en homogénéité, et en mémoire collective.</p>
   <div class="grid-3">
-    <div class="card bad">
-      <span class="ico">📁</span>
-      <h3>Équipe A · SharePoint</h3>
-      <p>Templates Word + Excel partagés en arborescence libre. Pas de workflow, pas de RACI auto, pas d'historique de décisions.</p>
-    </div>
-    <div class="card bad">
-      <span class="ico">☁️</span>
-      <h3>Équipe B · Salesforce</h3>
-      <p>Objets custom branchés sur le CRM. Bon pour le pipeline commercial, mais inadapté pour la gouvernance scientifique et les MDS.</p>
+    <div class="card warn">
+      <span class="ico">🧭</span>
+      <h3 data-k="s2.c1.h">Process exigeant</h3>
+      <p data-k="s2.c1.p">10 étapes, 5 acteurs, 3 comités, une validation CEO et un MDS de 12 items obligatoires — sans support digital qui en force la complétude.</p>
     </div>
     <div class="card warn">
-      <span class="ico">⚠️</span>
-      <h3>Risque</h3>
-      <p>Dans 6 mois, deux référentiels parallèles à réconcilier, double saisie pour les BUs, et <b>NutriTrials ne reçoit plus que des données fragmentées</b> — exactement le contraire de son ambition.</p>
+      <span class="ico">🧩</span>
+      <h3 data-k="s2.c2.h">Données fragmentées</h3>
+      <p data-k="s2.c2.p">Saisies multiples, formats hétérogènes entre BUs et régions, traçabilité limitée des décisions et des gates — exactement le gap data-performance que NutriTrials vise à combler.</p>
+    </div>
+    <div class="card warn">
+      <span class="ico">🧠</span>
+      <h3 data-k="s2.c3.h">Mémoire perdue</h3>
+      <p data-k="s2.c3.p">Sans capture systématique des Use Cases, gates, décisions Go/Hold/Kill et lessons learned, chaque cycle reconstruit ce que le cycle précédent avait appris.</p>
     </div>
   </div>
 </section>
@@ -249,25 +235,22 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
   <div class="slide-h">
     <div class="num">02</div>
     <div class="ttl">
-      <div class="eye">L'insight</div>
-      <h2>NutriTrials fait déjà l'<b>aval</b>. Pas besoin de réinventer — il faut juste <b>brancher l'amont</b>.</h2>
+      <div class="eye" data-k="s3.eye">L'insight</div>
+      <h2 data-k="s3.h">NutriTrials fait déjà l'<b>aval</b>. Pas besoin de réinventer — il faut juste <b>brancher l'amont</b>.</h2>
     </div>
   </div>
   <div class="grid-2">
     <div>
-      <p class="lead" style="margin-bottom:14px">NutriTrials est <b>live</b> à nutritrials.ma, opérationnel, et en cours de rollout pilote multi-BUs. Sa promesse : <i>single reference platform for agronomic evidence management within OCP Nutricrops</i>.</p>
-      <div class="quote">Over the past 2 years, one gap has become increasingly visible: our agronomic value is strong but our data remains fragmented.
-        <span class="src">— Mail interne récent · annonce de la généralisation de NutriTrials</span>
-      </div>
+      <p class="lead" style="margin-bottom:14px" data-k="s3.lead">NutriTrials est live à nutritrials.ma, opérationnel, et en cours de rollout pilote multi-BUs. Sa promesse : <i>single reference platform for agronomic evidence management within OCP Nutricrops</i>. La logique : ne pas dupliquer cette plateforme, mais la prolonger en amont.</p>
     </div>
     <div>
       <div class="card good">
-        <h3>✓ Ce que NutriTrials fait (l'aval)</h3>
-        <p style="margin-top:10px"><b>Trial creation</b> structuré + validation workflows<br><b>Regional &amp; global dashboards</b><br><b>Claims consolidation</b> formalisée<br><b>Rollout pilote</b> en cours multi-BUs</p>
+        <h3 data-k="s3.c1.h">✓ Ce que NutriTrials porte (l'aval)</h3>
+        <p style="margin-top:10px" data-k="s3.c1.p"><b>Trial creation</b> structuré + validation workflows<br><b>Regional & global dashboards</b><br><b>Claims consolidation</b> formalisée<br><b>Rollout</b> en cours multi-BUs</p>
       </div>
-      <div class="card bad" style="margin-top:14px">
-        <h3>✗ Ce qui manque (l'amont)</h3>
-        <p style="margin-top:10px">Cycle annuel structuré · Use Case intake forcé · Steering Committee digitalisé · CEO portfolio approval · Fast Track lane · Closure &amp; KB · <b>AI Q&amp;A sur les données</b></p>
+      <div class="card warn" style="margin-top:14px">
+        <h3 data-k="s3.c2.h">✚ Ce que NutriPlan ajoute (l'amont)</h3>
+        <p style="margin-top:10px" data-k="s3.c2.p">Cycle annuel · Use Case intake · Steering Committee digitalisé · CEO portfolio approval · Fast Track · Monitoring · Closure & KB · <b>IA Q&A sur les données</b></p>
       </div>
     </div>
   </div>
@@ -278,22 +261,22 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
   <div class="slide-h">
     <div class="num">03</div>
     <div class="ttl">
-      <div class="eye">La vision</div>
-      <h2>Une seule plateforme, <b>end-to-end</b>, pour le Trial Management.</h2>
+      <div class="eye" data-k="s4.eye">La vision</div>
+      <h2 data-k="s4.h">Une seule plateforme, <b>end-to-end</b>, pour le Trial Management.</h2>
     </div>
   </div>
-  <p class="lead">NutriPlan branche l'amont au-dessus de NutriTrials. Un Use Case validé par le CEO devient automatiquement un Trial dans NutriTrials. Les résultats remontent en sens inverse pour alimenter Monitoring Committee + KB. Zéro re-saisie, traçabilité totale.</p>
+  <p class="lead" data-k="s4.lead">NutriPlan branche l'amont au-dessus de NutriTrials. Un Use Case validé par le CEO devient automatiquement un Trial dans NutriTrials. Les résultats remontent en sens inverse pour alimenter le Monitoring Committee et la KB. Zéro re-saisie, traçabilité totale.</p>
   <div class="diag">
     <div class="diag-col">
-      <div class="diag-tile silo"><div class="nm">Aujourd'hui · l'amont</div><div class="dd">SharePoint &nbsp;·&nbsp; Salesforce &nbsp;·&nbsp; emails &nbsp;·&nbsp; Word/Excel</div></div>
-      <div class="diag-tile silo"><div class="nm">Handoff manuel</div><div class="dd">Re-saisie · perte d'info · pas de traçabilité gates</div></div>
-      <div class="diag-tile platform"><div class="nm">NutriTrials</div><div class="dd">Execution · monitoring · claims · dashboards · LIVE</div></div>
+      <div class="diag-tile gap"><div class="nm" data-k="s4.l1.nm">Aujourd'hui · amont</div><div class="dd" data-k="s4.l1.dd">Documents, templates, processus parallèles</div></div>
+      <div class="diag-tile gap"><div class="nm" data-k="s4.l2.nm">Handoff manuel</div><div class="dd" data-k="s4.l2.dd">Re-saisies · perte d'info · traçabilité limitée des gates</div></div>
+      <div class="diag-tile platform"><div class="nm" data-k="s4.l3.nm">NutriTrials</div><div class="dd" data-k="s4.l3.dd">Execution · monitoring · claims · dashboards · LIVE</div></div>
     </div>
     <div class="diag-arrow">⇒</div>
     <div class="diag-col">
-      <div class="diag-tile upst"><div class="nm">NutriPlan · Plan &amp; Govern</div><div class="dd">Cycle annuel · intake · Steering · CEO gates · Fast Track · AI chat-with-data</div></div>
-      <div class="diag-tile platform"><div class="nm">↓ Auto handoff API</div><div class="dd">UC approved → Trial provisionné (protocole · MDS · partenaire · KPIs)</div></div>
-      <div class="diag-tile platform"><div class="nm">NutriTrials · Execute</div><div class="dd">Execution · monitoring · claims · dashboards · LIVE</div></div>
+      <div class="diag-tile upst"><div class="nm" data-k="s4.r1.nm">NutriPlan · Plan & Govern</div><div class="dd" data-k="s4.r1.dd">Cycle · intake · Steering · CEO · Fast Track · IA chat-with-data</div></div>
+      <div class="diag-tile platform"><div class="nm" data-k="s4.r2.nm">↓ Auto handoff API</div><div class="dd" data-k="s4.r2.dd">UC approved → Trial provisionné (protocole · MDS · partenaire · KPIs)</div></div>
+      <div class="diag-tile platform"><div class="nm" data-k="s4.r3.nm">NutriTrials · Execute</div><div class="dd" data-k="s4.r3.dd">Execution · monitoring · claims · dashboards · LIVE</div></div>
     </div>
   </div>
 </section>
@@ -303,64 +286,53 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
   <div class="slide-h">
     <div class="num">04</div>
     <div class="ttl">
-      <div class="eye">Mapping process</div>
-      <h2>Les <b>10 étapes</b> du Trial Management Framework, et qui les opère.</h2>
+      <div class="eye" data-k="s5.eye">Mapping process</div>
+      <h2 data-k="s5.h">Les <b>10 étapes</b> du Trial Management Framework, et qui les opère.</h2>
     </div>
   </div>
-  <p class="lead">Le framework officiel sera respecté ligne par ligne. NutriPlan opère les étapes 1 à 5 et 9 à 10 ; NutriTrials opère 6 à 8. Le handoff entre les deux est automatique et auditable.</p>
-  <div class="process">
-    <div class="step np"><div class="lyr">NutriPlan</div><div class="nm">1 · Launch Annual Cycle</div></div>
-    <div class="step np"><div class="lyr">NutriPlan</div><div class="nm">2 · Use Case Intake</div></div>
-    <div class="step np"><div class="lyr">NutriPlan</div><div class="nm">3 · Trial Design</div></div>
-    <div class="step np"><div class="lyr">NutriPlan</div><div class="nm">4 · Steering · Gate 1</div></div>
-    <div class="step np"><div class="lyr">NutriPlan</div><div class="nm">5 · CEO · Gate 2</div></div>
-    <div class="step nt"><div class="lyr">NutriTrials</div><div class="nm">6 · Readiness &amp; Contracting</div></div>
-    <div class="step nt"><div class="lyr">NutriTrials</div><div class="nm">7 · Execution &amp; Data</div></div>
-    <div class="step nt"><div class="lyr">NutriTrials</div><div class="nm">8 · Analysis &amp; Results</div></div>
-    <div class="step np"><div class="lyr">NutriPlan</div><div class="nm">9 · Monitoring · Gate 3</div></div>
-    <div class="step np"><div class="lyr">NutriPlan</div><div class="nm">10 · Closure &amp; KB</div></div>
-  </div>
+  <p class="lead" data-k="s5.lead">Le framework officiel est respecté ligne par ligne. NutriPlan opère les étapes 1 à 5 et 9 à 10 ; NutriTrials opère 6 à 8. Le handoff entre les deux est automatique et auditable.</p>
+  <div class="process" id="processSteps"></div>
   <div class="grid-2" style="margin-top:24px">
     <div class="card">
-      <h3>NutriPlan — l'orchestrateur</h3>
-      <p>Cycle annuel · Intake structuré (force le MDS) · 3 gates digitalisés (Steering / CEO / Monitoring) · Fast Track lane · Closure &amp; KB · AI chat-with-data · RACI auto-routing.</p>
+      <h3 data-k="s5.c1.h">NutriPlan — l'orchestrateur</h3>
+      <p data-k="s5.c1.p">Cycle annuel · Intake structuré (force le MDS) · 3 gates digitalisés (Steering / CEO / Monitoring) · Fast Track · Closure & KB · IA chat-with-data · RACI auto-routing.</p>
     </div>
     <div class="card">
-      <h3>NutriTrials — l'exécution</h3>
-      <p>Trial creation post-handoff · Field operations · Data capture · Validation workflows · Regional &amp; global dashboards · Claims consolidation. <b>Inchangé.</b></p>
+      <h3 data-k="s5.c2.h">NutriTrials — l'exécution</h3>
+      <p data-k="s5.c2.p">Trial creation post-handoff · Field operations · Data capture · Validation workflows · Regional & global dashboards · Claims consolidation. <b>Inchangé.</b></p>
     </div>
   </div>
 </section>
 
-<!-- ====== SLIDE 6 — THE AI ANGLE ====== -->
+<!-- ====== SLIDE 6 — AI ANGLE ====== -->
 <section class="slide">
   <div class="slide-h">
     <div class="num">05</div>
     <div class="ttl">
-      <div class="eye">L'angle IA · D²nAI</div>
-      <h2>3 cas d'usage AI <b>concrets</b>, pas du chat décoratif.</h2>
+      <div class="eye" data-k="s6.eye">L'angle IA · D²nAI</div>
+      <h2 data-k="s6.h">3 cas d'usage IA <b>concrets</b>, pas du chat décoratif.</h2>
     </div>
   </div>
   <div class="grid-3">
     <div class="card">
       <span class="ico">🔍</span>
-      <h3>Portfolio Q&amp;A</h3>
-      <p><i>« Quels demos NPK en Afrique sont à risque ce mois ? »</i><br><i>« Quels Use Cases ont un MDS incomplet ? »</i><br><i>« Compare le portefeuille Brazil vs India. »</i><br>Langage naturel, réponse en 2 sec, citations IDs.</p>
+      <h3 data-k="s6.c1.h">Portfolio Q&A</h3>
+      <p data-k="s6.c1.p"><i>« Quels demos NPK en Afrique sont à risque ce mois ? »</i><br><i>« Quels Use Cases ont un MDS incomplet ? »</i><br><i>« Compare le portefeuille Brazil vs India. »</i><br>Langage naturel, réponse en 2 secondes, citations IDs.</p>
     </div>
     <div class="card">
       <span class="ico">✍️</span>
-      <h3>Use Case copilot</h3>
-      <p>Au moment où une BU rédige son intake, l'AI suggère KPIs et protocole inspirés de trials similaires passés, signale les MDS manquants, propose un budget benchmark. <b>Réduit le ping-pong avec SA&amp;I de 60 %.</b></p>
+      <h3 data-k="s6.c2.h">Use Case copilot</h3>
+      <p data-k="s6.c2.p">Au moment où une BU rédige son intake, l'IA suggère KPIs et protocole inspirés de trials similaires passés, signale les MDS manquants, propose un budget benchmark. <b>Réduit le ping-pong avec SA&I.</b></p>
     </div>
     <div class="card">
       <span class="ico">📋</span>
-      <h3>Governance briefing</h3>
-      <p>Auto-génération du dossier Steering / Monitoring : synthèse des UCs du cycle, alertes risques, comparaison vs cycle N-1, recommandations Go/Hold/Kill chiffrées. <b>Brief comité en 1 clic.</b></p>
+      <h3 data-k="s6.c3.h">Governance briefing</h3>
+      <p data-k="s6.c3.p">Auto-génération du dossier Steering / Monitoring : synthèse des UCs du cycle, alertes risques, comparaison vs cycle N-1, recommandations Go/Hold/Kill chiffrées. <b>Brief comité en 1 clic.</b></p>
     </div>
   </div>
   <div class="card deep" style="margin-top:18px">
-    <h3>🛡️ Pas de chat décoratif — ça raisonne sur tes vraies données</h3>
-    <p style="margin-top:6px">Claude 4.6 servi par Azure Databricks (déjà en place pour le CGM Cockpit, on réutilise le proxy server-side). Les Use Cases du portefeuille sont stuffés dans le contexte ou indexés via Vector Search. PAT Databricks jamais exposé au navigateur. <b>Branding D²nAI bot uniquement</b> — aucune mention provider visible.</p>
+    <h3 data-k="s6.deep.h">🛡️ Du chat qui raisonne sur tes vraies données</h3>
+    <p style="margin-top:6px" data-k="s6.deep.p">Claude 4.6 servi par Azure Databricks (proxy déjà en place côté D²nAI, réutilisé tel quel). Les Use Cases du portefeuille sont indexés via Vector Search. PAT Databricks jamais exposé au navigateur. <b>Branding D²nAI bot uniquement</b> — aucune mention de provider visible.</p>
   </div>
 </section>
 
@@ -369,20 +341,20 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
   <div class="slide-h">
     <div class="num">06</div>
     <div class="ttl">
-      <div class="eye">Demo live · MVP cliquable</div>
-      <h2>Pas une slide. Un <b>MVP</b> qu'on ouvre en réunion.</h2>
+      <div class="eye" data-k="s7.eye">Demo live · MVP cliquable</div>
+      <h2 data-k="s7.h">Pas une slide. Un <b>MVP</b> qu'on ouvre en réunion.</h2>
     </div>
   </div>
-  <p class="lead">Le MVP est <b>opérationnel</b>. 35 Use Cases seedés, vues Cockpit / Portfolio Kanban+Table / Use Case detail / Calendar annuel / Governance + RACI / Fast Track / Closure KB / Référentiels admin. Chat AI branché sur Databricks Claude 4.6.</p>
+  <p class="lead" data-k="s7.lead">Le MVP est opérationnel. 35 Use Cases seedés, vues Cockpit / Portfolio Kanban+Table / Use Case detail / Cycle annuel / Governance + RACI / Fast Track / Closure KB / Référentiels admin. Chat IA branché sur Databricks Claude 4.6.</p>
   <div class="nums">
-    <div class="num"><div class="v">35<small>UCs</small></div><div class="l"><b>Seed portfolio</b> · cycle 2026 réaliste, multi-BU/régions/cultures</div></div>
-    <div class="num"><div class="v">10<small>étapes</small></div><div class="l"><b>Framework officiel</b> du doc Trial Management ligne par ligne</div></div>
-    <div class="num"><div class="v">3<small>gates</small></div><div class="l">Steering · CEO · Monitoring — Go/Hold/Kill tracé</div></div>
-    <div class="num"><div class="v">FR<small>EN PT</small></div><div class="l">Tri-lingue prévu V1 (déjà supporté côté brand)</div></div>
+    <div class="num"><div class="v">35<small data-k="s7.n1.u">UCs</small></div><div class="l"><b data-k="s7.n1.b">Seed portfolio</b><span data-k="s7.n1.d"> · cycle 2026 réaliste, multi-BU/régions/cultures</span></div></div>
+    <div class="num"><div class="v">10<small data-k="s7.n2.u">étapes</small></div><div class="l"><b data-k="s7.n2.b">Framework officiel</b><span data-k="s7.n2.d"> respecté ligne par ligne</span></div></div>
+    <div class="num"><div class="v">3<small data-k="s7.n3.u">gates</small></div><div class="l"><span data-k="s7.n3.d">Steering · CEO · Monitoring — Go/Hold/Kill tracé</span></div></div>
+    <div class="num"><div class="v">3<small data-k="s7.n4.u">langues</small></div><div class="l"><span data-k="s7.n4.d">FR · EN · PT-BR — bascule par drapeaux</span></div></div>
   </div>
   <div class="card" style="margin-top:24px;background:linear-gradient(135deg,#fbfdfb,#f4faf5);border-color:var(--green-200)">
-    <h3>👉 À montrer en réunion</h3>
-    <p style="margin-top:6px"><b>1.</b> Cockpit landing — KPIs · alertes · heatmap BU×culture · bridge NutriTrials &nbsp;·&nbsp; <b>2.</b> Portfolio Kanban — drag-style des UCs par gate &nbsp;·&nbsp; <b>3.</b> Use Case detail — KPIs, MDS, gates, handoff → NutriTrials &nbsp;·&nbsp; <b>4.</b> AI chat — pose 2-3 questions live ("UCs à risque MDS", "brief steering") &nbsp;·&nbsp; <b>5.</b> Cycle annuel — Gantt 12 mois</p>
+    <h3 data-k="s7.script.h">👉 À montrer en réunion</h3>
+    <p style="margin-top:6px" data-k="s7.script.p"><b>1.</b> Cockpit landing — KPIs, alertes, heatmap BU×culture, bridge NutriTrials &nbsp;·&nbsp; <b>2.</b> Portfolio Kanban — drill-down des UCs par gate &nbsp;·&nbsp; <b>3.</b> Use Case detail — KPIs, MDS, gates, handoff → NutriTrials &nbsp;·&nbsp; <b>4.</b> IA chat — 2-3 questions live ("UCs à risque MDS", "brief Steering") &nbsp;·&nbsp; <b>5.</b> Cycle annuel — Gantt 12 mois</p>
   </div>
 </section>
 
@@ -391,55 +363,55 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
   <div class="slide-h">
     <div class="num">07</div>
     <div class="ttl">
-      <div class="eye">Architecture</div>
-      <h2>Stack <b>simple</b>, infra <b>déjà en place</b>.</h2>
+      <div class="eye" data-k="s8.eye">Architecture</div>
+      <h2 data-k="s8.h">Stack <b>simple</b>, infra <b>déjà en place</b>.</h2>
     </div>
   </div>
   <div class="arch">
     <div class="arch-lyr np">
-      <div class="ttl">Frontend<b>NutriPlan</b></div>
+      <div class="ttl"><span data-k="s8.r1.t">Frontend</span><b data-k="s8.r1.b">NutriPlan</b></div>
       <div class="items">
-        <span class="it">Single-file SPA</span>
-        <span class="it">WordPress plugin</span>
-        <span class="it">Plein-écran /nutriplan</span>
-        <span class="it">Shortcode [nutriplan]</span>
-        <span class="it">Tri-lingue FR/EN/PT</span>
-        <span class="it">No build step</span>
+        <span class="it" data-k="s8.r1.i1">Single-file SPA</span>
+        <span class="it" data-k="s8.r1.i2">WordPress plugin</span>
+        <span class="it" data-k="s8.r1.i3">Plein-écran /nutriplan</span>
+        <span class="it" data-k="s8.r1.i4">Shortcode [nutriplan]</span>
+        <span class="it" data-k="s8.r1.i5">Tri-lingue FR/EN/PT</span>
+        <span class="it" data-k="s8.r1.i6">No build step</span>
       </div>
     </div>
     <div class="arch-lyr nt">
-      <div class="ttl">Frontend<b>NutriTrials</b></div>
+      <div class="ttl"><span data-k="s8.r2.t">Frontend</span><b data-k="s8.r2.b">NutriTrials</b></div>
       <div class="items">
-        <span class="it">Existant · nutritrials.ma</span>
-        <span class="it">Bridge via API</span>
-        <span class="it">Lien handoff dans NutriPlan</span>
+        <span class="it" data-k="s8.r2.i1">Existant · nutritrials.ma</span>
+        <span class="it" data-k="s8.r2.i2">Bridge via API</span>
+        <span class="it" data-k="s8.r2.i3">Lien handoff dans NutriPlan</span>
       </div>
     </div>
     <div class="arch-lyr shared">
-      <div class="ttl">Backend<b>API + Workflow</b></div>
+      <div class="ttl"><span data-k="s8.r3.t">Backend</span><b data-k="s8.r3.b">API + Workflow</b></div>
       <div class="items">
-        <span class="it">REST endpoints (WP plugin)</span>
-        <span class="it">Workflow engine BPMN-light</span>
-        <span class="it">Auth same-origin + nonce</span>
-        <span class="it">Bridge handoff API ↔ NutriTrials</span>
+        <span class="it" data-k="s8.r3.i1">REST endpoints (WP plugin)</span>
+        <span class="it" data-k="s8.r3.i2">Workflow engine BPMN-light</span>
+        <span class="it" data-k="s8.r3.i3">Auth same-origin + nonce</span>
+        <span class="it" data-k="s8.r3.i4">Bridge handoff API ↔ NutriTrials</span>
       </div>
     </div>
     <div class="arch-lyr shared">
-      <div class="ttl">AI · D²nAI<b>Co-pilot</b></div>
+      <div class="ttl"><span data-k="s8.r4.t">IA · D²nAI</span><b data-k="s8.r4.b">Co-pilot</b></div>
       <div class="items">
-        <span class="it">Claude 4.6</span>
-        <span class="it">Azure Databricks Foundation Models</span>
-        <span class="it">Vector Search (RAG)</span>
-        <span class="it">PAT server-side · jamais exposé</span>
-        <span class="it">Branding D²nAI bot only</span>
+        <span class="it" data-k="s8.r4.i1">Claude 4.6</span>
+        <span class="it" data-k="s8.r4.i2">Azure Databricks Foundation Models</span>
+        <span class="it" data-k="s8.r4.i3">Vector Search (RAG)</span>
+        <span class="it" data-k="s8.r4.i4">PAT server-side · jamais exposé</span>
+        <span class="it" data-k="s8.r4.i5">Branding D²nAI bot only</span>
       </div>
     </div>
     <div class="arch-lyr">
-      <div class="ttl">Data layer<b>Source of truth</b></div>
+      <div class="ttl"><span data-k="s8.r5.t">Data layer</span><b data-k="s8.r5.b">Source of truth</b></div>
       <div class="items">
-        <span class="it">Unity Catalog (Databricks)</span>
-        <span class="it">NutriTrials DB (existante)</span>
-        <span class="it">Référentiels partagés (BUs · cultures · MDS · KPIs)</span>
+        <span class="it" data-k="s8.r5.i1">Unity Catalog (Databricks)</span>
+        <span class="it" data-k="s8.r5.i2">NutriTrials DB (existante)</span>
+        <span class="it" data-k="s8.r5.i3">Référentiels partagés (BUs · cultures · MDS · KPIs)</span>
       </div>
     </div>
   </div>
@@ -450,54 +422,30 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
   <div class="slide-h">
     <div class="num">08</div>
     <div class="ttl">
-      <div class="eye">Roadmap</div>
-      <h2>Phasage <b>4 vagues</b>, ship-to-prod en <b>10-12 semaines</b>.</h2>
+      <div class="eye" data-k="s9.eye">Roadmap</div>
+      <h2 data-k="s9.h">Phasage <b>4 vagues</b>, ship-to-prod en <b>10-12 semaines</b>.</h2>
     </div>
   </div>
   <div class="rm">
     <div class="rm-it now">
-      <span class="pill">V0 · maintenant</span>
-      <h4>MVP démo</h4>
-      <ul>
-        <li>Cockpit · Portfolio Kanban+Table</li>
-        <li>Use Case detail · MDS</li>
-        <li>Calendar · Governance RACI</li>
-        <li>Chat AI mock + Claude 4.6</li>
-        <li><b>Prêt pour lundi</b></li>
-      </ul>
+      <span class="pill" data-k="s9.v0.p">V0 · maintenant</span>
+      <h4 data-k="s9.v0.h">MVP démo</h4>
+      <ul data-k="s9.v0.ul"><li>Cockpit · Portfolio Kanban+Table</li><li>Use Case detail · MDS</li><li>Cycle annuel · Governance RACI</li><li>Chat IA mock + Claude 4.6</li><li><b>Prêt pour lundi</b></li></ul>
     </div>
     <div class="rm-it next">
-      <span class="pill">V1 · semaines 1-4</span>
-      <h4>Plan &amp; Govern core</h4>
-      <ul>
-        <li>Intake form fonctionnel + MDS dynamique</li>
-        <li>Workflow gates real (Steering / CEO / Monitoring)</li>
-        <li>RACI auto-routing aux acteurs</li>
-        <li>Fast Track lane fonctionnel</li>
-        <li>Pilote 2-3 BUs volontaires</li>
-      </ul>
+      <span class="pill" data-k="s9.v1.p">V1 · semaines 1-4</span>
+      <h4 data-k="s9.v1.h">Plan & Govern core</h4>
+      <ul data-k="s9.v1.ul"><li>Intake fonctionnel + MDS dynamique</li><li>Workflow gates real (Steering / CEO / Monitoring)</li><li>RACI auto-routing aux acteurs</li><li>Fast Track lane fonctionnel</li><li>Pilote 2-3 BUs volontaires</li></ul>
     </div>
     <div class="rm-it later">
-      <span class="pill">V2 · semaines 5-8</span>
-      <h4>Bridge + AI Q&amp;A</h4>
-      <ul>
-        <li>Auto-provisioning UC → Trial dans NutriTrials (API)</li>
-        <li>Vector Search RAG sur portfolio</li>
-        <li>Governance briefing auto-généré</li>
-        <li>Multilingue FR/EN/PT-BR live</li>
-        <li>Notifications (email/Teams)</li>
-      </ul>
+      <span class="pill" data-k="s9.v2.p">V2 · semaines 5-8</span>
+      <h4 data-k="s9.v2.h">Bridge + IA Q&A</h4>
+      <ul data-k="s9.v2.ul"><li>Auto-provisioning UC → Trial dans NutriTrials (API)</li><li>Vector Search RAG sur portfolio</li><li>Governance briefing auto-généré</li><li>Notifications (email/Teams)</li><li>Multilingue généralisé</li></ul>
     </div>
     <div class="rm-it future">
-      <span class="pill">V3 · semaines 9-12</span>
-      <h4>Copilot + KB · GA</h4>
-      <ul>
-        <li>Use Case copilot (suggestions IA en cours de saisie)</li>
-        <li>Closure KB indexée + searchable</li>
-        <li>Dashboards CEO Office</li>
-        <li>SSO Azure AD intégré</li>
-        <li>Generalization toutes BUs</li>
-      </ul>
+      <span class="pill" data-k="s9.v3.p">V3 · semaines 9-12</span>
+      <h4 data-k="s9.v3.h">Copilot + KB · GA</h4>
+      <ul data-k="s9.v3.ul"><li>Use Case copilot (suggestions IA en cours de saisie)</li><li>Closure KB indexée + searchable</li><li>Dashboards CEO Office</li><li>SSO Azure AD intégré</li><li>Généralisation toutes BUs</li></ul>
     </div>
   </div>
 </section>
@@ -507,35 +455,362 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
   <div class="slide-h">
     <div class="num">09</div>
     <div class="ttl">
-      <div class="eye">Next steps</div>
-      <h2>Ce dont on a besoin pour passer du MVP à la <b>V1 pilote</b>.</h2>
+      <div class="eye" data-k="s10.eye">Next steps</div>
+      <h2 data-k="s10.h">Ce qu'il faut pour passer du MVP à la <b>V1 pilote</b>.</h2>
     </div>
   </div>
   <div class="ask">
     <div>
-      <h3>3 décisions, à prendre lundi.</h3>
-      <p>Tout le reste découle :</p>
-      <ul>
-        <li><b>Sponsor exécutif</b> — qui porte le projet côté COMEX / CEO Office (la gouvernance touche le CEO, donc le sponsor doit l'être aussi).</li>
-        <li><b>Alignement avec NutriTrials</b> — accès API + sessions co-design avec l'équipe filiale qui le maintient. C'est <b>elle qui ouvre la porte du bridge</b>, sans elle on duplique.</li>
-        <li><b>2-3 BUs pilotes</b> volontaires pour la V1 (préférable : une mix régions différentes). Pas tout-le-monde-d'un-coup.</li>
-      </ul>
+      <h3 data-k="s10.ask.h">3 décisions à acter.</h3>
+      <p data-k="s10.ask.p">Tout le reste découle :</p>
+      <ul data-k="s10.ask.ul"><li><b>Sponsor exécutif</b> — qui porte le projet côté COMEX / CEO Office (la gouvernance touche le CEO, donc le sponsor doit l'être aussi).</li><li><b>Alignement avec NutriTrials</b> — accès API + sessions co-design avec l'équipe qui le maintient. C'est <b>elle qui ouvre la porte du bridge</b>.</li><li><b>2-3 BUs pilotes</b> volontaires pour la V1 (mix régions différentes recommandé). Pas tout-le-monde-d'un-coup.</li></ul>
     </div>
     <div class="cta">
-      <a class="btn" href="../nutriplan" target="_blank" rel="noopener">▶ Lancer la démo NutriPlan</a>
-      <a class="btn ghost" href="https://nutritrials.ma" target="_blank" rel="noopener">↗ Voir NutriTrials</a>
-      <a class="btn ghost" href="javascript:window.print()">⤓ Export PDF de ce pitch</a>
+      <a class="btn" href="../nutriplan" target="_blank" rel="noopener" data-k="s10.cta1">▶ Lancer la démo NutriPlan</a>
+      <a class="btn ghost" href="https://nutritrials.ma" target="_blank" rel="noopener" data-k="s10.cta2">↗ Voir NutriTrials</a>
+      <a class="btn ghost" href="javascript:window.print()" data-k="s10.cta3">⤓ Export PDF de ce pitch</a>
     </div>
   </div>
   <div class="card" style="margin-top:20px;background:#fbfdfb">
-    <h3>Ce que ça change concrètement, dès le mois prochain</h3>
-    <p style="margin-top:6px">→ Les deux équipes business <b>arrêtent</b> SharePoint/Salesforce et bâtissent ensemble dans NutriPlan · → Le cycle 2026 démarre avec un <b>intake digitalisé</b> · → Les Steering Committees ont un <b>brief AI</b> en 1 clic · → NutriTrials reçoit des UCs <b>complets et validés</b> · → La promesse <i>single reference platform for agronomic evidence management</i> devient <b>tenable</b>.</p>
+    <h3 data-k="s10.impact.h">Ce que ça change concrètement, dès le mois prochain</h3>
+    <p style="margin-top:6px" data-k="s10.impact.p">→ Le cycle 2026 démarre avec un cadre amont digitalisé · → Les Steering Committees ont un brief IA en 1 clic · → NutriTrials reçoit des UCs complets et validés · → La promesse <i>single reference platform for agronomic evidence management</i> devient tenable end-to-end.</p>
   </div>
 </section>
 
 <div class="fn">
-  NutriPlan · Pitch · cycle 2026 · D²nAI · OCP Nutricrops · MVP · à brancher sur NutriTrials · <b>Confidentiel — usage interne</b>
+  <span data-k="footer">NutriPlan · Pitch · cycle 2026 · D²nAI · OCP Nutricrops · MVP · à brancher sur NutriTrials · <b>Confidentiel — usage interne</b></span>
 </div>
 
+<script>
+/* ============================================================================
+ * Tri-lingual layer — FR / EN / PT-BR
+ * Reads ?lang=xx or saved pref; persists in localStorage; switchable via flags.
+ * ========================================================================== */
+const T = {
+fr:{
+ 'bar.tag':'· Pitch · OCP Nutricrops · D²nAI',
+ 'bar.demo':'↗ Lancer la démo live',
+ 'bar.pdf':'⤓ Export PDF',
+ 's1.eye':'Pitch · Cycle 2026',
+ 's1.h':'NutriPlan. L\'amont structuré de <b>NutriTrials</b>.',
+ 's1.p':'NutriTrials est en cours de généralisation comme <b>single reference platform</b> pour l\'evidence management agronomique. Il lui manque la couche amont — cycle annuel, intake, gouvernance, IA. <b>NutriPlan la branche en 4 semaines</b>, sans rien réinventer.',
+ 's1.f1l':'D²nAI', 's1.f1v':'Data · Digital · AI · OCP Nutricrops',
+ 's1.f2l':'Powered by', 's1.f2v':'Claude 4.6 via Azure Databricks · NutriTrials API',
+ 's1.f3l':'Status', 's1.f3v':'MVP démo · prêt à brancher · juin 2026',
+ 's2.eye':'Le constat',
+ 's2.h':'Un cadre amont <b>structuré</b> manque — et chaque jour il coûte de la <b>traçabilité</b>.',
+ 's2.lead':'Le Trial Management Framework définit 10 étapes, 3 comités de gouvernance et un RACI précis. À ce jour, ce flux amont (cycle annuel, intake, Steering, CEO, Monitoring) n\'a pas d\'outil unifié — il s\'opère par documents et processus parallèles, avec un coût en complétude, en homogénéité et en mémoire collective.',
+ 's2.c1.h':'Process exigeant',
+ 's2.c1.p':'10 étapes, 5 acteurs, 3 comités, une validation CEO et un MDS de 12 items obligatoires — sans support digital qui en force la complétude.',
+ 's2.c2.h':'Données fragmentées',
+ 's2.c2.p':'Saisies multiples, formats hétérogènes entre BUs et régions, traçabilité limitée des décisions et des gates — exactement le gap data-performance que NutriTrials vise à combler.',
+ 's2.c3.h':'Mémoire perdue',
+ 's2.c3.p':'Sans capture systématique des Use Cases, gates, décisions Go/Hold/Kill et lessons learned, chaque cycle reconstruit ce que le cycle précédent avait appris.',
+ 's3.eye':'L\'insight',
+ 's3.h':'NutriTrials fait déjà l\'<b>aval</b>. Pas besoin de réinventer — il faut juste <b>brancher l\'amont</b>.',
+ 's3.lead':'NutriTrials est live à nutritrials.ma, opérationnel, et en cours de rollout pilote multi-BUs. Sa promesse : <i>single reference platform for agronomic evidence management within OCP Nutricrops</i>. La logique : ne pas dupliquer cette plateforme, mais la prolonger en amont.',
+ 's3.c1.h':'✓ Ce que NutriTrials porte (l\'aval)',
+ 's3.c1.p':'<b>Trial creation</b> structuré + validation workflows<br><b>Regional & global dashboards</b><br><b>Claims consolidation</b> formalisée<br><b>Rollout</b> en cours multi-BUs',
+ 's3.c2.h':'✚ Ce que NutriPlan ajoute (l\'amont)',
+ 's3.c2.p':'Cycle annuel · Use Case intake · Steering Committee digitalisé · CEO portfolio approval · Fast Track · Monitoring · Closure & KB · <b>IA Q&A sur les données</b>',
+ 's4.eye':'La vision',
+ 's4.h':'Une seule plateforme, <b>end-to-end</b>, pour le Trial Management.',
+ 's4.lead':'NutriPlan branche l\'amont au-dessus de NutriTrials. Un Use Case validé par le CEO devient automatiquement un Trial dans NutriTrials. Les résultats remontent en sens inverse pour alimenter le Monitoring Committee et la KB. Zéro re-saisie, traçabilité totale.',
+ 's4.l1.nm':'Aujourd\'hui · amont','s4.l1.dd':'Documents, templates, processus parallèles',
+ 's4.l2.nm':'Handoff manuel','s4.l2.dd':'Re-saisies · perte d\'info · traçabilité limitée des gates',
+ 's4.l3.nm':'NutriTrials','s4.l3.dd':'Execution · monitoring · claims · dashboards · LIVE',
+ 's4.r1.nm':'NutriPlan · Plan & Govern','s4.r1.dd':'Cycle · intake · Steering · CEO · Fast Track · IA chat-with-data',
+ 's4.r2.nm':'↓ Auto handoff API','s4.r2.dd':'UC approved → Trial provisionné (protocole · MDS · partenaire · KPIs)',
+ 's4.r3.nm':'NutriTrials · Execute','s4.r3.dd':'Execution · monitoring · claims · dashboards · LIVE',
+ 's5.eye':'Mapping process',
+ 's5.h':'Les <b>10 étapes</b> du Trial Management Framework, et qui les opère.',
+ 's5.lead':'Le framework officiel est respecté ligne par ligne. NutriPlan opère les étapes 1 à 5 et 9 à 10 ; NutriTrials opère 6 à 8. Le handoff entre les deux est automatique et auditable.',
+ 's5.c1.h':'NutriPlan — l\'orchestrateur',
+ 's5.c1.p':'Cycle annuel · Intake structuré (force le MDS) · 3 gates digitalisés (Steering / CEO / Monitoring) · Fast Track · Closure & KB · IA chat-with-data · RACI auto-routing.',
+ 's5.c2.h':'NutriTrials — l\'exécution',
+ 's5.c2.p':'Trial creation post-handoff · Field operations · Data capture · Validation workflows · Regional & global dashboards · Claims consolidation. <b>Inchangé.</b>',
+ 's6.eye':'L\'angle IA · D²nAI',
+ 's6.h':'3 cas d\'usage IA <b>concrets</b>, pas du chat décoratif.',
+ 's6.c1.h':'Portfolio Q&A',
+ 's6.c1.p':'<i>« Quels demos NPK en Afrique sont à risque ce mois ? »</i><br><i>« Quels Use Cases ont un MDS incomplet ? »</i><br><i>« Compare le portefeuille Brazil vs India. »</i><br>Langage naturel, réponse en 2 secondes, citations IDs.',
+ 's6.c2.h':'Use Case copilot',
+ 's6.c2.p':'Au moment où une BU rédige son intake, l\'IA suggère KPIs et protocole inspirés de trials similaires passés, signale les MDS manquants, propose un budget benchmark. <b>Réduit le ping-pong avec SA&I.</b>',
+ 's6.c3.h':'Governance briefing',
+ 's6.c3.p':'Auto-génération du dossier Steering / Monitoring : synthèse des UCs du cycle, alertes risques, comparaison vs cycle N-1, recommandations Go/Hold/Kill chiffrées. <b>Brief comité en 1 clic.</b>',
+ 's6.deep.h':'🛡️ Du chat qui raisonne sur tes vraies données',
+ 's6.deep.p':'Claude 4.6 servi par Azure Databricks (proxy déjà en place côté D²nAI, réutilisé tel quel). Les Use Cases du portefeuille sont indexés via Vector Search. PAT Databricks jamais exposé au navigateur. <b>Branding D²nAI bot uniquement</b> — aucune mention de provider visible.',
+ 's7.eye':'Demo live · MVP cliquable',
+ 's7.h':'Pas une slide. Un <b>MVP</b> qu\'on ouvre en réunion.',
+ 's7.lead':'Le MVP est opérationnel. 35 Use Cases seedés, vues Cockpit / Portfolio Kanban+Table / Use Case detail / Cycle annuel / Governance + RACI / Fast Track / Closure KB / Référentiels admin. Chat IA branché sur Databricks Claude 4.6.',
+ 's7.n1.u':'UCs','s7.n1.b':'Seed portfolio','s7.n1.d':' · cycle 2026 réaliste, multi-BU/régions/cultures',
+ 's7.n2.u':'étapes','s7.n2.b':'Framework officiel','s7.n2.d':' respecté ligne par ligne',
+ 's7.n3.u':'gates','s7.n3.d':'Steering · CEO · Monitoring — Go/Hold/Kill tracé',
+ 's7.n4.u':'langues','s7.n4.d':'FR · EN · PT-BR — bascule par drapeaux',
+ 's7.script.h':'👉 À montrer en réunion',
+ 's7.script.p':'<b>1.</b> Cockpit landing — KPIs, alertes, heatmap BU×culture, bridge NutriTrials &nbsp;·&nbsp; <b>2.</b> Portfolio Kanban — drill-down des UCs par gate &nbsp;·&nbsp; <b>3.</b> Use Case detail — KPIs, MDS, gates, handoff → NutriTrials &nbsp;·&nbsp; <b>4.</b> IA chat — 2-3 questions live ("UCs à risque MDS", "brief Steering") &nbsp;·&nbsp; <b>5.</b> Cycle annuel — Gantt 12 mois',
+ 's8.eye':'Architecture',
+ 's8.h':'Stack <b>simple</b>, infra <b>déjà en place</b>.',
+ 's8.r1.t':'Frontend','s8.r1.b':'NutriPlan',
+ 's8.r1.i1':'Single-file SPA','s8.r1.i2':'WordPress plugin','s8.r1.i3':'Plein-écran /nutriplan','s8.r1.i4':'Shortcode [nutriplan]','s8.r1.i5':'Tri-lingue FR/EN/PT','s8.r1.i6':'No build step',
+ 's8.r2.t':'Frontend','s8.r2.b':'NutriTrials',
+ 's8.r2.i1':'Existant · nutritrials.ma','s8.r2.i2':'Bridge via API','s8.r2.i3':'Lien handoff dans NutriPlan',
+ 's8.r3.t':'Backend','s8.r3.b':'API + Workflow',
+ 's8.r3.i1':'REST endpoints (WP plugin)','s8.r3.i2':'Workflow engine BPMN-light','s8.r3.i3':'Auth same-origin + nonce','s8.r3.i4':'Bridge handoff API ↔ NutriTrials',
+ 's8.r4.t':'IA · D²nAI','s8.r4.b':'Co-pilot',
+ 's8.r4.i1':'Claude 4.6','s8.r4.i2':'Azure Databricks Foundation Models','s8.r4.i3':'Vector Search (RAG)','s8.r4.i4':'PAT server-side · jamais exposé','s8.r4.i5':'Branding D²nAI bot only',
+ 's8.r5.t':'Data layer','s8.r5.b':'Source of truth',
+ 's8.r5.i1':'Unity Catalog (Databricks)','s8.r5.i2':'NutriTrials DB (existante)','s8.r5.i3':'Référentiels partagés (BUs · cultures · MDS · KPIs)',
+ 's9.eye':'Roadmap',
+ 's9.h':'Phasage <b>4 vagues</b>, ship-to-prod en <b>10-12 semaines</b>.',
+ 's9.v0.p':'V0 · maintenant','s9.v0.h':'MVP démo',
+ 's9.v0.ul':'<li>Cockpit · Portfolio Kanban+Table</li><li>Use Case detail · MDS</li><li>Cycle annuel · Governance RACI</li><li>Chat IA mock + Claude 4.6</li><li><b>Prêt pour lundi</b></li>',
+ 's9.v1.p':'V1 · semaines 1-4','s9.v1.h':'Plan & Govern core',
+ 's9.v1.ul':'<li>Intake fonctionnel + MDS dynamique</li><li>Workflow gates real (Steering / CEO / Monitoring)</li><li>RACI auto-routing aux acteurs</li><li>Fast Track lane fonctionnel</li><li>Pilote 2-3 BUs volontaires</li>',
+ 's9.v2.p':'V2 · semaines 5-8','s9.v2.h':'Bridge + IA Q&A',
+ 's9.v2.ul':'<li>Auto-provisioning UC → Trial dans NutriTrials (API)</li><li>Vector Search RAG sur portfolio</li><li>Governance briefing auto-généré</li><li>Notifications (email/Teams)</li><li>Multilingue généralisé</li>',
+ 's9.v3.p':'V3 · semaines 9-12','s9.v3.h':'Copilot + KB · GA',
+ 's9.v3.ul':'<li>Use Case copilot (suggestions IA en cours de saisie)</li><li>Closure KB indexée + searchable</li><li>Dashboards CEO Office</li><li>SSO Azure AD intégré</li><li>Généralisation toutes BUs</li>',
+ 's10.eye':'Next steps',
+ 's10.h':'Ce qu\'il faut pour passer du MVP à la <b>V1 pilote</b>.',
+ 's10.ask.h':'3 décisions à acter.',
+ 's10.ask.p':'Tout le reste découle :',
+ 's10.ask.ul':'<li><b>Sponsor exécutif</b> — qui porte le projet côté COMEX / CEO Office (la gouvernance touche le CEO, donc le sponsor doit l\'être aussi).</li><li><b>Alignement avec NutriTrials</b> — accès API + sessions co-design avec l\'équipe qui le maintient. C\'est <b>elle qui ouvre la porte du bridge</b>.</li><li><b>2-3 BUs pilotes</b> volontaires pour la V1 (mix régions différentes recommandé). Pas tout-le-monde-d\'un-coup.</li>',
+ 's10.cta1':'▶ Lancer la démo NutriPlan','s10.cta2':'↗ Voir NutriTrials','s10.cta3':'⤓ Export PDF de ce pitch',
+ 's10.impact.h':'Ce que ça change concrètement, dès le mois prochain',
+ 's10.impact.p':'→ Le cycle 2026 démarre avec un cadre amont digitalisé · → Les Steering Committees ont un brief IA en 1 clic · → NutriTrials reçoit des UCs complets et validés · → La promesse <i>single reference platform for agronomic evidence management</i> devient tenable end-to-end.',
+ 'footer':'NutriPlan · Pitch · cycle 2026 · D²nAI · OCP Nutricrops · MVP · à brancher sur NutriTrials · <b>Confidentiel — usage interne</b>',
+ 'proc.lyr.np':'NutriPlan','proc.lyr.nt':'NutriTrials',
+ 'proc.1':'1 · Launch Annual Cycle','proc.2':'2 · Use Case Intake','proc.3':'3 · Trial Design','proc.4':'4 · Steering · Gate 1','proc.5':'5 · CEO · Gate 2',
+ 'proc.6':'6 · Readiness & Contracting','proc.7':'7 · Execution & Data','proc.8':'8 · Analysis & Results','proc.9':'9 · Monitoring · Gate 3','proc.10':'10 · Closure & KB'
+},
+en:{
+ 'bar.tag':'· Pitch · OCP Nutricrops · D²nAI',
+ 'bar.demo':'↗ Launch live demo',
+ 'bar.pdf':'⤓ Export PDF',
+ 's1.eye':'Pitch · 2026 cycle',
+ 's1.h':'NutriPlan. The structured upstream layer of <b>NutriTrials</b>.',
+ 's1.p':'NutriTrials is being rolled out as the <b>single reference platform</b> for agronomic evidence management. What it\'s missing is the upstream layer — annual cycle, intake, governance, AI. <b>NutriPlan plugs it in within 4 weeks</b>, with zero reinvention.',
+ 's1.f1l':'D²nAI', 's1.f1v':'Data · Digital · AI · OCP Nutricrops',
+ 's1.f2l':'Powered by', 's1.f2v':'Claude 4.6 via Azure Databricks · NutriTrials API',
+ 's1.f3l':'Status', 's1.f3v':'MVP demo · ready to plug · June 2026',
+ 's2.eye':'The gap',
+ 's2.h':'A <b>structured upstream</b> framework is missing — and every day it costs <b>traceability</b>.',
+ 's2.lead':'The Trial Management Framework defines 10 steps, 3 governance committees and a precise RACI. Today, that upstream flow (annual cycle, intake, Steering, CEO, Monitoring) has no unified tool — it runs through documents and parallel processes, at a cost in completeness, consistency and institutional memory.',
+ 's2.c1.h':'Demanding process',
+ 's2.c1.p':'10 steps, 5 actors, 3 committees, one CEO approval and a 12-item mandatory MDS — without a digital backbone enforcing completeness.',
+ 's2.c2.h':'Fragmented data',
+ 's2.c2.p':'Multiple entry points, heterogeneous formats across BUs and regions, limited traceability of decisions and gates — exactly the data-performance gap NutriTrials aims to close.',
+ 's2.c3.h':'Memory lost',
+ 's2.c3.p':'Without systematic capture of Use Cases, gates, Go/Hold/Kill decisions and lessons learned, every cycle rebuilds what the previous cycle had figured out.',
+ 's3.eye':'The insight',
+ 's3.h':'NutriTrials already handles the <b>downstream</b>. No need to reinvent — just <b>plug in the upstream</b>.',
+ 's3.lead':'NutriTrials is live at nutritrials.ma, operational, and undergoing multi-BU pilot rollout. Its promise: <i>single reference platform for agronomic evidence management within OCP Nutricrops</i>. The logic: don\'t duplicate this platform, extend it upstream.',
+ 's3.c1.h':'✓ What NutriTrials owns (downstream)',
+ 's3.c1.p':'Structured <b>trial creation</b> + validation workflows<br><b>Regional & global dashboards</b><br>Formalized <b>claims consolidation</b><br>Multi-BU <b>rollout</b> underway',
+ 's3.c2.h':'✚ What NutriPlan adds (upstream)',
+ 's3.c2.p':'Annual cycle · Use Case intake · Digitized Steering Committee · CEO portfolio approval · Fast Track · Monitoring · Closure & KB · <b>AI Q&A on the data</b>',
+ 's4.eye':'The vision',
+ 's4.h':'One platform, <b>end-to-end</b>, for Trial Management.',
+ 's4.lead':'NutriPlan plugs the upstream layer on top of NutriTrials. A CEO-approved Use Case is automatically provisioned as a Trial in NutriTrials. Results flow back to feed the Monitoring Committee and the KB. Zero re-entry, full traceability.',
+ 's4.l1.nm':'Today · upstream','s4.l1.dd':'Documents, templates, parallel processes',
+ 's4.l2.nm':'Manual handoff','s4.l2.dd':'Re-entries · info loss · limited gate traceability',
+ 's4.l3.nm':'NutriTrials','s4.l3.dd':'Execution · monitoring · claims · dashboards · LIVE',
+ 's4.r1.nm':'NutriPlan · Plan & Govern','s4.r1.dd':'Cycle · intake · Steering · CEO · Fast Track · AI chat-with-data',
+ 's4.r2.nm':'↓ Auto handoff API','s4.r2.dd':'UC approved → Trial provisioned (protocol · MDS · partner · KPIs)',
+ 's4.r3.nm':'NutriTrials · Execute','s4.r3.dd':'Execution · monitoring · claims · dashboards · LIVE',
+ 's5.eye':'Process mapping',
+ 's5.h':'The <b>10 steps</b> of the Trial Management Framework, and who operates them.',
+ 's5.lead':'The official framework is followed line by line. NutriPlan operates steps 1-5 and 9-10; NutriTrials operates 6-8. The handoff between them is automatic and auditable.',
+ 's5.c1.h':'NutriPlan — the orchestrator',
+ 's5.c1.p':'Annual cycle · Structured intake (enforces MDS) · 3 digitized gates (Steering / CEO / Monitoring) · Fast Track · Closure & KB · AI chat-with-data · RACI auto-routing.',
+ 's5.c2.h':'NutriTrials — the execution',
+ 's5.c2.p':'Trial creation post-handoff · Field operations · Data capture · Validation workflows · Regional & global dashboards · Claims consolidation. <b>Unchanged.</b>',
+ 's6.eye':'The AI angle · D²nAI',
+ 's6.h':'3 <b>concrete</b> AI use cases, no decorative chat.',
+ 's6.c1.h':'Portfolio Q&A',
+ 's6.c1.p':'<i>"Which NPK demos in Africa are at risk this month?"</i><br><i>"Which Use Cases have an incomplete MDS?"</i><br><i>"Compare the Brazil vs India portfolio."</i><br>Natural language, 2-second answer, ID citations.',
+ 's6.c2.h':'Use Case copilot',
+ 's6.c2.p':'While a BU drafts its intake, the AI suggests KPIs and protocols inspired by similar past trials, flags missing MDS items, proposes a budget benchmark. <b>Reduces the ping-pong with SA&I.</b>',
+ 's6.c3.h':'Governance briefing',
+ 's6.c3.p':'Auto-generated Steering / Monitoring packs: cycle summary, risk alerts, vs N-1 cycle comparison, quantified Go/Hold/Kill recommendations. <b>Committee brief in one click.</b>',
+ 's6.deep.h':'🛡️ Chat that reasons on your actual data',
+ 's6.deep.p':'Claude 4.6 served by Azure Databricks (proxy already in place on the D²nAI side, reused as-is). Portfolio Use Cases are indexed via Vector Search. The Databricks PAT is never exposed to the browser. <b>D²nAI bot branding only</b> — no underlying provider mentioned anywhere.',
+ 's7.eye':'Live demo · clickable MVP',
+ 's7.h':'Not a slide. An <b>MVP</b> you open in the meeting.',
+ 's7.lead':'The MVP is up and running. 35 seeded Use Cases, views for Cockpit / Portfolio Kanban+Table / Use Case detail / Annual cycle / Governance + RACI / Fast Track / Closure KB / Reference data admin. AI chat wired to Databricks Claude 4.6.',
+ 's7.n1.u':'UCs','s7.n1.b':'Seed portfolio','s7.n1.d':' · realistic 2026 cycle, multi-BU/regions/crops',
+ 's7.n2.u':'steps','s7.n2.b':'Official framework','s7.n2.d':' followed line by line',
+ 's7.n3.u':'gates','s7.n3.d':'Steering · CEO · Monitoring — Go/Hold/Kill traced',
+ 's7.n4.u':'languages','s7.n4.d':'FR · EN · PT-BR — flag-based switching',
+ 's7.script.h':'👉 What to show in the meeting',
+ 's7.script.p':'<b>1.</b> Cockpit landing — KPIs, alerts, BU × crop heatmap, NutriTrials bridge &nbsp;·&nbsp; <b>2.</b> Portfolio Kanban — drill into UCs by gate &nbsp;·&nbsp; <b>3.</b> Use Case detail — KPIs, MDS, gates, handoff → NutriTrials &nbsp;·&nbsp; <b>4.</b> AI chat — 2-3 questions live ("UCs at MDS risk", "Steering brief") &nbsp;·&nbsp; <b>5.</b> Annual cycle — 12-month Gantt',
+ 's8.eye':'Architecture',
+ 's8.h':'<b>Simple</b> stack, infra <b>already in place</b>.',
+ 's8.r1.t':'Frontend','s8.r1.b':'NutriPlan',
+ 's8.r1.i1':'Single-file SPA','s8.r1.i2':'WordPress plugin','s8.r1.i3':'Full-screen /nutriplan','s8.r1.i4':'Shortcode [nutriplan]','s8.r1.i5':'Tri-lingual FR/EN/PT','s8.r1.i6':'No build step',
+ 's8.r2.t':'Frontend','s8.r2.b':'NutriTrials',
+ 's8.r2.i1':'Existing · nutritrials.ma','s8.r2.i2':'Bridge via API','s8.r2.i3':'Handoff link inside NutriPlan',
+ 's8.r3.t':'Backend','s8.r3.b':'API + Workflow',
+ 's8.r3.i1':'REST endpoints (WP plugin)','s8.r3.i2':'BPMN-light workflow engine','s8.r3.i3':'Same-origin auth + nonce','s8.r3.i4':'Handoff API bridge ↔ NutriTrials',
+ 's8.r4.t':'AI · D²nAI','s8.r4.b':'Co-pilot',
+ 's8.r4.i1':'Claude 4.6','s8.r4.i2':'Azure Databricks Foundation Models','s8.r4.i3':'Vector Search (RAG)','s8.r4.i4':'Server-side PAT · never exposed','s8.r4.i5':'D²nAI bot branding only',
+ 's8.r5.t':'Data layer','s8.r5.b':'Source of truth',
+ 's8.r5.i1':'Unity Catalog (Databricks)','s8.r5.i2':'NutriTrials DB (existing)','s8.r5.i3':'Shared reference data (BUs · crops · MDS · KPIs)',
+ 's9.eye':'Roadmap',
+ 's9.h':'<b>4 waves</b> phasing, ship-to-prod in <b>10-12 weeks</b>.',
+ 's9.v0.p':'V0 · now','s9.v0.h':'MVP demo',
+ 's9.v0.ul':'<li>Cockpit · Portfolio Kanban+Table</li><li>Use Case detail · MDS</li><li>Annual cycle · Governance RACI</li><li>AI chat mock + Claude 4.6</li><li><b>Ready for Monday</b></li>',
+ 's9.v1.p':'V1 · weeks 1-4','s9.v1.h':'Plan & Govern core',
+ 's9.v1.ul':'<li>Functional intake + dynamic MDS</li><li>Real gate workflow (Steering / CEO / Monitoring)</li><li>RACI auto-routing to actors</li><li>Fast Track lane operational</li><li>Pilot with 2-3 volunteer BUs</li>',
+ 's9.v2.p':'V2 · weeks 5-8','s9.v2.h':'Bridge + AI Q&A',
+ 's9.v2.ul':'<li>Auto-provisioning UC → Trial in NutriTrials (API)</li><li>Vector Search RAG on portfolio</li><li>Auto-generated governance briefings</li><li>Notifications (email/Teams)</li><li>Multilingual generalized</li>',
+ 's9.v3.p':'V3 · weeks 9-12','s9.v3.h':'Copilot + KB · GA',
+ 's9.v3.ul':'<li>Use Case copilot (AI suggestions during drafting)</li><li>Indexed, searchable Closure KB</li><li>CEO Office dashboards</li><li>Azure AD SSO integrated</li><li>Generalization to all BUs</li>',
+ 's10.eye':'Next steps',
+ 's10.h':'What it takes to move from MVP to <b>V1 pilot</b>.',
+ 's10.ask.h':'3 decisions to lock in.',
+ 's10.ask.p':'Everything else flows from those:',
+ 's10.ask.ul':'<li><b>Executive sponsor</b> — who carries the project on the COMEX / CEO Office side (governance touches the CEO, so the sponsor must be senior).</li><li><b>NutriTrials alignment</b> — API access + co-design sessions with the team that maintains it. <b>They open the bridge door</b>.</li><li><b>2-3 pilot BUs</b> volunteering for V1 (a mix of regions recommended). Not everyone at once.</li>',
+ 's10.cta1':'▶ Launch the NutriPlan demo','s10.cta2':'↗ Visit NutriTrials','s10.cta3':'⤓ Export this pitch as PDF',
+ 's10.impact.h':'What it changes, concretely, starting next month',
+ 's10.impact.p':'→ The 2026 cycle launches with a digitized upstream framework · → Steering Committees get a one-click AI briefing · → NutriTrials receives complete, validated UCs · → The promise of a <i>single reference platform for agronomic evidence management</i> becomes truly end-to-end.',
+ 'footer':'NutriPlan · Pitch · 2026 cycle · D²nAI · OCP Nutricrops · MVP · to plug into NutriTrials · <b>Confidential — internal use</b>',
+ 'proc.lyr.np':'NutriPlan','proc.lyr.nt':'NutriTrials',
+ 'proc.1':'1 · Launch Annual Cycle','proc.2':'2 · Use Case Intake','proc.3':'3 · Trial Design','proc.4':'4 · Steering · Gate 1','proc.5':'5 · CEO · Gate 2',
+ 'proc.6':'6 · Readiness & Contracting','proc.7':'7 · Execution & Data','proc.8':'8 · Analysis & Results','proc.9':'9 · Monitoring · Gate 3','proc.10':'10 · Closure & KB'
+},
+pt:{
+ 'bar.tag':'· Pitch · OCP Nutricrops · D²nAI',
+ 'bar.demo':'↗ Abrir demo ao vivo',
+ 'bar.pdf':'⤓ Exportar PDF',
+ 's1.eye':'Pitch · Ciclo 2026',
+ 's1.h':'NutriPlan. A camada estruturada de planejamento de <b>NutriTrials</b>.',
+ 's1.p':'NutriTrials está sendo generalizado como <b>plataforma única de referência</b> para a gestão de evidência agronômica. Falta a camada de planejamento — ciclo anual, intake, governança, IA. <b>NutriPlan a conecta em 4 semanas</b>, sem reinventar nada.',
+ 's1.f1l':'D²nAI', 's1.f1v':'Data · Digital · AI · OCP Nutricrops',
+ 's1.f2l':'Powered by', 's1.f2v':'Claude 4.6 via Azure Databricks · API NutriTrials',
+ 's1.f3l':'Status', 's1.f3v':'MVP demo · pronto para conectar · junho 2026',
+ 's2.eye':'O diagnóstico',
+ 's2.h':'Falta um arcabouço de planejamento <b>estruturado</b> — e isso custa <b>rastreabilidade</b> todos os dias.',
+ 's2.lead':'O Trial Management Framework define 10 etapas, 3 comitês de governança e um RACI preciso. Hoje, esse fluxo de planejamento (ciclo anual, intake, Steering, CEO, Monitoring) não tem ferramenta unificada — opera por documentos e processos paralelos, com perdas em completude, em homogeneidade e em memória institucional.',
+ 's2.c1.h':'Processo exigente',
+ 's2.c1.p':'10 etapas, 5 atores, 3 comitês, uma validação CEO e um MDS de 12 itens obrigatórios — sem um suporte digital que force a completude.',
+ 's2.c2.h':'Dados fragmentados',
+ 's2.c2.p':'Múltiplos pontos de entrada, formatos heterogêneos entre BUs e regiões, rastreabilidade limitada das decisões e dos gates — exatamente o gap data-performance que NutriTrials quer fechar.',
+ 's2.c3.h':'Memória perdida',
+ 's2.c3.p':'Sem captura sistemática dos Use Cases, gates, decisões Go/Hold/Kill e lessons learned, cada ciclo reconstrói o que o ciclo anterior já tinha aprendido.',
+ 's3.eye':'O insight',
+ 's3.h':'NutriTrials já cuida do <b>downstream</b>. Não é preciso reinventar — é preciso <b>conectar o planejamento</b>.',
+ 's3.lead':'NutriTrials está no ar em nutritrials.ma, operacional, e em rollout piloto multi-BU. Sua promessa: <i>single reference platform for agronomic evidence management within OCP Nutricrops</i>. A lógica: não duplicar essa plataforma, mas estendê-la para o planejamento.',
+ 's3.c1.h':'✓ O que NutriTrials cobre (downstream)',
+ 's3.c1.p':'<b>Trial creation</b> estruturado + workflows de validação<br><b>Dashboards regionais e globais</b><br><b>Consolidação de claims</b> formalizada<br><b>Rollout</b> em andamento multi-BU',
+ 's3.c2.h':'✚ O que NutriPlan adiciona (planejamento)',
+ 's3.c2.p':'Ciclo anual · Use Case intake · Steering Committee digitalizado · Aprovação CEO do portfólio · Fast Track · Monitoring · Closure & KB · <b>IA Q&A sobre os dados</b>',
+ 's4.eye':'A visão',
+ 's4.h':'Uma única plataforma, <b>end-to-end</b>, para Trial Management.',
+ 's4.lead':'NutriPlan conecta o planejamento por cima de NutriTrials. Um Use Case aprovado pelo CEO é provisionado automaticamente como Trial em NutriTrials. Os resultados retornam para alimentar o Monitoring Committee e a KB. Zero retrabalho, rastreabilidade total.',
+ 's4.l1.nm':'Hoje · planejamento','s4.l1.dd':'Documentos, templates, processos paralelos',
+ 's4.l2.nm':'Handoff manual','s4.l2.dd':'Retrabalhos · perda de informação · rastreabilidade limitada dos gates',
+ 's4.l3.nm':'NutriTrials','s4.l3.dd':'Execução · monitoramento · claims · dashboards · LIVE',
+ 's4.r1.nm':'NutriPlan · Plan & Govern','s4.r1.dd':'Ciclo · intake · Steering · CEO · Fast Track · IA chat-with-data',
+ 's4.r2.nm':'↓ API de handoff automático','s4.r2.dd':'UC aprovado → Trial provisionado (protocolo · MDS · parceiro · KPIs)',
+ 's4.r3.nm':'NutriTrials · Execute','s4.r3.dd':'Execução · monitoramento · claims · dashboards · LIVE',
+ 's5.eye':'Mapeamento do processo',
+ 's5.h':'As <b>10 etapas</b> do Trial Management Framework, e quem opera cada uma.',
+ 's5.lead':'O framework oficial é seguido linha a linha. NutriPlan opera as etapas 1 a 5 e 9 a 10; NutriTrials opera 6 a 8. O handoff entre os dois é automático e auditável.',
+ 's5.c1.h':'NutriPlan — o orquestrador',
+ 's5.c1.p':'Ciclo anual · Intake estruturado (força o MDS) · 3 gates digitalizados (Steering / CEO / Monitoring) · Fast Track · Closure & KB · IA chat-with-data · RACI auto-routing.',
+ 's5.c2.h':'NutriTrials — a execução',
+ 's5.c2.p':'Criação de Trial pós-handoff · Operações em campo · Captura de dados · Workflows de validação · Dashboards regionais e globais · Consolidação de claims. <b>Sem mudança.</b>',
+ 's6.eye':'O ângulo IA · D²nAI',
+ 's6.h':'3 casos de uso de IA <b>concretos</b>, sem chat decorativo.',
+ 's6.c1.h':'Portfolio Q&A',
+ 's6.c1.p':'<i>"Quais demos NPK na África estão em risco este mês?"</i><br><i>"Quais Use Cases têm um MDS incompleto?"</i><br><i>"Compare o portfólio Brazil vs India."</i><br>Linguagem natural, resposta em 2 segundos, citação dos IDs.',
+ 's6.c2.h':'Use Case copilot',
+ 's6.c2.p':'No momento em que uma BU redige seu intake, a IA sugere KPIs e protocolo inspirados em trials passados similares, sinaliza MDS faltantes, propõe benchmark de orçamento. <b>Reduz o ping-pong com SA&I.</b>',
+ 's6.c3.h':'Briefing de governança',
+ 's6.c3.p':'Geração automática do pacote Steering / Monitoring: síntese dos UCs do ciclo, alertas de risco, comparação vs ciclo N-1, recomendações Go/Hold/Kill quantificadas. <b>Briefing do comitê em 1 clique.</b>',
+ 's6.deep.h':'🛡️ Chat que raciocina sobre seus dados reais',
+ 's6.deep.p':'Claude 4.6 servido por Azure Databricks (proxy já instalado pelo D²nAI, reutilizado tal qual). Os Use Cases do portfólio são indexados via Vector Search. O PAT Databricks nunca é exposto ao navegador. <b>Branding D²nAI bot apenas</b> — nenhuma menção a provider.',
+ 's7.eye':'Demo ao vivo · MVP clicável',
+ 's7.h':'Não é slide. É um <b>MVP</b> que se abre durante a reunião.',
+ 's7.lead':'O MVP está operacional. 35 Use Cases semeados, telas Cockpit / Portfolio Kanban+Tabela / Detalhe de Use Case / Ciclo anual / Governança + RACI / Fast Track / Closure KB / Catálogos admin. Chat IA conectado ao Databricks Claude 4.6.',
+ 's7.n1.u':'UCs','s7.n1.b':'Seed portfolio','s7.n1.d':' · ciclo 2026 realista, multi-BU/regiões/culturas',
+ 's7.n2.u':'etapas','s7.n2.b':'Framework oficial','s7.n2.d':' seguido linha a linha',
+ 's7.n3.u':'gates','s7.n3.d':'Steering · CEO · Monitoring — Go/Hold/Kill rastreado',
+ 's7.n4.u':'idiomas','s7.n4.d':'FR · EN · PT-BR — troca por bandeiras',
+ 's7.script.h':'👉 O que mostrar na reunião',
+ 's7.script.p':'<b>1.</b> Cockpit landing — KPIs, alertas, heatmap BU × cultura, bridge NutriTrials &nbsp;·&nbsp; <b>2.</b> Portfolio Kanban — drill-down dos UCs por gate &nbsp;·&nbsp; <b>3.</b> Detalhe do Use Case — KPIs, MDS, gates, handoff → NutriTrials &nbsp;·&nbsp; <b>4.</b> Chat IA — 2-3 perguntas ao vivo ("UCs com risco de MDS", "briefing Steering") &nbsp;·&nbsp; <b>5.</b> Ciclo anual — Gantt 12 meses',
+ 's8.eye':'Arquitetura',
+ 's8.h':'Stack <b>simples</b>, infraestrutura <b>já instalada</b>.',
+ 's8.r1.t':'Frontend','s8.r1.b':'NutriPlan',
+ 's8.r1.i1':'SPA single-file','s8.r1.i2':'Plugin WordPress','s8.r1.i3':'Tela cheia /nutriplan','s8.r1.i4':'Shortcode [nutriplan]','s8.r1.i5':'Trilíngue FR/EN/PT','s8.r1.i6':'Sem build step',
+ 's8.r2.t':'Frontend','s8.r2.b':'NutriTrials',
+ 's8.r2.i1':'Existente · nutritrials.ma','s8.r2.i2':'Bridge via API','s8.r2.i3':'Link de handoff dentro de NutriPlan',
+ 's8.r3.t':'Backend','s8.r3.b':'API + Workflow',
+ 's8.r3.i1':'Endpoints REST (plugin WP)','s8.r3.i2':'Workflow engine BPMN-light','s8.r3.i3':'Auth same-origin + nonce','s8.r3.i4':'Bridge handoff API ↔ NutriTrials',
+ 's8.r4.t':'IA · D²nAI','s8.r4.b':'Co-pilot',
+ 's8.r4.i1':'Claude 4.6','s8.r4.i2':'Azure Databricks Foundation Models','s8.r4.i3':'Vector Search (RAG)','s8.r4.i4':'PAT server-side · nunca exposto','s8.r4.i5':'Branding D²nAI bot apenas',
+ 's8.r5.t':'Camada de dados','s8.r5.b':'Source of truth',
+ 's8.r5.i1':'Unity Catalog (Databricks)','s8.r5.i2':'NutriTrials DB (existente)','s8.r5.i3':'Catálogos compartilhados (BUs · culturas · MDS · KPIs)',
+ 's9.eye':'Roadmap',
+ 's9.h':'Faseamento em <b>4 ondas</b>, ship-to-prod em <b>10-12 semanas</b>.',
+ 's9.v0.p':'V0 · agora','s9.v0.h':'MVP demo',
+ 's9.v0.ul':'<li>Cockpit · Portfolio Kanban+Tabela</li><li>Detalhe de Use Case · MDS</li><li>Ciclo anual · Governança RACI</li><li>Chat IA mock + Claude 4.6</li><li><b>Pronto para segunda</b></li>',
+ 's9.v1.p':'V1 · semanas 1-4','s9.v1.h':'Plan & Govern core',
+ 's9.v1.ul':'<li>Intake funcional + MDS dinâmico</li><li>Workflow real dos gates (Steering / CEO / Monitoring)</li><li>RACI auto-routing aos atores</li><li>Fast Track lane funcional</li><li>Piloto com 2-3 BUs voluntárias</li>',
+ 's9.v2.p':'V2 · semanas 5-8','s9.v2.h':'Bridge + IA Q&A',
+ 's9.v2.ul':'<li>Auto-provisionamento UC → Trial em NutriTrials (API)</li><li>Vector Search RAG sobre o portfólio</li><li>Briefings de governança auto-gerados</li><li>Notificações (email/Teams)</li><li>Multilíngue generalizado</li>',
+ 's9.v3.p':'V3 · semanas 9-12','s9.v3.h':'Copilot + KB · GA',
+ 's9.v3.ul':'<li>Use Case copilot (sugestões de IA durante a redação)</li><li>Closure KB indexada e pesquisável</li><li>Dashboards CEO Office</li><li>SSO Azure AD integrado</li><li>Generalização a todas as BUs</li>',
+ 's10.eye':'Next steps',
+ 's10.h':'O que é preciso para passar do MVP à <b>V1 piloto</b>.',
+ 's10.ask.h':'3 decisões a tomar.',
+ 's10.ask.p':'Tudo o resto decorre dessas:',
+ 's10.ask.ul':'<li><b>Sponsor executivo</b> — quem carrega o projeto no COMEX / CEO Office (a governança toca o CEO, então o sponsor precisa ser nesse nível).</li><li><b>Alinhamento com NutriTrials</b> — acesso à API + sessões de co-design com o time que mantém a plataforma. <b>Eles abrem a porta do bridge</b>.</li><li><b>2-3 BUs piloto</b> voluntárias para a V1 (mix de regiões recomendado). Não todo mundo de uma vez.</li>',
+ 's10.cta1':'▶ Abrir a demo NutriPlan','s10.cta2':'↗ Visitar NutriTrials','s10.cta3':'⤓ Exportar este pitch em PDF',
+ 's10.impact.h':'O que muda, concretamente, já no próximo mês',
+ 's10.impact.p':'→ O ciclo 2026 começa com um arcabouço digital no planejamento · → Os Steering Committees têm briefing de IA em 1 clique · → NutriTrials recebe UCs completos e validados · → A promessa <i>single reference platform for agronomic evidence management</i> torna-se sustentável end-to-end.',
+ 'footer':'NutriPlan · Pitch · ciclo 2026 · D²nAI · OCP Nutricrops · MVP · para conectar ao NutriTrials · <b>Confidencial — uso interno</b>',
+ 'proc.lyr.np':'NutriPlan','proc.lyr.nt':'NutriTrials',
+ 'proc.1':'1 · Lançar ciclo anual','proc.2':'2 · Use Case intake','proc.3':'3 · Design do trial','proc.4':'4 · Steering · Gate 1','proc.5':'5 · CEO · Gate 2',
+ 'proc.6':'6 · Readiness & contratos','proc.7':'7 · Execução & dados','proc.8':'8 · Análise & resultados','proc.9':'9 · Monitoring · Gate 3','proc.10':'10 · Closure & KB'
+}
+};
+const LOC = { fr:'fr-FR', en:'en-GB', pt:'pt-BR' };
+const LS_LANG = 'nplan_pitch_lang_v1';
+function detectLang(){
+  try{ const v=localStorage.getItem(LS_LANG); if(v && T[v]) return v; }catch(e){}
+  const q=new URLSearchParams(location.search).get('lang'); if(q && T[q]) return q;
+  const n=(navigator.language||'fr').slice(0,2).toLowerCase(); return T[n]?n:'fr';
+}
+let LANG = detectLang();
+
+function processHtml(){
+  const np = T[LANG]['proc.lyr.np'], nt = T[LANG]['proc.lyr.nt'];
+  const steps = [
+    [1,'np'],[2,'np'],[3,'np'],[4,'np'],[5,'np'],
+    [6,'nt'],[7,'nt'],[8,'nt'],
+    [9,'np'],[10,'np']
+  ];
+  return steps.map(([n,cls])=>{
+    const lyr = cls==='np'?np:nt;
+    const nm  = T[LANG]['proc.'+n];
+    return `<div class="step ${cls}"><div class="lyr">${lyr}</div><div class="nm">${nm}</div></div>`;
+  }).join('');
+}
+function applyLang(){
+  document.documentElement.lang = LANG;
+  document.querySelectorAll('[data-k]').forEach(el=>{
+    const v = T[LANG][el.dataset.k];
+    if(v!==undefined) el.innerHTML = v;
+  });
+  document.querySelectorAll('.langsel button').forEach(b=>b.classList.toggle('on', b.dataset.l===LANG));
+  const proc = document.getElementById('processSteps');
+  if(proc) proc.innerHTML = processHtml();
+}
+function setLang(l){ LANG=l; try{localStorage.setItem(LS_LANG,l);}catch(e){} applyLang(); }
+document.querySelectorAll('.langsel button').forEach(b=>b.onclick=()=>setLang(b.dataset.l));
+applyLang();
+</script>
 </body>
 </html>

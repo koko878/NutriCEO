@@ -82,6 +82,10 @@ a{color:var(--green-700);text-decoration:none}
 .tb-prof .av{width:26px;height:26px;border-radius:50%;background:var(--green-700);color:#fff;display:grid;place-items:center;font:800 11px 'Inter'}
 .tb-prof .nm{font:700 12px 'Inter';color:var(--ink)}
 .tb-prof .ro{font:500 10.5px 'Inter';color:var(--muted)}
+.tb-lang{display:flex;gap:2px;background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:3px}
+.tb-lang button{border:0;background:none;font-size:16px;line-height:1;padding:5px 7px;border-radius:6px;cursor:pointer;opacity:.55;transition:opacity .15s,background .15s}
+.tb-lang button:hover{opacity:.85}
+.tb-lang button.on{opacity:1;background:#fff;box-shadow:0 1px 2px rgba(16,35,26,.08)}
 @media(max-width:780px){.tb-search{display:none}.tb-prof .nm,.tb-prof .ro{display:none}}
 
 /* ----- main ----- */
@@ -467,10 +471,10 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
     <div class="sb-brand">
       <div class="by">OCP Nutricrops · D²nAI</div>
       <div class="nm">Nutri<b>Plan</b></div>
-      <span class="tag">Plan & Govern · ↗ NutriTrials</span>
+      <span class="tag" id="sbBrandTag">Plan &amp; Govern · ↗ NutriTrials</span>
     </div>
     <nav class="sb-nav" id="sbNav"></nav>
-    <div class="sb-foot"><span class="dot"></span>Cycle <b style="color:#fff;margin:0 4px">2026</b> · synchronisé avec NutriTrials</div>
+    <div class="sb-foot"><span class="dot"></span><span id="sbFoot"><b style="color:#fff;margin:0 4px">Cycle 2026</b> · synced with NutriTrials</span></div>
   </aside>
 
   <!-- ====== TOPBAR ====== -->
@@ -479,12 +483,17 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
     <div class="tb-sp"></div>
     <div class="tb-search">
       <span style="opacity:.5">🔍</span>
-      <input type="text" placeholder="Rechercher un Use Case, partenaire, BU…" id="globalSearch">
+      <input type="text" id="globalSearch">
       <span class="kbd">⌘K</span>
     </div>
-    <button class="tb-btn primary" onclick="goView('intake')">+ Nouveau Use Case</button>
+    <div class="tb-lang" id="tbLang">
+      <button data-l="fr" title="Français">🇫🇷</button>
+      <button data-l="en" title="English">🇬🇧</button>
+      <button data-l="pt" title="Português (Brasil)">🇧🇷</button>
+    </div>
+    <button class="tb-btn primary" onclick="goView('intake')" id="btnTopIntake">+ New Use Case</button>
     <button class="tb-btn ai" onclick="toggleChat()"><span class="dot"></span> D²nAI bot</button>
-    <div class="tb-prof"><span class="av">HK</span><div><div class="nm">Hamza K.</div><div class="ro">Global Head Data & AI</div></div></div>
+    <div class="tb-prof"><span class="av">HK</span><div><div class="nm">Hamza K.</div><div class="ro" id="profRole">Global Head Data &amp; AI</div></div></div>
   </header>
 
   <!-- ====== MAIN ====== -->
@@ -552,20 +561,20 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
  * ============================================================================ */
 
 /* -----------------------------------------------------------------
- * 1. NAVIGATION CONFIG
+ * 1. NAVIGATION CONFIG (i18n via tr())
  * --------------------------------------------------------------- */
 const NAV = [
-  { sec: 'Pilotage' },
-  { id:'cockpit',    ico:'⚡', lbl:'Cockpit',         crumb:'Cockpit'                  },
-  { id:'portfolio',  ico:'📚', lbl:'Portefeuille',    crumb:'Portefeuille trials'      },
-  { id:'calendar',   ico:'📅', lbl:'Cycle annuel',    crumb:'Cycle annuel · Calendrier'},
-  { id:'governance', ico:'⚖️', lbl:'Gouvernance',     crumb:'Comités & gouvernance'    },
-  { sec: 'Workflows' },
-  { id:'intake',     ico:'➕', lbl:'Nouveau Use Case',crumb:'Nouveau Use Case'         },
-  { id:'fasttrack',  ico:'🚀', lbl:'Fast Track',      crumb:'Fast Track requests'      },
-  { sec: 'Capitalisation' },
-  { id:'kb',         ico:'💡', lbl:'Closure & KB',    crumb:'Closure & Knowledge Base' },
-  { id:'admin',      ico:'⚙️', lbl:'Référentiels',    crumb:'Référentiels · Admin'     }
+  { sec:'nav.sec.pilot' },
+  { id:'cockpit',    ico:'⚡', lblK:'nav.cockpit',    crumbK:'nav.cockpit.cr' },
+  { id:'portfolio',  ico:'📚', lblK:'nav.portfolio',  crumbK:'nav.portfolio.cr' },
+  { id:'calendar',   ico:'📅', lblK:'nav.calendar',   crumbK:'nav.calendar.cr' },
+  { id:'governance', ico:'⚖️', lblK:'nav.gov',        crumbK:'nav.gov.cr' },
+  { sec:'nav.sec.work' },
+  { id:'intake',     ico:'➕', lblK:'nav.intake',     crumbK:'nav.intake.cr' },
+  { id:'fasttrack',  ico:'🚀', lblK:'nav.ft',         crumbK:'nav.ft.cr' },
+  { sec:'nav.sec.cap' },
+  { id:'kb',         ico:'💡', lblK:'nav.kb',         crumbK:'nav.kb.cr' },
+  { id:'admin',      ico:'⚙️', lblK:'nav.adm',        crumbK:'nav.adm.cr' }
 ];
 
 /* -----------------------------------------------------------------
@@ -604,27 +613,609 @@ const PARTNERS = [
   { nm:'Yara Pilot Farm', typ:'Industrial partner' }
 ];
 const STATUSES = [
-  { id:'draft',      lbl:'Draft',          pill:'pill-st-draft',      color:'#5c6b62' },
-  { id:'submitted',  lbl:'Submitted',      pill:'pill-st-submitted',  color:'#1f6c9c' },
-  { id:'steering',   lbl:'In Steering',    pill:'pill-st-steering',   color:'#7c5b07' },
-  { id:'ceo',        lbl:'CEO Pending',    pill:'pill-st-ceo',        color:'#8d4a04' },
-  { id:'approved',   lbl:'Approved',       pill:'pill-st-approved',   color:'#15803D' },
-  { id:'execution',  lbl:'In Execution',   pill:'pill-st-execution',  color:'#2E7D32' },
-  { id:'monitoring', lbl:'Monitoring',     pill:'pill-st-monitoring', color:'#0e4f6e' },
-  { id:'closed-go',  lbl:'Closed · Go',    pill:'pill-st-go',         color:'#0c5b27' },
-  { id:'closed-hold',lbl:'Closed · Hold',  pill:'pill-st-hold',       color:'#8c5a06' },
-  { id:'closed-kill',lbl:'Closed · Kill',  pill:'pill-st-kill',       color:'#8b1a1a' }
+  { id:'draft',       lblK:'st.draft',       pill:'pill-st-draft',      color:'#5c6b62' },
+  { id:'submitted',   lblK:'st.submitted',   pill:'pill-st-submitted',  color:'#1f6c9c' },
+  { id:'steering',    lblK:'st.steering',    pill:'pill-st-steering',   color:'#7c5b07' },
+  { id:'ceo',         lblK:'st.ceo',         pill:'pill-st-ceo',        color:'#8d4a04' },
+  { id:'approved',    lblK:'st.approved',    pill:'pill-st-approved',   color:'#15803D' },
+  { id:'execution',   lblK:'st.execution',   pill:'pill-st-execution',  color:'#2E7D32' },
+  { id:'monitoring',  lblK:'st.monitoring',  pill:'pill-st-monitoring', color:'#0e4f6e' },
+  { id:'closed-go',   lblK:'st.closed-go',   pill:'pill-st-go',         color:'#0c5b27' },
+  { id:'closed-hold', lblK:'st.closed-hold', pill:'pill-st-hold',       color:'#8c5a06' },
+  { id:'closed-kill', lblK:'st.closed-kill', pill:'pill-st-kill',       color:'#8b1a1a' }
 ];
 const TYPES = [
-  { id:'scientific', lbl:'Scientific', pill:'pill-typ-scientific', dd:'Generate new scientific knowledge (TRL 2–4)' },
-  { id:'applied',    lbl:'Applied',    pill:'pill-typ-applied',    dd:'Validate product performance (TRL 5–8)' },
-  { id:'demo',       lbl:'Demo',       pill:'pill-typ-demo',       dd:'Demonstrate value under farmer conditions (TRL 7–9)' }
+  { id:'scientific', lblK:'typ.scientific', pill:'pill-typ-scientific', ddK:'typ.scientific.dd' },
+  { id:'applied',    lblK:'typ.applied',    pill:'pill-typ-applied',    ddK:'typ.applied.dd' },
+  { id:'demo',       lblK:'typ.demo',       pill:'pill-typ-demo',       ddK:'typ.demo.dd' }
 ];
 const PRIORITIES = [
-  { id:'high',lbl:'High',   pill:'pill-prio-high' },
-  { id:'med', lbl:'Medium', pill:'pill-prio-med'  },
-  { id:'low', lbl:'Low',    pill:'pill-prio-low'  }
+  { id:'high', lblK:'prio.high', pill:'pill-prio-high' },
+  { id:'med',  lblK:'prio.med',  pill:'pill-prio-med'  },
+  { id:'low',  lblK:'prio.low',  pill:'pill-prio-low'  }
 ];
+function stLbl(s){ return tr(s.lblK||'st.'+s.id, s.id); }
+function tyLbl(t){ return tr(t.lblK||'typ.'+t.id, t.id); }
+function prLbl(p){ return tr(p.lblK||'prio.'+p.id, p.id); }
+
+/* -----------------------------------------------------------------
+ * 2bis. i18n — FR / EN / PT-BR. tr(key, fallback?) returns the
+ * translation or the fallback / key. setLang() persists + re-renders.
+ * --------------------------------------------------------------- */
+const T = {
+fr:{
+ // chrome
+ 'side.tag':'Plan & Govern · ↗ NutriTrials',
+ 'side.foot':'synchronisé avec NutriTrials',
+ 'nav.sec.pilot':'Pilotage','nav.sec.work':'Workflows','nav.sec.cap':'Capitalisation',
+ 'nav.cockpit':'Cockpit','nav.cockpit.cr':'Cockpit',
+ 'nav.portfolio':'Portefeuille','nav.portfolio.cr':'Portefeuille trials',
+ 'nav.calendar':'Cycle annuel','nav.calendar.cr':'Cycle annuel · Calendrier',
+ 'nav.gov':'Gouvernance','nav.gov.cr':'Comités & gouvernance',
+ 'nav.intake':'Nouveau Use Case','nav.intake.cr':'Nouveau Use Case',
+ 'nav.ft':'Fast Track','nav.ft.cr':'Fast Track',
+ 'nav.kb':'Closure & KB','nav.kb.cr':'Closure & Knowledge Base',
+ 'nav.adm':'Référentiels','nav.adm.cr':'Référentiels · Admin',
+ 'tb.search.ph':'Rechercher un Use Case, partenaire, BU…',
+ 'tb.intake':'+ Nouveau Use Case',
+ 'tb.role':'Global Head Data & AI',
+ 'cycle':'Cycle',
+ // statuses
+ 'st.draft':'Brouillon','st.submitted':'Soumis','st.steering':'En Steering','st.ceo':'CEO en attente',
+ 'st.approved':'Approuvé','st.execution':'En exécution','st.monitoring':'Monitoring',
+ 'st.closed-go':'Clos · Go','st.closed-hold':'Clos · Hold','st.closed-kill':'Clos · Kill',
+ 'typ.scientific':'Scientific','typ.scientific.dd':'Générer de la connaissance scientifique (TRL 2–4)',
+ 'typ.applied':'Applied','typ.applied.dd':'Valider la performance produit (TRL 5–8)',
+ 'typ.demo':'Demo','typ.demo.dd':'Démontrer la valeur en conditions farmer (TRL 7–9)',
+ 'prio.high':'Haute','prio.med':'Moyenne','prio.low':'Basse',
+ // cockpit
+ 'ck.hero.m1':'⚡ Cycle {y} · {n} trials actifs',
+ 'ck.hero.m2':'{nb} BUs · {nr} régions',
+ 'ck.hero.m3':'↗ Branché à NutriTrials',
+ 'ck.hero.h':'Plan & Govern, l\'amont qui ferme la boucle NutriTrials',
+ 'ck.hero.p':'Cycle annuel · Use Case intake · Steering & CEO gates · Fast Track · IA Q&A — tout ce qui se passe <b>avant</b> que les trials atterrissent dans NutriTrials. Single reference platform, vraiment end-to-end.',
+ 'ck.hs.actif':'Portefeuille actif','ck.hs.actif.d':'{n} en cours de validation',
+ 'ck.hs.budget':'Budget cycle {y}','ck.hs.budget.d':'Allocation pondérée par BU',
+ 'ck.hs.goRate':'Go rate (closed)','ck.hs.goRate.d':'{n} décisions Go cumulées',
+ 'ck.k.submitted':'Soumis','ck.k.submitted.d':'En attente Steering',
+ 'ck.k.steering':'En Steering','ck.k.steering.d':'Revue Gate 1',
+ 'ck.k.ceo':'CEO en attente','ck.k.ceo.d':'Gate 2 portfolio',
+ 'ck.k.exec':'En exécution','ck.k.exec.d':'Field + monitoring',
+ 'ck.k.unit':'UCs',
+ 'ck.alerts.h':'🔥 Alertes & escalations','ck.alerts.sub':'— issues détectées sur ton portefeuille',
+ 'ck.alerts.allOk':'Tout est sous contrôle ✓',
+ 'ck.act.h':'📝 Activité récente',
+ 'ck.bridge.h':'↗ Bridge NutriTrials','ck.bridge.sub':'— handoff automatique vers la plateforme d\'exécution',
+ 'ck.bridge.p':'Dès qu\'un Use Case passe le Gate CEO, NutriPlan provisionne automatiquement le trial dans <b style="color:var(--green-800)">NutriTrials</b> (protocole, MDS, partenaire, KPIs). Aucune re-saisie. Les résultats remontent en sens inverse pour alimenter le Monitoring Committee et la KB.',
+ 'ck.bridge.k1':'📤 Handoff envoyés (cycle)','ck.bridge.d1':'→ provisionnés dans NutriTrials',
+ 'ck.bridge.k2':'⏳ En attente handoff','ck.bridge.d2':'approved · prêts pour NutriTrials',
+ 'ck.bridge.k3':'🔄 Résultats reçus','ck.bridge.d3':'data + KPIs depuis NutriTrials',
+ 'ck.bridge.k4':'🌐 Plateforme','ck.bridge.d4':'single reference platform',
+ 'ck.heat.h':'🌍 Couverture portefeuille — BU × Culture','ck.heat.sub':'— intensité = nb de Use Cases',
+ 'ck.bus.h':'🏢 Top BUs émettrices',
+ 'ck.bus.bu':'BU','ck.bus.ucs':'Use Cases','ck.bus.budget':'Budget total','ck.bus.status':'Statut majoritaire','ck.bus.lead':'SA&I lead',
+ 'ck.alert.late':'{id} en attente de Steering Committee depuis 14 jours',
+ 'ck.alert.late.ctx':'{name} — {bu} · prioriser','ck.alert.late.cta':'Ouvrir',
+ 'ck.alert.mds':'{id} — MDS incomplet ({n}/12)',
+ 'ck.alert.mds.ctx':'Risque de blocage Gate 1 — {miss} manquants','ck.alert.mds.cta':'Compléter',
+ 'ck.alert.ft':'Fast Track en attente — {id}',
+ 'ck.alert.ft.ctx':'{name} · Justification Note à valider par le Scientific Monitoring Committee','ck.alert.ft.cta':'Réviser',
+ // portfolio
+ 'pf.eye':'Portefeuille','pf.h':'{n} Use Cases du cycle {y}',
+ 'pf.lead':'Sélectionne, filtre, drill-down. Vue Kanban (par statut de gate) ou Tableau (par BU / culture / budget). Les UCs <b>approved</b>+ sont auto-provisionnés dans <a href="https://nutritrials.ma" target="_blank" rel="noopener">NutriTrials</a>.',
+ 'pf.v.kanban':'⊟ Kanban','pf.v.table':'⊞ Tableau',
+ 'pf.filt.type':'Type','pf.filt.bu':'BU','pf.filt.status':'Statut','pf.filt.all':'tous','pf.filt.reset':'↺ Reset',
+ 'pf.kn.draft':'Brouillon','pf.kn.submitted':'Soumis','pf.kn.gates':'Gates','pf.kn.approved':'Approuvé','pf.kn.inflight':'En cours','pf.kn.closed':'Clôturé',
+ 'pf.kn.empty':'vide',
+ 'pf.tbl.id':'ID','pf.tbl.uc':'Use Case','pf.tbl.bureg':'BU · Région','pf.tbl.cropprod':'Culture · Produit','pf.tbl.type':'Type','pf.tbl.status':'Statut','pf.tbl.budget':'Budget','pf.tbl.partner':'Partenaire','pf.tbl.sai':'SA&I','pf.tbl.upd':'Maj.',
+ 'pf.tbl.empty':'Aucun Use Case ne correspond aux filtres.',
+ // modal
+ 'uc.start':'Lancement prévu','uc.end':'Clôture prévue','uc.budget':'Budget alloué','uc.partner':'Partenaire','uc.sai':'SA&I Lead',
+ 'uc.plan':'Plan expérimental','uc.plan.fmt':'{t} traitements × {r} répétitions',
+ 'uc.objP':'Objectif primaire','uc.objS':'Objectifs secondaires','uc.kpiP':'KPIs primaires','uc.kpiS':'KPIs secondaires','uc.risks':'Risques identifiés',
+ 'uc.gates':'Gates de gouvernance','uc.mds':'Minimum Data Set ({n}/12)',
+ 'uc.go':'✓ GO','uc.hold':'⏸ HOLD','uc.kill':'✗ KILL',
+ 'uc.close':'Fermer','uc.ai':'🤖 Demander à D²nAI bot','uc.openNT':'↗ Ouvrir dans NutriTrials','uc.edit':'✎ Éditer',
+ 'uc.edit.toast':'🛠 V2 — édition Use Case (non implémenté dans le MVP)',
+ // intake
+ 'in.eye':'Workflow · Soumission','in.h':'Nouveau Use Case',
+ 'in.lead':'Formulaire structuré qui force la complétude (objectifs, KPIs, MDS, budget, partenaire). Validation auto avant soumission au Steering Committee, puis handoff <b>automatique vers NutriTrials</b> après CEO approval.',
+ 'in.step1':'Objectifs & rationale','in.step2':'Périmètre & site','in.step3':'KPIs & MDS','in.step4':'Budget & partenaire','in.step5':'Soumission',
+ 'in.s1.h':'1 · Objectifs & rationale','in.s1.sub':'Pourquoi ce Use Case ? Quels résultats attendus ?',
+ 'in.f.name':'Nom du Use Case','in.f.name.ph':'Ex : Sulphur deficiency correction on irrigated maize',
+ 'in.f.bu':'BU émettrice','in.f.type':'Type de trial',
+ 'in.f.objPrim':'Objectif primaire','in.f.objPrim.ph':'Quantifier la réponse de…',
+ 'in.f.objSec':'Objectifs secondaires','in.f.objSec.opt':'(≥2 recommandés)',
+ 'in.f.rat':'Rationale scientifique / business','in.f.rat.ph':'Quel problème adressé ? Pourquoi maintenant ?',
+ 'in.s2.h':'2 · Périmètre & site','in.s2.sub':'Où, sur quelle culture, avec quel produit ?',
+ 'in.f.region':'Région cible','in.f.crop':'Culture','in.f.prod':'Produit OCP testé','in.f.ref':'Référence comparée',
+ 'in.f.treat':'Nb traitements','in.f.rep':'Nb répétitions','in.f.start':'Date de lancement','in.f.end':'Date de clôture estimée',
+ 'in.s3.h':'3 · KPIs & Minimum Data Set','in.s3.sub':'Le MDS est obligatoire — 12 items pour garantir la comparabilité cross-cycles.',
+ 'in.s3.help':'À mesure que tu remplis les sections, les items MDS basculent en vert ✓.',
+ 'in.s4.h':'4 · Budget & partenaire',
+ 'in.f.budget':'Budget prévisionnel ($)','in.f.budget.ph':'180000',
+ 'in.f.prio':'Priorité business','in.f.partner':'Partenaire pressenti',
+ 'in.f.ft':'Mode Fast Track','in.f.std':'Cycle standard','in.f.urgent':'Fast Track — urgent',
+ 'in.f.sai':'SA&I lead','in.f.sai.ph':'Anaïs M., Karim T., …',
+ 'in.btn.cancel':'← Annuler','in.btn.draft':'💾 Enregistrer en brouillon','in.btn.submit':'📨 Soumettre au Steering Committee',
+ 'in.toast.draft':'💾 Brouillon enregistré (mock)','in.toast.submit':'📨 Soumis au Steering Committee (mock)',
+ 'in.note':'_MVP — la sauvegarde réelle + validation MDS dynamique arrivent en V1.1._',
+ // calendar
+ 'cal.eye':'Cycle annuel','cal.h':'Calendrier du cycle {y}',
+ 'cal.lead':'Timeline opérationnelle : phases obligatoires, gates de gouvernance, QBR, Fast Track lane. Vue Gantt 12 mois.',
+ 'cal.phase':'Phase','cal.today':'Aujourd\'hui :',
+ 'cal.b1':'Annual Trial Cycle launch','cal.b1.s':'SA&I notification + templates',
+ 'cal.b2':'Use Case submission window','cal.b2.s':'Toutes BUs · entrée portefeuille',
+ 'cal.b3':'Trial Steering Committee · Gate 1','cal.b3.s':'Design & readiness review',
+ 'cal.b4':'CEO Portfolio Approval · Gate 2','cal.b4.s':'Annual portfolio + budget',
+ 'cal.b5':'Trial readiness & contractualisation','cal.b5.s':'Protocoles, sites, partenaires',
+ 'cal.b6':'Exécution — trials saison 1','cal.b6.s':'Field operations, monitoring',
+ 'cal.b7':'Monitoring Committee · Monthly rolling','cal.b7.s':'Revue evidence · rotation BUs',
+ 'cal.b8':'QBR portfolio refresh','cal.b8.s':'Mid-cycle agility check',
+ 'cal.b9':'Fast Track lane','cal.b9.s':'Demandes urgentes exceptionnelles',
+ 'cal.b10':'Adoption decision + Closure','cal.b10.s':'Go/Hold/Kill + knowledge capture',
+ // governance
+ 'gov.eye':'Gouvernance','gov.h':'Comités & RACI',
+ 'gov.lead':'Visibilité sur les comités à venir, ce qui les attend, et la matrice de responsabilité officielle du Trial Management Framework.',
+ 'gov.steering.h':'⚖️ Trial Steering Committee','gov.steering.sub':'— Gate 1 · Design & readiness',
+ 'gov.steering.when':'Prochaine session : <b style="color:var(--ink)">{date}</b>',
+ 'gov.steering.cnt':'{n} dossiers à l\'ordre du jour',
+ 'gov.ceo.h':'🏛️ CEO Portfolio Approval','gov.ceo.sub':'— Gate 2 · Annual portfolio',
+ 'gov.ceo.when':'Prochaine décision : <b style="color:var(--ink)">{date}</b>',
+ 'gov.ceo.empty':'Pas de dossier en attente.',
+ 'gov.monitor.h':'🔁 Scientific Monitoring Committee','gov.monitor.sub':'— Gate 3 · Monthly rolling, rotation BU',
+ 'gov.monitor.cnt':'{n} trials en revue continue · rotation BU mensuelle.',
+ 'gov.tbl.month':'Mois','gov.tbl.bu':'BU présentatrice','gov.tbl.ucs':'UCs présentés','gov.tbl.decisions':'Décisions attendues',
+ 'gov.raci.h':'🎯 RACI Matrix','gov.raci.sub':'— extrait du Trial Management Framework',
+ 'gov.act.open':'Ouvrir →',
+ // fast track
+ 'ft.eye':'Exception · Fast Track','ft.h':'🚀 Fast Track requests',
+ 'ft.lead':'Demandes urgentes hors cycle annuel — Chief/EVP approval + acknowledgment du Scientific Monitoring Committee. SLA accéléré, traçabilité renforcée.',
+ 'ft.k1':'Fast Track actifs','ft.k1.sub':'Hors cycle annuel',
+ 'ft.k2':'SLA moyen','ft.k2.sub':'vs 90 j cycle standard',
+ 'ft.k3':'Budget engagé','ft.k3.sub':'Cycle {y}',
+ 'ft.k4':'Go rate','ft.k4.sub':'Closed FT decisions',
+ 'ft.wf.h':'Workflow Fast Track','ft.wf.sub':'— exception au cycle annuel',
+ 'ft.wf.1':'1 · Identification urgence','ft.wf.2':'2 · Chief/EVP validation','ft.wf.3':'3 · Monitoring Committee ack','ft.wf.4':'4 · Protocol & readiness','ft.wf.5':'5 · Execution → Decision',
+ 'ft.list.h':'Fast Track requests — cycle {y} ({n})','ft.list.empty':'Aucun Fast Track actuel.',
+ // KB
+ 'kb.eye':'Capitalisation','kb.h':'Closure & Knowledge Base',
+ 'kb.lead':'Toutes les fiches de clôture du cycle précédent — apprentissages, méthodologies validées, lectures à reprendre. Indexées pour le prochain cycle.',
+ 'kb.filt.all':'Tous','kb.filt.go':'Go','kb.filt.hold':'Hold','kb.filt.kill':'Kill','kb.export':'⤓ Export PDF',
+ 'kb.l.go':'Uplift rendement confirmé (+{p} %). Protocole MDS robuste, recommandation : déploiement régional.',
+ 'kb.l.hold':'Effet de site marqué — variance entre sites > 20 %. À reprendre avec design en blocs équilibrés.',
+ 'kb.l.kill':'Hypothèse non confirmée. Inputs : variabilité météo + non-respect protocole partenaire. À ne PAS répliquer en l\'état.',
+ 'kb.empty':'Pas encore de clôtures sur ce cycle.',
+ // admin
+ 'adm.eye':'Référentiels','adm.h':'Admin · Référentiels',
+ 'adm.lead':'Bases de référence partagées : BUs, régions, cultures, produits, partenaires, MDS, statuses, types de trial. Source de vérité pour tout le système.',
+ 'adm.bu.h':'🏢 Business Units ({n})','adm.bu.code':'Code','adm.bu.name':'Nom','adm.bu.regions':'Régions',
+ 'adm.crops.h':'🌾 Cultures ({n})','adm.prods.h':'🧪 Produits OCP ({n})',
+ 'adm.partners.h':'🤝 Partenaires ({n})','adm.partners.nm':'Partenaire','adm.partners.typ':'Type',
+ 'adm.mds.h':'📋 Minimum Data Set (12 items)',
+ // chat
+ 'chat.h':'D²nAI bot','chat.sub':'Chat with your Trial data',
+ 'chat.close':'Fermer',
+ 'chat.input.ph':'Demande en langage naturel — ex : « Quels demos NPK en Afrique sont à risque ? »',
+ 'chat.meta':'D²nAI bot · répond sur les données du portefeuille de trials',
+ 'chat.sugs.l':'💡 Suggestions',
+ 'chat.greet':'👋 Salut ! Je suis le **D²nAI bot** dédié à NutriPlan — l\'amont de **NutriTrials**.\n\nJe peux :\n- Filtrer / résumer tes Use Cases (par BU, culture, statut, TRL…)\n- Détecter les risques (MDS incomplet, gates en retard, partenaires non confirmés)\n- Préparer un brief Steering / Monitoring Committee\n- Tracer le handoff vers NutriTrials (ce qui est passé en exécution, ce qui attend)\n- Comparer trials passés vs cycle en cours\n\nDemande-moi tout en langage naturel — je raisonne sur les **{n} Use Cases** du cycle 2026.',
+ 'chat.sug1':'Quels Use Cases ont un MDS incomplet ?',
+ 'chat.sug2':'Donne-moi un brief du Steering Committee de la semaine prochaine.',
+ 'chat.sug3':'Quels demos NPK en Afrique sont à risque ?',
+ 'chat.sug4':'Quels Use Cases sont prêts au handoff NutriTrials ?',
+ 'chat.sug5':'Compare le portefeuille Brazil vs India.',
+ 'chat.sug6':'Quels trials Soufre sont en exécution ce trimestre ?',
+ 'chat.unavail':'⚠️ D²nAI bot indisponible : {e}\n\n_Astuce_ : vérifie que la configuration AI est branchée (Réglages → NutriPlan AI ou CGM Cockpit AI).',
+ 'chat.thinking':'D²nAI bot is thinking…',
+ 'chat.localFb':'Je suis en mode dégradé (le backend AI n\'est pas branché sur ce déploiement). Configure-le dans **Réglages → NutriPlan AI** pour libérer le vrai chat-with-data.\n\nEn attendant, je vois **{n} Use Cases** dans le portefeuille — utilise le portfolio ou les filtres pour les explorer.',
+ 'chat.lfb.mds':'⚠️ Use Cases avec MDS incomplet (risque de blocage au Gate 1) :',
+ 'chat.lfb.mds.mode':'\n\n_(Mode dégradé — backend AI non joint.)_',
+ 'chat.lfb.brazil':'🇧🇷 Portefeuille Brazil BU : **{n} Use Cases**, budget total **{b}**.',
+ 'chat.lfb.sulphur':'☀️ Trials Soufre actifs :',
+ 'chat.lfb.handoff':'↗ **Handoff NutriTrials** :\n\n- **{ready} UCs approved** prêts à être provisionnés sur nutritrials.ma\n- **{sent} UCs déjà actifs** dans NutriTrials (execution + monitoring)\n\nUCs en attente de handoff :',
+ 'months':'Jan,Fév,Mar,Avr,Mai,Jun,Jul,Aoû,Sep,Oct,Nov,Déc',
+ 'gov.steering.date':'jeudi 25 juin 2026 · 14:00–16:30',
+ 'gov.ceo.date':'vendredi 3 juillet 2026',
+ 'gov.month.jan':'Janvier {y}','gov.month.feb':'Février {y}','gov.month.mar':'Mars {y}','gov.month.apr':'Avril {y}','gov.month.may':'Mai {y}','gov.month.jun':'Juin {y}',
+ 'gov.bu.jan':'Africa BU','gov.bu.feb':'Brazil BU','gov.bu.mar':'India BU','gov.bu.apr':'Europe BU','gov.bu.may':'North America BU','gov.bu.jun':'Asia-Pacific BU',
+ 'gov.dec.jan':'2 Go-decisions attendues','gov.dec.feb':'1 Hold review','gov.dec.mar':'Cross-site consolidation','gov.dec.apr':'Closure 2025 — final reports','gov.dec.may':'Pilot Iowa drip-line','gov.dec.jun':'Monsoon stress trials',
+ 'gov.step.1':'1 · Launch Annual Trial Cycle','gov.step.2':'2 · Use Case definition & drafting','gov.step.3':'3 · Final Proposal Consolidation','gov.step.4':'4 · Trial Steering Committee','gov.step.5':'5 · CEO Validation','gov.step.6':'6 · Trial Readiness & Contracting','gov.step.7':'7 · Execution & Data Collection','gov.step.8':'8 · Analysis & Result Validation','gov.step.9':'9 · Monitoring Committee','gov.step.10':'10 · Adoption Decision','gov.step.11':'11 · Closure & Knowledge Sharing',
+ 'gov.raci.r':'Responsible','gov.raci.a':'Accountable','gov.raci.c':'Consulted','gov.raci.i':'Informed',
+ 'gov.act':'Étape','gov.role.sai':'SA&I','gov.role.bu':'BUs / Régions','gov.role.sf':'Support Fns','gov.role.gv':'Governance','gov.role.ceo':'CEO',
+ 'badge.opt':'FACULTATIF','badge.req':'OBLIGATOIRE','badge.ft':'🚀 Fast Track',
+ 'pf.kn.empty.dot':'∅',
+ 'date':'fr-FR'
+},
+en:{
+ 'side.tag':'Plan & Govern · ↗ NutriTrials',
+ 'side.foot':'synced with NutriTrials',
+ 'nav.sec.pilot':'Steering','nav.sec.work':'Workflows','nav.sec.cap':'Knowledge',
+ 'nav.cockpit':'Cockpit','nav.cockpit.cr':'Cockpit',
+ 'nav.portfolio':'Portfolio','nav.portfolio.cr':'Trial portfolio',
+ 'nav.calendar':'Annual cycle','nav.calendar.cr':'Annual cycle · Calendar',
+ 'nav.gov':'Governance','nav.gov.cr':'Committees & governance',
+ 'nav.intake':'New Use Case','nav.intake.cr':'New Use Case',
+ 'nav.ft':'Fast Track','nav.ft.cr':'Fast Track',
+ 'nav.kb':'Closure & KB','nav.kb.cr':'Closure & Knowledge Base',
+ 'nav.adm':'Reference data','nav.adm.cr':'Reference data · Admin',
+ 'tb.search.ph':'Search a Use Case, partner, BU…',
+ 'tb.intake':'+ New Use Case',
+ 'tb.role':'Global Head Data & AI',
+ 'cycle':'Cycle',
+ 'st.draft':'Draft','st.submitted':'Submitted','st.steering':'In Steering','st.ceo':'CEO Pending',
+ 'st.approved':'Approved','st.execution':'In Execution','st.monitoring':'Monitoring',
+ 'st.closed-go':'Closed · Go','st.closed-hold':'Closed · Hold','st.closed-kill':'Closed · Kill',
+ 'typ.scientific':'Scientific','typ.scientific.dd':'Generate new scientific knowledge (TRL 2–4)',
+ 'typ.applied':'Applied','typ.applied.dd':'Validate product performance (TRL 5–8)',
+ 'typ.demo':'Demo','typ.demo.dd':'Demonstrate value under farmer conditions (TRL 7–9)',
+ 'prio.high':'High','prio.med':'Medium','prio.low':'Low',
+ 'ck.hero.m1':'⚡ {y} cycle · {n} active trials',
+ 'ck.hero.m2':'{nb} BUs · {nr} regions',
+ 'ck.hero.m3':'↗ Wired to NutriTrials',
+ 'ck.hero.h':'Plan & Govern — the upstream layer that closes the NutriTrials loop',
+ 'ck.hero.p':'Annual cycle · Use Case intake · Steering & CEO gates · Fast Track · AI Q&A — everything that happens <b>before</b> the trials land in NutriTrials. Single reference platform, truly end-to-end.',
+ 'ck.hs.actif':'Active portfolio','ck.hs.actif.d':'{n} under validation',
+ 'ck.hs.budget':'{y} cycle budget','ck.hs.budget.d':'Weighted allocation by BU',
+ 'ck.hs.goRate':'Go rate (closed)','ck.hs.goRate.d':'{n} cumulative Go decisions',
+ 'ck.k.submitted':'Submitted','ck.k.submitted.d':'Awaiting Steering',
+ 'ck.k.steering':'In Steering','ck.k.steering.d':'Gate 1 review',
+ 'ck.k.ceo':'CEO Pending','ck.k.ceo.d':'Gate 2 portfolio',
+ 'ck.k.exec':'In Execution','ck.k.exec.d':'Field + monitoring',
+ 'ck.k.unit':'UCs',
+ 'ck.alerts.h':'🔥 Alerts & escalations','ck.alerts.sub':'— issues detected on your portfolio',
+ 'ck.alerts.allOk':'All under control ✓',
+ 'ck.act.h':'📝 Recent activity',
+ 'ck.bridge.h':'↗ NutriTrials bridge','ck.bridge.sub':'— automatic handoff to the execution platform',
+ 'ck.bridge.p':'As soon as a Use Case clears the CEO Gate, NutriPlan auto-provisions the trial in <b style="color:var(--green-800)">NutriTrials</b> (protocol, MDS, partner, KPIs). Zero re-entry. Results flow back to feed the Monitoring Committee and the KB.',
+ 'ck.bridge.k1':'📤 Handoffs sent (cycle)','ck.bridge.d1':'→ provisioned in NutriTrials',
+ 'ck.bridge.k2':'⏳ Awaiting handoff','ck.bridge.d2':'approved · ready for NutriTrials',
+ 'ck.bridge.k3':'🔄 Results received','ck.bridge.d3':'data + KPIs back from NutriTrials',
+ 'ck.bridge.k4':'🌐 Platform','ck.bridge.d4':'single reference platform',
+ 'ck.heat.h':'🌍 Portfolio coverage — BU × Crop','ck.heat.sub':'— intensity = number of Use Cases',
+ 'ck.bus.h':'🏢 Top issuing BUs',
+ 'ck.bus.bu':'BU','ck.bus.ucs':'Use Cases','ck.bus.budget':'Total budget','ck.bus.status':'Dominant status','ck.bus.lead':'SA&I lead',
+ 'ck.alert.late':'{id} awaiting Steering Committee for 14 days',
+ 'ck.alert.late.ctx':'{name} — {bu} · prioritize','ck.alert.late.cta':'Open',
+ 'ck.alert.mds':'{id} — incomplete MDS ({n}/12)',
+ 'ck.alert.mds.ctx':'Gate 1 blocker risk — {miss} missing','ck.alert.mds.cta':'Complete',
+ 'ck.alert.ft':'Fast Track pending — {id}',
+ 'ck.alert.ft.ctx':'{name} · Justification Note awaiting Scientific Monitoring Committee','ck.alert.ft.cta':'Review',
+ 'pf.eye':'Portfolio','pf.h':'{n} Use Cases in the {y} cycle',
+ 'pf.lead':'Select, filter, drill into any UC. Switch between Kanban (by gate status) and Table (by BU / crop / budget). <b>Approved</b>+ UCs are auto-provisioned in <a href="https://nutritrials.ma" target="_blank" rel="noopener">NutriTrials</a>.',
+ 'pf.v.kanban':'⊟ Kanban','pf.v.table':'⊞ Table',
+ 'pf.filt.type':'Type','pf.filt.bu':'BU','pf.filt.status':'Status','pf.filt.all':'all','pf.filt.reset':'↺ Reset',
+ 'pf.kn.draft':'Draft','pf.kn.submitted':'Submitted','pf.kn.gates':'Gates','pf.kn.approved':'Approved','pf.kn.inflight':'In flight','pf.kn.closed':'Closed',
+ 'pf.kn.empty':'empty',
+ 'pf.tbl.id':'ID','pf.tbl.uc':'Use Case','pf.tbl.bureg':'BU · Region','pf.tbl.cropprod':'Crop · Product','pf.tbl.type':'Type','pf.tbl.status':'Status','pf.tbl.budget':'Budget','pf.tbl.partner':'Partner','pf.tbl.sai':'SA&I','pf.tbl.upd':'Upd.',
+ 'pf.tbl.empty':'No Use Case matches the current filters.',
+ 'uc.start':'Planned start','uc.end':'Planned end','uc.budget':'Allocated budget','uc.partner':'Partner','uc.sai':'SA&I Lead',
+ 'uc.plan':'Experimental plan','uc.plan.fmt':'{t} treatments × {r} replications',
+ 'uc.objP':'Primary objective','uc.objS':'Secondary objectives','uc.kpiP':'Primary KPIs','uc.kpiS':'Secondary KPIs','uc.risks':'Identified risks',
+ 'uc.gates':'Governance gates','uc.mds':'Minimum Data Set ({n}/12)',
+ 'uc.go':'✓ GO','uc.hold':'⏸ HOLD','uc.kill':'✗ KILL',
+ 'uc.close':'Close','uc.ai':'🤖 Ask D²nAI bot','uc.openNT':'↗ Open in NutriTrials','uc.edit':'✎ Edit',
+ 'uc.edit.toast':'🛠 V2 — Use Case editing (not in the MVP)',
+ 'in.eye':'Workflow · Submission','in.h':'New Use Case',
+ 'in.lead':'Structured form that enforces completeness (objectives, KPIs, MDS, budget, partner). Auto-validation before Steering Committee submission, then <b>automatic handoff to NutriTrials</b> after CEO approval.',
+ 'in.step1':'Objectives & rationale','in.step2':'Scope & site','in.step3':'KPIs & MDS','in.step4':'Budget & partner','in.step5':'Submission',
+ 'in.s1.h':'1 · Objectives & rationale','in.s1.sub':'Why this Use Case? What outcomes are expected?',
+ 'in.f.name':'Use Case name','in.f.name.ph':'e.g. Sulphur deficiency correction on irrigated maize',
+ 'in.f.bu':'Issuing BU','in.f.type':'Trial type',
+ 'in.f.objPrim':'Primary objective','in.f.objPrim.ph':'Quantify the response of…',
+ 'in.f.objSec':'Secondary objectives','in.f.objSec.opt':'(≥2 recommended)',
+ 'in.f.rat':'Scientific / business rationale','in.f.rat.ph':'What problem are we solving? Why now?',
+ 'in.s2.h':'2 · Scope & site','in.s2.sub':'Where, on which crop, with which product?',
+ 'in.f.region':'Target region','in.f.crop':'Crop','in.f.prod':'OCP product tested','in.f.ref':'Compared reference',
+ 'in.f.treat':'Number of treatments','in.f.rep':'Number of replications','in.f.start':'Start date','in.f.end':'Estimated end date',
+ 'in.s3.h':'3 · KPIs & Minimum Data Set','in.s3.sub':'The MDS is mandatory — 12 items to guarantee cross-cycle comparability.',
+ 'in.s3.help':'As you fill in the sections, MDS items will turn green ✓.',
+ 'in.s4.h':'4 · Budget & partner',
+ 'in.f.budget':'Planned budget ($)','in.f.budget.ph':'180000',
+ 'in.f.prio':'Business priority','in.f.partner':'Expected partner',
+ 'in.f.ft':'Fast Track mode','in.f.std':'Standard cycle','in.f.urgent':'Fast Track — urgent',
+ 'in.f.sai':'SA&I lead','in.f.sai.ph':'Anaïs M., Karim T., …',
+ 'in.btn.cancel':'← Cancel','in.btn.draft':'💾 Save as draft','in.btn.submit':'📨 Submit to Steering Committee',
+ 'in.toast.draft':'💾 Draft saved (mock)','in.toast.submit':'📨 Submitted to Steering Committee (mock)',
+ 'in.note':'_MVP — real save + dynamic MDS validation arrive in V1.1._',
+ 'cal.eye':'Annual cycle','cal.h':'{y} cycle calendar',
+ 'cal.lead':'Operational timeline: mandatory phases, governance gates, QBR, Fast Track lane. 12-month Gantt view.',
+ 'cal.phase':'Phase','cal.today':'Today:',
+ 'cal.b1':'Annual Trial Cycle launch','cal.b1.s':'SA&I notification + templates',
+ 'cal.b2':'Use Case submission window','cal.b2.s':'All BUs · portfolio entry',
+ 'cal.b3':'Trial Steering Committee · Gate 1','cal.b3.s':'Design & readiness review',
+ 'cal.b4':'CEO Portfolio Approval · Gate 2','cal.b4.s':'Annual portfolio + budget',
+ 'cal.b5':'Trial readiness & contracting','cal.b5.s':'Protocols, sites, partners',
+ 'cal.b6':'Execution — Season 1 trials','cal.b6.s':'Field operations, monitoring',
+ 'cal.b7':'Monitoring Committee · Monthly rolling','cal.b7.s':'Evidence review · BU rotation',
+ 'cal.b8':'QBR portfolio refresh','cal.b8.s':'Mid-cycle agility check',
+ 'cal.b9':'Fast Track lane','cal.b9.s':'Exceptional urgent requests',
+ 'cal.b10':'Adoption decision + Closure','cal.b10.s':'Go/Hold/Kill + knowledge capture',
+ 'gov.eye':'Governance','gov.h':'Committees & RACI',
+ 'gov.lead':'Visibility on upcoming committees, what they have to review, and the official Trial Management Framework RACI matrix.',
+ 'gov.steering.h':'⚖️ Trial Steering Committee','gov.steering.sub':'— Gate 1 · Design & readiness',
+ 'gov.steering.when':'Next session: <b style="color:var(--ink)">{date}</b>',
+ 'gov.steering.cnt':'{n} cases on the agenda',
+ 'gov.ceo.h':'🏛️ CEO Portfolio Approval','gov.ceo.sub':'— Gate 2 · Annual portfolio',
+ 'gov.ceo.when':'Next decision: <b style="color:var(--ink)">{date}</b>',
+ 'gov.ceo.empty':'No pending case.',
+ 'gov.monitor.h':'🔁 Scientific Monitoring Committee','gov.monitor.sub':'— Gate 3 · Monthly rolling, BU rotation',
+ 'gov.monitor.cnt':'{n} trials under continuous review · monthly BU rotation.',
+ 'gov.tbl.month':'Month','gov.tbl.bu':'Presenting BU','gov.tbl.ucs':'UCs presented','gov.tbl.decisions':'Expected decisions',
+ 'gov.raci.h':'🎯 RACI Matrix','gov.raci.sub':'— excerpt from the Trial Management Framework',
+ 'gov.act.open':'Open →',
+ 'ft.eye':'Exception · Fast Track','ft.h':'🚀 Fast Track requests',
+ 'ft.lead':'Urgent requests outside the annual cycle — Chief/EVP approval + acknowledgment from the Scientific Monitoring Committee. Accelerated SLA, enhanced traceability.',
+ 'ft.k1':'Active Fast Tracks','ft.k1.sub':'Outside the annual cycle',
+ 'ft.k2':'Average SLA','ft.k2.sub':'vs 90 d standard cycle',
+ 'ft.k3':'Committed budget','ft.k3.sub':'{y} cycle',
+ 'ft.k4':'Go rate','ft.k4.sub':'Closed FT decisions',
+ 'ft.wf.h':'Fast Track workflow','ft.wf.sub':'— exception to the annual cycle',
+ 'ft.wf.1':'1 · Urgency identified','ft.wf.2':'2 · Chief/EVP validation','ft.wf.3':'3 · Monitoring Committee ack','ft.wf.4':'4 · Protocol & readiness','ft.wf.5':'5 · Execution → Decision',
+ 'ft.list.h':'Fast Track requests — {y} cycle ({n})','ft.list.empty':'No active Fast Track right now.',
+ 'kb.eye':'Knowledge capture','kb.h':'Closure & Knowledge Base',
+ 'kb.lead':'All closure briefs from the previous cycle — learnings, validated methodologies, reads to revisit. Indexed for the next cycle.',
+ 'kb.filt.all':'All','kb.filt.go':'Go','kb.filt.hold':'Hold','kb.filt.kill':'Kill','kb.export':'⤓ Export PDF',
+ 'kb.l.go':'Yield uplift confirmed (+{p}%). Robust MDS protocol — recommendation: regional rollout.',
+ 'kb.l.hold':'Strong site effect — between-site variance > 20%. To resume with balanced block design.',
+ 'kb.l.kill':'Hypothesis not confirmed. Inputs: weather variability + partner protocol non-compliance. Do NOT replicate as-is.',
+ 'kb.empty':'No closures on this cycle yet.',
+ 'adm.eye':'Reference data','adm.h':'Admin · Reference data',
+ 'adm.lead':'Shared reference data: BUs, regions, crops, products, partners, MDS, statuses, trial types. Source of truth for the whole system.',
+ 'adm.bu.h':'🏢 Business Units ({n})','adm.bu.code':'Code','adm.bu.name':'Name','adm.bu.regions':'Regions',
+ 'adm.crops.h':'🌾 Crops ({n})','adm.prods.h':'🧪 OCP products ({n})',
+ 'adm.partners.h':'🤝 Partners ({n})','adm.partners.nm':'Partner','adm.partners.typ':'Type',
+ 'adm.mds.h':'📋 Minimum Data Set (12 items)',
+ 'chat.h':'D²nAI bot','chat.sub':'Chat with your Trial data',
+ 'chat.close':'Close',
+ 'chat.input.ph':'Ask in natural language — e.g. "Which NPK demos in Africa are at risk?"',
+ 'chat.meta':'D²nAI bot · answers from your Trial portfolio',
+ 'chat.sugs.l':'💡 Suggestions',
+ 'chat.greet':'👋 Hi! I\'m the **D²nAI bot** dedicated to NutriPlan — the upstream of **NutriTrials**.\n\nI can:\n- Filter / summarise your Use Cases (by BU, crop, status, TRL…)\n- Detect risks (incomplete MDS, late gates, unconfirmed partners)\n- Prepare a Steering / Monitoring Committee brief\n- Track the handoff to NutriTrials (what shipped, what\'s waiting)\n- Compare past trials vs current cycle\n\nAsk me anything in natural language — I reason over the **{n} Use Cases** in the 2026 cycle.',
+ 'chat.sug1':'Which Use Cases have an incomplete MDS?',
+ 'chat.sug2':'Give me a brief for next week\'s Steering Committee.',
+ 'chat.sug3':'Which NPK demos in Africa are at risk?',
+ 'chat.sug4':'Which Use Cases are ready for the NutriTrials handoff?',
+ 'chat.sug5':'Compare the Brazil vs India portfolios.',
+ 'chat.sug6':'Which Sulphur trials are in execution this quarter?',
+ 'chat.unavail':'⚠️ D²nAI bot unavailable: {e}\n\n_Hint_: check that the AI backend is wired (Settings → NutriPlan AI or CGM Cockpit AI).',
+ 'chat.thinking':'D²nAI bot is thinking…',
+ 'chat.localFb':'I\'m running in degraded mode (the AI backend isn\'t wired on this deployment). Configure it in **Settings → NutriPlan AI** to unlock the full chat-with-data.\n\nIn the meantime, I see **{n} Use Cases** in the portfolio — use the portfolio view or filters to explore.',
+ 'chat.lfb.mds':'⚠️ Use Cases with incomplete MDS (Gate 1 blocker risk):',
+ 'chat.lfb.mds.mode':'\n\n_(Degraded mode — AI backend unreachable.)_',
+ 'chat.lfb.brazil':'🇧🇷 Brazil BU portfolio: **{n} Use Cases**, total budget **{b}**.',
+ 'chat.lfb.sulphur':'☀️ Active Sulphur trials:',
+ 'chat.lfb.handoff':'↗ **NutriTrials handoff**:\n\n- **{ready} approved UCs** ready to be provisioned on nutritrials.ma\n- **{sent} UCs already live** in NutriTrials (execution + monitoring)\n\nUCs awaiting handoff:',
+ 'months':'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec',
+ 'gov.steering.date':'Thursday 25 June 2026 · 2:00–4:30 PM',
+ 'gov.ceo.date':'Friday 3 July 2026',
+ 'gov.month.jan':'January {y}','gov.month.feb':'February {y}','gov.month.mar':'March {y}','gov.month.apr':'April {y}','gov.month.may':'May {y}','gov.month.jun':'June {y}',
+ 'gov.bu.jan':'Africa BU','gov.bu.feb':'Brazil BU','gov.bu.mar':'India BU','gov.bu.apr':'Europe BU','gov.bu.may':'North America BU','gov.bu.jun':'Asia-Pacific BU',
+ 'gov.dec.jan':'2 Go decisions expected','gov.dec.feb':'1 Hold review','gov.dec.mar':'Cross-site consolidation','gov.dec.apr':'Closure 2025 — final reports','gov.dec.may':'Iowa drip-line pilot','gov.dec.jun':'Monsoon stress trials',
+ 'gov.step.1':'1 · Launch Annual Trial Cycle','gov.step.2':'2 · Use Case definition & drafting','gov.step.3':'3 · Final Proposal Consolidation','gov.step.4':'4 · Trial Steering Committee','gov.step.5':'5 · CEO Validation','gov.step.6':'6 · Trial Readiness & Contracting','gov.step.7':'7 · Execution & Data Collection','gov.step.8':'8 · Analysis & Result Validation','gov.step.9':'9 · Monitoring Committee','gov.step.10':'10 · Adoption Decision','gov.step.11':'11 · Closure & Knowledge Sharing',
+ 'gov.raci.r':'Responsible','gov.raci.a':'Accountable','gov.raci.c':'Consulted','gov.raci.i':'Informed',
+ 'gov.act':'Step','gov.role.sai':'SA&I','gov.role.bu':'BUs / Regions','gov.role.sf':'Support Fns','gov.role.gv':'Governance','gov.role.ceo':'CEO',
+ 'badge.opt':'OPTIONAL','badge.req':'MANDATORY','badge.ft':'🚀 Fast Track',
+ 'pf.kn.empty.dot':'∅',
+ 'date':'en-GB'
+},
+pt:{
+ 'side.tag':'Plan & Govern · ↗ NutriTrials',
+ 'side.foot':'sincronizado com NutriTrials',
+ 'nav.sec.pilot':'Pilotagem','nav.sec.work':'Workflows','nav.sec.cap':'Capitalização',
+ 'nav.cockpit':'Cockpit','nav.cockpit.cr':'Cockpit',
+ 'nav.portfolio':'Portfólio','nav.portfolio.cr':'Portfólio de trials',
+ 'nav.calendar':'Ciclo anual','nav.calendar.cr':'Ciclo anual · Calendário',
+ 'nav.gov':'Governança','nav.gov.cr':'Comitês & governança',
+ 'nav.intake':'Novo Use Case','nav.intake.cr':'Novo Use Case',
+ 'nav.ft':'Fast Track','nav.ft.cr':'Fast Track',
+ 'nav.kb':'Closure & KB','nav.kb.cr':'Closure & Knowledge Base',
+ 'nav.adm':'Catálogos','nav.adm.cr':'Catálogos · Admin',
+ 'tb.search.ph':'Buscar Use Case, parceiro, BU…',
+ 'tb.intake':'+ Novo Use Case',
+ 'tb.role':'Global Head Data & AI',
+ 'cycle':'Ciclo',
+ 'st.draft':'Rascunho','st.submitted':'Enviado','st.steering':'Em Steering','st.ceo':'CEO pendente',
+ 'st.approved':'Aprovado','st.execution':'Em execução','st.monitoring':'Monitoring',
+ 'st.closed-go':'Fechado · Go','st.closed-hold':'Fechado · Hold','st.closed-kill':'Fechado · Kill',
+ 'typ.scientific':'Scientific','typ.scientific.dd':'Gerar conhecimento científico novo (TRL 2–4)',
+ 'typ.applied':'Applied','typ.applied.dd':'Validar a performance do produto (TRL 5–8)',
+ 'typ.demo':'Demo','typ.demo.dd':'Demonstrar valor em condições de farmer (TRL 7–9)',
+ 'prio.high':'Alta','prio.med':'Média','prio.low':'Baixa',
+ 'ck.hero.m1':'⚡ Ciclo {y} · {n} trials ativos',
+ 'ck.hero.m2':'{nb} BUs · {nr} regiões',
+ 'ck.hero.m3':'↗ Conectado a NutriTrials',
+ 'ck.hero.h':'Plan & Govern — a camada de planejamento que fecha o ciclo NutriTrials',
+ 'ck.hero.p':'Ciclo anual · Use Case intake · Steering & CEO gates · Fast Track · IA Q&A — tudo o que acontece <b>antes</b> dos trials caírem no NutriTrials. Plataforma única de referência, realmente end-to-end.',
+ 'ck.hs.actif':'Portfólio ativo','ck.hs.actif.d':'{n} em validação',
+ 'ck.hs.budget':'Orçamento ciclo {y}','ck.hs.budget.d':'Alocação ponderada por BU',
+ 'ck.hs.goRate':'Go rate (closed)','ck.hs.goRate.d':'{n} decisões Go acumuladas',
+ 'ck.k.submitted':'Enviado','ck.k.submitted.d':'Aguardando Steering',
+ 'ck.k.steering':'Em Steering','ck.k.steering.d':'Revisão Gate 1',
+ 'ck.k.ceo':'CEO pendente','ck.k.ceo.d':'Gate 2 portfólio',
+ 'ck.k.exec':'Em execução','ck.k.exec.d':'Campo + monitoring',
+ 'ck.k.unit':'UCs',
+ 'ck.alerts.h':'🔥 Alertas & escalações','ck.alerts.sub':'— problemas detectados no seu portfólio',
+ 'ck.alerts.allOk':'Tudo sob controle ✓',
+ 'ck.act.h':'📝 Atividade recente',
+ 'ck.bridge.h':'↗ Bridge NutriTrials','ck.bridge.sub':'— handoff automático para a plataforma de execução',
+ 'ck.bridge.p':'Quando um Use Case passa pelo Gate CEO, NutriPlan provisiona automaticamente o trial em <b style="color:var(--green-800)">NutriTrials</b> (protocolo, MDS, parceiro, KPIs). Sem retrabalho. Os resultados voltam para alimentar o Monitoring Committee e a KB.',
+ 'ck.bridge.k1':'📤 Handoffs enviados (ciclo)','ck.bridge.d1':'→ provisionados em NutriTrials',
+ 'ck.bridge.k2':'⏳ Aguardando handoff','ck.bridge.d2':'aprovados · prontos para NutriTrials',
+ 'ck.bridge.k3':'🔄 Resultados recebidos','ck.bridge.d3':'dados + KPIs vindos de NutriTrials',
+ 'ck.bridge.k4':'🌐 Plataforma','ck.bridge.d4':'plataforma única de referência',
+ 'ck.heat.h':'🌍 Cobertura do portfólio — BU × Cultura','ck.heat.sub':'— intensidade = número de Use Cases',
+ 'ck.bus.h':'🏢 Top BUs emissoras',
+ 'ck.bus.bu':'BU','ck.bus.ucs':'Use Cases','ck.bus.budget':'Orçamento total','ck.bus.status':'Status dominante','ck.bus.lead':'SA&I lead',
+ 'ck.alert.late':'{id} aguardando Steering Committee há 14 dias',
+ 'ck.alert.late.ctx':'{name} — {bu} · priorizar','ck.alert.late.cta':'Abrir',
+ 'ck.alert.mds':'{id} — MDS incompleto ({n}/12)',
+ 'ck.alert.mds.ctx':'Risco de bloqueio no Gate 1 — {miss} ausentes','ck.alert.mds.cta':'Completar',
+ 'ck.alert.ft':'Fast Track pendente — {id}',
+ 'ck.alert.ft.ctx':'{name} · Justification Note aguardando o Scientific Monitoring Committee','ck.alert.ft.cta':'Revisar',
+ 'pf.eye':'Portfólio','pf.h':'{n} Use Cases no ciclo {y}',
+ 'pf.lead':'Selecione, filtre, drill-down em qualquer UC. Alterne entre Kanban (por status de gate) e Tabela (por BU / cultura / orçamento). Os UCs <b>approved</b>+ são auto-provisionados em <a href="https://nutritrials.ma" target="_blank" rel="noopener">NutriTrials</a>.',
+ 'pf.v.kanban':'⊟ Kanban','pf.v.table':'⊞ Tabela',
+ 'pf.filt.type':'Tipo','pf.filt.bu':'BU','pf.filt.status':'Status','pf.filt.all':'todos','pf.filt.reset':'↺ Reset',
+ 'pf.kn.draft':'Rascunho','pf.kn.submitted':'Enviado','pf.kn.gates':'Gates','pf.kn.approved':'Aprovado','pf.kn.inflight':'Em andamento','pf.kn.closed':'Fechado',
+ 'pf.kn.empty':'vazio',
+ 'pf.tbl.id':'ID','pf.tbl.uc':'Use Case','pf.tbl.bureg':'BU · Região','pf.tbl.cropprod':'Cultura · Produto','pf.tbl.type':'Tipo','pf.tbl.status':'Status','pf.tbl.budget':'Orçamento','pf.tbl.partner':'Parceiro','pf.tbl.sai':'SA&I','pf.tbl.upd':'Atual.',
+ 'pf.tbl.empty':'Nenhum Use Case corresponde aos filtros.',
+ 'uc.start':'Início previsto','uc.end':'Fechamento previsto','uc.budget':'Orçamento alocado','uc.partner':'Parceiro','uc.sai':'SA&I Lead',
+ 'uc.plan':'Plano experimental','uc.plan.fmt':'{t} tratamentos × {r} repetições',
+ 'uc.objP':'Objetivo primário','uc.objS':'Objetivos secundários','uc.kpiP':'KPIs primários','uc.kpiS':'KPIs secundários','uc.risks':'Riscos identificados',
+ 'uc.gates':'Gates de governança','uc.mds':'Minimum Data Set ({n}/12)',
+ 'uc.go':'✓ GO','uc.hold':'⏸ HOLD','uc.kill':'✗ KILL',
+ 'uc.close':'Fechar','uc.ai':'🤖 Perguntar ao D²nAI bot','uc.openNT':'↗ Abrir em NutriTrials','uc.edit':'✎ Editar',
+ 'uc.edit.toast':'🛠 V2 — edição de Use Case (não implementado no MVP)',
+ 'in.eye':'Workflow · Envio','in.h':'Novo Use Case',
+ 'in.lead':'Formulário estruturado que força a completude (objetivos, KPIs, MDS, orçamento, parceiro). Validação automática antes do envio ao Steering Committee, depois <b>handoff automático para NutriTrials</b> após aprovação CEO.',
+ 'in.step1':'Objetivos & rationale','in.step2':'Escopo & site','in.step3':'KPIs & MDS','in.step4':'Orçamento & parceiro','in.step5':'Envio',
+ 'in.s1.h':'1 · Objetivos & rationale','in.s1.sub':'Por que este Use Case? Que resultados são esperados?',
+ 'in.f.name':'Nome do Use Case','in.f.name.ph':'Ex: Sulphur deficiency correction on irrigated maize',
+ 'in.f.bu':'BU emissora','in.f.type':'Tipo de trial',
+ 'in.f.objPrim':'Objetivo primário','in.f.objPrim.ph':'Quantificar a resposta de…',
+ 'in.f.objSec':'Objetivos secundários','in.f.objSec.opt':'(≥2 recomendados)',
+ 'in.f.rat':'Rationale científico / business','in.f.rat.ph':'Que problema endereçar? Por que agora?',
+ 'in.s2.h':'2 · Escopo & site','in.s2.sub':'Onde, em qual cultura, com qual produto?',
+ 'in.f.region':'Região alvo','in.f.crop':'Cultura','in.f.prod':'Produto OCP testado','in.f.ref':'Referência comparada',
+ 'in.f.treat':'Nº de tratamentos','in.f.rep':'Nº de repetições','in.f.start':'Data de início','in.f.end':'Data estimada de fechamento',
+ 'in.s3.h':'3 · KPIs & Minimum Data Set','in.s3.sub':'O MDS é obrigatório — 12 itens para garantir comparabilidade entre ciclos.',
+ 'in.s3.help':'À medida que você preenche, os itens MDS ficam verdes ✓.',
+ 'in.s4.h':'4 · Orçamento & parceiro',
+ 'in.f.budget':'Orçamento previsto ($)','in.f.budget.ph':'180000',
+ 'in.f.prio':'Prioridade business','in.f.partner':'Parceiro previsto',
+ 'in.f.ft':'Modo Fast Track','in.f.std':'Ciclo padrão','in.f.urgent':'Fast Track — urgente',
+ 'in.f.sai':'SA&I lead','in.f.sai.ph':'Anaïs M., Karim T., …',
+ 'in.btn.cancel':'← Cancelar','in.btn.draft':'💾 Salvar rascunho','in.btn.submit':'📨 Enviar ao Steering Committee',
+ 'in.toast.draft':'💾 Rascunho salvo (mock)','in.toast.submit':'📨 Enviado ao Steering Committee (mock)',
+ 'in.note':'_MVP — o save real + validação dinâmica do MDS chegam na V1.1._',
+ 'cal.eye':'Ciclo anual','cal.h':'Calendário do ciclo {y}',
+ 'cal.lead':'Timeline operacional: fases obrigatórias, gates de governança, QBR, Fast Track lane. Visão Gantt 12 meses.',
+ 'cal.phase':'Fase','cal.today':'Hoje:',
+ 'cal.b1':'Lançamento do ciclo anual','cal.b1.s':'Notificação SA&I + templates',
+ 'cal.b2':'Janela de submissão de Use Cases','cal.b2.s':'Todas as BUs · entrada no portfólio',
+ 'cal.b3':'Trial Steering Committee · Gate 1','cal.b3.s':'Revisão de design & readiness',
+ 'cal.b4':'Aprovação CEO do portfólio · Gate 2','cal.b4.s':'Portfólio anual + orçamento',
+ 'cal.b5':'Trial readiness & contratos','cal.b5.s':'Protocolos, sites, parceiros',
+ 'cal.b6':'Execução — trials temporada 1','cal.b6.s':'Operações de campo, monitoring',
+ 'cal.b7':'Monitoring Committee · Rolling mensal','cal.b7.s':'Revisão de evidência · rotação BUs',
+ 'cal.b8':'QBR refresh do portfólio','cal.b8.s':'Mid-cycle agility check',
+ 'cal.b9':'Fast Track lane','cal.b9.s':'Demandas urgentes excepcionais',
+ 'cal.b10':'Decisão de adoção + Closure','cal.b10.s':'Go/Hold/Kill + knowledge capture',
+ 'gov.eye':'Governança','gov.h':'Comitês & RACI',
+ 'gov.lead':'Visibilidade dos comitês futuros, o que precisam revisar, e a matriz RACI oficial do Trial Management Framework.',
+ 'gov.steering.h':'⚖️ Trial Steering Committee','gov.steering.sub':'— Gate 1 · Design & readiness',
+ 'gov.steering.when':'Próxima sessão: <b style="color:var(--ink)">{date}</b>',
+ 'gov.steering.cnt':'{n} dossiês na pauta',
+ 'gov.ceo.h':'🏛️ CEO Portfolio Approval','gov.ceo.sub':'— Gate 2 · Portfólio anual',
+ 'gov.ceo.when':'Próxima decisão: <b style="color:var(--ink)">{date}</b>',
+ 'gov.ceo.empty':'Nenhum dossiê pendente.',
+ 'gov.monitor.h':'🔁 Scientific Monitoring Committee','gov.monitor.sub':'— Gate 3 · Rolling mensal, rotação BU',
+ 'gov.monitor.cnt':'{n} trials em revisão contínua · rotação BU mensal.',
+ 'gov.tbl.month':'Mês','gov.tbl.bu':'BU apresentadora','gov.tbl.ucs':'UCs apresentados','gov.tbl.decisions':'Decisões esperadas',
+ 'gov.raci.h':'🎯 Matriz RACI','gov.raci.sub':'— extraída do Trial Management Framework',
+ 'gov.act.open':'Abrir →',
+ 'ft.eye':'Exceção · Fast Track','ft.h':'🚀 Fast Track requests',
+ 'ft.lead':'Demandas urgentes fora do ciclo anual — aprovação Chief/EVP + acknowledgment do Scientific Monitoring Committee. SLA acelerado, rastreabilidade reforçada.',
+ 'ft.k1':'Fast Tracks ativos','ft.k1.sub':'Fora do ciclo anual',
+ 'ft.k2':'SLA médio','ft.k2.sub':'vs 90 d ciclo padrão',
+ 'ft.k3':'Orçamento comprometido','ft.k3.sub':'Ciclo {y}',
+ 'ft.k4':'Go rate','ft.k4.sub':'Decisões FT fechadas',
+ 'ft.wf.h':'Workflow Fast Track','ft.wf.sub':'— exceção ao ciclo anual',
+ 'ft.wf.1':'1 · Identificação da urgência','ft.wf.2':'2 · Validação Chief/EVP','ft.wf.3':'3 · Monitoring Committee ack','ft.wf.4':'4 · Protocolo & readiness','ft.wf.5':'5 · Execução → Decisão',
+ 'ft.list.h':'Fast Track requests — ciclo {y} ({n})','ft.list.empty':'Nenhum Fast Track ativo no momento.',
+ 'kb.eye':'Capitalização','kb.h':'Closure & Knowledge Base',
+ 'kb.lead':'Todos os relatórios de fechamento do ciclo anterior — aprendizados, metodologias validadas, leituras a retomar. Indexados para o próximo ciclo.',
+ 'kb.filt.all':'Todos','kb.filt.go':'Go','kb.filt.hold':'Hold','kb.filt.kill':'Kill','kb.export':'⤓ Exportar PDF',
+ 'kb.l.go':'Uplift de rendimento confirmado (+{p}%). Protocolo MDS robusto — recomendação: rollout regional.',
+ 'kb.l.hold':'Efeito de site marcado — variância entre sites > 20%. Retomar com design em blocos balanceados.',
+ 'kb.l.kill':'Hipótese não confirmada. Inputs: variabilidade meteorológica + não conformidade do parceiro. NÃO replicar como está.',
+ 'kb.empty':'Sem fechamentos neste ciclo ainda.',
+ 'adm.eye':'Catálogos','adm.h':'Admin · Catálogos',
+ 'adm.lead':'Catálogos de referência compartilhados: BUs, regiões, culturas, produtos, parceiros, MDS, statuses, tipos de trial. Source of truth para todo o sistema.',
+ 'adm.bu.h':'🏢 Business Units ({n})','adm.bu.code':'Código','adm.bu.name':'Nome','adm.bu.regions':'Regiões',
+ 'adm.crops.h':'🌾 Culturas ({n})','adm.prods.h':'🧪 Produtos OCP ({n})',
+ 'adm.partners.h':'🤝 Parceiros ({n})','adm.partners.nm':'Parceiro','adm.partners.typ':'Tipo',
+ 'adm.mds.h':'📋 Minimum Data Set (12 itens)',
+ 'chat.h':'D²nAI bot','chat.sub':'Chat with your Trial data',
+ 'chat.close':'Fechar',
+ 'chat.input.ph':'Pergunte em linguagem natural — ex: "Quais demos NPK na África estão em risco?"',
+ 'chat.meta':'D²nAI bot · responde sobre os dados do portfólio de trials',
+ 'chat.sugs.l':'💡 Sugestões',
+ 'chat.greet':'👋 Olá! Sou o **D²nAI bot** dedicado ao NutriPlan — o planejamento de **NutriTrials**.\n\nPosso:\n- Filtrar / resumir seus Use Cases (por BU, cultura, status, TRL…)\n- Detectar riscos (MDS incompleto, gates atrasados, parceiros não confirmados)\n- Preparar um briefing Steering / Monitoring Committee\n- Rastrear o handoff para NutriTrials (o que foi enviado, o que está aguardando)\n- Comparar trials passados vs ciclo atual\n\nPergunte tudo em linguagem natural — raciocino sobre os **{n} Use Cases** do ciclo 2026.',
+ 'chat.sug1':'Quais Use Cases têm um MDS incompleto?',
+ 'chat.sug2':'Me dê um briefing do Steering Committee da semana que vem.',
+ 'chat.sug3':'Quais demos NPK na África estão em risco?',
+ 'chat.sug4':'Quais Use Cases estão prontos para o handoff NutriTrials?',
+ 'chat.sug5':'Compare o portfólio Brazil vs India.',
+ 'chat.sug6':'Quais trials Sulphur estão em execução neste trimestre?',
+ 'chat.unavail':'⚠️ D²nAI bot indisponível: {e}\n\n_Dica_: verifique se a configuração da IA está conectada (Settings → NutriPlan AI ou CGM Cockpit AI).',
+ 'chat.thinking':'D²nAI bot is thinking…',
+ 'chat.localFb':'Estou em modo degradado (o backend AI não está conectado nesta implementação). Configure-o em **Settings → NutriPlan AI** para liberar o chat-with-data real.\n\nEnquanto isso, vejo **{n} Use Cases** no portfólio — use a portfolio view ou os filtros para explorar.',
+ 'chat.lfb.mds':'⚠️ Use Cases com MDS incompleto (risco de bloqueio no Gate 1):',
+ 'chat.lfb.mds.mode':'\n\n_(Modo degradado — backend AI inacessível.)_',
+ 'chat.lfb.brazil':'🇧🇷 Portfólio Brazil BU: **{n} Use Cases**, orçamento total **{b}**.',
+ 'chat.lfb.sulphur':'☀️ Trials Sulphur ativos:',
+ 'chat.lfb.handoff':'↗ **Handoff NutriTrials**:\n\n- **{ready} UCs aprovados** prontos para serem provisionados em nutritrials.ma\n- **{sent} UCs já ativos** em NutriTrials (execução + monitoring)\n\nUCs aguardando handoff:',
+ 'months':'Jan,Fev,Mar,Abr,Mai,Jun,Jul,Ago,Set,Out,Nov,Dez',
+ 'gov.steering.date':'quinta-feira 25 de junho de 2026 · 14:00–16:30',
+ 'gov.ceo.date':'sexta-feira 3 de julho de 2026',
+ 'gov.month.jan':'Janeiro {y}','gov.month.feb':'Fevereiro {y}','gov.month.mar':'Março {y}','gov.month.apr':'Abril {y}','gov.month.may':'Maio {y}','gov.month.jun':'Junho {y}',
+ 'gov.bu.jan':'Africa BU','gov.bu.feb':'Brazil BU','gov.bu.mar':'India BU','gov.bu.apr':'Europe BU','gov.bu.may':'North America BU','gov.bu.jun':'Asia-Pacific BU',
+ 'gov.dec.jan':'2 decisões Go esperadas','gov.dec.feb':'1 Hold review','gov.dec.mar':'Consolidação cross-site','gov.dec.apr':'Closure 2025 — relatórios finais','gov.dec.may':'Piloto Iowa drip-line','gov.dec.jun':'Trials monsoon stress',
+ 'gov.step.1':'1 · Lançar ciclo anual','gov.step.2':'2 · Definição & redação de Use Cases','gov.step.3':'3 · Consolidação final das propostas','gov.step.4':'4 · Trial Steering Committee','gov.step.5':'5 · Validação CEO','gov.step.6':'6 · Readiness & contratos','gov.step.7':'7 · Execução & coleta de dados','gov.step.8':'8 · Análise & validação dos resultados','gov.step.9':'9 · Monitoring Committee','gov.step.10':'10 · Decisão de adoção','gov.step.11':'11 · Closure & knowledge sharing',
+ 'gov.raci.r':'Responsible','gov.raci.a':'Accountable','gov.raci.c':'Consulted','gov.raci.i':'Informed',
+ 'gov.act':'Etapa','gov.role.sai':'SA&I','gov.role.bu':'BUs / Regiões','gov.role.sf':'Support Fns','gov.role.gv':'Governança','gov.role.ceo':'CEO',
+ 'badge.opt':'OPCIONAL','badge.req':'OBRIGATÓRIO','badge.ft':'🚀 Fast Track',
+ 'pf.kn.empty.dot':'∅',
+ 'date':'pt-BR'
+}
+};
+const LS_LANG = 'nplan_lang_v1';
+function detectLang(){
+  try{ const v=localStorage.getItem(LS_LANG); if(v && T[v]) return v; }catch(e){}
+  const q=new URLSearchParams(location.search).get('lang'); if(q && T[q]) return q;
+  const n=(navigator.language||'fr').slice(0,2).toLowerCase(); return T[n]?n:'fr';
+}
+let LANG = detectLang();
+function tr(k, fb){
+  const v = (T[LANG] && T[LANG][k]); if(v!==undefined) return v;
+  if(fb!==undefined) return fb;
+  return k;
+}
+function trf(k, params){
+  let s = tr(k);
+  if(params){ Object.keys(params).forEach(p=>{ s = s.split('{'+p+'}').join(params[p]); }); }
+  return s;
+}
+function setLang(l){
+  if(!T[l]) return;
+  LANG = l;
+  try{ localStorage.setItem(LS_LANG, l); }catch(e){}
+  applyLang();
+}
+function applyLang(){
+  document.documentElement.lang = LANG;
+  // static elements with data-k
+  document.querySelectorAll('[data-k]').forEach(el=>{
+    const v = tr(el.dataset.k); if(v!==undefined) el.innerHTML = v;
+  });
+  document.querySelectorAll('[data-kph]').forEach(el=>{
+    const v = tr(el.dataset.kph); if(v!==undefined) el.placeholder = v;
+  });
+  // top bar bits
+  const gs = document.getElementById('globalSearch'); if(gs) gs.placeholder = tr('tb.search.ph');
+  const ti = document.getElementById('btnTopIntake'); if(ti) ti.textContent = tr('tb.intake');
+  const pr = document.getElementById('profRole'); if(pr) pr.textContent = tr('tb.role');
+  // language pills + sidebar foot
+  document.querySelectorAll('.tb-lang button').forEach(b=>b.classList.toggle('on', b.dataset.l===LANG));
+  const sb = document.getElementById('sbBrandTag'); if(sb) sb.textContent = tr('side.tag');
+  // re-render the active view (rebuilds all dynamic strings)
+  renderSidebar();
+  goView(PREFS.view||'cockpit');
+}
+
 const MDS_ITEMS = [
   'Scientific rationale',
   'Treatment hypothesis',
@@ -781,18 +1372,20 @@ function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.
  * --------------------------------------------------------------- */
 function renderSidebar(){
   const host = document.getElementById('sbNav');
-  const counts = portfolioCounts();
   const inSteering = DATA.filter(u=>u.status==='steering').length;
   const draft      = DATA.filter(u=>u.status==='draft').length;
   const fastTrack  = DATA.filter(u=>u.fast_track && u.status!=='closed-go' && u.status!=='closed-kill' && u.status!=='closed-hold').length;
   const closed     = DATA.filter(u=>/^closed-/.test(u.status)).length;
   const badges = { portfolio: DATA.length, intake: draft||null, fasttrack: fastTrack||null, kb: closed||null, governance: inSteering||null };
   host.innerHTML = NAV.map(it => {
-    if(it.sec) return `<div class="sb-section">${it.sec}</div>`;
+    if(it.sec) return `<div class="sb-section">${tr(it.sec)}</div>`;
     const bd = badges[it.id];
     const bdCls = it.id==='governance' && bd ? 'warn' : '';
-    return `<button class="sb-item ${PREFS.view===it.id?'on':''}" data-v="${it.id}" onclick="goView('${it.id}')"><span class="ico">${it.ico}</span><span class="lbl">${it.lbl}</span>${bd?`<span class="badge ${bdCls}">${bd}</span>`:''}</button>`;
+    return `<button class="sb-item ${PREFS.view===it.id?'on':''}" data-v="${it.id}" onclick="goView('${it.id}')"><span class="ico">${it.ico}</span><span class="lbl">${tr(it.lblK)}</span>${bd?`<span class="badge ${bdCls}">${bd}</span>`:''}</button>`;
   }).join('');
+  const sf = document.getElementById('sbFoot');
+  if(sf) sf.innerHTML = `<b style="color:#fff;margin:0 4px">${tr('cycle')} 2026</b> · ${tr('side.foot')}`;
+  const sbTag = document.getElementById('sbBrandTag'); if(sbTag) sbTag.textContent = tr('side.tag');
 }
 function goView(id){
   PREFS.view = id; savePrefs();
@@ -800,7 +1393,7 @@ function goView(id){
   document.getElementById('sc-'+id).classList.add('on');
   document.querySelectorAll('.sb-item').forEach(b=>b.classList.toggle('on', b.dataset.v===id));
   const nav = NAV.find(n=>n.id===id);
-  document.getElementById('crumbs').innerHTML = `<span>NutriPlan</span><span class="sep">/</span><b>${nav?nav.crumb:id}</b>`;
+  document.getElementById('crumbs').innerHTML = `<span>NutriPlan</span><span class="sep">/</span><b>${nav?tr(nav.crumbK):id}</b>`;
   if(id==='cockpit')    renderCockpit();
   if(id==='portfolio')  renderPortfolio();
   if(id==='intake')     renderIntake();
@@ -836,60 +1429,61 @@ function renderCockpit(){
   const alerts = buildAlerts();
   const activity = buildActivity();
 
+  const Y = 2026;
   document.getElementById('sc-cockpit').innerHTML = `
     <div class="ck-hero">
       <div class="ck-hero-meta">
-        <span class="pill">⚡ Cycle 2026 · ${active} trials actifs</span>
-        <span class="pill ghost">${BUS.length} BUs · ${Object.values(REGIONS).flat().length} régions</span>
-        <span class="pill ghost">↗ Branché à NutriTrials</span>
+        <span class="pill">${trf('ck.hero.m1',{y:Y, n:active})}</span>
+        <span class="pill ghost">${trf('ck.hero.m2',{nb:BUS.length, nr:Object.values(REGIONS).flat().length})}</span>
+        <span class="pill ghost">${tr('ck.hero.m3')}</span>
       </div>
-      <h1>Plan &amp; Govern, l'amont qui ferme la boucle NutriTrials</h1>
-      <p>Cycle annuel · Use Case intake · Steering &amp; CEO gates · Fast Track · AI Q&amp;A — tout ce qui se passe <b>avant</b> que les trials atterrissent dans NutriTrials. Single reference platform, vraiment end-to-end.</p>
+      <h1>${tr('ck.hero.h')}</h1>
+      <p>${tr('ck.hero.p')}</p>
       <div class="ck-hero-stats">
-        <div class="ck-hs"><div class="l">Portefeuille actif</div><div class="v">${active}<small>/ ${total}</small></div><div class="d">${inPipe} en cours de validation</div></div>
-        <div class="ck-hs"><div class="l">Budget cycle 2026</div><div class="v">${fmtMoney(totalBudget)}</div><div class="d">Allocation pondérée par BU</div></div>
-        <div class="ck-hs"><div class="l">Go rate (closed)</div><div class="v">${goRate}<small>%</small></div><div class="d">${DATA.filter(u=>u.status==='closed-go').length} décisions Go cumulées</div></div>
+        <div class="ck-hs"><div class="l">${tr('ck.hs.actif')}</div><div class="v">${active}<small>/ ${total}</small></div><div class="d">${trf('ck.hs.actif.d',{n:inPipe})}</div></div>
+        <div class="ck-hs"><div class="l">${trf('ck.hs.budget',{y:Y})}</div><div class="v">${fmtMoney(totalBudget)}</div><div class="d">${tr('ck.hs.budget.d')}</div></div>
+        <div class="ck-hs"><div class="l">${tr('ck.hs.goRate')}</div><div class="v">${goRate}<small>%</small></div><div class="d">${trf('ck.hs.goRate.d',{n:DATA.filter(u=>u.status==='closed-go').length})}</div></div>
       </div>
     </div>
 
     <div class="kpi-grid">
-      ${kpiTile('📚', 'Submitted', c.submitted, 'En attente Steering', 'bar', Math.min(100,(c.submitted/Math.max(1,total))*100))}
-      ${kpiTile('⚖️', 'In Steering', c.steering, 'Gate 1 review', 'bar', Math.min(100,(c.steering/Math.max(1,total))*100))}
-      ${kpiTile('🏛️', 'CEO Pending', c.ceo, 'Gate 2 portfolio', 'bar', Math.min(100,(c.ceo/Math.max(1,total))*100))}
-      ${kpiTile('🌱', 'In Execution', c.execution + c.monitoring, 'Field + monitoring', 'bar', Math.min(100,((c.execution+c.monitoring)/Math.max(1,total))*100))}
+      ${kpiTile('📚', tr('ck.k.submitted'), c.submitted, tr('ck.k.submitted.d'), Math.min(100,(c.submitted/Math.max(1,total))*100))}
+      ${kpiTile('⚖️', tr('ck.k.steering'),  c.steering, tr('ck.k.steering.d'),  Math.min(100,(c.steering/Math.max(1,total))*100))}
+      ${kpiTile('🏛️', tr('ck.k.ceo'),       c.ceo,      tr('ck.k.ceo.d'),       Math.min(100,(c.ceo/Math.max(1,total))*100))}
+      ${kpiTile('🌱', tr('ck.k.exec'),      c.execution + c.monitoring, tr('ck.k.exec.d'), Math.min(100,((c.execution+c.monitoring)/Math.max(1,total))*100))}
     </div>
 
     <div class="row-2c">
       <div class="card">
-        <h3>🔥 Alertes & escalations <span class="sub">— issues détectées sur ton portefeuille</span></h3>
-        ${alerts.map(a=>`<div class="alert ${a.kind}"><span class="ico">${a.ico}</span><div class="b"><b>${escapeHtml(a.title)}</b><span>${escapeHtml(a.ctx)}</span></div><button class="act" onclick="${a.action}">${a.cta} →</button></div>`).join('') || '<div class="muted">Tout est sous contrôle ✓</div>'}
+        <h3>${tr('ck.alerts.h')} <span class="sub">${tr('ck.alerts.sub')}</span></h3>
+        ${alerts.map(a=>`<div class="alert ${a.kind}"><span class="ico">${a.ico}</span><div class="b"><b>${escapeHtml(a.title)}</b><span>${escapeHtml(a.ctx)}</span></div><button class="act" onclick="${a.action}">${escapeHtml(a.cta)} →</button></div>`).join('') || `<div class="muted">${tr('ck.alerts.allOk')}</div>`}
       </div>
       <div class="card">
-        <h3>📝 Activité récente</h3>
+        <h3>${tr('ck.act.h')}</h3>
         <div class="act-line">${activity.map(a=>`<div class="act-it ${a.kind||''}"><b>${escapeHtml(a.title)}</b> <span class="ts">· ${a.when}</span><div class="ctx">${escapeHtml(a.ctx)}</div></div>`).join('')}</div>
       </div>
     </div>
 
     <div class="card">
-      <h3>🌍 Couverture portefeuille — BU × Culture <span class="sub">— intensité = nb de Use Cases</span></h3>
+      <h3>${tr('ck.heat.h')} <span class="sub">${tr('ck.heat.sub')}</span></h3>
       ${renderHeatmap()}
     </div>
 
     <div class="card" style="background:linear-gradient(135deg,#fbfdfb,#f0f6f1);border-color:var(--green-200)">
-      <h3 style="margin-bottom:6px">↗ Bridge NutriTrials <span class="sub">— handoff automatique vers la plateforme d'exécution</span></h3>
-      <p class="muted" style="margin:0 0 14px;font-size:13px">Dès qu'un Use Case passe le Gate CEO, NutriPlan provisionne automatiquement le trial dans <b style="color:var(--green-800)">NutriTrials</b> (protocole, MDS, partenaire, KPIs). Aucune re-saisie. Les résultats remontent en sens inverse pour alimenter le Monitoring Committee et la KB.</p>
+      <h3 style="margin-bottom:6px">${tr('ck.bridge.h')} <span class="sub">${tr('ck.bridge.sub')}</span></h3>
+      <p class="muted" style="margin:0 0 14px;font-size:13px">${tr('ck.bridge.p')}</p>
       <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:0">
-        <div class="kpi" style="cursor:default"><div class="k">📤 Handoff envoyés (cycle)</div><div class="v">${DATA.filter(u=>['execution','monitoring','closed-go','closed-hold','closed-kill'].includes(u.status)).length}</div><div class="d flat">→ provisionnés dans NutriTrials</div></div>
-        <div class="kpi" style="cursor:default"><div class="k">⏳ En attente handoff</div><div class="v">${DATA.filter(u=>u.status==='approved').length}</div><div class="d flat">approved · prêts pour NutriTrials</div></div>
-        <div class="kpi" style="cursor:default"><div class="k">🔄 Résultats reçus</div><div class="v">${DATA.filter(u=>u.status==='monitoring' || /^closed-/.test(u.status)).length}</div><div class="d flat">data + KPIs depuis NutriTrials</div></div>
-        <div class="kpi" style="cursor:default"><div class="k">🌐 Plateforme</div><div class="v" style="font-size:18px;line-height:1.2"><a href="https://nutritrials.ma" target="_blank" rel="noopener" style="color:var(--green-800)">nutritrials.ma ↗</a></div><div class="d flat">single reference platform</div></div>
+        <div class="kpi" style="cursor:default"><div class="k">${tr('ck.bridge.k1')}</div><div class="v">${DATA.filter(u=>['execution','monitoring','closed-go','closed-hold','closed-kill'].includes(u.status)).length}</div><div class="d flat">${tr('ck.bridge.d1')}</div></div>
+        <div class="kpi" style="cursor:default"><div class="k">${tr('ck.bridge.k2')}</div><div class="v">${DATA.filter(u=>u.status==='approved').length}</div><div class="d flat">${tr('ck.bridge.d2')}</div></div>
+        <div class="kpi" style="cursor:default"><div class="k">${tr('ck.bridge.k3')}</div><div class="v">${DATA.filter(u=>u.status==='monitoring' || /^closed-/.test(u.status)).length}</div><div class="d flat">${tr('ck.bridge.d3')}</div></div>
+        <div class="kpi" style="cursor:default"><div class="k">${tr('ck.bridge.k4')}</div><div class="v" style="font-size:18px;line-height:1.2"><a href="https://nutritrials.ma" target="_blank" rel="noopener" style="color:var(--green-800)">nutritrials.ma ↗</a></div><div class="d flat">${tr('ck.bridge.d4')}</div></div>
       </div>
     </div>
 
     <div class="card">
-      <h3>🏢 Top BUs émettrices</h3>
+      <h3>${tr('ck.bus.h')}</h3>
       <div class="tbl-wrap"><table class="tbl">
-        <thead><tr><th>BU</th><th>Use Cases</th><th>Budget total</th><th>Statut majoritaire</th><th>SA&I lead</th></tr></thead>
+        <thead><tr><th>${tr('ck.bus.bu')}</th><th>${tr('ck.bus.ucs')}</th><th>${tr('ck.bus.budget')}</th><th>${tr('ck.bus.status')}</th><th>${tr('ck.bus.lead')}</th></tr></thead>
         <tbody>${buBreakdown.map(b=>{
           const list = DATA.filter(u=>u.bu===b.id);
           const bdg = list.reduce((s,u)=>s+(u.budget||0),0);
@@ -899,34 +1493,47 @@ function renderCockpit(){
           const leads = [...new Set(list.map(u=>u.sai_lead))];
           return `<tr class="t-link" onclick="PREFS.filters={bu:'${b.id}'};goView('portfolio')"><td><span class="av ${b.color}">${b.id}</span> <b>${escapeHtml(b.nm)}</b></td>
             <td class="t-num">${b.n}</td><td class="t-num">${fmtMoney(bdg)}</td>
-            <td>${topSt?`<span class="pill ${topSt.pill}">${topSt.lbl}</span>`:'—'}</td>
+            <td>${topSt?`<span class="pill ${topSt.pill}">${stLbl(topSt)}</span>`:'—'}</td>
             <td class="muted">${leads.slice(0,2).join(', ')}${leads.length>2?` +${leads.length-2}`:''}</td></tr>`;
         }).join('')}</tbody>
       </table></div>
     </div>
   `;
 }
-function kpiTile(ico,k,v,d,_,pct){
+function kpiTile(ico,k,v,d,pct){
   return `<div class="kpi" onclick="goView('portfolio')">
     <div class="k"><span class="ico">${ico}</span>${escapeHtml(k)}</div>
-    <div class="v">${v}<small>UCs</small></div>
+    <div class="v">${v}<small>${tr('ck.k.unit')}</small></div>
     <div class="d flat">${escapeHtml(d)}</div>
-    <div class="bar"><i style="width:0"></i></div>
-  </div>`.replace('width:0',`width:${pct||0}%`);
+    <div class="bar"><i style="width:${pct||0}%"></i></div>
+  </div>`;
 }
 function buildAlerts(){
   const out = [];
   const lateGates = DATA.filter(u=>u.status==='steering').slice(0,3);
   lateGates.forEach(u=>{
-    out.push({ kind:'warn', ico:'⏳', title:`${u.id} en attente de Steering Committee depuis 14 jours`, ctx:`${u.name} — ${buOf(u.bu).nm} · prioriser`, cta:'Ouvrir', action:`openUc('${u.id}')` });
+    out.push({ kind:'warn', ico:'⏳',
+      title: trf('ck.alert.late',{id:u.id}),
+      ctx:   trf('ck.alert.late.ctx',{name:u.name, bu:buOf(u.bu).nm}),
+      cta:   tr('ck.alert.late.cta'),
+      action:`openUc('${u.id}')` });
   });
   const mds = DATA.filter(u=>u.mds_covered && u.mds_covered.length<11 && u.status!=='draft').slice(0,2);
   mds.forEach(u=>{
-    out.push({ kind:'bad', ico:'⚠️', title:`${u.id} — MDS incomplet (${u.mds_covered.length}/12)`, ctx:`Risque de blocage Gate 1 — ${MDS_ITEMS.filter(m=>!u.mds_covered.includes(m)).slice(0,2).join(' · ')} manquants`, cta:'Compléter', action:`openUc('${u.id}')` });
+    const miss = MDS_ITEMS.filter(m=>!u.mds_covered.includes(m)).slice(0,2).join(' · ');
+    out.push({ kind:'bad', ico:'⚠️',
+      title: trf('ck.alert.mds',{id:u.id, n:u.mds_covered.length}),
+      ctx:   trf('ck.alert.mds.ctx',{miss}),
+      cta:   tr('ck.alert.mds.cta'),
+      action:`openUc('${u.id}')` });
   });
   const ftPending = DATA.filter(u=>u.fast_track && u.status==='submitted').slice(0,1);
   ftPending.forEach(u=>{
-    out.push({ kind:'warn', ico:'🚀', title:`Fast Track en attente — ${u.id}`, ctx:`${u.name} · Justification Note à valider par le Scientific Monitoring Committee`, cta:'Réviser', action:`goView('fasttrack')` });
+    out.push({ kind:'warn', ico:'🚀',
+      title: trf('ck.alert.ft',{id:u.id}),
+      ctx:   trf('ck.alert.ft.ctx',{name:u.name}),
+      cta:   tr('ck.alert.ft.cta'),
+      action:`goView('fasttrack')` });
   });
   return out.slice(0,5);
 }
@@ -935,7 +1542,7 @@ function buildActivity(){
     .slice(0,8).map(u=>{
       const st = statusOf(u.status);
       const kind = u.status==='draft'?'':(u.status==='approved'||u.status.startsWith('closed-go')?'':(u.status==='closed-kill'?'bad':(u.status==='steering'||u.status==='ceo'?'warn':'info')));
-      return { title:`${u.id} · ${st.lbl}`, when:fmtDate(u.last_update), ctx:u.name, kind };
+      return { title:`${u.id} · ${stLbl(st)}`, when:fmtDate(u.last_update), ctx:u.name, kind };
     });
 }
 function renderHeatmap(){
@@ -956,24 +1563,23 @@ function renderHeatmap(){
  * 6. PORTFOLIO — Kanban + Table views with filters
  * --------------------------------------------------------------- */
 function renderPortfolio(){
-  const flt = PREFS.filters||{};
   const view = PREFS.portfolioView||'kanban';
   const list = filteredUCs();
   document.getElementById('sc-portfolio').innerHTML = `
-    <div class="eyebrow">Portefeuille</div>
-    <h2 class="h-pg">${list.length} Use Cases du cycle 2026</h2>
-    <p class="lead">Sélectionne, filtre, drill-down. Vue Kanban (par statut de gate) ou Tableau (par BU / culture / budget). Les UCs <b>approved</b>+ sont auto-provisionnés dans <a href="https://nutritrials.ma" target="_blank" rel="noopener">NutriTrials</a>.</p>
+    <div class="eyebrow">${tr('pf.eye')}</div>
+    <h2 class="h-pg">${trf('pf.h',{n:list.length, y:2026})}</h2>
+    <p class="lead">${tr('pf.lead')}</p>
 
     <div class="tool-bar">
       <div class="subnav">
-        <button class="${view==='kanban'?'on':''}" onclick="PREFS.portfolioView='kanban';savePrefs();renderPortfolio()">⊟ Kanban</button>
-        <button class="${view==='table'?'on':''}"  onclick="PREFS.portfolioView='table';savePrefs();renderPortfolio()">⊞ Tableau</button>
+        <button class="${view==='kanban'?'on':''}" onclick="PREFS.portfolioView='kanban';savePrefs();renderPortfolio()">${tr('pf.v.kanban')}</button>
+        <button class="${view==='table'?'on':''}"  onclick="PREFS.portfolioView='table';savePrefs();renderPortfolio()">${tr('pf.v.table')}</button>
       </div>
       <div class="sp"></div>
-      ${chipFilter('Type','type', TYPES.map(t=>[t.id,t.lbl]))}
-      ${chipFilter('BU','bu', BUS.map(b=>[b.id,b.nm]))}
-      ${chipFilter('Statut','status', STATUSES.map(s=>[s.id,s.lbl]))}
-      <button class="btn ghost sm" onclick="PREFS.filters={};savePrefs();renderPortfolio()">↺ Reset</button>
+      ${chipFilter(tr('pf.filt.type'),  'type',   TYPES.map(t=>[t.id, tyLbl(t)]))}
+      ${chipFilter(tr('pf.filt.bu'),    'bu',     BUS.map(b=>[b.id, b.nm]))}
+      ${chipFilter(tr('pf.filt.status'),'status', STATUSES.map(s=>[s.id, stLbl(s)]))}
+      <button class="btn ghost sm" onclick="PREFS.filters={};savePrefs();renderPortfolio()">${tr('pf.filt.reset')}</button>
     </div>
 
     ${view==='kanban' ? renderKanban(list) : renderTable(list)}
@@ -983,7 +1589,7 @@ function chipFilter(label, key, options){
   const v = (PREFS.filters||{})[key];
   const cur = options.find(o=>o[0]===v);
   return `<div class="chip" onclick="cycleFilter('${key}', ${JSON.stringify(options.map(o=>o[0])).replace(/"/g,'&quot;')})">
-    <span style="color:var(--muted)">${label}:</span> <b>${cur?escapeHtml(cur[1]):'tous'}</b>
+    <span style="color:var(--muted)">${label}:</span> <b>${cur?escapeHtml(cur[1]):tr('pf.filt.all')}</b>
     ${v?'<span class="x" onclick="event.stopPropagation();clearFilter(\''+key+'\')">×</span>':''}
   </div>`;
 }
@@ -1006,18 +1612,18 @@ function filteredUCs(){
 }
 function renderKanban(list){
   const cols = [
-    { ids:['draft'],                lbl:'Draft',           dot:'#5c6b62' },
-    { ids:['submitted'],            lbl:'Submitted',       dot:'#1f6c9c' },
-    { ids:['steering','ceo'],       lbl:'Gates',           dot:'#7c5b07' },
-    { ids:['approved'],             lbl:'Approved',        dot:'#15803D' },
-    { ids:['execution','monitoring'],lbl:'In flight',      dot:'#2E7D32' },
-    { ids:['closed-go','closed-hold','closed-kill'], lbl:'Closed', dot:'#103d17' }
+    { ids:['draft'],                                  lblK:'pf.kn.draft',     dot:'#5c6b62' },
+    { ids:['submitted'],                              lblK:'pf.kn.submitted', dot:'#1f6c9c' },
+    { ids:['steering','ceo'],                         lblK:'pf.kn.gates',     dot:'#7c5b07' },
+    { ids:['approved'],                               lblK:'pf.kn.approved',  dot:'#15803D' },
+    { ids:['execution','monitoring'],                 lblK:'pf.kn.inflight',  dot:'#2E7D32' },
+    { ids:['closed-go','closed-hold','closed-kill'],  lblK:'pf.kn.closed',    dot:'#103d17' }
   ];
   return `<div class="kanban">${cols.map(c=>{
     const items = list.filter(u=>c.ids.includes(u.status));
     return `<div class="kn-col">
-      <div class="kn-col-h"><span class="dot" style="background:${c.dot}"></span><span class="nm">${c.lbl}</span><span class="cnt">${items.length}</span></div>
-      <div class="kn-list">${items.map(kanbanCard).join('') || '<div class="empty" style="padding:14px 6px"><div class="big">∅</div>vide</div>'}</div>
+      <div class="kn-col-h"><span class="dot" style="background:${c.dot}"></span><span class="nm">${tr(c.lblK)}</span><span class="cnt">${items.length}</span></div>
+      <div class="kn-list">${items.map(kanbanCard).join('') || `<div class="empty" style="padding:14px 6px"><div class="big">${tr('pf.kn.empty.dot')}</div>${tr('pf.kn.empty')}</div>`}</div>
     </div>`;
   }).join('')}</div>`;
 }
@@ -1027,16 +1633,16 @@ function kanbanCard(u){
     <div class="ttl">${escapeHtml(u.name)}</div>
     <div class="meta"><b>${u.id}</b> · ${escapeHtml(bu.nm)} · ${escapeHtml(u.region)}</div>
     <div class="pills">
-      <span class="pill ${ty.pill}">${ty.lbl}</span>
-      <span class="pill ${pr.pill}">${pr.lbl}</span>
-      ${u.fast_track?`<span class="pill" style="background:#fde7e7;color:#a01f1f">🚀 Fast Track</span>`:''}
+      <span class="pill ${ty.pill}">${tyLbl(ty)}</span>
+      <span class="pill ${pr.pill}">${prLbl(pr)}</span>
+      ${u.fast_track?`<span class="pill" style="background:#fde7e7;color:#a01f1f">${tr('badge.ft')}</span>`:''}
     </div>
     <div class="foot"><span>🌾 ${escapeHtml(u.crop)} · ${escapeHtml(u.product)}</span><span class="sp"></span><span>${fmtMoney(u.budget)}</span></div>
   </div>`;
 }
 function renderTable(list){
   return `<div class="tbl-wrap"><table class="tbl">
-    <thead><tr><th>ID</th><th>Use Case</th><th>BU · Région</th><th>Culture · Produit</th><th>Type</th><th>Statut</th><th>Budget</th><th>Partenaire</th><th>SA&I</th><th>Maj.</th></tr></thead>
+    <thead><tr><th>${tr('pf.tbl.id')}</th><th>${tr('pf.tbl.uc')}</th><th>${tr('pf.tbl.bureg')}</th><th>${tr('pf.tbl.cropprod')}</th><th>${tr('pf.tbl.type')}</th><th>${tr('pf.tbl.status')}</th><th>${tr('pf.tbl.budget')}</th><th>${tr('pf.tbl.partner')}</th><th>${tr('pf.tbl.sai')}</th><th>${tr('pf.tbl.upd')}</th></tr></thead>
     <tbody>${list.map(u=>{
       const st = statusOf(u.status), ty = typeOf(u.type), bu = buOf(u.bu);
       return `<tr class="t-link" onclick="openUc('${u.id}')">
@@ -1044,14 +1650,14 @@ function renderTable(list){
         <td class="t-cell-prim">${escapeHtml(u.name)}<div class="meta">${escapeHtml(u.objective_primary)}</div></td>
         <td><span class="av ${bu.color}">${bu.id}</span> ${escapeHtml(u.region)}</td>
         <td>${escapeHtml(u.crop)} <span class="muted">· ${escapeHtml(u.product)}</span></td>
-        <td><span class="pill ${ty.pill}">${ty.lbl}</span></td>
-        <td><span class="pill ${st.pill}">${st.lbl}</span></td>
+        <td><span class="pill ${ty.pill}">${tyLbl(ty)}</span></td>
+        <td><span class="pill ${st.pill}">${stLbl(st)}</span></td>
         <td class="t-num">${fmtMoney(u.budget)}</td>
         <td>${escapeHtml(u.partner||'—')}</td>
         <td class="muted">${escapeHtml(u.sai_lead||'—')}</td>
         <td class="muted">${fmtDate(u.last_update)}</td>
       </tr>`;
-    }).join('') || '<tr><td colspan="10" class="empty">Aucun Use Case ne correspond aux filtres.</td></tr>'}</tbody>
+    }).join('') || `<tr><td colspan="10" class="empty">${tr('pf.tbl.empty')}</td></tr>`}</tbody>
   </table></div>`;
 }
 
@@ -1068,74 +1674,74 @@ function openUc(id){
   document.getElementById('ucModalBox').innerHTML = `
     <div class="modal-h">
       <div class="ttl">
-        <div class="eye">${u.id} · ${escapeHtml(bu.nm)}${u.fast_track?' · <b style="color:#a01f1f">🚀 Fast Track</b>':''}</div>
+        <div class="eye">${u.id} · ${escapeHtml(bu.nm)}${u.fast_track?' · <b style="color:#a01f1f">'+tr('badge.ft')+'</b>':''}</div>
         <h2>${escapeHtml(u.name)}</h2>
         <div class="meta">
-          <span class="pill ${st.pill}">${st.lbl}</span>
-          <span class="pill ${ty.pill}">${ty.lbl}</span>
-          <span class="pill ${pr.pill}">${pr.lbl}</span>
+          <span class="pill ${st.pill}">${stLbl(st)}</span>
+          <span class="pill ${ty.pill}">${tyLbl(ty)}</span>
+          <span class="pill ${pr.pill}">${prLbl(pr)}</span>
           <span>🌍 ${escapeHtml(u.region)}</span>
           <span>🌾 ${escapeHtml(u.crop)}</span>
           <span>🧪 ${escapeHtml(u.product)}</span>
         </div>
       </div>
-      <button class="x" onclick="closeUc()" title="Fermer">✕</button>
+      <button class="x" onclick="closeUc()" title="${tr('uc.close')}">✕</button>
     </div>
     <div class="modal-body">
       <div>
         <div class="uc-grid">
-          <div class="uc-cell"><div class="lbl">Lancement prévu</div><div class="val">${fmtDate(u.start_date)}</div></div>
-          <div class="uc-cell"><div class="lbl">Clôture prévue</div><div class="val">${fmtDate(u.end_date)}</div></div>
-          <div class="uc-cell"><div class="lbl">Budget alloué</div><div class="val">${fmtMoney(u.budget)}</div></div>
-          <div class="uc-cell"><div class="lbl">Partenaire</div><div class="val">${escapeHtml(u.partner||'—')}</div></div>
-          <div class="uc-cell"><div class="lbl">SA&I Lead</div><div class="val">${escapeHtml(u.sai_lead||'—')}</div></div>
-          <div class="uc-cell"><div class="lbl">Plan expérimental</div><div class="val">${u.treatments} traitements × ${u.replications} répétitions</div></div>
+          <div class="uc-cell"><div class="lbl">${tr('uc.start')}</div><div class="val">${fmtDate(u.start_date)}</div></div>
+          <div class="uc-cell"><div class="lbl">${tr('uc.end')}</div><div class="val">${fmtDate(u.end_date)}</div></div>
+          <div class="uc-cell"><div class="lbl">${tr('uc.budget')}</div><div class="val">${fmtMoney(u.budget)}</div></div>
+          <div class="uc-cell"><div class="lbl">${tr('uc.partner')}</div><div class="val">${escapeHtml(u.partner||'—')}</div></div>
+          <div class="uc-cell"><div class="lbl">${tr('uc.sai')}</div><div class="val">${escapeHtml(u.sai_lead||'—')}</div></div>
+          <div class="uc-cell"><div class="lbl">${tr('uc.plan')}</div><div class="val">${trf('uc.plan.fmt',{t:u.treatments, r:u.replications})}</div></div>
         </div>
 
         <div class="uc-sect">
-          <h4>Objectif primaire</h4>
+          <h4>${tr('uc.objP')}</h4>
           <p>${escapeHtml(u.objective_primary)}</p>
         </div>
         <div class="uc-sect">
-          <h4>Objectifs secondaires</h4>
+          <h4>${tr('uc.objS')}</h4>
           <ul style="margin:4px 0 0 16px;padding:0">${(u.objectives_secondary||[]).map(o=>`<li style="font-size:13.5px;color:var(--ink-2);margin-bottom:4px">${escapeHtml(o)}</li>`).join('')}</ul>
         </div>
         <div class="uc-sect">
-          <h4>KPIs primaires</h4>
+          <h4>${tr('uc.kpiP')}</h4>
           <div class="uc-kpi">${(u.kpis_primary||[]).map(k=>`<div class="it"><div class="k">${escapeHtml(k.k)}</div><div class="v">${escapeHtml(k.target||'—')}</div></div>`).join('')}</div>
         </div>
         <div class="uc-sect">
-          <h4>KPIs secondaires</h4>
+          <h4>${tr('uc.kpiS')}</h4>
           <div class="uc-kpi">${(u.kpis_secondary||[]).map(k=>`<div class="it"><div class="k">${escapeHtml(k.k)}</div><div class="v muted">—</div></div>`).join('')}</div>
         </div>
         <div class="uc-sect">
-          <h4>Risques identifiés</h4>
+          <h4>${tr('uc.risks')}</h4>
           <ul style="margin:4px 0 0 16px;padding:0">${(u.risks||[]).map(r=>`<li style="font-size:13.5px;color:var(--ink-2);margin-bottom:4px">${escapeHtml(r)}</li>`).join('')}</ul>
         </div>
       </div>
       <div>
         <div class="uc-sect" style="margin-top:0">
-          <h4>Gates de gouvernance</h4>
+          <h4>${tr('uc.gates')}</h4>
           <div class="gate-list">${(u.gates||[]).map(g=>{
             const cls = g.status==='done'?'done':(g.status==='current'?'cur':'');
             const decCls = g.decision==='go'?'go':(g.decision==='hold'?'hold':(g.decision==='kill'?'kill':''));
-            const decLbl = g.decision==='go'?'✓ GO':(g.decision==='hold'?'⏸ HOLD':(g.decision==='kill'?'✗ KILL':''));
+            const decLbl = g.decision==='go'?tr('uc.go'):(g.decision==='hold'?tr('uc.hold'):(g.decision==='kill'?tr('uc.kill'):''));
             const icoTxt = g.status==='done'?'✓':(g.status==='current'?'•':' ');
             return `<div class="gate-it ${cls}"><div class="ico">${icoTxt}</div><div class="b"><b>${escapeHtml(g.nm)}</b><span>${escapeHtml(g.kind)} · ${escapeHtml(g.when)}</span>${decLbl?`<div class="dec ${decCls}">${decLbl}</div>`:''}</div></div>`;
           }).join('')}</div>
         </div>
         <div class="uc-sect">
-          <h4>Minimum Data Set (${(u.mds_covered||[]).length}/12)</h4>
+          <h4>${trf('uc.mds',{n:(u.mds_covered||[]).length})}</h4>
           ${mdsList}
         </div>
       </div>
     </div>
     <div class="modal-foot">
-      <button class="btn ghost sm" onclick="closeUc()">Fermer</button>
+      <button class="btn ghost sm" onclick="closeUc()">${tr('uc.close')}</button>
       <span class="sp"></span>
-      ${['execution','monitoring','closed-go','closed-hold','closed-kill','approved'].includes(u.status) ? `<a class="btn ghost sm" href="https://nutritrials.ma" target="_blank" rel="noopener" style="text-decoration:none">↗ Ouvrir dans NutriTrials</a>` : ''}
-      <button class="btn ghost sm" onclick="askAIAbout('${u.id}')">🤖 Demander à D²nAI bot</button>
-      <button class="btn primary sm" onclick="toast('🛠 V2 — édition Use Case (non implémenté dans le MVP)')">✎ Éditer</button>
+      ${['execution','monitoring','closed-go','closed-hold','closed-kill','approved'].includes(u.status) ? `<a class="btn ghost sm" href="https://nutritrials.ma" target="_blank" rel="noopener" style="text-decoration:none">${tr('uc.openNT')}</a>` : ''}
+      <button class="btn ghost sm" onclick="askAIAbout('${u.id}')">${tr('uc.ai')}</button>
+      <button class="btn primary sm" onclick="toast(tr('uc.edit.toast'))">${tr('uc.edit')}</button>
     </div>
   `;
   document.getElementById('ucModal').classList.add('on');
@@ -1158,13 +1764,13 @@ function toggleChat(){
   }
 }
 function chatGreet(){
-  CHAT_HIST.push({ role:'assistant', text:
-    `👋 Salut ! Je suis le **D²nAI bot** dédié à NutriPlan — l'amont de **NutriTrials**.\n\nJe peux :\n- Filtrer / résumer tes Use Cases (par BU, culture, statut, TRL…)\n- Détecter les risques (MDS incomplet, gates en retard, partenaires non confirmés)\n- Préparer un brief Steering / Monitoring Committee\n- Tracer le handoff vers NutriTrials (ce qui est passé en exécution, ce qui attend)\n- Comparer trials passés vs cycle en cours\n\nDemande-moi tout en langage naturel — je raisonne sur les **${DATA.length} Use Cases** du cycle 2026.` });
+  CHAT_HIST.length = 0;
+  CHAT_HIST.push({ role:'assistant', text: trf('chat.greet',{n:DATA.length}) });
   renderChatBody();
 }
 function renderChatBody(){
-  const host = document.getElementById('chatBody');
-  host.innerHTML = CHAT_HIST.map(m=>`<div class="chat-msg ${m.role==='user'?'you':'ai'}${m.thinking?' thinking':''}"><div class="av">${m.role==='user'?'You':'⚡'}</div><div class="bub">${m.thinking?'D²nAI bot is thinking…':_mdToHtml(m.text)}</div></div>`).join('');
+  const host = document.getElementById('chatBody'); if(!host) return;
+  host.innerHTML = CHAT_HIST.map(m=>`<div class="chat-msg ${m.role==='user'?'you':'ai'}${m.thinking?' thinking':''}"><div class="av">${m.role==='user'?'You':'⚡'}</div><div class="bub">${m.thinking?tr('chat.thinking'):_mdToHtml(m.text)}</div></div>`).join('');
   host.scrollTop = host.scrollHeight;
 }
 function _mdToHtml(s){
@@ -1189,16 +1795,9 @@ function _mdToHtml(s){
   return h;
 }
 function renderChatSugs(){
-  const host = document.getElementById('chatSugs');
-  const sugs = [
-    'Quels Use Cases ont un MDS incomplet ?',
-    'Donne-moi un brief du Steering Committee de la semaine prochaine.',
-    'Quels demos NPK en Afrique sont à risque ?',
-    'Quels Use Cases sont prêts au handoff NutriTrials ?',
-    'Compare le portefeuille Brazil vs India.',
-    'Quels trials Soufre sont en exécution ce trimestre ?'
-  ];
-  host.innerHTML = `<div class="l">💡 Suggestions</div>` + sugs.map(s=>`<button onclick="chatAsk(${JSON.stringify(s).replace(/"/g,'&quot;')})">${escapeHtml(s)}</button>`).join('');
+  const host = document.getElementById('chatSugs'); if(!host) return;
+  const sugs = ['chat.sug1','chat.sug2','chat.sug3','chat.sug4','chat.sug5','chat.sug6'].map(k=>tr(k));
+  host.innerHTML = `<div class="l">${tr('chat.sugs.l')}</div>` + sugs.map(s=>`<button onclick="chatAsk(${JSON.stringify(s).replace(/"/g,'&quot;')})">${escapeHtml(s)}</button>`).join('');
 }
 function chatAsk(q){
   document.getElementById('chatInput').value = q;
@@ -1224,7 +1823,7 @@ async function chatSend(){
     CHAT_HIST.push({ role:'assistant', text: reply });
   } catch(e){
     CHAT_HIST.pop();
-    CHAT_HIST.push({ role:'assistant', text: `⚠️ D²nAI bot indisponible : ${e.message}\n\n_Astuce_ : vérifie que la configuration AI est branchée (Réglages → NutriPlan AI ou CGM Cockpit AI).` });
+    CHAT_HIST.push({ role:'assistant', text: trf('chat.unavail',{e:e.message}) });
   } finally {
     document.getElementById('chatSendBtn').disabled = false;
     renderChatBody();
@@ -1263,57 +1862,58 @@ function _buildSystemPrompt(){
     start:u.start_date, end:u.end_date, mds_covered:(u.mds_covered||[]).length,
     obj:u.objective_primary
   }));
-  return `Tu es **D²nAI bot**, le copilote IA dédié à **NutriPlan** — le module Plan & Govern qui s'articule avec **NutriTrials** (la plateforme d'exécution live à nutritrials.ma) pour couvrir le cycle complet de Trial Management chez OCP Nutricrops.
+  const langName = {fr:'French',en:'English',pt:'Brazilian Portuguese'}[LANG] || 'French';
+  return `You are **D²nAI bot**, the AI co-pilot dedicated to **NutriPlan** — the Plan & Govern module that sits on top of **NutriTrials** (the execution platform live at nutritrials.ma) to cover the full Trial Management cycle at OCP Nutricrops.
 
-Positionnement à toujours porter :
-- **NutriPlan = l'amont** : cycle annuel, Use Case intake, Steering Committee, CEO portfolio approval, Fast Track, Monitoring Committee, Closure & KB
-- **NutriTrials = l'aval** : exécution terrain, data capture, dashboards, claims consolidation
-- Le **handoff** est automatique : un Use Case validé par le CEO devient un Trial dans NutriTrials (protocole, MDS, partenaire, KPIs pré-provisionnés)
-- Ensemble = **single reference platform end-to-end** pour l'evidence management agronomique
+Positioning to always carry:
+- **NutriPlan = upstream**: annual cycle, Use Case intake, Steering Committee, CEO portfolio approval, Fast Track, Monitoring Committee, Closure & KB
+- **NutriTrials = downstream**: field execution, data capture, dashboards, claims consolidation
+- **Handoff is automatic**: a CEO-approved Use Case becomes a Trial in NutriTrials (protocol, MDS, partner, KPIs pre-provisioned)
+- Together = **single reference platform end-to-end** for agronomic evidence management
 
-Tu raisonnes EXCLUSIVEMENT sur le portefeuille de Use Cases fourni ci-dessous (cycle 2026). Tu ne dois jamais mentionner les technologies sous-jacentes (Claude, Anthropic, Databricks, modèle, etc) — tu te présentes comme « D²nAI bot ».
+You reason EXCLUSIVELY over the portfolio of Use Cases below (2026 cycle). You must NEVER mention underlying technology (Claude, Anthropic, Databricks, model, etc.) — you introduce yourself as "D²nAI bot".
 
-Style :
-- Réponds en français par défaut (mais switche en anglais ou portugais si la question l'est).
-- Cite TOUJOURS les IDs des Use Cases concernés (format UC-2026-XXX).
-- Utilise du markdown léger : **gras**, listes -, ## titres, tableaux si pertinent.
-- Sois concis et orienté action (recommandations claires).
-- Quand pertinent, mentionne explicitement le **handoff vers NutriTrials** (pour les UCs approved / in execution / monitoring).
+Language: respond in **${langName}** (the current user language is "${LANG}"). If the user explicitly writes in another language, switch.
 
-Contexte process : 10 étapes (Annual Cycle → Use Case → Steering Gate 1 → CEO Gate 2 → Readiness → Execution → Monitoring → Adoption Go/Hold/Kill → Closure). Comités : Trial Steering Committee + Scientific Monitoring Committee. MDS = Minimum Data Set (12 items obligatoires). Trois types : Scientific (TRL 2-4), Applied (TRL 5-8), Demo (TRL 7-9).
+Style:
+- Cite the IDs of relevant Use Cases (format UC-2026-XXX).
+- Use light markdown: **bold**, lists with -, ## headers, tables if relevant.
+- Be concise and action-oriented (clear recommendations).
+- When relevant, explicitly mention the **handoff to NutriTrials** (for UCs in approved / execution / monitoring).
 
-Données — ${rows.length} Use Cases du portefeuille :
+Process context: 10 steps (Annual Cycle → Use Case → Steering Gate 1 → CEO Gate 2 → Readiness → Execution → Monitoring → Adoption Go/Hold/Kill → Closure). Committees: Trial Steering Committee + Scientific Monitoring Committee. MDS = Minimum Data Set (12 mandatory items). Three types: Scientific (TRL 2-4), Applied (TRL 5-8), Demo (TRL 7-9).
+
+Data — ${rows.length} Use Cases in the portfolio:
 
 \`\`\`json
 ${JSON.stringify(rows)}
 \`\`\`
 
-BUs : ${BUS.map(b=>b.id+'='+b.nm).join(' · ')}.
-Statuses : ${STATUSES.map(s=>s.id+'='+s.lbl).join(' · ')}.
+BUs: ${BUS.map(b=>b.id+'='+b.nm).join(' · ')}.
+Statuses (id=labels in ${LANG}): ${STATUSES.map(s=>s.id+'='+stLbl(s)).join(' · ')}.
 
-Réponds maintenant à la question utilisateur.`;
+Now answer the user's question in ${langName}.`;
 }
 function _localFallback(q){
-  // Tiny "smart" fallback when AI backend is unreachable, so the demo always shows something useful.
   const lc = q.toLowerCase();
-  if(/risque|mds|incomplet/.test(lc)){
+  if(/risque|risk|mds|incomplet|incomplete/.test(lc)){
     const list = DATA.filter(u=>(u.mds_covered||[]).length<11 && u.status!=='draft').slice(0,5);
-    return `⚠️ Use Cases avec MDS incomplet (risque de blocage au Gate 1) :\n\n${list.map(u=>`- **${u.id}** — ${u.name} _(MDS ${u.mds_covered.length}/12)_`).join('\n')}\n\n_(Mode dégradé — backend AI non joint.)_`;
+    return tr('chat.lfb.mds') + '\n\n' + list.map(u=>`- **${u.id}** — ${u.name} _(MDS ${u.mds_covered.length}/12)_`).join('\n') + tr('chat.lfb.mds.mode');
   }
   if(/brazil|bresil|brésil/.test(lc)){
     const list = DATA.filter(u=>u.bu==='BRA');
-    return `🇧🇷 Portefeuille Brazil BU : **${list.length} Use Cases**, budget total **${fmtMoney(list.reduce((s,u)=>s+u.budget,0))}**.\n\n${list.slice(0,5).map(u=>`- **${u.id}** — ${u.name} _(${u.status})_`).join('\n')}`;
+    return trf('chat.lfb.brazil',{n:list.length, b:fmtMoney(list.reduce((s,u)=>s+u.budget,0))}) + '\n\n' + list.slice(0,5).map(u=>`- **${u.id}** — ${u.name} _(${u.status})_`).join('\n');
   }
   if(/soufre|sulphur|sulfur/.test(lc)){
     const list = DATA.filter(u=>/sulph|sulfur|soufre/i.test(u.name));
-    return `☀️ Trials Soufre actifs :\n\n${list.map(u=>`- **${u.id}** — ${u.name} _(${u.status})_`).join('\n')}`;
+    return tr('chat.lfb.sulphur') + '\n\n' + list.map(u=>`- **${u.id}** — ${u.name} _(${u.status})_`).join('\n');
   }
   if(/nutritrials|handoff|provisionn/.test(lc)){
     const ready = DATA.filter(u=>u.status==='approved');
     const sent  = DATA.filter(u=>['execution','monitoring'].includes(u.status));
-    return `↗ **Handoff NutriTrials** :\n\n- **${ready.length} UCs approved** prêts à être provisionnés sur nutritrials.ma\n- **${sent.length} UCs déjà actifs** dans NutriTrials (execution + monitoring)\n\nUCs en attente de handoff :\n${ready.slice(0,5).map(u=>`- **${u.id}** — ${u.name}`).join('\n')}`;
+    return trf('chat.lfb.handoff',{ready:ready.length, sent:sent.length}) + '\n' + ready.slice(0,5).map(u=>`- **${u.id}** — ${u.name}`).join('\n');
   }
-  return `Je suis en mode dégradé (le backend AI n'est pas branché sur ce déploiement). Configure-le dans **Réglages → NutriPlan AI** pour libérer le vrai chat-with-data.\n\nEn attendant, je vois **${DATA.length} Use Cases** dans le portefeuille — utilise le portfolio ou les filtres pour les explorer.`;
+  return trf('chat.localFb',{n:DATA.length});
 }
 
 /* -----------------------------------------------------------------
@@ -1321,83 +1921,83 @@ function _localFallback(q){
  * --------------------------------------------------------------- */
 function renderIntake(){
   document.getElementById('sc-intake').innerHTML = `
-    <div class="eyebrow">Workflow · Soumission</div>
-    <h2 class="h-pg">Nouveau Use Case</h2>
-    <p class="lead">Formulaire structuré qui force la complétude (objectifs, KPIs, MDS, budget, partenaire) — fini les Word/PDF/SharePoint/Salesforce reçus à moitié remplis. Validation auto avant soumission au Steering Committee, puis handoff <b>automatique vers NutriTrials</b> après CEO approval.</p>
+    <div class="eyebrow">${tr('in.eye')}</div>
+    <h2 class="h-pg">${tr('in.h')}</h2>
+    <p class="lead">${tr('in.lead')}</p>
     <div class="steps-bar">
-      <div class="s on"><span class="n"><span class="num">1</span></span>Objectifs & rationale</div>
+      <div class="s on"><span class="n"><span class="num">1</span></span>${tr('in.step1')}</div>
       <span class="conn"></span>
-      <div class="s"><span class="n"><span class="num">2</span></span>Périmètre & site</div>
+      <div class="s"><span class="n"><span class="num">2</span></span>${tr('in.step2')}</div>
       <span class="conn"></span>
-      <div class="s"><span class="n"><span class="num">3</span></span>KPIs & MDS</div>
+      <div class="s"><span class="n"><span class="num">3</span></span>${tr('in.step3')}</div>
       <span class="conn"></span>
-      <div class="s"><span class="n"><span class="num">4</span></span>Budget & partenaire</div>
+      <div class="s"><span class="n"><span class="num">4</span></span>${tr('in.step4')}</div>
       <span class="conn"></span>
-      <div class="s"><span class="n"><span class="num">5</span></span>Soumission</div>
+      <div class="s"><span class="n"><span class="num">5</span></span>${tr('in.step5')}</div>
     </div>
 
     <div class="form-section">
-      <h3>1 · Objectifs & rationale</h3>
-      <p class="sub">Pourquoi ce Use Case ? Quels résultats attendus ?</p>
+      <h3>${tr('in.s1.h')}</h3>
+      <p class="sub">${tr('in.s1.sub')}</p>
       <div class="form-grid">
-        <div class="fld full"><label>Nom du Use Case <span class="req">*</span></label><input type="text" placeholder="Ex : Sulphur deficiency correction on irrigated maize"></div>
-        <div class="fld"><label>BU émettrice <span class="req">*</span></label>
+        <div class="fld full"><label>${tr('in.f.name')} <span class="req">*</span></label><input type="text" placeholder="${tr('in.f.name.ph')}"></div>
+        <div class="fld"><label>${tr('in.f.bu')} <span class="req">*</span></label>
           <select>${BUS.map(b=>`<option>${b.nm}</option>`).join('')}</select></div>
-        <div class="fld"><label>Type de trial <span class="req">*</span></label>
-          <select>${TYPES.map(t=>`<option>${t.lbl} — TRL ${t.id==='scientific'?'2-4':(t.id==='applied'?'5-8':'7-9')}</option>`).join('')}</select></div>
-        <div class="fld full"><label>Objectif primaire <span class="req">*</span></label><textarea placeholder="Quantifier la réponse de…"></textarea></div>
-        <div class="fld full"><label>Objectifs secondaires <span class="opt">(≥2 recommandés)</span></label><textarea placeholder="1. …\n2. …\n3. …"></textarea></div>
-        <div class="fld full"><label>Rationale scientifique / business <span class="req">*</span></label><textarea placeholder="Quel problème adressé ? Pourquoi maintenant ?"></textarea></div>
+        <div class="fld"><label>${tr('in.f.type')} <span class="req">*</span></label>
+          <select>${TYPES.map(t=>`<option>${tyLbl(t)} — TRL ${t.id==='scientific'?'2-4':(t.id==='applied'?'5-8':'7-9')}</option>`).join('')}</select></div>
+        <div class="fld full"><label>${tr('in.f.objPrim')} <span class="req">*</span></label><textarea placeholder="${tr('in.f.objPrim.ph')}"></textarea></div>
+        <div class="fld full"><label>${tr('in.f.objSec')} <span class="opt">${tr('in.f.objSec.opt')}</span></label><textarea placeholder="1. …\n2. …\n3. …"></textarea></div>
+        <div class="fld full"><label>${tr('in.f.rat')} <span class="req">*</span></label><textarea placeholder="${tr('in.f.rat.ph')}"></textarea></div>
       </div>
     </div>
 
     <div class="form-section">
-      <h3>2 · Périmètre & site</h3>
-      <p class="sub">Où, sur quelle culture, avec quel produit ?</p>
+      <h3>${tr('in.s2.h')}</h3>
+      <p class="sub">${tr('in.s2.sub')}</p>
       <div class="form-grid">
-        <div class="fld"><label>Région cible <span class="req">*</span></label>
+        <div class="fld"><label>${tr('in.f.region')} <span class="req">*</span></label>
           <select>${Object.values(REGIONS).flat().map(r=>`<option>${r}</option>`).join('')}</select></div>
-        <div class="fld"><label>Culture <span class="req">*</span></label>
+        <div class="fld"><label>${tr('in.f.crop')} <span class="req">*</span></label>
           <select>${CROPS.map(c=>`<option>${c}</option>`).join('')}</select></div>
-        <div class="fld"><label>Produit OCP testé <span class="req">*</span></label>
+        <div class="fld"><label>${tr('in.f.prod')} <span class="req">*</span></label>
           <select>${PRODUCTS.map(p=>`<option>${p}</option>`).join('')}</select></div>
-        <div class="fld"><label>Référence comparée</label>
+        <div class="fld"><label>${tr('in.f.ref')}</label>
           <select>${PRODUCTS.map(p=>`<option>${p}</option>`).join('')}</select></div>
-        <div class="fld"><label>Nb traitements <span class="req">*</span></label><input type="number" placeholder="4" min="1"></div>
-        <div class="fld"><label>Nb répétitions <span class="req">*</span></label><input type="number" placeholder="3" min="3"></div>
-        <div class="fld"><label>Date de lancement</label><input type="date"></div>
-        <div class="fld"><label>Date de clôture estimée</label><input type="date"></div>
+        <div class="fld"><label>${tr('in.f.treat')} <span class="req">*</span></label><input type="number" placeholder="4" min="1"></div>
+        <div class="fld"><label>${tr('in.f.rep')} <span class="req">*</span></label><input type="number" placeholder="3" min="3"></div>
+        <div class="fld"><label>${tr('in.f.start')}</label><input type="date"></div>
+        <div class="fld"><label>${tr('in.f.end')}</label><input type="date"></div>
       </div>
     </div>
 
     <div class="form-section">
-      <h3>3 · KPIs & Minimum Data Set</h3>
-      <p class="sub">Le MDS est obligatoire — 12 items pour garantir la comparabilité cross-cycles.</p>
+      <h3>${tr('in.s3.h')}</h3>
+      <p class="sub">${tr('in.s3.sub')}</p>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px">${MDS_ITEMS.map(m=>`<div class="mds-row miss"><span class="ico">!</span><span class="nm">${m}</span></div>`).join('')}</div>
-      <p class="help" style="margin-top:10px;color:var(--muted)">À mesure que tu remplis les sections, les items MDS basculent en vert ✓.</p>
+      <p class="help" style="margin-top:10px;color:var(--muted)">${tr('in.s3.help')}</p>
     </div>
 
     <div class="form-section">
-      <h3>4 · Budget & partenaire</h3>
+      <h3>${tr('in.s4.h')}</h3>
       <div class="form-grid">
-        <div class="fld"><label>Budget prévisionnel ($) <span class="req">*</span></label><input type="number" placeholder="180000"></div>
-        <div class="fld"><label>Priorité business</label>
-          <select>${PRIORITIES.map(p=>`<option>${p.lbl}</option>`).join('')}</select></div>
-        <div class="fld full"><label>Partenaire pressenti <span class="req">*</span></label>
+        <div class="fld"><label>${tr('in.f.budget')} <span class="req">*</span></label><input type="number" placeholder="${tr('in.f.budget.ph')}"></div>
+        <div class="fld"><label>${tr('in.f.prio')}</label>
+          <select>${PRIORITIES.map(p=>`<option>${prLbl(p)}</option>`).join('')}</select></div>
+        <div class="fld full"><label>${tr('in.f.partner')} <span class="req">*</span></label>
           <select>${PARTNERS.map(p=>`<option>${p.nm} — ${p.typ}</option>`).join('')}</select></div>
-        <div class="fld"><label>Mode Fast Track</label>
-          <select><option>Standard cycle</option><option>Fast Track — urgent</option></select></div>
-        <div class="fld"><label>SA&I lead</label><input type="text" placeholder="Anaïs M., Karim T., …"></div>
+        <div class="fld"><label>${tr('in.f.ft')}</label>
+          <select><option>${tr('in.f.std')}</option><option>${tr('in.f.urgent')}</option></select></div>
+        <div class="fld"><label>${tr('in.f.sai')}</label><input type="text" placeholder="${tr('in.f.sai.ph')}"></div>
       </div>
     </div>
 
     <div class="tool-bar">
-      <button class="btn ghost" onclick="goView('portfolio')">← Annuler</button>
+      <button class="btn ghost" onclick="goView('portfolio')">${tr('in.btn.cancel')}</button>
       <span class="sp"></span>
-      <button class="btn ghost" onclick="toast('💾 Brouillon enregistré (mock)')">💾 Enregistrer en brouillon</button>
-      <button class="btn primary" onclick="toast('📨 Soumis au Steering Committee (mock)')">📨 Soumettre au Steering Committee</button>
+      <button class="btn ghost" onclick="toast(tr('in.toast.draft'))">${tr('in.btn.draft')}</button>
+      <button class="btn primary" onclick="toast(tr('in.toast.submit'))">${tr('in.btn.submit')}</button>
     </div>
-    <p class="muted" style="text-align:center;margin:10px 0 0">_MVP — la sauvegarde réelle + validation MDS dynamique arrivent en V1.1._</p>
+    <p class="muted" style="text-align:center;margin:10px 0 0">${tr('in.note')}</p>
   `;
 }
 
@@ -1405,35 +2005,39 @@ function renderIntake(){
  * 10. CALENDAR (annual cycle Gantt) — placeholder for V1
  * --------------------------------------------------------------- */
 function renderCalendar(){
-  const months = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+  const months = tr('months').split(',');
   const cur = (new Date().getMonth());
   const bars = [
-    { lbl:'Annual Trial Cycle launch',    sub:'SA&I notification + templates', start:0, end:0, cls:'b-cycle' },
-    { lbl:'Use Case submission window',    sub:'Toutes BUs · entrée portefeuille', start:0, end:1, cls:'b-cycle' },
-    { lbl:'Trial Steering Committee · Gate 1', sub:'Design & readiness review', start:1, end:1, cls:'b-gate' },
-    { lbl:'CEO Portfolio Approval · Gate 2',   sub:'Annual portfolio + budget', start:1, end:1, cls:'b-gate' },
-    { lbl:'Trial readiness & contractualization',sub:'Protocols, sites, partner contracts', start:2, end:3, cls:'b-cycle' },
-    { lbl:'Execution — Season 1 trials',  sub:'Field operations, monitoring', start:3, end:9, cls:'' },
-    { lbl:'Monitoring Committee · Monthly rolling', sub:'Evidence review · BU rotation', start:4, end:11, cls:'b-gate' },
-    { lbl:'QBR portfolio refresh',         sub:'Mid-cycle agility check', start:5, end:5, cls:'b-qbr' },
-    { lbl:'Fast Track lane',               sub:'Exceptional urgent requests', start:0, end:11, cls:'b-fast' },
-    { lbl:'Adoption decision + Closure',   sub:'Go/Hold/Kill + knowledge capture', start:10, end:11, cls:'b-cycle' }
+    { lblK:'cal.b1',  subK:'cal.b1.s',  start:0,  end:0,  cls:'b-cycle' },
+    { lblK:'cal.b2',  subK:'cal.b2.s',  start:0,  end:1,  cls:'b-cycle' },
+    { lblK:'cal.b3',  subK:'cal.b3.s',  start:1,  end:1,  cls:'b-gate'  },
+    { lblK:'cal.b4',  subK:'cal.b4.s',  start:1,  end:1,  cls:'b-gate'  },
+    { lblK:'cal.b5',  subK:'cal.b5.s',  start:2,  end:3,  cls:'b-cycle' },
+    { lblK:'cal.b6',  subK:'cal.b6.s',  start:3,  end:9,  cls:''        },
+    { lblK:'cal.b7',  subK:'cal.b7.s',  start:4,  end:11, cls:'b-gate'  },
+    { lblK:'cal.b8',  subK:'cal.b8.s',  start:5,  end:5,  cls:'b-qbr'   },
+    { lblK:'cal.b9',  subK:'cal.b9.s',  start:0,  end:11, cls:'b-fast'  },
+    { lblK:'cal.b10', subK:'cal.b10.s', start:10, end:11, cls:'b-cycle' }
   ];
+  const Y = 2026;
   document.getElementById('sc-calendar').innerHTML = `
-    <div class="eyebrow">Cycle annuel</div>
-    <h2 class="h-pg">Calendrier du cycle 2026</h2>
-    <p class="lead">Timeline opérationnelle : phases obligatoires, gates de gouvernance, QBR, Fast Track lane. Vue Gantt 12 mois.</p>
+    <div class="eyebrow">${tr('cal.eye')}</div>
+    <h2 class="h-pg">${trf('cal.h',{y:Y})}</h2>
+    <p class="lead">${tr('cal.lead')}</p>
     <div class="cal-wrap">
       <div class="cal-grid">
-        <div class="cal-h lbl">Phase</div>
+        <div class="cal-h lbl">${tr('cal.phase')}</div>
         ${months.map((m,i)=>`<div class="cal-h ${i===cur?'today':''}">${m}</div>`).join('')}
-        ${bars.map(b=>`<div class="cal-row">
-          <div class="cal-lbl">${escapeHtml(b.lbl)}<small>${escapeHtml(b.sub)}</small></div>
-          ${months.map((_,m)=>`<div class="cal-cell">${m===b.start?`<div class="cal-bar ${b.cls}" style="left:6px;right:6px;width:calc(${(b.end-b.start+1)*100}% - 12px)">${escapeHtml(b.lbl)}</div>`:''}</div>`).join('')}
-        </div>`).join('')}
+        ${bars.map(b=>{
+          const lbl = tr(b.lblK), sub = tr(b.subK);
+          return `<div class="cal-row">
+            <div class="cal-lbl">${escapeHtml(lbl)}<small>${escapeHtml(sub)}</small></div>
+            ${months.map((_,m)=>`<div class="cal-cell">${m===b.start?`<div class="cal-bar ${b.cls}" style="left:6px;right:6px;width:calc(${(b.end-b.start+1)*100}% - 12px)">${escapeHtml(lbl)}</div>`:''}</div>`).join('')}
+          </div>`;
+        }).join('')}
       </div>
     </div>
-    <p class="muted" style="margin-top:10px">Aujourd'hui : ${new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})}.</p>
+    <p class="muted" style="margin-top:10px">${tr('cal.today')} ${new Date().toLocaleDateString(tr('date'),{day:'2-digit',month:'long',year:'numeric'})}.</p>
   `;
 }
 
@@ -1444,58 +2048,67 @@ function renderGovernance(){
   const inSteering = DATA.filter(u=>u.status==='steering');
   const ceoPending = DATA.filter(u=>u.status==='ceo');
   const monitoring = DATA.filter(u=>u.status==='monitoring');
+  const Y = 2026;
+  const months6 = [
+    ['gov.month.jan','gov.bu.jan','gov.dec.jan',5],
+    ['gov.month.feb','gov.bu.feb','gov.dec.feb',6],
+    ['gov.month.mar','gov.bu.mar','gov.dec.mar',4],
+    ['gov.month.apr','gov.bu.apr','gov.dec.apr',3],
+    ['gov.month.may','gov.bu.may','gov.dec.may',4],
+    ['gov.month.jun','gov.bu.jun','gov.dec.jun',3]
+  ];
+  const raciRows = [
+    ['gov.step.1', 'r','','','',''],
+    ['gov.step.2', 'c','r','','',''],
+    ['gov.step.3', 'r','c','','',''],
+    ['gov.step.4', 'c','c','','r',''],
+    ['gov.step.5', '','','','','a'],
+    ['gov.step.6', 'c','c','r','',''],
+    ['gov.step.7', 'c','r','','',''],
+    ['gov.step.8', 'r','c','','',''],
+    ['gov.step.9', 'c','c','','r',''],
+    ['gov.step.10','','','','','a'],
+    ['gov.step.11','r','c','','','']
+  ];
   document.getElementById('sc-governance').innerHTML = `
-    <div class="eyebrow">Gouvernance</div>
-    <h2 class="h-pg">Comités & RACI</h2>
-    <p class="lead">Visibilité sur les comités à venir, ce qui les attend, et la matrice de responsabilité officielle du Trial Management Framework.</p>
+    <div class="eyebrow">${tr('gov.eye')}</div>
+    <h2 class="h-pg">${tr('gov.h')}</h2>
+    <p class="lead">${tr('gov.lead')}</p>
 
     <div class="row-2c">
       <div class="card">
-        <h3>⚖️ Trial Steering Committee <span class="sub">— Gate 1 · Design & readiness</span></h3>
-        <p class="muted" style="margin:0 0 12px">Prochaine session : <b style="color:var(--ink)">jeudi 25 juin 2026 · 14:00–16:30</b></p>
-        <h4 style="font:700 12px 'Inter';color:var(--green-800);text-transform:uppercase;letter-spacing:.06em;margin:0 0 8px">${inSteering.length} dossiers à l'ordre du jour</h4>
-        ${inSteering.slice(0,5).map(u=>`<div class="alert ok"><span class="ico">📄</span><div class="b"><b>${escapeHtml(u.name)}</b><span>${u.id} · ${buOf(u.bu).nm} · ${escapeHtml(u.partner||'—')}</span></div><button class="act" onclick="openUc('${u.id}')">Ouvrir →</button></div>`).join('')}
-        ${inSteering.length>5?`<p class="muted" style="margin:10px 0 0;text-align:center">+ ${inSteering.length-5} autres dossiers</p>`:''}
+        <h3>${tr('gov.steering.h')} <span class="sub">${tr('gov.steering.sub')}</span></h3>
+        <p class="muted" style="margin:0 0 12px">${trf('gov.steering.when',{date:tr('gov.steering.date')})}</p>
+        <h4 style="font:700 12px 'Inter';color:var(--green-800);text-transform:uppercase;letter-spacing:.06em;margin:0 0 8px">${trf('gov.steering.cnt',{n:inSteering.length})}</h4>
+        ${inSteering.slice(0,5).map(u=>`<div class="alert ok"><span class="ico">📄</span><div class="b"><b>${escapeHtml(u.name)}</b><span>${u.id} · ${buOf(u.bu).nm} · ${escapeHtml(u.partner||'—')}</span></div><button class="act" onclick="openUc('${u.id}')">${tr('gov.act.open')}</button></div>`).join('')}
       </div>
       <div class="card">
-        <h3>🏛️ CEO Portfolio Approval <span class="sub">— Gate 2 · Annual portfolio</span></h3>
-        <p class="muted" style="margin:0 0 12px">Prochaine décision : <b style="color:var(--ink)">vendredi 3 juillet 2026</b></p>
-        ${ceoPending.slice(0,5).map(u=>`<div class="alert warn"><span class="ico">⏳</span><div class="b"><b>${escapeHtml(u.name)}</b><span>${u.id} · ${fmtMoney(u.budget)}</span></div><button class="act" onclick="openUc('${u.id}')">Ouvrir →</button></div>`).join('') || '<div class="muted">Pas de dossier en attente.</div>'}
+        <h3>${tr('gov.ceo.h')} <span class="sub">${tr('gov.ceo.sub')}</span></h3>
+        <p class="muted" style="margin:0 0 12px">${trf('gov.ceo.when',{date:tr('gov.ceo.date')})}</p>
+        ${ceoPending.slice(0,5).map(u=>`<div class="alert warn"><span class="ico">⏳</span><div class="b"><b>${escapeHtml(u.name)}</b><span>${u.id} · ${fmtMoney(u.budget)}</span></div><button class="act" onclick="openUc('${u.id}')">${tr('gov.act.open')}</button></div>`).join('') || `<div class="muted">${tr('gov.ceo.empty')}</div>`}
       </div>
     </div>
 
     <div class="card">
-      <h3>🔁 Scientific Monitoring Committee <span class="sub">— Gate 3 · Monthly rolling, BU rotation</span></h3>
-      <p class="muted" style="margin:0 0 12px">${monitoring.length} trials en revue continue · rotation BU mensuelle.</p>
+      <h3>${tr('gov.monitor.h')} <span class="sub">${tr('gov.monitor.sub')}</span></h3>
+      <p class="muted" style="margin:0 0 12px">${trf('gov.monitor.cnt',{n:monitoring.length})}</p>
       <div class="tbl-wrap"><table class="tbl">
-        <thead><tr><th>Mois</th><th>BU présentatrice</th><th>UCs présentés</th><th>Décisions attendues</th></tr></thead>
+        <thead><tr><th>${tr('gov.tbl.month')}</th><th>${tr('gov.tbl.bu')}</th><th>${tr('gov.tbl.ucs')}</th><th>${tr('gov.tbl.decisions')}</th></tr></thead>
         <tbody>
-          ${[['Janvier','Africa BU',5,'2 Go-decisions attendues'],['Février','Brazil BU',6,'1 Hold review'],['Mars','India BU',4,'Cross-site consolidation'],['Avril','Europe BU',3,'Closure 2025 — final reports'],['Mai','North America BU',4,'Pilot Iowa drip-line'],['Juin','Asia-Pacific BU',3,'Monsoon stress trials']].map(r=>`<tr><td><b>${r[0]} 2026</b></td><td>${r[1]}</td><td class="t-num">${r[2]}</td><td class="muted">${r[3]}</td></tr>`).join('')}
+          ${months6.map(r=>`<tr><td><b>${trf(r[0],{y:Y})}</b></td><td>${tr(r[1])}</td><td class="t-num">${r[3]}</td><td class="muted">${tr(r[2])}</td></tr>`).join('')}
         </tbody>
       </table></div>
     </div>
 
     <div class="card">
-      <h3>🎯 RACI Matrix <span class="sub">— extrait du Trial Management Framework</span></h3>
+      <h3>${tr('gov.raci.h')} <span class="sub">${tr('gov.raci.sub')}</span></h3>
       <div class="tbl-wrap"><table class="tbl raci">
-        <thead><tr><th>Étape</th><th style="text-align:center">SA&I</th><th style="text-align:center">BUs / Régions</th><th style="text-align:center">Support Fns</th><th style="text-align:center">Governance</th><th style="text-align:center">CEO</th></tr></thead>
+        <thead><tr><th>${tr('gov.act')}</th><th style="text-align:center">${tr('gov.role.sai')}</th><th style="text-align:center">${tr('gov.role.bu')}</th><th style="text-align:center">${tr('gov.role.sf')}</th><th style="text-align:center">${tr('gov.role.gv')}</th><th style="text-align:center">${tr('gov.role.ceo')}</th></tr></thead>
         <tbody>
-          ${[
-            ['1 · Launch Annual Trial Cycle','r','','','',''],
-            ['2 · Use Case definition & drafting','c','r','','',''],
-            ['3 · Final Proposal Consolidation','r','c','','',''],
-            ['4 · Trial Steering Committee','c','c','','r',''],
-            ['5 · CEO Validation','','','','','a'],
-            ['6 · Trial Readiness & Contracting','c','c','r','',''],
-            ['7 · Execution & Data Collection','c','r','','',''],
-            ['8 · Analysis & Result Validation','r','c','','',''],
-            ['9 · Monitoring Committee','c','c','','r',''],
-            ['10 · Adoption Decision','','','','','a'],
-            ['11 · Closure & Knowledge Sharing','r','c','','','']
-          ].map(r=>`<tr><td><b>${r[0]}</b></td>${r.slice(1).map(c=>`<td style="text-align:center">${c?`<span class="raci-cell ${c}">${c.toUpperCase()}</span>`:''}</td>`).join('')}</tr>`).join('')}
+          ${raciRows.map(r=>`<tr><td><b>${tr(r[0])}</b></td>${r.slice(1).map(c=>`<td style="text-align:center">${c?`<span class="raci-cell ${c}">${c.toUpperCase()}</span>`:''}</td>`).join('')}</tr>`).join('')}
         </tbody>
       </table></div>
-      <p class="muted" style="margin-top:10px;font-size:11.5px"><span class="raci-cell r">R</span> Responsible &nbsp; <span class="raci-cell a">A</span> Accountable &nbsp; <span class="raci-cell c">C</span> Consulted &nbsp; <span class="raci-cell i">I</span> Informed</p>
+      <p class="muted" style="margin-top:10px;font-size:11.5px"><span class="raci-cell r">R</span> ${tr('gov.raci.r')} &nbsp; <span class="raci-cell a">A</span> ${tr('gov.raci.a')} &nbsp; <span class="raci-cell c">C</span> ${tr('gov.raci.c')} &nbsp; <span class="raci-cell i">I</span> ${tr('gov.raci.i')}</p>
     </div>
   `;
 }
@@ -1505,28 +2118,29 @@ function renderGovernance(){
  * --------------------------------------------------------------- */
 function renderFastTrack(){
   const fts = DATA.filter(u=>u.fast_track);
+  const Y = 2026;
   document.getElementById('sc-fasttrack').innerHTML = `
-    <div class="eyebrow">Exception · Fast Track</div>
-    <h2 class="h-pg">🚀 Fast Track requests</h2>
-    <p class="lead">Demandes urgentes hors cycle annuel — Chief/EVP approval + acknowledgment du Scientific Monitoring Committee. SLA accéléré, traçabilité renforcée.</p>
+    <div class="eyebrow">${tr('ft.eye')}</div>
+    <h2 class="h-pg">${tr('ft.h')}</h2>
+    <p class="lead">${tr('ft.lead')}</p>
 
     <div class="kpi-grid">
-      ${kpiTile('🚀','Fast Track actifs', fts.filter(u=>!/^closed-/.test(u.status)).length, 'Hors cycle annuel','bar',60)}
-      ${kpiTile('⏱','SLA moyen', '12 j', 'vs 90 j cycle standard','bar',80)}
-      ${kpiTile('💰','Budget engagé', fmtMoney(fts.reduce((s,u)=>s+u.budget,0)), 'Cycle 2026','bar',45)}
-      ${kpiTile('✓','Go rate', Math.round(fts.filter(u=>u.status==='closed-go').length/Math.max(1,fts.filter(u=>/^closed-/.test(u.status)).length)*100)+'%', 'Closed FT decisions','bar',70)}
+      ${kpiTile('🚀', tr('ft.k1'), fts.filter(u=>!/^closed-/.test(u.status)).length, tr('ft.k1.sub'), 60)}
+      ${kpiTile('⏱', tr('ft.k2'), '12 j', tr('ft.k2.sub'), 80)}
+      ${kpiTile('💰', tr('ft.k3'), fmtMoney(fts.reduce((s,u)=>s+u.budget,0)), trf('ft.k3.sub',{y:Y}), 45)}
+      ${kpiTile('✓',  tr('ft.k4'), Math.round(fts.filter(u=>u.status==='closed-go').length/Math.max(1,fts.filter(u=>/^closed-/.test(u.status)).length)*100)+'%', tr('ft.k4.sub'), 70)}
     </div>
 
     <div class="card">
-      <h3>Workflow Fast Track <span class="sub">— exception au cycle annuel</span></h3>
+      <h3>${tr('ft.wf.h')} <span class="sub">${tr('ft.wf.sub')}</span></h3>
       <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">
-        ${['1 · Identification urgence','2 · Chief/EVP validation','3 · Monitoring Committee ack','4 · Protocol & readiness','5 · Execution → Decision'].map((s,i)=>`<div style="background:linear-gradient(135deg,#fde7e7,#fdf2e0);border:1px solid #f0c9c9;border-radius:9px;padding:11px 12px;text-align:center;font:700 11.5px 'Inter';color:#7a1313">${s}</div>`).join('')}
+        ${['ft.wf.1','ft.wf.2','ft.wf.3','ft.wf.4','ft.wf.5'].map(k=>`<div style="background:linear-gradient(135deg,#fde7e7,#fdf2e0);border:1px solid #f0c9c9;border-radius:9px;padding:11px 12px;text-align:center;font:700 11.5px 'Inter';color:#7a1313">${tr(k)}</div>`).join('')}
       </div>
     </div>
 
     <div class="card">
-      <h3>Fast Track requests — cycle 2026 (${fts.length})</h3>
-      ${fts.length ? renderTable(fts) : '<div class="empty">Aucun Fast Track actuel.</div>'}
+      <h3>${trf('ft.list.h',{y:Y, n:fts.length})}</h3>
+      ${fts.length ? renderTable(fts) : `<div class="empty">${tr('ft.list.empty')}</div>`}
     </div>
   `;
 }
@@ -1537,37 +2151,34 @@ function renderFastTrack(){
 function renderKB(){
   const closed = DATA.filter(u=>/^closed-/.test(u.status));
   const lessons = closed.map((u,i)=>{
-    const out = u.status==='closed-go'?'Go — adoption validée':(u.status==='closed-hold'?'Hold — conditions de relance':'Kill — apprentissages négatifs');
-    const lesson = u.status==='closed-go'
-      ? `Uplift rendement confirmé (+${5+i%4} %). Protocole MDS robuste, recommandation : déploiement régional.`
-      : u.status==='closed-hold'
-        ? `Effet de site marqué — variance entre sites > 20 %. À reprendre avec design en blocs équilibrés.`
-        : `Hypothèse non confirmée. Inputs : variabilité météo + non-respect protocole partenaire. À ne PAS répliquer en l'état.`;
-    return Object.assign({}, u, { _outcome:out, _lesson:lesson });
+    const lesson = u.status==='closed-go'  ? trf('kb.l.go',{p:5+i%4})
+                : u.status==='closed-hold' ? tr('kb.l.hold')
+                : tr('kb.l.kill');
+    return Object.assign({}, u, { _lesson:lesson });
   });
   document.getElementById('sc-kb').innerHTML = `
-    <div class="eyebrow">Capitalisation</div>
-    <h2 class="h-pg">Closure & Knowledge Base</h2>
-    <p class="lead">Toutes les fiches de clôture du cycle précédent — apprentissages, méthodologies validées, lectures à reprendre. Indexées pour le prochain cycle.</p>
+    <div class="eyebrow">${tr('kb.eye')}</div>
+    <h2 class="h-pg">${tr('kb.h')}</h2>
+    <p class="lead">${tr('kb.lead')}</p>
 
     <div class="tool-bar">
-      <div class="chip on">Tous (${closed.length})</div>
-      <div class="chip">Go (${closed.filter(u=>u.status==='closed-go').length})</div>
-      <div class="chip">Hold (${closed.filter(u=>u.status==='closed-hold').length})</div>
-      <div class="chip">Kill (${closed.filter(u=>u.status==='closed-kill').length})</div>
+      <div class="chip on">${tr('kb.filt.all')} (${closed.length})</div>
+      <div class="chip">${tr('kb.filt.go')} (${closed.filter(u=>u.status==='closed-go').length})</div>
+      <div class="chip">${tr('kb.filt.hold')} (${closed.filter(u=>u.status==='closed-hold').length})</div>
+      <div class="chip">${tr('kb.filt.kill')} (${closed.filter(u=>u.status==='closed-kill').length})</div>
       <div class="sp"></div>
-      <button class="btn ghost sm">⤓ Export PDF</button>
+      <button class="btn ghost sm">${tr('kb.export')}</button>
     </div>
 
     <div class="kb-grid">${lessons.map(u=>{
       const st = statusOf(u.status); const ty = typeOf(u.type);
       return `<div class="kb-card" onclick="openUc('${u.id}')">
-        <div class="h"><span class="pill ${st.pill}">${st.lbl}</span><span class="pill ${ty.pill}">${ty.lbl}</span></div>
+        <div class="h"><span class="pill ${st.pill}">${stLbl(st)}</span><span class="pill ${ty.pill}">${tyLbl(ty)}</span></div>
         <h4>${escapeHtml(u.name)}</h4>
         <div class="ll">${escapeHtml(u._lesson)}</div>
         <div class="ft"><span>${u.id}</span> · <span>${escapeHtml(u.crop)}</span> · <span>${escapeHtml(buOf(u.bu).nm)}</span></div>
       </div>`;
-    }).join('') || '<div class="empty">Pas encore de clôtures sur ce cycle.</div>'}</div>
+    }).join('') || `<div class="empty">${tr('kb.empty')}</div>`}</div>
   `;
 }
 
@@ -1576,27 +2187,27 @@ function renderKB(){
  * --------------------------------------------------------------- */
 function renderAdmin(){
   document.getElementById('sc-admin').innerHTML = `
-    <div class="eyebrow">Référentiels</div>
-    <h2 class="h-pg">Admin · Référentiels</h2>
-    <p class="lead">Bases de référence partagées : BUs, régions, cultures, produits, partenaires, MDS, statuses, types de trial. Source de vérité pour tout le système.</p>
+    <div class="eyebrow">${tr('adm.eye')}</div>
+    <h2 class="h-pg">${tr('adm.h')}</h2>
+    <p class="lead">${tr('adm.lead')}</p>
 
     <div class="row-2c">
-      <div class="card"><h3>🏢 Business Units (${BUS.length})</h3>
-        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Code</th><th>Nom</th><th>Régions</th></tr></thead><tbody>${BUS.map(b=>`<tr><td><b>${b.id}</b></td><td>${b.nm}</td><td class="muted">${(REGIONS[b.id]||[]).join(', ')||'—'}</td></tr>`).join('')}</tbody></table></div>
+      <div class="card"><h3>${trf('adm.bu.h',{n:BUS.length})}</h3>
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>${tr('adm.bu.code')}</th><th>${tr('adm.bu.name')}</th><th>${tr('adm.bu.regions')}</th></tr></thead><tbody>${BUS.map(b=>`<tr><td><b>${b.id}</b></td><td>${b.nm}</td><td class="muted">${(REGIONS[b.id]||[]).join(', ')||'—'}</td></tr>`).join('')}</tbody></table></div>
       </div>
-      <div class="card"><h3>🌾 Cultures (${CROPS.length})</h3>
+      <div class="card"><h3>${trf('adm.crops.h',{n:CROPS.length})}</h3>
         <div style="display:flex;flex-wrap:wrap;gap:6px">${CROPS.map(c=>`<span class="chip">${escapeHtml(c)}</span>`).join('')}</div>
       </div>
     </div>
     <div class="row-2c">
-      <div class="card"><h3>🧪 Produits OCP (${PRODUCTS.length})</h3>
+      <div class="card"><h3>${trf('adm.prods.h',{n:PRODUCTS.length})}</h3>
         <div style="display:flex;flex-wrap:wrap;gap:6px">${PRODUCTS.map(p=>`<span class="chip">${escapeHtml(p)}</span>`).join('')}</div>
       </div>
-      <div class="card"><h3>🤝 Partenaires (${PARTNERS.length})</h3>
-        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Partenaire</th><th>Type</th></tr></thead><tbody>${PARTNERS.map(p=>`<tr><td><b>${escapeHtml(p.nm)}</b></td><td class="muted">${escapeHtml(p.typ)}</td></tr>`).join('')}</tbody></table></div>
+      <div class="card"><h3>${trf('adm.partners.h',{n:PARTNERS.length})}</h3>
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>${tr('adm.partners.nm')}</th><th>${tr('adm.partners.typ')}</th></tr></thead><tbody>${PARTNERS.map(p=>`<tr><td><b>${escapeHtml(p.nm)}</b></td><td class="muted">${escapeHtml(p.typ)}</td></tr>`).join('')}</tbody></table></div>
       </div>
     </div>
-    <div class="card"><h3>📋 Minimum Data Set (12 items)</h3>
+    <div class="card"><h3>${tr('adm.mds.h')}</h3>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">${MDS_ITEMS.map(m=>`<div class="mds-row ok"><span class="ico">✓</span><span class="nm">${escapeHtml(m)}</span></div>`).join('')}</div>
     </div>
   `;
@@ -1622,7 +2233,11 @@ function postHeight(){
 window.addEventListener('resize', postHeight);
 setInterval(postHeight, 800);
 
+// Wire language switcher (flag buttons in topbar) — does a full re-render on change.
+document.querySelectorAll('.tb-lang button').forEach(b=>b.onclick=()=>{ setLang(b.dataset.l); CHAT_HIST.length = 0; if(PREFS.chatOpen){ chatGreet(); } });
+
 renderSidebar();
+applyLang();
 goView(PREFS.view || 'cockpit');
 if(PREFS.chatOpen) toggleChat();
 
