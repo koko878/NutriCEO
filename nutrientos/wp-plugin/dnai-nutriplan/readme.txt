@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.4.0
+Stable tag: 0.5.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later

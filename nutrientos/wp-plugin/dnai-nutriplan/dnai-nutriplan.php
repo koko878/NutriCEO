@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutriPlan — Trial Management Cockpit
  * Description:       Sister-app of NutriTrials covering the full upstream Trial Management cycle (annual planning, Use Case intake, Steering / CEO / Monitoring gates, Fast Track lane, closure & knowledge base). Includes a chat-with-data AI co-pilot powered by Anthropic Claude (Sonnet 4.6) served via Azure Databricks Foundation Model APIs (OpenAI-compatible). All branded D²nAI bot — no underlying provider mention.
- * Version:           0.4.0
+ * Version:           0.5.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutriplan
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NPLAN_VER', '0.4.0' );
+define( 'DNAI_NPLAN_VER', '0.5.0' );
 define( 'DNAI_NPLAN_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NPLAN_DIR', plugin_dir_path( __FILE__ ) );
 

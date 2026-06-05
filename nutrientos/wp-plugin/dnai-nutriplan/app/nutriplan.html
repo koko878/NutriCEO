@@ -118,6 +118,11 @@ a{color:var(--green-700);text-decoration:none}
 .kpi .d.flat{color:var(--muted);font-weight:500}
 .kpi .bar{margin-top:10px;height:4px;background:var(--soft);border-radius:999px;overflow:hidden}
 .kpi .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--green-500),var(--green-700));border-radius:999px;transition:width .55s ease}
+.kpi.kpi-bad{border-color:#f0c9c9;background:linear-gradient(180deg,#fff,#fef6f6)}
+.kpi.kpi-bad .v{color:#a01f1f}
+.ic-chip{margin-top:6px;font:800 10.5px 'Inter';padding:2px 7px;border-radius:5px;display:inline-block}
+.ic-chip.bad{background:var(--bad-bg);color:var(--bad)}
+.ic-chip.ok{background:var(--ok-bg);color:var(--ok)}
 
 /* ==========================================================================
  * Card / Panel
@@ -406,9 +411,13 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
  * ========================================================================== */
 .cal-wrap{background:#fff;border:1px solid var(--line);border-radius:var(--rad-md);padding:18px;overflow-x:auto}
 .cal-grid{display:grid;grid-template-columns:200px repeat(12,1fr);gap:1px;min-width:880px}
-.cal-h{font:700 10.5px 'Inter';color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:6px 0;text-align:center;border-bottom:1px solid var(--line)}
+.cal-grid.cal16{grid-template-columns:170px repeat(16,1fr);min-width:1180px}
+.cal-h{font:700 10.5px 'Inter';color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:6px 4px;text-align:center;border-bottom:1px solid var(--line)}
 .cal-h.lbl{text-align:left;padding-left:8px}
 .cal-h.today{color:var(--green-700);background:var(--green-50);border-radius:6px}
+.cal-h.cal-h-prev{color:#8aa195;background:#f5f9f6;font-size:9.5px}
+.cal-h.cal-h-qbr{background:#eaf3f8;color:#1d5e94}
+.cal-h.cal-h-qbr .qbr-dot{display:block;font:800 8.5px 'Inter';color:#0e4f6e;margin-top:2px;letter-spacing:.05em}
 .cal-row{display:contents}
 .cal-row .cal-lbl{font:600 12.5px 'Inter';color:var(--ink);padding:9px 8px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;justify-content:center}
 .cal-row .cal-lbl small{font:500 10.5px 'Inter';color:var(--muted);margin-top:1px}
@@ -419,6 +428,18 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .cal-bar.b-cycle{background:linear-gradient(90deg,#0c5b27,#103d17)}
 .cal-bar.b-fast{background:linear-gradient(90deg,#a01f1f,#7a1313)}
 .cal-bar.b-qbr{background:linear-gradient(90deg,#1d5e94,#0e4f6e)}
+.cal-bar.b-launch{background:linear-gradient(90deg,#2E7D32,#103d17)}
+.cal-bar.b-readiness{background:linear-gradient(90deg,#7c5b07,#5b3f05)}
+.cal-bar.b-exec{background:linear-gradient(90deg,#1d5e94,#0e4f6e)}
+.cal-bar.b-decision{background:linear-gradient(90deg,#583c8d,#3d2a64)}
+.legend-sw{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:5px;vertical-align:-2px}
+.legend-sw.b-launch{background:linear-gradient(135deg,#2E7D32,#103d17)}
+.legend-sw.b-readiness{background:linear-gradient(135deg,#7c5b07,#5b3f05)}
+.legend-sw.b-exec{background:linear-gradient(135deg,#1d5e94,#0e4f6e)}
+.legend-sw.b-decision{background:linear-gradient(135deg,#583c8d,#3d2a64)}
+.legend-sw.b-gate{background:linear-gradient(135deg,#7c5b07,#a06b04)}
+.legend-sw.b-qbr{background:linear-gradient(135deg,#1d5e94,#0e4f6e);border:1px dashed #1d5e94}
+.legend-sw.b-fast{background:linear-gradient(135deg,#a01f1f,#7a1313)}
 
 /* ==========================================================================
  * RACI matrix
@@ -520,6 +541,9 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
     <!-- ----- CLOSURE / KB SCREEN ----- -->
     <section class="screen" id="sc-kb"></section>
 
+    <!-- ----- INTERNAL CONTROLS ----- -->
+    <section class="screen" id="sc-controls"></section>
+
     <!-- ----- ADMIN / REFERENCES ----- -->
     <section class="screen" id="sc-admin"></section>
   </main>
@@ -569,6 +593,7 @@ const NAV = [
   { id:'portfolio',  ico:'📚', lblK:'nav.portfolio',  crumbK:'nav.portfolio.cr' },
   { id:'calendar',   ico:'📅', lblK:'nav.calendar',   crumbK:'nav.calendar.cr' },
   { id:'governance', ico:'⚖️', lblK:'nav.gov',        crumbK:'nav.gov.cr' },
+  { id:'controls',   ico:'🛡️', lblK:'nav.ic',         crumbK:'nav.ic.cr' },
   { sec:'nav.sec.work' },
   { id:'intake',     ico:'➕', lblK:'nav.intake',     crumbK:'nav.intake.cr' },
   { id:'fasttrack',  ico:'🚀', lblK:'nav.ft',         crumbK:'nav.ft.cr' },
@@ -652,6 +677,7 @@ fr:{
  'nav.portfolio':'Portefeuille','nav.portfolio.cr':'Portefeuille trials',
  'nav.calendar':'Cycle annuel','nav.calendar.cr':'Cycle annuel · Calendrier',
  'nav.gov':'Gouvernance','nav.gov.cr':'Comités & gouvernance',
+ 'nav.ic':'Contrôles internes','nav.ic.cr':'Contrôles internes · Compliance',
  'nav.intake':'Nouveau Use Case','nav.intake.cr':'Nouveau Use Case',
  'nav.ft':'Fast Track','nav.ft.cr':'Fast Track',
  'nav.kb':'Closure & KB','nav.kb.cr':'Closure & Knowledge Base',
@@ -682,6 +708,29 @@ fr:{
  'ck.k.ceo':'CEO en attente','ck.k.ceo.d':'Gate 2 portfolio',
  'ck.k.exec':'En exécution','ck.k.exec.d':'Field + monitoring',
  'ck.k.unit':'UCs',
+ // 4 KPIs officiels (framework v1.0 §8)
+ 'ck.kpi1':'% Fast Track','ck.kpi1.d':'Cible : ≤ 10 % (gouvernance respectée)',
+ 'ck.kpi2':'% Transform → Demo / Launch','ck.kpi2.d':'Cible : ≥ 50 % (impact business)',
+ 'ck.kpi3':'% On time','ck.kpi3.d':'Cible : ≥ 80 % (discipline d\'exécution)',
+ 'ck.kpi4':'Budget variance','ck.kpi4.d':'Cible : ± 5 % (adhérence financière)',
+ // Macro-phases (4)
+ 'mp.launch':'Trial Cycle Launch','mp.readiness':'Operational Readiness','mp.execution':'Execution — Data & Analysis','mp.decision':'Decision',
+ // Trial Classes & Types
+ 'cls.fundamental':'Fundamental & Discovery','cls.validation':'Validation','cls.prelaunch':'Pre-launch','cls.demo':'Demo Plots',
+ 'tp.ctrl':'Controlled trials','tp.station':'At-station trials',
+ 'tp.ctrlval':'Controlled Validation trials','tp.stationval':'At-station validation trials','tp.fieldval':'Field validation',
+ 'tp.commercial':'Commercial pre-launch','tp.regulatory':'Regulatory pre-launch',
+ 'tp.demoplot':'Demonstration plots',
+ // Strategic Objectives
+ 'so.product_dev':'Product Development & Validation','so.cropping_mgmt':'Cropping Management Practices',
+ 'so.sustainable':'Sustainable / Resilient Agriculture','so.digital_ag':'Digital & Precision Agriculture',
+ 'so.nutrition':'Human & Livestock Nutrition','so.demo_adoption':'Demonstrations for Market Adoption',
+ // Partner Setup Types
+ 'ps.institution':'Institution-based','ps.client':'Client-based','ps.provider':'Private Service Provider',
+ // QBR windows
+ 'qbr.q1':'QBR 1','qbr.q2':'QBR 2','qbr.q3':'QBR 3',
+ // Severity labels
+ 'sev.high':'high','sev.med':'med','sev.high.lbl':'Critique','sev.med.lbl':'Moyenne',
  'ck.alerts.h':'🔥 Alertes & escalations','ck.alerts.sub':'— issues détectées sur ton portefeuille',
  'ck.alerts.allOk':'Tout est sous contrôle ✓',
  'ck.act.h':'📝 Activité récente',
@@ -712,6 +761,7 @@ fr:{
  // modal
  'uc.start':'Lancement prévu','uc.end':'Clôture prévue','uc.budget':'Budget alloué','uc.partner':'Partenaire','uc.sai':'SA&I Lead',
  'uc.plan':'Plan expérimental','uc.plan.fmt':'{t} traitements × {r} répétitions',
+ 'uc.class':'Trial Class · Type','uc.partnerSetup':'Setup partenaire','uc.strategicObj':'Objectifs stratégiques','uc.icIssues':'Écarts IC ouverts',
  'uc.objP':'Objectif primaire','uc.objS':'Objectifs secondaires','uc.kpiP':'KPIs primaires','uc.kpiS':'KPIs secondaires','uc.risks':'Risques identifiés',
  'uc.gates':'Gates de gouvernance','uc.mds':'Minimum Data Set ({n}/12)',
  'uc.go':'✓ GO','uc.hold':'⏸ HOLD','uc.kill':'✗ KILL',
@@ -743,7 +793,11 @@ fr:{
  // calendar
  'cal.eye':'Cycle annuel','cal.h':'Calendrier du cycle {y}',
  'cal.lead':'Timeline opérationnelle : phases obligatoires, gates de gouvernance, QBR, Fast Track lane. Vue Gantt 12 mois.',
+ 'cal.lead.v2':'Timeline opérationnelle alignée framework v1.0 : 4 macro-phases · 4 gates · 3 fenêtres QBR pour l\'intake en cours d\'année · Fast Track lane. Le cycle démarre en <b>Septembre N-1</b>.',
  'cal.phase':'Phase','cal.today':'Aujourd\'hui :',
+ 'cal.qbr.title':'Fenêtre QBR — intake en cours d\'année',
+ 'cal.legend.h':'Légende','cal.legend.sub':'— couleurs des barres',
+ 'cal.legend.gate':'Gates de gouvernance','cal.legend.qbr':'Fenêtres QBR intake','cal.legend.fast':'Fast Track lane (exception)',
  'cal.b1':'Annual Trial Cycle launch','cal.b1.s':'SA&I notification + templates',
  'cal.b2':'Use Case submission window','cal.b2.s':'Toutes BUs · entrée portefeuille',
  'cal.b3':'Trial Steering Committee · Gate 1','cal.b3.s':'Design & readiness review',
@@ -793,6 +847,12 @@ fr:{
  'adm.crops.h':'🌾 Cultures ({n})','adm.prods.h':'🧪 Produits OCP ({n})',
  'adm.partners.h':'🤝 Partenaires ({n})','adm.partners.nm':'Partenaire','adm.partners.typ':'Type',
  'adm.mds.h':'📋 Minimum Data Set (12 items)',
+ 'adm.classes.h':'🔬 Trial Classes & Types','adm.classes.sub':'— taxonomie framework v1.0',
+ 'adm.classes.cls':'Class','adm.classes.trl':'TRL','adm.classes.types':'Types',
+ 'adm.so.h':'🎯 Strategic Objectives','adm.so.sub':'— 6 axes officiels',
+ 'adm.ps.h':'🤝 Partner Setup Types','adm.ps.sub':'— 3 modes contractuels',
+ 'adm.mp.h':'🧭 Macro-phases du cycle','adm.mp.sub':'— 4 phases officielles',
+ 'adm.fw.h':'📜 Trial Management Framework v1.0','adm.fw.body':'Document validé et signé par le CEO. 10 sections · 22 contrôles internes · 4 KPIs · 6 objectifs stratégiques · 4 classes × types · 3 setups partenaire · 4 macro-phases. NutriPlan opérationnalise ce document ligne par ligne.',
  // chat
  'chat.h':'D²nAI bot','chat.sub':'Chat with your Trial data',
  'chat.close':'Fermer',
@@ -820,6 +880,46 @@ fr:{
  'gov.month.jan':'Janvier {y}','gov.month.feb':'Février {y}','gov.month.mar':'Mars {y}','gov.month.apr':'Avril {y}','gov.month.may':'Mai {y}','gov.month.jun':'Juin {y}',
  'gov.bu.jan':'Africa BU','gov.bu.feb':'Brazil BU','gov.bu.mar':'India BU','gov.bu.apr':'Europe BU','gov.bu.may':'North America BU','gov.bu.jun':'Asia-Pacific BU',
  'gov.dec.jan':'2 Go-decisions attendues','gov.dec.feb':'1 Hold review','gov.dec.mar':'Cross-site consolidation','gov.dec.apr':'Closure 2025 — final reports','gov.dec.may':'Pilot Iowa drip-line','gov.dec.jun':'Monsoon stress trials',
+ 'ic.eye':'Compliance · Audit','ic.h':'Contrôles internes du framework v1.0',
+ 'ic.lead':'Les 22 contrôles internes définis par le framework v1.0 — répartis sur 5 domaines. Une vue dédiée pour piloter la conformité, détecter les écarts, préparer les audits.',
+ 'ic.k1':'Compliance rate','ic.k1.d':'UCs sans écart IC',
+ 'ic.k2':'UCs en écart','ic.k2.d':'À traiter en priorité',
+ 'ic.k3':'Contrôles définis','ic.k3.d':'Framework v1.0',
+ 'ic.k4':'Écarts ouverts','ic.k4.d':'Cumul portefeuille',
+ 'ic.byDom.h':'Contrôles par domaine','ic.byDom.sub':'— 5 domaines · 22 contrôles',
+ 'ic.points':'points','ic.issues':'écarts','ic.ok':'conforme',
+ 'ic.tbl.h':'Détail des 22 contrôles internes','ic.tbl.sub':'— état de conformité du portefeuille',
+ 'ic.tbl.id':'Réf','ic.tbl.dom':'Domaine','ic.tbl.ctrl':'Contrôle','ic.tbl.sev':'Sévérité','ic.tbl.ucs':'UCs en écart','ic.tbl.status':'Statut',
+ 'ic.compliant':'Conforme',
+ 'ic.dom.planning':'Planning & Proposal','ic.dom.governance':'Governance & Approval','ic.dom.execution':'Execution & Compliance','ic.dom.data':'Data Quality & Integrity','ic.dom.reporting':'Reporting & Closure',
+ 'ic.ai.h':'Demander au D²nAI bot','ic.ai.sub':'Le copilote IA peut analyser la conformité — clic pour pré-remplir une question.',
+ 'ic.ai.q1':'Quels Use Cases sont en écart sur IC-D4.1 ?',
+ 'ic.ai.q2':'Donne-moi un brief des écarts ouverts pour le prochain audit.',
+ 'ic.ai.q3':'Quel domaine de contrôle a le plus d\'écarts ce cycle ?',
+ 'ic.ai.q4':'Identifie les UCs en risque de blocage Gate 4 (Deployment Readiness).',
+ 'ic.p1_1':'Use Case completeness — template + champs obligatoires',
+ 'ic.p1_2':'Respect de la deadline de soumission',
+ 'ic.p1_3':'Scientific Review Note émise par SA&I',
+ 'ic.p1_4':'Pas de partenaire contacté en doublon',
+ 'ic.g2_1':'CEO approval avant lancement',
+ 'ic.g2_2':'Minutes Steering Committee signées',
+ 'ic.g2_3':'Volume Fast Track ≤ 5–10 %',
+ 'ic.g2_4':'Changements de scope formellement validés',
+ 'ic.e3_1':'Contrat partenaire avant opérations terrain',
+ 'ic.e3_2':'Clearance compliance (Legal/Quality/Reg/PA-PR)',
+ 'ic.e3_3':'Adhérence au budget approuvé CEO',
+ 'ic.e3_4':'Adhérence au protocole validé',
+ 'ic.e3_5':'Trial enregistré dans NutriTrials avant lancement',
+ 'ic.d4_1':'MDS complet pour chaque trial clos',
+ 'ic.d4_2':'Saisie data dans NutriTrials en temps voulu',
+ 'ic.d4_3':'Stockage exclusif dans plateformes OCP',
+ 'ic.d4_4':'Gouvernance data appliquée (accès, partage)',
+ 'ic.d4_5':'Indépendance de l\'analyse scientifique',
+ 'ic.r5_1':'Reporting trimestriel COMEX + CEO',
+ 'ic.r5_2':'Participation rolling review mensuelle',
+ 'ic.r5_3':'Closure report archivé + validé SA&I',
+ 'ic.r5_4':'Lessons learned consolidées N+1',
+ 'ic.r5_5':'IP & publications externes validées',
  'gov.step.1':'1 · Launch Annual Trial Cycle','gov.step.2':'2 · Use Case definition & drafting','gov.step.3':'3 · Final Proposal Consolidation','gov.step.4':'4 · Trial Steering Committee','gov.step.5':'5 · CEO Validation','gov.step.6':'6 · Trial Readiness & Contracting','gov.step.7':'7 · Execution & Data Collection','gov.step.8':'8 · Analysis & Result Validation','gov.step.9':'9 · Monitoring Committee','gov.step.10':'10 · Adoption Decision','gov.step.11':'11 · Closure & Knowledge Sharing',
  'gov.raci.r':'Responsible','gov.raci.a':'Accountable','gov.raci.c':'Consulted','gov.raci.i':'Informed',
  'gov.act':'Étape','gov.role.sai':'SA&I','gov.role.bu':'BUs / Régions','gov.role.sf':'Support Fns','gov.role.gv':'Governance','gov.role.ceo':'CEO',
@@ -835,6 +935,7 @@ en:{
  'nav.portfolio':'Portfolio','nav.portfolio.cr':'Trial portfolio',
  'nav.calendar':'Annual cycle','nav.calendar.cr':'Annual cycle · Calendar',
  'nav.gov':'Governance','nav.gov.cr':'Committees & governance',
+ 'nav.ic':'Internal controls','nav.ic.cr':'Internal controls · Compliance',
  'nav.intake':'New Use Case','nav.intake.cr':'New Use Case',
  'nav.ft':'Fast Track','nav.ft.cr':'Fast Track',
  'nav.kb':'Closure & KB','nav.kb.cr':'Closure & Knowledge Base',
@@ -863,6 +964,22 @@ en:{
  'ck.k.ceo':'CEO Pending','ck.k.ceo.d':'Gate 2 portfolio',
  'ck.k.exec':'In Execution','ck.k.exec.d':'Field + monitoring',
  'ck.k.unit':'UCs',
+ 'ck.kpi1':'% Fast Track','ck.kpi1.d':'Target: ≤ 10% (governance discipline)',
+ 'ck.kpi2':'% Transform → Demo / Launch','ck.kpi2.d':'Target: ≥ 50% (business impact)',
+ 'ck.kpi3':'% On time','ck.kpi3.d':'Target: ≥ 80% (execution discipline)',
+ 'ck.kpi4':'Budget variance','ck.kpi4.d':'Target: ± 5% (financial adherence)',
+ 'mp.launch':'Trial Cycle Launch','mp.readiness':'Operational Readiness','mp.execution':'Execution — Data & Analysis','mp.decision':'Decision',
+ 'cls.fundamental':'Fundamental & Discovery','cls.validation':'Validation','cls.prelaunch':'Pre-launch','cls.demo':'Demo Plots',
+ 'tp.ctrl':'Controlled trials','tp.station':'At-station trials',
+ 'tp.ctrlval':'Controlled Validation trials','tp.stationval':'At-station validation trials','tp.fieldval':'Field validation',
+ 'tp.commercial':'Commercial pre-launch','tp.regulatory':'Regulatory pre-launch',
+ 'tp.demoplot':'Demonstration plots',
+ 'so.product_dev':'Product Development & Validation','so.cropping_mgmt':'Cropping Management Practices',
+ 'so.sustainable':'Sustainable / Resilient Agriculture','so.digital_ag':'Digital & Precision Agriculture',
+ 'so.nutrition':'Human & Livestock Nutrition','so.demo_adoption':'Demonstrations for Market Adoption',
+ 'ps.institution':'Institution-based','ps.client':'Client-based','ps.provider':'Private Service Provider',
+ 'qbr.q1':'QBR 1','qbr.q2':'QBR 2','qbr.q3':'QBR 3',
+ 'sev.high':'high','sev.med':'med','sev.high.lbl':'Critical','sev.med.lbl':'Medium',
  'ck.alerts.h':'🔥 Alerts & escalations','ck.alerts.sub':'— issues detected on your portfolio',
  'ck.alerts.allOk':'All under control ✓',
  'ck.act.h':'📝 Recent activity',
@@ -891,6 +1008,7 @@ en:{
  'pf.tbl.empty':'No Use Case matches the current filters.',
  'uc.start':'Planned start','uc.end':'Planned end','uc.budget':'Allocated budget','uc.partner':'Partner','uc.sai':'SA&I Lead',
  'uc.plan':'Experimental plan','uc.plan.fmt':'{t} treatments × {r} replications',
+ 'uc.class':'Trial Class · Type','uc.partnerSetup':'Partner setup','uc.strategicObj':'Strategic objectives','uc.icIssues':'Open IC gaps',
  'uc.objP':'Primary objective','uc.objS':'Secondary objectives','uc.kpiP':'Primary KPIs','uc.kpiS':'Secondary KPIs','uc.risks':'Identified risks',
  'uc.gates':'Governance gates','uc.mds':'Minimum Data Set ({n}/12)',
  'uc.go':'✓ GO','uc.hold':'⏸ HOLD','uc.kill':'✗ KILL',
@@ -920,7 +1038,11 @@ en:{
  'in.note':'_MVP — real save + dynamic MDS validation arrive in V1.1._',
  'cal.eye':'Annual cycle','cal.h':'{y} cycle calendar',
  'cal.lead':'Operational timeline: mandatory phases, governance gates, QBR, Fast Track lane. 12-month Gantt view.',
+ 'cal.lead.v2':'Operational timeline aligned with framework v1.0: 4 macro-phases · 4 gates · 3 QBR in-year intake windows · Fast Track lane. The cycle starts in <b>September N-1</b>.',
  'cal.phase':'Phase','cal.today':'Today:',
+ 'cal.qbr.title':'QBR window — in-year intake',
+ 'cal.legend.h':'Legend','cal.legend.sub':'— bar colors',
+ 'cal.legend.gate':'Governance gates','cal.legend.qbr':'QBR intake windows','cal.legend.fast':'Fast Track lane (exception)',
  'cal.b1':'Annual Trial Cycle launch','cal.b1.s':'SA&I notification + templates',
  'cal.b2':'Use Case submission window','cal.b2.s':'All BUs · portfolio entry',
  'cal.b3':'Trial Steering Committee · Gate 1','cal.b3.s':'Design & readiness review',
@@ -966,6 +1088,12 @@ en:{
  'adm.crops.h':'🌾 Crops ({n})','adm.prods.h':'🧪 OCP products ({n})',
  'adm.partners.h':'🤝 Partners ({n})','adm.partners.nm':'Partner','adm.partners.typ':'Type',
  'adm.mds.h':'📋 Minimum Data Set (12 items)',
+ 'adm.classes.h':'🔬 Trial Classes & Types','adm.classes.sub':'— framework v1.0 taxonomy',
+ 'adm.classes.cls':'Class','adm.classes.trl':'TRL','adm.classes.types':'Types',
+ 'adm.so.h':'🎯 Strategic Objectives','adm.so.sub':'— 6 official axes',
+ 'adm.ps.h':'🤝 Partner Setup Types','adm.ps.sub':'— 3 contractual modes',
+ 'adm.mp.h':'🧭 Cycle macro-phases','adm.mp.sub':'— 4 official phases',
+ 'adm.fw.h':'📜 Trial Management Framework v1.0','adm.fw.body':'Validated document signed by the CEO. 10 sections · 22 internal controls · 4 KPIs · 6 strategic objectives · 4 classes × types · 3 partner setups · 4 macro-phases. NutriPlan operationalises this document line by line.',
  'chat.h':'D²nAI bot','chat.sub':'Chat with your Trial data',
  'chat.close':'Close',
  'chat.input.ph':'Ask in natural language — e.g. "Which NPK demos in Africa are at risk?"',
@@ -992,6 +1120,46 @@ en:{
  'gov.month.jan':'January {y}','gov.month.feb':'February {y}','gov.month.mar':'March {y}','gov.month.apr':'April {y}','gov.month.may':'May {y}','gov.month.jun':'June {y}',
  'gov.bu.jan':'Africa BU','gov.bu.feb':'Brazil BU','gov.bu.mar':'India BU','gov.bu.apr':'Europe BU','gov.bu.may':'North America BU','gov.bu.jun':'Asia-Pacific BU',
  'gov.dec.jan':'2 Go decisions expected','gov.dec.feb':'1 Hold review','gov.dec.mar':'Cross-site consolidation','gov.dec.apr':'Closure 2025 — final reports','gov.dec.may':'Iowa drip-line pilot','gov.dec.jun':'Monsoon stress trials',
+ 'ic.eye':'Compliance · Audit','ic.h':'Internal controls of framework v1.0',
+ 'ic.lead':'The 22 internal controls defined by the validated framework v1.0 — spread across 5 domains. A dedicated view to steer compliance, surface deviations, prepare audits.',
+ 'ic.k1':'Compliance rate','ic.k1.d':'UCs with no IC gap',
+ 'ic.k2':'UCs with gaps','ic.k2.d':'To prioritise',
+ 'ic.k3':'Defined controls','ic.k3.d':'Framework v1.0',
+ 'ic.k4':'Open gaps','ic.k4.d':'Portfolio cumulative',
+ 'ic.byDom.h':'Controls by domain','ic.byDom.sub':'— 5 domains · 22 controls',
+ 'ic.points':'points','ic.issues':'gaps','ic.ok':'compliant',
+ 'ic.tbl.h':'Detail of the 22 internal controls','ic.tbl.sub':'— portfolio compliance state',
+ 'ic.tbl.id':'Ref','ic.tbl.dom':'Domain','ic.tbl.ctrl':'Control','ic.tbl.sev':'Severity','ic.tbl.ucs':'UCs with gaps','ic.tbl.status':'Status',
+ 'ic.compliant':'Compliant',
+ 'ic.dom.planning':'Planning & Proposal','ic.dom.governance':'Governance & Approval','ic.dom.execution':'Execution & Compliance','ic.dom.data':'Data Quality & Integrity','ic.dom.reporting':'Reporting & Closure',
+ 'ic.ai.h':'Ask the D²nAI bot','ic.ai.sub':'The AI co-pilot can analyse compliance — click to prefill a question.',
+ 'ic.ai.q1':'Which Use Cases have an IC-D4.1 gap?',
+ 'ic.ai.q2':'Give me a brief of open gaps for the next audit.',
+ 'ic.ai.q3':'Which control domain has the most gaps this cycle?',
+ 'ic.ai.q4':'Identify UCs at risk of failing Gate 4 (Deployment Readiness).',
+ 'ic.p1_1':'Use Case completeness — template + mandatory fields',
+ 'ic.p1_2':'Submission deadline compliance',
+ 'ic.p1_3':'Scientific Review Note issued by SA&I',
+ 'ic.p1_4':'No duplicate partner outreach',
+ 'ic.g2_1':'CEO approval prior to launch',
+ 'ic.g2_2':'Steering Committee minutes signed',
+ 'ic.g2_3':'Fast Track volume ≤ 5–10%',
+ 'ic.g2_4':'Scope change authorisation',
+ 'ic.e3_1':'Partner contracting before field operations',
+ 'ic.e3_2':'Compliance clearance (Legal/Quality/Reg/PA-PR)',
+ 'ic.e3_3':'Budget adherence (CEO approved)',
+ 'ic.e3_4':'Protocol adherence',
+ 'ic.e3_5':'Trial registered in NutriTrials before launch',
+ 'ic.d4_1':'MDS complete for each closed trial',
+ 'ic.d4_2':'Timely data entry in NutriTrials',
+ 'ic.d4_3':'Exclusive storage in OCP platforms',
+ 'ic.d4_4':'Data governance applied (access, sharing)',
+ 'ic.d4_5':'Independence of scientific analysis',
+ 'ic.r5_1':'Quarterly reporting to COMEX + CEO',
+ 'ic.r5_2':'Monthly rolling review participation',
+ 'ic.r5_3':'Closure report archived + SA&I validated',
+ 'ic.r5_4':'Lessons learned consolidated N+1',
+ 'ic.r5_5':'IP & external publications validated',
  'gov.step.1':'1 · Launch Annual Trial Cycle','gov.step.2':'2 · Use Case definition & drafting','gov.step.3':'3 · Final Proposal Consolidation','gov.step.4':'4 · Trial Steering Committee','gov.step.5':'5 · CEO Validation','gov.step.6':'6 · Trial Readiness & Contracting','gov.step.7':'7 · Execution & Data Collection','gov.step.8':'8 · Analysis & Result Validation','gov.step.9':'9 · Monitoring Committee','gov.step.10':'10 · Adoption Decision','gov.step.11':'11 · Closure & Knowledge Sharing',
  'gov.raci.r':'Responsible','gov.raci.a':'Accountable','gov.raci.c':'Consulted','gov.raci.i':'Informed',
  'gov.act':'Step','gov.role.sai':'SA&I','gov.role.bu':'BUs / Regions','gov.role.sf':'Support Fns','gov.role.gv':'Governance','gov.role.ceo':'CEO',
@@ -1007,6 +1175,7 @@ pt:{
  'nav.portfolio':'Portfólio','nav.portfolio.cr':'Portfólio de trials',
  'nav.calendar':'Ciclo anual','nav.calendar.cr':'Ciclo anual · Calendário',
  'nav.gov':'Governança','nav.gov.cr':'Comitês & governança',
+ 'nav.ic':'Controles internos','nav.ic.cr':'Controles internos · Compliance',
  'nav.intake':'Novo Use Case','nav.intake.cr':'Novo Use Case',
  'nav.ft':'Fast Track','nav.ft.cr':'Fast Track',
  'nav.kb':'Closure & KB','nav.kb.cr':'Closure & Knowledge Base',
@@ -1035,6 +1204,22 @@ pt:{
  'ck.k.ceo':'CEO pendente','ck.k.ceo.d':'Gate 2 portfólio',
  'ck.k.exec':'Em execução','ck.k.exec.d':'Campo + monitoring',
  'ck.k.unit':'UCs',
+ 'ck.kpi1':'% Fast Track','ck.kpi1.d':'Meta: ≤ 10% (disciplina de governança)',
+ 'ck.kpi2':'% Transform → Demo / Launch','ck.kpi2.d':'Meta: ≥ 50% (impacto business)',
+ 'ck.kpi3':'% On time','ck.kpi3.d':'Meta: ≥ 80% (disciplina de execução)',
+ 'ck.kpi4':'Variância orçamentária','ck.kpi4.d':'Meta: ± 5% (aderência financeira)',
+ 'mp.launch':'Trial Cycle Launch','mp.readiness':'Operational Readiness','mp.execution':'Execução — Dados & Análise','mp.decision':'Decisão',
+ 'cls.fundamental':'Fundamental & Discovery','cls.validation':'Validation','cls.prelaunch':'Pre-launch','cls.demo':'Demo Plots',
+ 'tp.ctrl':'Controlled trials','tp.station':'At-station trials',
+ 'tp.ctrlval':'Controlled Validation trials','tp.stationval':'At-station validation trials','tp.fieldval':'Field validation',
+ 'tp.commercial':'Commercial pre-launch','tp.regulatory':'Regulatory pre-launch',
+ 'tp.demoplot':'Demonstration plots',
+ 'so.product_dev':'Desenvolvimento & validação de produto','so.cropping_mgmt':'Práticas de manejo agronômico',
+ 'so.sustainable':'Agricultura sustentável / resiliente','so.digital_ag':'Agricultura digital & de precisão',
+ 'so.nutrition':'Nutrição humana & animal','so.demo_adoption':'Demos para adoção de mercado',
+ 'ps.institution':'Institucional','ps.client':'Cliente','ps.provider':'Prestador de serviço privado',
+ 'qbr.q1':'QBR 1','qbr.q2':'QBR 2','qbr.q3':'QBR 3',
+ 'sev.high':'high','sev.med':'med','sev.high.lbl':'Crítica','sev.med.lbl':'Média',
  'ck.alerts.h':'🔥 Alertas & escalações','ck.alerts.sub':'— problemas detectados no seu portfólio',
  'ck.alerts.allOk':'Tudo sob controle ✓',
  'ck.act.h':'📝 Atividade recente',
@@ -1063,6 +1248,7 @@ pt:{
  'pf.tbl.empty':'Nenhum Use Case corresponde aos filtros.',
  'uc.start':'Início previsto','uc.end':'Fechamento previsto','uc.budget':'Orçamento alocado','uc.partner':'Parceiro','uc.sai':'SA&I Lead',
  'uc.plan':'Plano experimental','uc.plan.fmt':'{t} tratamentos × {r} repetições',
+ 'uc.class':'Trial Class · Type','uc.partnerSetup':'Setup do parceiro','uc.strategicObj':'Objetivos estratégicos','uc.icIssues':'Desvios IC abertos',
  'uc.objP':'Objetivo primário','uc.objS':'Objetivos secundários','uc.kpiP':'KPIs primários','uc.kpiS':'KPIs secundários','uc.risks':'Riscos identificados',
  'uc.gates':'Gates de governança','uc.mds':'Minimum Data Set ({n}/12)',
  'uc.go':'✓ GO','uc.hold':'⏸ HOLD','uc.kill':'✗ KILL',
@@ -1092,7 +1278,11 @@ pt:{
  'in.note':'_MVP — o save real + validação dinâmica do MDS chegam na V1.1._',
  'cal.eye':'Ciclo anual','cal.h':'Calendário do ciclo {y}',
  'cal.lead':'Timeline operacional: fases obrigatórias, gates de governança, QBR, Fast Track lane. Visão Gantt 12 meses.',
+ 'cal.lead.v2':'Timeline operacional alinhada ao framework v1.0: 4 macro-fases · 4 gates · 3 janelas QBR para intake no decorrer do ano · Fast Track lane. O ciclo começa em <b>Setembro N-1</b>.',
  'cal.phase':'Fase','cal.today':'Hoje:',
+ 'cal.qbr.title':'Janela QBR — intake no decorrer do ano',
+ 'cal.legend.h':'Legenda','cal.legend.sub':'— cores das barras',
+ 'cal.legend.gate':'Gates de governança','cal.legend.qbr':'Janelas QBR de intake','cal.legend.fast':'Fast Track lane (exceção)',
  'cal.b1':'Lançamento do ciclo anual','cal.b1.s':'Notificação SA&I + templates',
  'cal.b2':'Janela de submissão de Use Cases','cal.b2.s':'Todas as BUs · entrada no portfólio',
  'cal.b3':'Trial Steering Committee · Gate 1','cal.b3.s':'Revisão de design & readiness',
@@ -1138,6 +1328,12 @@ pt:{
  'adm.crops.h':'🌾 Culturas ({n})','adm.prods.h':'🧪 Produtos OCP ({n})',
  'adm.partners.h':'🤝 Parceiros ({n})','adm.partners.nm':'Parceiro','adm.partners.typ':'Tipo',
  'adm.mds.h':'📋 Minimum Data Set (12 itens)',
+ 'adm.classes.h':'🔬 Trial Classes & Types','adm.classes.sub':'— taxonomia do framework v1.0',
+ 'adm.classes.cls':'Class','adm.classes.trl':'TRL','adm.classes.types':'Types',
+ 'adm.so.h':'🎯 Strategic Objectives','adm.so.sub':'— 6 eixos oficiais',
+ 'adm.ps.h':'🤝 Partner Setup Types','adm.ps.sub':'— 3 modos contratuais',
+ 'adm.mp.h':'🧭 Macro-fases do ciclo','adm.mp.sub':'— 4 fases oficiais',
+ 'adm.fw.h':'📜 Trial Management Framework v1.0','adm.fw.body':'Documento validado e assinado pelo CEO. 10 seções · 22 controles internos · 4 KPIs · 6 objetivos estratégicos · 4 classes × types · 3 setups de parceiro · 4 macro-fases. NutriPlan operacionaliza esse documento linha a linha.',
  'chat.h':'D²nAI bot','chat.sub':'Chat with your Trial data',
  'chat.close':'Fechar',
  'chat.input.ph':'Pergunte em linguagem natural — ex: "Quais demos NPK na África estão em risco?"',
@@ -1164,6 +1360,46 @@ pt:{
  'gov.month.jan':'Janeiro {y}','gov.month.feb':'Fevereiro {y}','gov.month.mar':'Março {y}','gov.month.apr':'Abril {y}','gov.month.may':'Maio {y}','gov.month.jun':'Junho {y}',
  'gov.bu.jan':'Africa BU','gov.bu.feb':'Brazil BU','gov.bu.mar':'India BU','gov.bu.apr':'Europe BU','gov.bu.may':'North America BU','gov.bu.jun':'Asia-Pacific BU',
  'gov.dec.jan':'2 decisões Go esperadas','gov.dec.feb':'1 Hold review','gov.dec.mar':'Consolidação cross-site','gov.dec.apr':'Closure 2025 — relatórios finais','gov.dec.may':'Piloto Iowa drip-line','gov.dec.jun':'Trials monsoon stress',
+ 'ic.eye':'Compliance · Auditoria','ic.h':'Controles internos do framework v1.0',
+ 'ic.lead':'Os 22 controles internos definidos pelo framework v1.0 — distribuídos em 5 domínios. Visão dedicada para conduzir a conformidade, identificar desvios, preparar auditorias.',
+ 'ic.k1':'Taxa de conformidade','ic.k1.d':'UCs sem desvio IC',
+ 'ic.k2':'UCs com desvio','ic.k2.d':'Priorizar tratamento',
+ 'ic.k3':'Controles definidos','ic.k3.d':'Framework v1.0',
+ 'ic.k4':'Desvios em aberto','ic.k4.d':'Cumulativo portfólio',
+ 'ic.byDom.h':'Controles por domínio','ic.byDom.sub':'— 5 domínios · 22 controles',
+ 'ic.points':'pontos','ic.issues':'desvios','ic.ok':'conforme',
+ 'ic.tbl.h':'Detalhe dos 22 controles internos','ic.tbl.sub':'— estado de conformidade do portfólio',
+ 'ic.tbl.id':'Ref','ic.tbl.dom':'Domínio','ic.tbl.ctrl':'Controle','ic.tbl.sev':'Severidade','ic.tbl.ucs':'UCs em desvio','ic.tbl.status':'Status',
+ 'ic.compliant':'Conforme',
+ 'ic.dom.planning':'Planning & Proposal','ic.dom.governance':'Governance & Approval','ic.dom.execution':'Execution & Compliance','ic.dom.data':'Data Quality & Integrity','ic.dom.reporting':'Reporting & Closure',
+ 'ic.ai.h':'Perguntar ao D²nAI bot','ic.ai.sub':'O copiloto IA pode analisar a conformidade — clique para pré-preencher uma pergunta.',
+ 'ic.ai.q1':'Quais Use Cases estão em desvio no IC-D4.1?',
+ 'ic.ai.q2':'Me dê um briefing dos desvios abertos para a próxima auditoria.',
+ 'ic.ai.q3':'Qual domínio de controle tem mais desvios neste ciclo?',
+ 'ic.ai.q4':'Identifique UCs em risco de bloqueio no Gate 4 (Deployment Readiness).',
+ 'ic.p1_1':'Use Case completude — template + campos obrigatórios',
+ 'ic.p1_2':'Respeito ao prazo de submissão',
+ 'ic.p1_3':'Scientific Review Note emitida pela SA&I',
+ 'ic.p1_4':'Sem contato duplicado com parceiros',
+ 'ic.g2_1':'Aprovação CEO antes do lançamento',
+ 'ic.g2_2':'Atas do Steering Committee assinadas',
+ 'ic.g2_3':'Volume Fast Track ≤ 5–10%',
+ 'ic.g2_4':'Mudanças de escopo formalmente validadas',
+ 'ic.e3_1':'Contrato com parceiro antes das operações de campo',
+ 'ic.e3_2':'Clearance compliance (Legal/Quality/Reg/PA-PR)',
+ 'ic.e3_3':'Aderência ao orçamento aprovado pelo CEO',
+ 'ic.e3_4':'Aderência ao protocolo validado',
+ 'ic.e3_5':'Trial registrado no NutriTrials antes do lançamento',
+ 'ic.d4_1':'MDS completo para cada trial fechado',
+ 'ic.d4_2':'Entrada de dados no NutriTrials em tempo hábil',
+ 'ic.d4_3':'Armazenamento exclusivo nas plataformas OCP',
+ 'ic.d4_4':'Governança de dados aplicada (acesso, compartilhamento)',
+ 'ic.d4_5':'Independência da análise científica',
+ 'ic.r5_1':'Reporting trimestral COMEX + CEO',
+ 'ic.r5_2':'Participação na rolling review mensal',
+ 'ic.r5_3':'Closure report arquivado + validado pela SA&I',
+ 'ic.r5_4':'Lessons learned consolidadas no ciclo N+1',
+ 'ic.r5_5':'IP & publicações externas validadas',
  'gov.step.1':'1 · Lançar ciclo anual','gov.step.2':'2 · Definição & redação de Use Cases','gov.step.3':'3 · Consolidação final das propostas','gov.step.4':'4 · Trial Steering Committee','gov.step.5':'5 · Validação CEO','gov.step.6':'6 · Readiness & contratos','gov.step.7':'7 · Execução & coleta de dados','gov.step.8':'8 · Análise & validação dos resultados','gov.step.9':'9 · Monitoring Committee','gov.step.10':'10 · Decisão de adoção','gov.step.11':'11 · Closure & knowledge sharing',
  'gov.raci.r':'Responsible','gov.raci.a':'Accountable','gov.raci.c':'Consulted','gov.raci.i':'Informed',
  'gov.act':'Etapa','gov.role.sai':'SA&I','gov.role.bu':'BUs / Regiões','gov.role.sf':'Support Fns','gov.role.gv':'Governança','gov.role.ceo':'CEO',
@@ -1230,6 +1466,90 @@ const MDS_ITEMS = [
   'Data capture tool',
   'Economic model'
 ];
+
+/* -----------------------------------------------------------------
+ * 2ter. Validated framework reference data (v1.0 signed by CEO)
+ *  — 4 macro-phases · 4 Trial Classes · 6 Strategic Objectives ·
+ *    3 Partner Setup Types · 22 Internal Control Points · 4 process KPIs.
+ *  Source of truth: Trial Management Framework v1.0 (CEO-signed).
+ * --------------------------------------------------------------- */
+const MACRO_PHASES = [
+  { id:'launch',    lblK:'mp.launch',    color:'#2E7D32' },
+  { id:'readiness', lblK:'mp.readiness', color:'#7c5b07' },
+  { id:'execution', lblK:'mp.execution', color:'#1d5e94' },
+  { id:'decision',  lblK:'mp.decision',  color:'#583c8d' }
+];
+const CLASSES = [
+  { id:'fundamental', lblK:'cls.fundamental', trl:'TRL 2–4',
+    types:[ {id:'ctrl', lblK:'tp.ctrl'}, {id:'station', lblK:'tp.station'} ] },
+  { id:'validation',  lblK:'cls.validation',  trl:'TRL 5–8',
+    types:[ {id:'ctrl_val', lblK:'tp.ctrlval'}, {id:'station_val', lblK:'tp.stationval'}, {id:'field_val', lblK:'tp.fieldval'} ] },
+  { id:'prelaunch',   lblK:'cls.prelaunch',   trl:'TRL 7–9',
+    types:[ {id:'commercial', lblK:'tp.commercial'}, {id:'regulatory', lblK:'tp.regulatory'} ] },
+  { id:'demo',        lblK:'cls.demo',        trl:'TRL 8–9',
+    types:[ {id:'demo_plot', lblK:'tp.demoplot'} ] }
+];
+const STRATEGIC_OBJECTIVES = [
+  { id:'product_dev',  lblK:'so.product_dev',  ico:'🧪' },
+  { id:'cropping_mgmt',lblK:'so.cropping_mgmt',ico:'🌱' },
+  { id:'sustainable',  lblK:'so.sustainable',  ico:'🌍' },
+  { id:'digital_ag',   lblK:'so.digital_ag',   ico:'📡' },
+  { id:'nutrition',    lblK:'so.nutrition',    ico:'🥗' },
+  { id:'demo_adoption',lblK:'so.demo_adoption',ico:'📣' }
+];
+const PARTNER_SETUPS = [
+  { id:'institution', lblK:'ps.institution' },
+  { id:'client',      lblK:'ps.client'      },
+  { id:'provider',    lblK:'ps.provider'    }
+];
+// 22 Internal Control Points across 5 domains — the audit/compliance backbone.
+const IC_POINTS = [
+  { id:'IC-P1.1', dom:'planning', lblK:'ic.p1_1', sevK:'sev.high' },
+  { id:'IC-P1.2', dom:'planning', lblK:'ic.p1_2', sevK:'sev.med' },
+  { id:'IC-P1.3', dom:'planning', lblK:'ic.p1_3', sevK:'sev.high' },
+  { id:'IC-P1.4', dom:'planning', lblK:'ic.p1_4', sevK:'sev.med' },
+  { id:'IC-G2.1', dom:'governance', lblK:'ic.g2_1', sevK:'sev.high' },
+  { id:'IC-G2.2', dom:'governance', lblK:'ic.g2_2', sevK:'sev.med' },
+  { id:'IC-G2.3', dom:'governance', lblK:'ic.g2_3', sevK:'sev.high' },
+  { id:'IC-G2.4', dom:'governance', lblK:'ic.g2_4', sevK:'sev.med' },
+  { id:'IC-E3.1', dom:'execution', lblK:'ic.e3_1', sevK:'sev.high' },
+  { id:'IC-E3.2', dom:'execution', lblK:'ic.e3_2', sevK:'sev.high' },
+  { id:'IC-E3.3', dom:'execution', lblK:'ic.e3_3', sevK:'sev.med' },
+  { id:'IC-E3.4', dom:'execution', lblK:'ic.e3_4', sevK:'sev.high' },
+  { id:'IC-E3.5', dom:'execution', lblK:'ic.e3_5', sevK:'sev.high' },
+  { id:'IC-D4.1', dom:'data', lblK:'ic.d4_1', sevK:'sev.high' },
+  { id:'IC-D4.2', dom:'data', lblK:'ic.d4_2', sevK:'sev.med' },
+  { id:'IC-D4.3', dom:'data', lblK:'ic.d4_3', sevK:'sev.high' },
+  { id:'IC-D4.4', dom:'data', lblK:'ic.d4_4', sevK:'sev.high' },
+  { id:'IC-D4.5', dom:'data', lblK:'ic.d4_5', sevK:'sev.med' },
+  { id:'IC-R5.1', dom:'reporting', lblK:'ic.r5_1', sevK:'sev.high' },
+  { id:'IC-R5.2', dom:'reporting', lblK:'ic.r5_2', sevK:'sev.med' },
+  { id:'IC-R5.3', dom:'reporting', lblK:'ic.r5_3', sevK:'sev.high' },
+  { id:'IC-R5.4', dom:'reporting', lblK:'ic.r5_4', sevK:'sev.med' },
+  { id:'IC-R5.5', dom:'reporting', lblK:'ic.r5_5', sevK:'sev.med' }
+];
+const IC_DOMAINS = [
+  { id:'planning',   lblK:'ic.dom.planning',   ico:'📋' },
+  { id:'governance', lblK:'ic.dom.governance', ico:'⚖️' },
+  { id:'execution',  lblK:'ic.dom.execution',  ico:'🌱' },
+  { id:'data',       lblK:'ic.dom.data',       ico:'📊' },
+  { id:'reporting',  lblK:'ic.dom.reporting',  ico:'📝' }
+];
+// QBR in-year intake windows (Trial Cycle Launch happens in N-1 Sep).
+const QBR_WINDOWS = [
+  { id:'qbr1', monthIdx:2,  yearOffset:0,  lblK:'qbr.q1' }, // Mar
+  { id:'qbr2', monthIdx:5,  yearOffset:0,  lblK:'qbr.q2' }, // Jun
+  { id:'qbr3', monthIdx:8,  yearOffset:0,  lblK:'qbr.q3' }  // Sep
+];
+
+// Map a UC status to its macro-phase id.
+function macroPhaseOf(statusId){
+  if(['draft','submitted','steering','ceo'].includes(statusId)) return 'launch';
+  if(statusId==='approved') return 'readiness';
+  if(['execution','monitoring'].includes(statusId)) return 'execution';
+  if(/^closed-/.test(statusId)) return 'decision';
+  return 'launch';
+}
 const SEED_USECASES_RAW = [
   ['UC-2026-001','Sulphur deficiency correction on irrigated maize','AFR','Morocco','Maize','PHOSGOLD','demo','high','execution',  185000,'INRA Maroc','2026-03-15','2026-09-30'],
   ['UC-2026-002','PHOSGOLD performance on potato — Egypt staple','AFR','Egypt','Potato','PHOSGOLD','applied','high','monitoring',   240000,'IFDC','2026-02-01','2026-08-15'],
@@ -1280,10 +1600,30 @@ const SEED_USECASES = SEED_USECASES_RAW.map((r,i)=>{
   const fastTrack = (i % 11 === 7); // ~9% fast track
   const treatments = 4 + (i % 3); // 4-6 traitements
   const replications = 3 + (i % 2); // 3-4 répétitions
+  // Derive Class × Type from the legacy `type` field (Scientific/Applied/Demo) → align with v1.0 taxonomy.
+  const cls = type==='scientific' ? 'fundamental'
+            : type==='applied'    ? (i%3===0?'prelaunch':'validation')
+            : 'demo';
+  const clsObj = CLASSES.find(c=>c.id===cls);
+  const trialType = clsObj.types[i % clsObj.types.length].id;
+  // 1 strategic objective per UC (deterministic spread, occasional 2nd for richness).
+  const so1 = STRATEGIC_OBJECTIVES[i % STRATEGIC_OBJECTIVES.length].id;
+  const so2 = (i % 4 === 0) ? STRATEGIC_OBJECTIVES[(i+2) % STRATEGIC_OBJECTIVES.length].id : null;
+  const strategicObjectives = so2 ? [so1, so2] : [so1];
+  const partnerSetup = (/UM6P|INRA|EMBRAPA|ICRISAT|CIMMYT|Africa/i.test(partner)) ? 'institution'
+                     : (/Yara|Agrinova|La Ribera|AgTech/i.test(partner)) ? 'client'
+                     : 'provider';
+  // IC non-conformities — synthetic for demo: every ~5th UC has 1-2 issues.
+  const icIssues = (i % 5 === 1) ? ['IC-P1.1'] : (i % 7 === 3) ? ['IC-D4.1','IC-R5.3'] : [];
   return {
     id, name, bu, region, crop, product:prod, type, priority:prio, status, budget, partner,
     start_date:start, end_date:end,
     fast_track:fastTrack,
+    trial_class: cls,
+    trial_type: trialType,
+    strategic_objectives: strategicObjectives,
+    partner_setup: partnerSetup,
+    ic_issues: icIssues,
     objective_primary: objPrimary,
     objectives_secondary: [
       `Caractériser la cinétique d'absorption N-P-K sur ${replications} sites.`,
@@ -1316,25 +1656,40 @@ const SEED_USECASES = SEED_USECASES_RAW.map((r,i)=>{
 });
 function _backDate(d){ const x=new Date(); x.setDate(x.getDate()-d); return x.toISOString().slice(0,10); }
 function _gatesFor(status){
+  // 4 gates per the validated framework v1.0:
+  //   Gate 1 = Trial Steering Committee (Ideation)
+  //   Gate 2 = Trial Steering Committee (Execution readiness)
+  //   Gate 3 = Scientific Monitoring Committee (Evidence review)
+  //   Gate 4 = Scientific Monitoring Committee (Deployment Readiness)
   const order = ['submitted','steering','ceo','execution','monitoring','closed'];
   const idx = order.indexOf(status.replace(/^closed-.*$/,'closed'));
   const gates = [
-    { id:'steering', nm:'Trial Steering Committee', when:'2026-01-20', kind:'Gate 1 — Design & readiness' },
-    { id:'ceo',      nm:'CEO Portfolio Approval',   when:'2026-02-10', kind:'Gate 2 — Annual portfolio' },
-    { id:'monitoring',nm:'Monitoring Committee',    when:'TBD',        kind:'Gate 3 — Evidence review' }
+    { id:'steering1', nm:'Trial Steering Committee — Gate 1', when:'2025-11-20', kind:'Gate 1 — Ideation' },
+    { id:'steering2', nm:'Trial Steering Committee — Gate 2', when:'2025-12-10', kind:'Gate 2 — Execution readiness' },
+    { id:'monitoring',nm:'Scientific Monitoring Committee',   when:'TBD',         kind:'Gate 3 — Evidence review' },
+    { id:'deploy',    nm:'Deployment Readiness',              when:'TBD',         kind:'Gate 4 — Deployment readiness' }
   ];
   return gates.map((g,i)=>{
     let st='upcoming', dec=null;
     if(idx<=0){ st = i===0?'current':'upcoming'; }
     else if(idx===1){ st = i===0?'done':(i===1?'current':'upcoming'); if(i===0) dec='go'; }
     else if(idx===2){ st = i<2?'done':(i===2?'current':'upcoming'); if(i<2) dec='go'; }
-    else if(idx>=3){ st = i<3?'done':'upcoming'; if(i<3) dec='go'; }
+    else if(idx>=3){ st = i<3?'done':(i===3?'current':'upcoming'); if(i<3) dec='go'; }
     if(status==='closed-hold' && i===2){ dec='hold'; }
     if(status==='closed-kill' && i===2){ dec='kill'; }
     if(status==='closed-go'   && i===2){ dec='go'; }
+    if(status==='closed-go'   && i===3){ dec='go'; st='done'; }
     return Object.assign({}, g, { status:st, decision:dec });
   });
 }
+function classOf(id){ return CLASSES.find(c=>c.id===id) || CLASSES[0]; }
+function trialTypeOf(classId, typeId){
+  const c = classOf(classId);
+  return c.types.find(t=>t.id===typeId) || c.types[0];
+}
+function soOf(id){ return STRATEGIC_OBJECTIVES.find(s=>s.id===id) || STRATEGIC_OBJECTIVES[0]; }
+function psOf(id){ return PARTNER_SETUPS.find(p=>p.id===id) || PARTNER_SETUPS[0]; }
+function icOf(id){ return IC_POINTS.find(p=>p.id===id); }
 
 /* -----------------------------------------------------------------
  * 3. STATE
@@ -1399,6 +1754,7 @@ function goView(id){
   if(id==='intake')     renderIntake();
   if(id==='calendar')   renderCalendar();
   if(id==='governance') renderGovernance();
+  if(id==='controls')   renderControls();
   if(id==='fasttrack')  renderFastTrack();
   if(id==='kb')         renderKB();
   if(id==='admin')      renderAdmin();
@@ -1446,11 +1802,12 @@ function renderCockpit(){
       </div>
     </div>
 
+    <!-- 4 official KPIs from the validated framework v1.0 (§8 KPI) -->
     <div class="kpi-grid">
-      ${kpiTile('📚', tr('ck.k.submitted'), c.submitted, tr('ck.k.submitted.d'), Math.min(100,(c.submitted/Math.max(1,total))*100))}
-      ${kpiTile('⚖️', tr('ck.k.steering'),  c.steering, tr('ck.k.steering.d'),  Math.min(100,(c.steering/Math.max(1,total))*100))}
-      ${kpiTile('🏛️', tr('ck.k.ceo'),       c.ceo,      tr('ck.k.ceo.d'),       Math.min(100,(c.ceo/Math.max(1,total))*100))}
-      ${kpiTile('🌱', tr('ck.k.exec'),      c.execution + c.monitoring, tr('ck.k.exec.d'), Math.min(100,((c.execution+c.monitoring)/Math.max(1,total))*100))}
+      ${kpiOfficial('🚀', tr('ck.kpi1'), pctFastTrack().toFixed(0)+'%', tr('ck.kpi1.d'), pctFastTrack(), 10, true)}
+      ${kpiOfficial('📈', tr('ck.kpi2'), pctTransform().toFixed(0)+'%', tr('ck.kpi2.d'), pctTransform(), 50, false)}
+      ${kpiOfficial('⏱', tr('ck.kpi3'),  pctOnTime().toFixed(0)+'%',   tr('ck.kpi3.d'),  pctOnTime(),    80, false)}
+      ${kpiOfficial('💰', tr('ck.kpi4'), (budgetVariance()>=0?'+':'')+budgetVariance().toFixed(1)+'%', tr('ck.kpi4.d'), Math.abs(budgetVariance()), 5, true)}
     </div>
 
     <div class="row-2c">
@@ -1507,6 +1864,100 @@ function kpiTile(ico,k,v,d,pct){
     <div class="d flat">${escapeHtml(d)}</div>
     <div class="bar"><i style="width:${pct||0}%"></i></div>
   </div>`;
+}
+function kpiOfficial(ico,k,v,d,pct,target,lowerIsBetter){
+  // KPI tile aligned with the validated framework's 4 official process KPIs (§8).
+  // Color the bar based on whether the value beats the implicit target.
+  const ok = lowerIsBetter ? (pct<=target) : (pct>=target);
+  const cls = ok ? '' : 'kpi-bad';
+  return `<div class="kpi ${cls}" onclick="goView('portfolio')" title="${escapeHtml(d)}">
+    <div class="k"><span class="ico">${ico}</span>${escapeHtml(k)}</div>
+    <div class="v">${v}</div>
+    <div class="d ${ok?'up':'down'}">${ok?'✓':'⚠'} ${escapeHtml(d)}</div>
+    <div class="bar"><i style="width:${Math.min(100,pct||0)}%;background:${ok?'linear-gradient(90deg,var(--green-500),var(--green-700))':'linear-gradient(90deg,#f0c9c9,var(--bad))'}"></i></div>
+  </div>`;
+}
+function pctFastTrack(){
+  const total = DATA.length || 1;
+  return DATA.filter(u=>u.fast_track).length / total * 100;
+}
+function pctTransform(){
+  const closed = DATA.filter(u=>/^closed-/.test(u.status));
+  if(!closed.length) return 0;
+  return closed.filter(u=>u.status==='closed-go').length / closed.length * 100;
+}
+function pctOnTime(){
+  // Synthetic: trials whose end_date is within the current year and aren't kill'd are "on time"
+  const closed = DATA.filter(u=>/^closed-/.test(u.status));
+  if(!closed.length) return 0;
+  return closed.filter(u=>u.status!=='closed-kill').length / closed.length * 100;
+}
+function budgetVariance(){
+  // Synthetic budget variance: deterministic spread around the planned budget.
+  let p=0, a=0;
+  DATA.forEach((u,i)=>{ p += u.budget; a += u.budget * (1 + ((i%9)-4)*0.012); });
+  return p ? ((a-p)/p)*100 : 0;
+}
+function renderControls(){
+  // Internal Controls view — the audit/compliance backbone (22 IC points across 5 domains).
+  const issues = {}; DATA.forEach(u=>{ (u.ic_issues||[]).forEach(ic=>{ (issues[ic]=issues[ic]||[]).push(u); }); });
+  const totalIssues = Object.values(issues).reduce((s,a)=>s+a.length,0);
+  const ucsWithIssues = DATA.filter(u=>(u.ic_issues||[]).length>0).length;
+  const compliance = Math.round((DATA.length - ucsWithIssues) / Math.max(1,DATA.length) * 100);
+  document.getElementById('sc-controls').innerHTML = `
+    <div class="eyebrow">${tr('ic.eye')}</div>
+    <h2 class="h-pg">${tr('ic.h')}</h2>
+    <p class="lead">${tr('ic.lead')}</p>
+
+    <div class="kpi-grid">
+      ${kpiOfficial('🛡️', tr('ic.k1'), compliance+'%',    tr('ic.k1.d'),    compliance, 95, false)}
+      ${kpiOfficial('⚠️',  tr('ic.k2'), ucsWithIssues+'',   tr('ic.k2.d'),    ucsWithIssues, 2, true)}
+      ${kpiOfficial('📋', tr('ic.k3'), IC_POINTS.length+'',tr('ic.k3.d'),    100, 100, false)}
+      ${kpiOfficial('🚨', tr('ic.k4'), totalIssues+'',     tr('ic.k4.d'),    totalIssues, 3, true)}
+    </div>
+
+    <div class="card">
+      <h3>${tr('ic.byDom.h')} <span class="sub">${tr('ic.byDom.sub')}</span></h3>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px">${IC_DOMAINS.map(d=>{
+        const pts = IC_POINTS.filter(p=>p.dom===d.id);
+        const issuesIn = Object.entries(issues).filter(([ic])=>{ const p = icOf(ic); return p && p.dom===d.id; }).reduce((s,[,arr])=>s+arr.length,0);
+        return `<div style="background:#fff;border:1px solid ${issuesIn?'#f0c9c9':'var(--green-200)'};border-radius:12px;padding:14px;text-align:center">
+          <div style="font-size:24px">${d.ico}</div>
+          <div style="font:700 11px 'Inter';color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:4px">${tr(d.lblK)}</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:${issuesIn?'var(--bad)':'var(--green-700)'};line-height:1;margin-top:6px">${pts.length}</div>
+          <div style="font:600 11px 'Inter';color:var(--muted);margin-top:4px">${tr('ic.points')}</div>
+          ${issuesIn?`<div class="ic-chip bad">${issuesIn} ${tr('ic.issues')}</div>`:`<div class="ic-chip ok">✓ ${tr('ic.ok')}</div>`}
+        </div>`;
+      }).join('')}</div>
+    </div>
+
+    <div class="card">
+      <h3>${tr('ic.tbl.h')} <span class="sub">${tr('ic.tbl.sub')}</span></h3>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>${tr('ic.tbl.id')}</th><th>${tr('ic.tbl.dom')}</th><th>${tr('ic.tbl.ctrl')}</th><th>${tr('ic.tbl.sev')}</th><th>${tr('ic.tbl.ucs')}</th><th>${tr('ic.tbl.status')}</th></tr></thead>
+        <tbody>${IC_POINTS.map(p=>{
+          const dom = IC_DOMAINS.find(d=>d.id===p.dom);
+          const ucs = issues[p.id]||[];
+          return `<tr ${ucs.length?'style="background:#fef9e6"':''}>
+            <td><b>${p.id}</b></td>
+            <td><span class="muted">${dom?dom.ico:''} ${dom?tr(dom.lblK):p.dom}</span></td>
+            <td>${tr(p.lblK)}</td>
+            <td><span class="pill ${tr(p.sevK)==='high'?'pill-prio-high':'pill-prio-med'}">${tr(p.sevK)==='high'?tr('sev.high.lbl'):tr('sev.med.lbl')}</span></td>
+            <td class="t-num">${ucs.length}</td>
+            <td>${ucs.length?`<span class="pill pill-st-kill">⚠ ${ucs.map(u=>u.id).slice(0,2).join(', ')}${ucs.length>2?' +'+(ucs.length-2):''}</span>`:'<span class="pill pill-st-go">✓ '+tr('ic.compliant')+'</span>'}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table></div>
+    </div>
+
+    <div class="card" style="background:linear-gradient(135deg,#fbfdfb,#f4faf5);border-color:var(--green-200)">
+      <h3>🤖 ${tr('ic.ai.h')}</h3>
+      <p class="muted" style="margin:0 0 10px">${tr('ic.ai.sub')}</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        ${['ic.ai.q1','ic.ai.q2','ic.ai.q3','ic.ai.q4'].map(k=>`<button class="chip" onclick="if(!PREFS.chatOpen)toggleChat();setTimeout(()=>chatAsk(${JSON.stringify(tr(k)).replace(/"/g,'&quot;')}), 250)">${tr(k)}</button>`).join('')}
+      </div>
+    </div>
+  `;
 }
 function buildAlerts(){
   const out = [];
@@ -1696,6 +2147,10 @@ function openUc(id){
           <div class="uc-cell"><div class="lbl">${tr('uc.partner')}</div><div class="val">${escapeHtml(u.partner||'—')}</div></div>
           <div class="uc-cell"><div class="lbl">${tr('uc.sai')}</div><div class="val">${escapeHtml(u.sai_lead||'—')}</div></div>
           <div class="uc-cell"><div class="lbl">${tr('uc.plan')}</div><div class="val">${trf('uc.plan.fmt',{t:u.treatments, r:u.replications})}</div></div>
+          <div class="uc-cell"><div class="lbl">${tr('uc.class')}</div><div class="val">${tr(classOf(u.trial_class).lblK)} <span class="muted" style="font-weight:500">— ${tr(trialTypeOf(u.trial_class,u.trial_type).lblK)} (${classOf(u.trial_class).trl})</span></div></div>
+          <div class="uc-cell"><div class="lbl">${tr('uc.partnerSetup')}</div><div class="val">${tr(psOf(u.partner_setup).lblK)}</div></div>
+          <div class="uc-cell" style="grid-column:1/-1"><div class="lbl">${tr('uc.strategicObj')}</div><div class="val" style="display:flex;flex-wrap:wrap;gap:6px;font-weight:500">${(u.strategic_objectives||[]).map(soId=>{const so=soOf(soId);return `<span class="pill" style="background:var(--green-50);color:var(--green-800)">${so.ico} ${tr(so.lblK)}</span>`;}).join('')}</div></div>
+          ${(u.ic_issues||[]).length?`<div class="uc-cell" style="grid-column:1/-1"><div class="lbl">${tr('uc.icIssues')}</div><div class="val" style="display:flex;flex-wrap:wrap;gap:6px;font-weight:500">${u.ic_issues.map(ic=>`<span class="pill" style="background:var(--bad-bg);color:var(--bad)">⚠ ${ic}</span>`).join('')}</div></div>`:''}
         </div>
 
         <div class="uc-sect">
@@ -1857,13 +2312,16 @@ async function chatCall(q){
 function _buildSystemPrompt(){
   const rows = DATA.map(u=>({
     id:u.id, name:u.name, bu:u.bu, region:u.region, crop:u.crop, product:u.product,
-    type:u.type, priority:u.priority, status:u.status, budget:u.budget,
-    partner:u.partner, fast_track:u.fast_track, sai_lead:u.sai_lead,
-    start:u.start_date, end:u.end_date, mds_covered:(u.mds_covered||[]).length,
+    type:u.type, trial_class:u.trial_class, trial_type:u.trial_type,
+    strategic_objectives:u.strategic_objectives, partner_setup:u.partner_setup,
+    priority:u.priority, status:u.status, macro_phase: macroPhaseOf(u.status),
+    budget:u.budget, partner:u.partner, fast_track:u.fast_track,
+    sai_lead:u.sai_lead, start:u.start_date, end:u.end_date,
+    mds_covered:(u.mds_covered||[]).length, ic_issues:u.ic_issues||[],
     obj:u.objective_primary
   }));
   const langName = {fr:'French',en:'English',pt:'Brazilian Portuguese'}[LANG] || 'French';
-  return `You are **D²nAI bot**, the AI co-pilot dedicated to **NutriPlan** — the Plan & Govern module that sits on top of **NutriTrials** (the execution platform live at nutritrials.ma) to cover the full Trial Management cycle at OCP Nutricrops.
+  return `You are **D²nAI bot**, the AI co-pilot dedicated to **NutriPlan** — the Plan & Govern module that sits on top of **NutriTrials** (the execution platform live at nutritrials.ma) to cover the full Trial Management cycle at OCP Nutricrops, in strict alignment with the **validated Trial Management Framework v1.0** signed by the CEO.
 
 Positioning to always carry:
 - **NutriPlan = upstream**: annual cycle, Use Case intake, Steering Committee, CEO portfolio approval, Fast Track, Monitoring Committee, Closure & KB
@@ -1881,7 +2339,16 @@ Style:
 - Be concise and action-oriented (clear recommendations).
 - When relevant, explicitly mention the **handoff to NutriTrials** (for UCs in approved / execution / monitoring).
 
-Process context: 10 steps (Annual Cycle → Use Case → Steering Gate 1 → CEO Gate 2 → Readiness → Execution → Monitoring → Adoption Go/Hold/Kill → Closure). Committees: Trial Steering Committee + Scientific Monitoring Committee. MDS = Minimum Data Set (12 mandatory items). Three types: Scientific (TRL 2-4), Applied (TRL 5-8), Demo (TRL 7-9).
+Framework v1.0 context (CEO-signed):
+- **4 macro-phases**: Trial Cycle Launch (Sep N-1 onwards), Operational Readiness, Execution & Data Collection, Decision.
+- **4 governance gates**: Gate 1 (TSC — Ideation), Gate 2 (TSC — Execution readiness), Gate 3 (SMC — Evidence review), Gate 4 (SMC — Deployment Readiness).
+- **Annual + 3 QBR intake windows** (QBR1/QBR2/QBR3).
+- **Trial Classes**: Fundamental & Discovery (TRL 2-4), Validation (TRL 5-8), Pre-launch (TRL 7-9), Demo Plots (TRL 8-9).
+- **Partner Setup Types**: Institution-based, Client-based, Private Service Provider.
+- **6 Strategic Objectives**: product_dev, cropping_mgmt, sustainable, digital_ag, nutrition, demo_adoption.
+- **4 official KPIs**: % fast-track (target ≤10%), % transform-to-demo, % on-time (target ≥80%), Budget variance (±5%).
+- **22 Internal Controls** in 5 domains (planning, governance, execution, data, reporting) — IC-P1.1 … IC-R5.5. Each UC may have ic_issues[] listing open gaps.
+- MDS = Minimum Data Set (12 mandatory items).
 
 Data — ${rows.length} Use Cases in the portfolio:
 
@@ -1891,6 +2358,8 @@ ${JSON.stringify(rows)}
 
 BUs: ${BUS.map(b=>b.id+'='+b.nm).join(' · ')}.
 Statuses (id=labels in ${LANG}): ${STATUSES.map(s=>s.id+'='+stLbl(s)).join(' · ')}.
+
+IC catalogue: ${IC_POINTS.map(p=>p.id+'='+tr(p.lblK)).join(' | ')}.
 
 Now answer the user's question in ${langName}.`;
 }
@@ -2005,38 +2474,65 @@ function renderIntake(){
  * 10. CALENDAR (annual cycle Gantt) — placeholder for V1
  * --------------------------------------------------------------- */
 function renderCalendar(){
-  const months = tr('months').split(',');
-  const cur = (new Date().getMonth());
+  // v1.0 timeline: N-1 (Sep…Dec) + N (Jan…Dec) = 16 months. Cycle starts Sep N-1.
+  // Columns 0-3 = Sep/Oct/Nov/Dec N-1; columns 4-15 = Jan…Dec N.
+  const monthsBase = tr('months').split(',');
+  const months16 = ['Sep N-1','Oct N-1','Nov N-1','Dec N-1', ...monthsBase];
+  // Current month index in the 16-col view: assume "now" is in N (year of pitch = 2026)
+  const cur = 4 + (new Date().getMonth());
+  // Bars now positioned over the 16-col axis (col 0 = Sep N-1).
+  // Macro-phase color mapping per the 4-phase framework.
   const bars = [
-    { lblK:'cal.b1',  subK:'cal.b1.s',  start:0,  end:0,  cls:'b-cycle' },
-    { lblK:'cal.b2',  subK:'cal.b2.s',  start:0,  end:1,  cls:'b-cycle' },
-    { lblK:'cal.b3',  subK:'cal.b3.s',  start:1,  end:1,  cls:'b-gate'  },
-    { lblK:'cal.b4',  subK:'cal.b4.s',  start:1,  end:1,  cls:'b-gate'  },
-    { lblK:'cal.b5',  subK:'cal.b5.s',  start:2,  end:3,  cls:'b-cycle' },
-    { lblK:'cal.b6',  subK:'cal.b6.s',  start:3,  end:9,  cls:''        },
-    { lblK:'cal.b7',  subK:'cal.b7.s',  start:4,  end:11, cls:'b-gate'  },
-    { lblK:'cal.b8',  subK:'cal.b8.s',  start:5,  end:5,  cls:'b-qbr'   },
-    { lblK:'cal.b9',  subK:'cal.b9.s',  start:0,  end:11, cls:'b-fast'  },
-    { lblK:'cal.b10', subK:'cal.b10.s', start:10, end:11, cls:'b-cycle' }
+    { lblK:'cal.b1',  subK:'cal.b1.s',  start:0,  end:0,  cls:'b-launch'   },
+    { lblK:'cal.b2',  subK:'cal.b2.s',  start:1,  end:3,  cls:'b-launch'   },
+    { lblK:'cal.b3',  subK:'cal.b3.s',  start:3,  end:3,  cls:'b-gate'     },
+    { lblK:'cal.b4',  subK:'cal.b4.s',  start:3,  end:3,  cls:'b-gate'     },
+    { lblK:'cal.b5',  subK:'cal.b5.s',  start:4,  end:7,  cls:'b-readiness'},
+    { lblK:'cal.b6',  subK:'cal.b6.s',  start:7,  end:13, cls:'b-exec'     },
+    { lblK:'cal.b7',  subK:'cal.b7.s',  start:8,  end:15, cls:'b-gate'     },
+    { lblK:'cal.b8',  subK:'cal.b8.s',  start:9,  end:9,  cls:'b-qbr'      },
+    { lblK:'cal.b9',  subK:'cal.b9.s',  start:0,  end:15, cls:'b-fast'     },
+    { lblK:'cal.b10', subK:'cal.b10.s', start:14, end:15, cls:'b-decision' }
   ];
+  // 3 QBR in-year intake windows (Mar, Jun, Sep N), aligned with framework §4.1.
+  const qbrCols = [6, 9, 12]; // Mar, Jun, Sep of N (1-indexed: Jan=4 → Mar=6, Jun=9, Sep=12)
   const Y = 2026;
   document.getElementById('sc-calendar').innerHTML = `
     <div class="eyebrow">${tr('cal.eye')}</div>
     <h2 class="h-pg">${trf('cal.h',{y:Y})}</h2>
-    <p class="lead">${tr('cal.lead')}</p>
+    <p class="lead">${tr('cal.lead.v2')}</p>
+
     <div class="cal-wrap">
-      <div class="cal-grid">
+      <div class="cal-grid cal16">
         <div class="cal-h lbl">${tr('cal.phase')}</div>
-        ${months.map((m,i)=>`<div class="cal-h ${i===cur?'today':''}">${m}</div>`).join('')}
+        ${months16.map((m,i)=>{
+          const isYear=i<4?'cal-h-prev':'';
+          const isQbr=qbrCols.includes(i)?'cal-h-qbr':'';
+          return `<div class="cal-h ${i===cur?'today':''} ${isYear} ${isQbr}" title="${isQbr?tr('cal.qbr.title'):''}">${m}${isQbr?' <span class=\"qbr-dot\">QBR</span>':''}</div>`;
+        }).join('')}
         ${bars.map(b=>{
           const lbl = tr(b.lblK), sub = tr(b.subK);
           return `<div class="cal-row">
             <div class="cal-lbl">${escapeHtml(lbl)}<small>${escapeHtml(sub)}</small></div>
-            ${months.map((_,m)=>`<div class="cal-cell">${m===b.start?`<div class="cal-bar ${b.cls}" style="left:6px;right:6px;width:calc(${(b.end-b.start+1)*100}% - 12px)">${escapeHtml(lbl)}</div>`:''}</div>`).join('')}
+            ${months16.map((_,m)=>`<div class="cal-cell">${m===b.start?`<div class="cal-bar ${b.cls}" style="left:6px;right:6px;width:calc(${(b.end-b.start+1)*100}% - 12px)">${escapeHtml(lbl)}</div>`:''}</div>`).join('')}
           </div>`;
         }).join('')}
       </div>
     </div>
+
+    <div class="card" style="margin-top:14px;background:linear-gradient(135deg,#fbfdfb,#f4faf5);border-color:var(--green-200)">
+      <h3>${tr('cal.legend.h')} <span class="sub">${tr('cal.legend.sub')}</span></h3>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:600 12.5px 'Inter'">
+        <span><span class="legend-sw b-launch"></span> ${tr('mp.launch')}</span>
+        <span><span class="legend-sw b-readiness"></span> ${tr('mp.readiness')}</span>
+        <span><span class="legend-sw b-exec"></span> ${tr('mp.execution')}</span>
+        <span><span class="legend-sw b-decision"></span> ${tr('mp.decision')}</span>
+        <span><span class="legend-sw b-gate"></span> ${tr('cal.legend.gate')}</span>
+        <span><span class="legend-sw b-qbr"></span> ${tr('cal.legend.qbr')}</span>
+        <span><span class="legend-sw b-fast"></span> ${tr('cal.legend.fast')}</span>
+      </div>
+    </div>
+
     <p class="muted" style="margin-top:10px">${tr('cal.today')} ${new Date().toLocaleDateString(tr('date'),{day:'2-digit',month:'long',year:'numeric'})}.</p>
   `;
 }
@@ -2209,6 +2705,29 @@ function renderAdmin(){
     </div>
     <div class="card"><h3>${tr('adm.mds.h')}</h3>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">${MDS_ITEMS.map(m=>`<div class="mds-row ok"><span class="ico">✓</span><span class="nm">${escapeHtml(m)}</span></div>`).join('')}</div>
+    </div>
+
+    <div class="row-2c">
+      <div class="card"><h3>${tr('adm.classes.h')} <span class="sub">${tr('adm.classes.sub')}</span></h3>
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>${tr('adm.classes.cls')}</th><th>${tr('adm.classes.trl')}</th><th>${tr('adm.classes.types')}</th></tr></thead><tbody>${CLASSES.map(c=>`<tr><td><b>${tr(c.lblK)}</b></td><td class="muted">${c.trl}</td><td>${c.types.map(t=>`<span class="chip">${tr(t.lblK)}</span>`).join(' ')}</td></tr>`).join('')}</tbody></table></div>
+      </div>
+      <div class="card"><h3>${tr('adm.so.h')} <span class="sub">${tr('adm.so.sub')}</span></h3>
+        <div style="display:flex;flex-direction:column;gap:6px">${STRATEGIC_OBJECTIVES.map(s=>`<div style="display:flex;align-items:center;gap:9px;padding:8px 12px;background:var(--green-50);border:1px solid var(--green-100);border-radius:9px"><span style="font-size:18px">${s.ico}</span><b style="color:var(--green-800);font:700 12.5px 'Inter'">${tr(s.lblK)}</b></div>`).join('')}</div>
+      </div>
+    </div>
+
+    <div class="row-2c">
+      <div class="card"><h3>${tr('adm.ps.h')} <span class="sub">${tr('adm.ps.sub')}</span></h3>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">${PARTNER_SETUPS.map(p=>`<span class="chip" style="background:#eaf3f8;border-color:#cde2ed;color:var(--info)">${tr(p.lblK)}</span>`).join('')}</div>
+      </div>
+      <div class="card"><h3>${tr('adm.mp.h')} <span class="sub">${tr('adm.mp.sub')}</span></h3>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">${MACRO_PHASES.map((mp,i)=>`<span class="chip" style="background:#fff;border:1px solid ${mp.color};color:${mp.color}"><b>${i+1}.</b> ${tr(mp.lblK)}</span>`).join('')}</div>
+      </div>
+    </div>
+
+    <div class="card" style="background:linear-gradient(135deg,#0a1812,#103d17);color:#dff0e3;border-color:rgba(124,252,154,.32)">
+      <h3 style="color:#fff">${tr('adm.fw.h')}</h3>
+      <p style="margin:0;color:#bcd4c2;font-size:13.5px;line-height:1.55">${tr('adm.fw.body')}</p>
     </div>
   `;
 }
