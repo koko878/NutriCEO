@@ -195,7 +195,7 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
     <p data-k="s1.p">Le <b>Trial Management Framework v1.0</b> vient d'être signé par le CEO. NutriTrials porte l'aval. <b>NutriPlan</b> opérationnalise l'amont — cycle annuel, intake, 4 gates de gouvernance, IA, 22 contrôles internes — en 4 semaines, ligne par ligne du document validé.</p>
     <div class="ftr">
       <div class="it"><b data-k="s1.f1l">D²nAI</b><span data-k="s1.f1v">Data · Digital · AI · OCP Nutricrops</span></div>
-      <div class="it"><b data-k="s1.f2l">Powered by</b><span data-k="s1.f2v">Claude 4.6 via Azure Databricks · NutriTrials API</span></div>
+      <div class="it"><b data-k="s1.f2l">Conçu &amp; développé par</b><span data-k="s1.f2v">L'équipe D²nAI · branché à NutriTrials</span></div>
       <div class="it"><b data-k="s1.f3l">Status</b><span data-k="s1.f3v">MVP démo · framework v1.0 signé · juin 2026</span></div>
     </div>
   </div>
@@ -356,7 +356,7 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
   </div>
   <div class="card deep" style="margin-top:18px">
     <h3 data-k="s6.deep.h">🛡️ Du chat qui raisonne sur tes vraies données</h3>
-    <p style="margin-top:6px" data-k="s6.deep.p">Claude 4.6 servi par Azure Databricks (proxy déjà en place côté D²nAI, réutilisé tel quel). Les Use Cases du portefeuille sont indexés via Vector Search. PAT Databricks jamais exposé au navigateur. <b>Branding D²nAI bot uniquement</b> — aucune mention de provider visible.</p>
+    <p style="margin-top:6px" data-k="s6.deep.p">Co-pilote IA <b>conçu et opéré par l'équipe D²nAI</b>. Les Use Cases du portefeuille sont indexés et accessibles en langage naturel. <b>Branding D²nAI bot uniquement</b> — l'utilisateur voit un seul interlocuteur.</p>
   </div>
 </section>
 
@@ -369,7 +369,7 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
       <h2 data-k="s7.h">Pas une slide. Un <b>MVP</b> qu'on ouvre en réunion.</h2>
     </div>
   </div>
-  <p class="lead" data-k="s7.lead">Le MVP est opérationnel. 35 Use Cases seedés, vues Cockpit / Portfolio Kanban+Table / Use Case detail / Cycle annuel / Governance + RACI / Fast Track / Closure KB / Référentiels admin. Chat IA branché sur Databricks Claude 4.6.</p>
+  <p class="lead" data-k="s7.lead">Le MVP est opérationnel. 35 Use Cases seedés, vues Cockpit / Portfolio Kanban+Table / Use Case detail / Cycle annuel / Governance + RACI / Contrôles internes / Fast Track / Closure KB / Référentiels admin. Co-pilote IA <b>D²nAI</b> branché en chat-with-data.</p>
   <div class="nums">
     <div class="num"><div class="v">35<small data-k="s7.n1.u">UCs</small></div><div class="l"><b data-k="s7.n1.b">Seed portfolio</b><span data-k="s7.n1.d"> · cycle 2026 réaliste, multi-BU/régions/cultures</span></div></div>
     <div class="num"><div class="v">10<small data-k="s7.n2.u">étapes</small></div><div class="l"><b data-k="s7.n2.b">Framework officiel</b><span data-k="s7.n2.d"> respecté ligne par ligne</span></div></div>
@@ -382,102 +382,10 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.015em
   </div>
 </section>
 
-<!-- ====== SLIDE 9 — ARCHITECTURE ====== -->
+<!-- ====== SLIDE 9 — THE ASK ====== -->
 <section class="slide">
   <div class="slide-h">
     <div class="num">08</div>
-    <div class="ttl">
-      <div class="eye" data-k="s8.eye">Architecture</div>
-      <h2 data-k="s8.h">Stack <b>simple</b>, infra <b>déjà en place</b>.</h2>
-    </div>
-  </div>
-  <div class="arch">
-    <div class="arch-lyr np">
-      <div class="ttl"><span data-k="s8.r1.t">Frontend</span><b data-k="s8.r1.b">NutriPlan</b></div>
-      <div class="items">
-        <span class="it" data-k="s8.r1.i1">Single-file SPA</span>
-        <span class="it" data-k="s8.r1.i2">WordPress plugin</span>
-        <span class="it" data-k="s8.r1.i3">Plein-écran /nutriplan</span>
-        <span class="it" data-k="s8.r1.i4">Shortcode [nutriplan]</span>
-        <span class="it" data-k="s8.r1.i5">Tri-lingue FR/EN/PT</span>
-        <span class="it" data-k="s8.r1.i6">No build step</span>
-      </div>
-    </div>
-    <div class="arch-lyr nt">
-      <div class="ttl"><span data-k="s8.r2.t">Frontend</span><b data-k="s8.r2.b">NutriTrials</b></div>
-      <div class="items">
-        <span class="it" data-k="s8.r2.i1">Existant · nutritrials.ma</span>
-        <span class="it" data-k="s8.r2.i2">Bridge via API</span>
-        <span class="it" data-k="s8.r2.i3">Lien handoff dans NutriPlan</span>
-      </div>
-    </div>
-    <div class="arch-lyr shared">
-      <div class="ttl"><span data-k="s8.r3.t">Backend</span><b data-k="s8.r3.b">API + Workflow</b></div>
-      <div class="items">
-        <span class="it" data-k="s8.r3.i1">REST endpoints (WP plugin)</span>
-        <span class="it" data-k="s8.r3.i2">Workflow engine BPMN-light</span>
-        <span class="it" data-k="s8.r3.i3">Auth same-origin + nonce</span>
-        <span class="it" data-k="s8.r3.i4">Bridge handoff API ↔ NutriTrials</span>
-      </div>
-    </div>
-    <div class="arch-lyr shared">
-      <div class="ttl"><span data-k="s8.r4.t">IA · D²nAI</span><b data-k="s8.r4.b">Co-pilot</b></div>
-      <div class="items">
-        <span class="it" data-k="s8.r4.i1">Claude 4.6</span>
-        <span class="it" data-k="s8.r4.i2">Azure Databricks Foundation Models</span>
-        <span class="it" data-k="s8.r4.i3">Vector Search (RAG)</span>
-        <span class="it" data-k="s8.r4.i4">PAT server-side · jamais exposé</span>
-        <span class="it" data-k="s8.r4.i5">Branding D²nAI bot only</span>
-      </div>
-    </div>
-    <div class="arch-lyr">
-      <div class="ttl"><span data-k="s8.r5.t">Data layer</span><b data-k="s8.r5.b">Source of truth</b></div>
-      <div class="items">
-        <span class="it" data-k="s8.r5.i1">Unity Catalog (Databricks)</span>
-        <span class="it" data-k="s8.r5.i2">NutriTrials DB (existante)</span>
-        <span class="it" data-k="s8.r5.i3">Référentiels partagés (BUs · cultures · MDS · KPIs)</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ====== SLIDE 10 — ROADMAP ====== -->
-<section class="slide">
-  <div class="slide-h">
-    <div class="num">09</div>
-    <div class="ttl">
-      <div class="eye" data-k="s9.eye">Roadmap</div>
-      <h2 data-k="s9.h">Phasage <b>4 vagues</b>, ship-to-prod en <b>10-12 semaines</b>.</h2>
-    </div>
-  </div>
-  <div class="rm">
-    <div class="rm-it now">
-      <span class="pill" data-k="s9.v0.p">V0 · maintenant</span>
-      <h4 data-k="s9.v0.h">MVP démo</h4>
-      <ul data-k="s9.v0.ul"><li>Cockpit · Portfolio Kanban+Table</li><li>Use Case detail · MDS</li><li>Cycle annuel · Governance RACI</li><li>Chat IA mock + Claude 4.6</li><li><b>Prêt pour lundi</b></li></ul>
-    </div>
-    <div class="rm-it next">
-      <span class="pill" data-k="s9.v1.p">V1 · semaines 1-4</span>
-      <h4 data-k="s9.v1.h">Plan & Govern core</h4>
-      <ul data-k="s9.v1.ul"><li>Intake fonctionnel + MDS dynamique</li><li>Workflow gates real (Steering / CEO / Monitoring)</li><li>RACI auto-routing aux acteurs</li><li>Fast Track lane fonctionnel</li><li>Pilote 2-3 BUs volontaires</li></ul>
-    </div>
-    <div class="rm-it later">
-      <span class="pill" data-k="s9.v2.p">V2 · semaines 5-8</span>
-      <h4 data-k="s9.v2.h">Bridge + IA Q&A</h4>
-      <ul data-k="s9.v2.ul"><li>Auto-provisioning UC → Trial dans NutriTrials (API)</li><li>Vector Search RAG sur portfolio</li><li>Governance briefing auto-généré</li><li>Notifications (email/Teams)</li><li>Multilingue généralisé</li></ul>
-    </div>
-    <div class="rm-it future">
-      <span class="pill" data-k="s9.v3.p">V3 · semaines 9-12</span>
-      <h4 data-k="s9.v3.h">Copilot + KB · GA</h4>
-      <ul data-k="s9.v3.ul"><li>Use Case copilot (suggestions IA en cours de saisie)</li><li>Closure KB indexée + searchable</li><li>Dashboards CEO Office</li><li>SSO Azure AD intégré</li><li>Généralisation toutes BUs</li></ul>
-    </div>
-  </div>
-</section>
-
-<!-- ====== SLIDE 11 — THE ASK ====== -->
-<section class="slide">
-  <div class="slide-h">
-    <div class="num">10</div>
     <div class="ttl">
       <div class="eye" data-k="s10.eye">Next steps</div>
       <h2 data-k="s10.h">Ce qu'il faut pour passer du MVP à la <b>V1 pilote</b>.</h2>
@@ -519,7 +427,7 @@ fr:{
  's1.h':'NutriPlan. L\'amont structuré de <b>NutriTrials</b>.',
  's1.p':'Le <b>Trial Management Framework v1.0</b> vient d\'être signé par le CEO. NutriTrials porte l\'aval. <b>NutriPlan</b> opérationnalise l\'amont — cycle annuel, intake, 4 gates de gouvernance, IA, 22 contrôles internes — en 4 semaines, ligne par ligne du document validé.',
  's1.f1l':'D²nAI', 's1.f1v':'Data · Digital · AI · OCP Nutricrops',
- 's1.f2l':'Powered by', 's1.f2v':'Claude 4.6 via Azure Databricks · NutriTrials API',
+ 's1.f2l':'Conçu &amp; développé par', 's1.f2v':'L\'équipe D²nAI · branché à NutriTrials',
  's1.f3l':'Status', 's1.f3v':'MVP démo · framework v1.0 signé · juin 2026',
  // Slide "Framework v1.0 décodé"
  'sFw.eye':'Framework v1.0 · décodé',
@@ -575,38 +483,16 @@ fr:{
  's6.c3.h':'Governance briefing',
  's6.c3.p':'Auto-génération du dossier Steering / Monitoring : synthèse des UCs du cycle, alertes risques, comparaison vs cycle N-1, recommandations Go/Hold/Kill chiffrées. <b>Brief comité en 1 clic.</b>',
  's6.deep.h':'🛡️ Du chat qui raisonne sur tes vraies données',
- 's6.deep.p':'Claude 4.6 servi par Azure Databricks (proxy déjà en place côté D²nAI, réutilisé tel quel). Les Use Cases du portefeuille sont indexés via Vector Search. PAT Databricks jamais exposé au navigateur. <b>Branding D²nAI bot uniquement</b> — aucune mention de provider visible.',
+ 's6.deep.p':'Co-pilote IA <b>conçu et opéré par l\'équipe D²nAI</b>. Les Use Cases du portefeuille sont indexés et accessibles en langage naturel. <b>Branding D²nAI bot uniquement</b> — l\'utilisateur voit un seul interlocuteur.',
  's7.eye':'Demo live · MVP cliquable',
  's7.h':'Pas une slide. Un <b>MVP</b> qu\'on ouvre en réunion.',
- 's7.lead':'Le MVP est opérationnel. 35 Use Cases seedés, vues Cockpit / Portfolio Kanban+Table / Use Case detail / Cycle annuel / Governance + RACI / Fast Track / Closure KB / Référentiels admin. Chat IA branché sur Databricks Claude 4.6.',
+ 's7.lead':'Le MVP est opérationnel. 35 Use Cases seedés, vues Cockpit / Portfolio Kanban+Table / Use Case detail / Cycle annuel / Governance + RACI / Contrôles internes / Fast Track / Closure KB / Référentiels admin. Co-pilote IA <b>D²nAI</b> branché en chat-with-data.',
  's7.n1.u':'UCs','s7.n1.b':'Seed portfolio','s7.n1.d':' · cycle 2026 réaliste, multi-BU/régions/cultures',
  's7.n2.u':'étapes','s7.n2.b':'Framework officiel','s7.n2.d':' respecté ligne par ligne',
  's7.n3.u':'gates','s7.n3.d':'Steering · CEO · Monitoring — Go/Hold/Kill tracé',
  's7.n4.u':'langues','s7.n4.d':'FR · EN · PT-BR — bascule par drapeaux',
  's7.script.h':'👉 À montrer en réunion',
  's7.script.p':'<b>1.</b> Cockpit landing — KPIs, alertes, heatmap BU×culture, bridge NutriTrials &nbsp;·&nbsp; <b>2.</b> Portfolio Kanban — drill-down des UCs par gate &nbsp;·&nbsp; <b>3.</b> Use Case detail — KPIs, MDS, gates, handoff → NutriTrials &nbsp;·&nbsp; <b>4.</b> IA chat — 2-3 questions live ("UCs à risque MDS", "brief Steering") &nbsp;·&nbsp; <b>5.</b> Cycle annuel — Gantt 12 mois',
- 's8.eye':'Architecture',
- 's8.h':'Stack <b>simple</b>, infra <b>déjà en place</b>.',
- 's8.r1.t':'Frontend','s8.r1.b':'NutriPlan',
- 's8.r1.i1':'Single-file SPA','s8.r1.i2':'WordPress plugin','s8.r1.i3':'Plein-écran /nutriplan','s8.r1.i4':'Shortcode [nutriplan]','s8.r1.i5':'Tri-lingue FR/EN/PT','s8.r1.i6':'No build step',
- 's8.r2.t':'Frontend','s8.r2.b':'NutriTrials',
- 's8.r2.i1':'Existant · nutritrials.ma','s8.r2.i2':'Bridge via API','s8.r2.i3':'Lien handoff dans NutriPlan',
- 's8.r3.t':'Backend','s8.r3.b':'API + Workflow',
- 's8.r3.i1':'REST endpoints (WP plugin)','s8.r3.i2':'Workflow engine BPMN-light','s8.r3.i3':'Auth same-origin + nonce','s8.r3.i4':'Bridge handoff API ↔ NutriTrials',
- 's8.r4.t':'IA · D²nAI','s8.r4.b':'Co-pilot',
- 's8.r4.i1':'Claude 4.6','s8.r4.i2':'Azure Databricks Foundation Models','s8.r4.i3':'Vector Search (RAG)','s8.r4.i4':'PAT server-side · jamais exposé','s8.r4.i5':'Branding D²nAI bot only',
- 's8.r5.t':'Data layer','s8.r5.b':'Source of truth',
- 's8.r5.i1':'Unity Catalog (Databricks)','s8.r5.i2':'NutriTrials DB (existante)','s8.r5.i3':'Référentiels partagés (BUs · cultures · MDS · KPIs)',
- 's9.eye':'Roadmap',
- 's9.h':'Phasage <b>4 vagues</b>, ship-to-prod en <b>10-12 semaines</b>.',
- 's9.v0.p':'V0 · maintenant','s9.v0.h':'MVP démo',
- 's9.v0.ul':'<li>Cockpit · Portfolio Kanban+Table</li><li>Use Case detail · MDS</li><li>Cycle annuel · Governance RACI</li><li>Chat IA mock + Claude 4.6</li><li><b>Prêt pour lundi</b></li>',
- 's9.v1.p':'V1 · semaines 1-4','s9.v1.h':'Plan & Govern core',
- 's9.v1.ul':'<li>Intake fonctionnel + MDS dynamique</li><li>Workflow gates real (Steering / CEO / Monitoring)</li><li>RACI auto-routing aux acteurs</li><li>Fast Track lane fonctionnel</li><li>Pilote 2-3 BUs volontaires</li>',
- 's9.v2.p':'V2 · semaines 5-8','s9.v2.h':'Bridge + IA Q&A',
- 's9.v2.ul':'<li>Auto-provisioning UC → Trial dans NutriTrials (API)</li><li>Vector Search RAG sur portfolio</li><li>Governance briefing auto-généré</li><li>Notifications (email/Teams)</li><li>Multilingue généralisé</li>',
- 's9.v3.p':'V3 · semaines 9-12','s9.v3.h':'Copilot + KB · GA',
- 's9.v3.ul':'<li>Use Case copilot (suggestions IA en cours de saisie)</li><li>Closure KB indexée + searchable</li><li>Dashboards CEO Office</li><li>SSO Azure AD intégré</li><li>Généralisation toutes BUs</li>',
  's10.eye':'Next steps',
  's10.h':'Ce qu\'il faut pour passer du MVP à la <b>V1 pilote</b>.',
  's10.ask.h':'3 décisions à acter.',
@@ -628,7 +514,7 @@ en:{
  's1.h':'NutriPlan. The structured upstream layer of <b>NutriTrials</b>.',
  's1.p':'The <b>Trial Management Framework v1.0</b> has just been signed by the CEO. NutriTrials owns the downstream. <b>NutriPlan</b> operationalises the upstream — annual cycle, intake, 4 governance gates, AI, 22 internal controls — in 4 weeks, line by line of the validated document.',
  's1.f1l':'D²nAI', 's1.f1v':'Data · Digital · AI · OCP Nutricrops',
- 's1.f2l':'Powered by', 's1.f2v':'Claude 4.6 via Azure Databricks · NutriTrials API',
+ 's1.f2l':'Designed &amp; built by', 's1.f2v':'The D²nAI team · wired to NutriTrials',
  's1.f3l':'Status', 's1.f3v':'MVP demo · framework v1.0 signed · June 2026',
  'sFw.eye':'Framework v1.0 · decoded',
  'sFw.h':'What the <b>v1.0</b> mandates — and what NutriPlan executes <b>line by line</b>.',
@@ -683,38 +569,16 @@ en:{
  's6.c3.h':'Governance briefing',
  's6.c3.p':'Auto-generated Steering / Monitoring packs: cycle summary, risk alerts, vs N-1 cycle comparison, quantified Go/Hold/Kill recommendations. <b>Committee brief in one click.</b>',
  's6.deep.h':'🛡️ Chat that reasons on your actual data',
- 's6.deep.p':'Claude 4.6 served by Azure Databricks (proxy already in place on the D²nAI side, reused as-is). Portfolio Use Cases are indexed via Vector Search. The Databricks PAT is never exposed to the browser. <b>D²nAI bot branding only</b> — no underlying provider mentioned anywhere.',
+ 's6.deep.p':'AI co-pilot <b>designed and operated by the D²nAI team</b>. Portfolio Use Cases are indexed and accessible in natural language. <b>D²nAI bot branding only</b> — users see one single interlocutor.',
  's7.eye':'Live demo · clickable MVP',
  's7.h':'Not a slide. An <b>MVP</b> you open in the meeting.',
- 's7.lead':'The MVP is up and running. 35 seeded Use Cases, views for Cockpit / Portfolio Kanban+Table / Use Case detail / Annual cycle / Governance + RACI / Fast Track / Closure KB / Reference data admin. AI chat wired to Databricks Claude 4.6.',
+ 's7.lead':'The MVP is up and running. 35 seeded Use Cases, views for Cockpit / Portfolio Kanban+Table / Use Case detail / Annual cycle / Governance + RACI / Internal controls / Fast Track / Closure KB / Reference data admin. AI co-pilot <b>D²nAI</b> wired in as chat-with-data.',
  's7.n1.u':'UCs','s7.n1.b':'Seed portfolio','s7.n1.d':' · realistic 2026 cycle, multi-BU/regions/crops',
  's7.n2.u':'steps','s7.n2.b':'Official framework','s7.n2.d':' followed line by line',
  's7.n3.u':'gates','s7.n3.d':'Steering · CEO · Monitoring — Go/Hold/Kill traced',
  's7.n4.u':'languages','s7.n4.d':'FR · EN · PT-BR — flag-based switching',
  's7.script.h':'👉 What to show in the meeting',
  's7.script.p':'<b>1.</b> Cockpit landing — KPIs, alerts, BU × crop heatmap, NutriTrials bridge &nbsp;·&nbsp; <b>2.</b> Portfolio Kanban — drill into UCs by gate &nbsp;·&nbsp; <b>3.</b> Use Case detail — KPIs, MDS, gates, handoff → NutriTrials &nbsp;·&nbsp; <b>4.</b> AI chat — 2-3 questions live ("UCs at MDS risk", "Steering brief") &nbsp;·&nbsp; <b>5.</b> Annual cycle — 12-month Gantt',
- 's8.eye':'Architecture',
- 's8.h':'<b>Simple</b> stack, infra <b>already in place</b>.',
- 's8.r1.t':'Frontend','s8.r1.b':'NutriPlan',
- 's8.r1.i1':'Single-file SPA','s8.r1.i2':'WordPress plugin','s8.r1.i3':'Full-screen /nutriplan','s8.r1.i4':'Shortcode [nutriplan]','s8.r1.i5':'Tri-lingual FR/EN/PT','s8.r1.i6':'No build step',
- 's8.r2.t':'Frontend','s8.r2.b':'NutriTrials',
- 's8.r2.i1':'Existing · nutritrials.ma','s8.r2.i2':'Bridge via API','s8.r2.i3':'Handoff link inside NutriPlan',
- 's8.r3.t':'Backend','s8.r3.b':'API + Workflow',
- 's8.r3.i1':'REST endpoints (WP plugin)','s8.r3.i2':'BPMN-light workflow engine','s8.r3.i3':'Same-origin auth + nonce','s8.r3.i4':'Handoff API bridge ↔ NutriTrials',
- 's8.r4.t':'AI · D²nAI','s8.r4.b':'Co-pilot',
- 's8.r4.i1':'Claude 4.6','s8.r4.i2':'Azure Databricks Foundation Models','s8.r4.i3':'Vector Search (RAG)','s8.r4.i4':'Server-side PAT · never exposed','s8.r4.i5':'D²nAI bot branding only',
- 's8.r5.t':'Data layer','s8.r5.b':'Source of truth',
- 's8.r5.i1':'Unity Catalog (Databricks)','s8.r5.i2':'NutriTrials DB (existing)','s8.r5.i3':'Shared reference data (BUs · crops · MDS · KPIs)',
- 's9.eye':'Roadmap',
- 's9.h':'<b>4 waves</b> phasing, ship-to-prod in <b>10-12 weeks</b>.',
- 's9.v0.p':'V0 · now','s9.v0.h':'MVP demo',
- 's9.v0.ul':'<li>Cockpit · Portfolio Kanban+Table</li><li>Use Case detail · MDS</li><li>Annual cycle · Governance RACI</li><li>AI chat mock + Claude 4.6</li><li><b>Ready for Monday</b></li>',
- 's9.v1.p':'V1 · weeks 1-4','s9.v1.h':'Plan & Govern core',
- 's9.v1.ul':'<li>Functional intake + dynamic MDS</li><li>Real gate workflow (Steering / CEO / Monitoring)</li><li>RACI auto-routing to actors</li><li>Fast Track lane operational</li><li>Pilot with 2-3 volunteer BUs</li>',
- 's9.v2.p':'V2 · weeks 5-8','s9.v2.h':'Bridge + AI Q&A',
- 's9.v2.ul':'<li>Auto-provisioning UC → Trial in NutriTrials (API)</li><li>Vector Search RAG on portfolio</li><li>Auto-generated governance briefings</li><li>Notifications (email/Teams)</li><li>Multilingual generalized</li>',
- 's9.v3.p':'V3 · weeks 9-12','s9.v3.h':'Copilot + KB · GA',
- 's9.v3.ul':'<li>Use Case copilot (AI suggestions during drafting)</li><li>Indexed, searchable Closure KB</li><li>CEO Office dashboards</li><li>Azure AD SSO integrated</li><li>Generalization to all BUs</li>',
  's10.eye':'Next steps',
  's10.h':'What it takes to move from MVP to <b>V1 pilot</b>.',
  's10.ask.h':'3 decisions to lock in.',
@@ -736,7 +600,7 @@ pt:{
  's1.h':'NutriPlan. A camada estruturada de planejamento de <b>NutriTrials</b>.',
  's1.p':'O <b>Trial Management Framework v1.0</b> acaba de ser assinado pelo CEO. NutriTrials cobre o downstream. <b>NutriPlan</b> operacionaliza o upstream — ciclo anual, intake, 4 gates de governança, IA, 22 controles internos — em 4 semanas, linha a linha do documento validado.',
  's1.f1l':'D²nAI', 's1.f1v':'Data · Digital · AI · OCP Nutricrops',
- 's1.f2l':'Powered by', 's1.f2v':'Claude 4.6 via Azure Databricks · API NutriTrials',
+ 's1.f2l':'Concebido &amp; construído por', 's1.f2v':'A equipe D²nAI · conectado ao NutriTrials',
  's1.f3l':'Status', 's1.f3v':'MVP demo · framework v1.0 assinado · junho 2026',
  'sFw.eye':'Framework v1.0 · decodificado',
  'sFw.h':'O que a <b>v1.0</b> exige — e o que o NutriPlan executa <b>linha a linha</b>.',
@@ -791,38 +655,16 @@ pt:{
  's6.c3.h':'Briefing de governança',
  's6.c3.p':'Geração automática do pacote Steering / Monitoring: síntese dos UCs do ciclo, alertas de risco, comparação vs ciclo N-1, recomendações Go/Hold/Kill quantificadas. <b>Briefing do comitê em 1 clique.</b>',
  's6.deep.h':'🛡️ Chat que raciocina sobre seus dados reais',
- 's6.deep.p':'Claude 4.6 servido por Azure Databricks (proxy já instalado pelo D²nAI, reutilizado tal qual). Os Use Cases do portfólio são indexados via Vector Search. O PAT Databricks nunca é exposto ao navegador. <b>Branding D²nAI bot apenas</b> — nenhuma menção a provider.',
+ 's6.deep.p':'Co-piloto IA <b>concebido e operado pela equipe D²nAI</b>. Os Use Cases do portfólio são indexados e acessíveis em linguagem natural. <b>Branding D²nAI bot apenas</b> — o usuário vê um único interlocutor.',
  's7.eye':'Demo ao vivo · MVP clicável',
  's7.h':'Não é slide. É um <b>MVP</b> que se abre durante a reunião.',
- 's7.lead':'O MVP está operacional. 35 Use Cases semeados, telas Cockpit / Portfolio Kanban+Tabela / Detalhe de Use Case / Ciclo anual / Governança + RACI / Fast Track / Closure KB / Catálogos admin. Chat IA conectado ao Databricks Claude 4.6.',
+ 's7.lead':'O MVP está operacional. 35 Use Cases semeados, telas Cockpit / Portfolio Kanban+Tabela / Detalhe de Use Case / Ciclo anual / Governança + RACI / Controles internos / Fast Track / Closure KB / Catálogos admin. Co-piloto IA <b>D²nAI</b> conectado em chat-with-data.',
  's7.n1.u':'UCs','s7.n1.b':'Seed portfolio','s7.n1.d':' · ciclo 2026 realista, multi-BU/regiões/culturas',
  's7.n2.u':'etapas','s7.n2.b':'Framework oficial','s7.n2.d':' seguido linha a linha',
  's7.n3.u':'gates','s7.n3.d':'Steering · CEO · Monitoring — Go/Hold/Kill rastreado',
  's7.n4.u':'idiomas','s7.n4.d':'FR · EN · PT-BR — troca por bandeiras',
  's7.script.h':'👉 O que mostrar na reunião',
  's7.script.p':'<b>1.</b> Cockpit landing — KPIs, alertas, heatmap BU × cultura, bridge NutriTrials &nbsp;·&nbsp; <b>2.</b> Portfolio Kanban — drill-down dos UCs por gate &nbsp;·&nbsp; <b>3.</b> Detalhe do Use Case — KPIs, MDS, gates, handoff → NutriTrials &nbsp;·&nbsp; <b>4.</b> Chat IA — 2-3 perguntas ao vivo ("UCs com risco de MDS", "briefing Steering") &nbsp;·&nbsp; <b>5.</b> Ciclo anual — Gantt 12 meses',
- 's8.eye':'Arquitetura',
- 's8.h':'Stack <b>simples</b>, infraestrutura <b>já instalada</b>.',
- 's8.r1.t':'Frontend','s8.r1.b':'NutriPlan',
- 's8.r1.i1':'SPA single-file','s8.r1.i2':'Plugin WordPress','s8.r1.i3':'Tela cheia /nutriplan','s8.r1.i4':'Shortcode [nutriplan]','s8.r1.i5':'Trilíngue FR/EN/PT','s8.r1.i6':'Sem build step',
- 's8.r2.t':'Frontend','s8.r2.b':'NutriTrials',
- 's8.r2.i1':'Existente · nutritrials.ma','s8.r2.i2':'Bridge via API','s8.r2.i3':'Link de handoff dentro de NutriPlan',
- 's8.r3.t':'Backend','s8.r3.b':'API + Workflow',
- 's8.r3.i1':'Endpoints REST (plugin WP)','s8.r3.i2':'Workflow engine BPMN-light','s8.r3.i3':'Auth same-origin + nonce','s8.r3.i4':'Bridge handoff API ↔ NutriTrials',
- 's8.r4.t':'IA · D²nAI','s8.r4.b':'Co-pilot',
- 's8.r4.i1':'Claude 4.6','s8.r4.i2':'Azure Databricks Foundation Models','s8.r4.i3':'Vector Search (RAG)','s8.r4.i4':'PAT server-side · nunca exposto','s8.r4.i5':'Branding D²nAI bot apenas',
- 's8.r5.t':'Camada de dados','s8.r5.b':'Source of truth',
- 's8.r5.i1':'Unity Catalog (Databricks)','s8.r5.i2':'NutriTrials DB (existente)','s8.r5.i3':'Catálogos compartilhados (BUs · culturas · MDS · KPIs)',
- 's9.eye':'Roadmap',
- 's9.h':'Faseamento em <b>4 ondas</b>, ship-to-prod em <b>10-12 semanas</b>.',
- 's9.v0.p':'V0 · agora','s9.v0.h':'MVP demo',
- 's9.v0.ul':'<li>Cockpit · Portfolio Kanban+Tabela</li><li>Detalhe de Use Case · MDS</li><li>Ciclo anual · Governança RACI</li><li>Chat IA mock + Claude 4.6</li><li><b>Pronto para segunda</b></li>',
- 's9.v1.p':'V1 · semanas 1-4','s9.v1.h':'Plan & Govern core',
- 's9.v1.ul':'<li>Intake funcional + MDS dinâmico</li><li>Workflow real dos gates (Steering / CEO / Monitoring)</li><li>RACI auto-routing aos atores</li><li>Fast Track lane funcional</li><li>Piloto com 2-3 BUs voluntárias</li>',
- 's9.v2.p':'V2 · semanas 5-8','s9.v2.h':'Bridge + IA Q&A',
- 's9.v2.ul':'<li>Auto-provisionamento UC → Trial em NutriTrials (API)</li><li>Vector Search RAG sobre o portfólio</li><li>Briefings de governança auto-gerados</li><li>Notificações (email/Teams)</li><li>Multilíngue generalizado</li>',
- 's9.v3.p':'V3 · semanas 9-12','s9.v3.h':'Copilot + KB · GA',
- 's9.v3.ul':'<li>Use Case copilot (sugestões de IA durante a redação)</li><li>Closure KB indexada e pesquisável</li><li>Dashboards CEO Office</li><li>SSO Azure AD integrado</li><li>Generalização a todas as BUs</li>',
  's10.eye':'Next steps',
  's10.h':'O que é preciso para passar do MVP à <b>V1 piloto</b>.',
  's10.ask.h':'3 decisões a tomar.',

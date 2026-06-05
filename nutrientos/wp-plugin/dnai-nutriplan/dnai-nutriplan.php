@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name:       D²nAI NutriPlan — Trial Management Cockpit
- * Description:       Sister-app of NutriTrials covering the full upstream Trial Management cycle (annual planning, Use Case intake, Steering / CEO / Monitoring gates, Fast Track lane, closure & knowledge base). Includes a chat-with-data AI co-pilot powered by Anthropic Claude (Sonnet 4.6) served via Azure Databricks Foundation Model APIs (OpenAI-compatible). All branded D²nAI bot — no underlying provider mention.
- * Version:           0.5.0
+ * Description:       Sister-app of NutriTrials covering the full upstream Trial Management cycle (annual planning, Use Case intake, Steering / CEO / Monitoring gates, internal controls, Fast Track lane, closure & knowledge base). Includes a chat-with-data AI co-pilot designed and operated by the D²nAI team.
+ * Version:           0.5.1
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutriplan
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NPLAN_VER', '0.5.0' );
+define( 'DNAI_NPLAN_VER', '0.5.1' );
 define( 'DNAI_NPLAN_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NPLAN_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -276,14 +276,14 @@ function dnai_nplan_settings_page() {
 	<div class="wrap">
 		<h1>NutriPlan AI</h1>
 		<?php if ( isset( $_GET['nplan_saved'] ) ) : ?><div class="notice notice-success is-dismissible"><p>Configuration enregistrée.</p></div><?php endif; ?>
-		<?php if ( $using_shared ) : ?><div class="notice notice-info"><p>Les paramètres Databricks sont actuellement <b>hérités du plugin CGM Cockpit</b> (même workspace). Tu peux laisser vide pour conserver ce comportement.</p></div><?php endif; ?>
-		<p class="description">Le backend AI sert le co-pilote NutriPlan (chat-with-data). Réutilise le proxy Databricks du CGM Cockpit si déjà configuré — sinon renseigne ci-dessous.</p>
+		<?php if ( $using_shared ) : ?><div class="notice notice-info"><p>Les paramètres backend AI sont actuellement <b>hérités du plugin CGM Cockpit</b>. Tu peux laisser vide pour conserver ce comportement.</p></div><?php endif; ?>
+		<p class="description">Backend AI du co-pilote NutriPlan (chat-with-data) — conçu et opéré par l'équipe D²nAI. Réutilise la configuration du CGM Cockpit si déjà en place.</p>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 			<?php wp_nonce_field( 'dnai_nplan_save' ); ?>
 			<input type="hidden" name="action" value="dnai_nplan_save">
 			<table class="form-table">
-				<tr><th>Workspace URL</th><td><input type="url" name="dnai_nplan_settings[dbx_workspace]" value="<?php echo $g( 'dbx_workspace' ); ?>" class="regular-text" placeholder="https://adb-...azuredatabricks.net"></td></tr>
-				<tr><th>Endpoint name</th><td><input type="text" name="dnai_nplan_settings[dbx_endpoint]" value="<?php echo $g( 'dbx_endpoint' ); ?>" class="regular-text" placeholder="databricks-claude-sonnet-4-5"></td></tr>
+				<tr><th>Workspace URL</th><td><input type="url" name="dnai_nplan_settings[dbx_workspace]" value="<?php echo $g( 'dbx_workspace' ); ?>" class="regular-text" placeholder="https://..."></td></tr>
+				<tr><th>Endpoint name</th><td><input type="text" name="dnai_nplan_settings[dbx_endpoint]" value="<?php echo $g( 'dbx_endpoint' ); ?>" class="regular-text" placeholder="endpoint-name"></td></tr>
 				<tr><th>PAT</th><td><input type="password" autocomplete="new-password" name="dnai_nplan_settings[dbx_token]" value="" class="regular-text" placeholder="<?php echo $has_tok ? '•••• déjà enregistré — laisser vide pour conserver' : 'dapi-...'; ?>"></td></tr>
 				<tr><th>Timeout (s)</th><td><input type="number" min="15" name="dnai_nplan_settings[dbx_timeout]" value="<?php echo $g( 'dbx_timeout', '120' ); ?>" class="small-text"></td></tr>
 			</table>
