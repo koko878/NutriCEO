@@ -1,0 +1,1466 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#1B5E20">
+<link rel="icon" type="image/png" href="assets/dnai-icon-512.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Atlas">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%231B5E20'/%3E%3Ccircle cx='90' cy='90' r='52' fill='none' stroke='%23E6F4E6' stroke-width='8'/%3E%3Cpath d='M38 90 H142 M90 38 V142' stroke='%23E6F4E6' stroke-width='8' stroke-linecap='round'/%3E%3Cpath d='M50 65 Q90 30 130 65 Q145 90 130 115 Q90 150 50 115 Q35 90 50 65 Z' fill='none' stroke='%23E6F4E6' stroke-width='6' opacity='.7'/%3E%3C/svg%3E">
+<title>Atlas — D²nAI · OCP Nutricrops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-900:#0F3D14; --green-800:#1B5E20; --green-700:#2E7D32; --green-500:#4CAF50;
+  --green-100:#E8F0E8; --green-50:#F2F7F2;
+  --ink:#13191A; --ink-2:#3C4642; --muted:#6B7268; --line:#E6E9E5;
+  --bg:#FAFBFA; --page:#EDEFEA;
+  --warn:#B45309; --warn-bg:#FEF3C7;
+  --ok:#15803D; --ok-bg:#DCFCE7;
+  --bad:#B91C1C; --bad-bg:#FEE2E2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background: radial-gradient(1200px 600px at 50% -10%, #E2E8DE 0%, transparent 60%), var(--page);
+  color:var(--ink); -webkit-font-smoothing:antialiased;
+  display:grid; place-items:center; min-height:100vh; padding:24px 16px;
+}
+.stage{display:flex;flex-direction:column;align-items:center;gap:18px}
+.legend{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.legend .brand{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;color:var(--green-800);font-size:14px;text-transform:none;letter-spacing:.02em}
+.phone{position:relative;width:390px;height:844px;background:#0a0a0a;border-radius:54px;padding:14px;box-shadow:0 30px 60px -20px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.06) inset,0 0 0 2px #1a1a1a}
+.notch{position:absolute;left:50%;top:18px;transform:translateX(-50%);width:120px;height:32px;background:#000;border-radius:20px;z-index:5}
+.screen{position:relative;width:100%;height:100%;background:var(--bg);border-radius:42px;overflow:hidden;display:flex;flex-direction:column}
+.status{height:48px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 6px;font-size:14px;font-weight:600;color:var(--ink)}
+.status .icons{display:flex;gap:5px;align-items:center}
+.dot{width:4px;height:4px;background:var(--ink);border-radius:50%}
+.battery{width:22px;height:11px;border:1.2px solid var(--ink);border-radius:3px;position:relative}
+.battery::after{content:"";position:absolute;right:-3px;top:2.5px;width:2px;height:4px;background:var(--ink);border-radius:0 1px 1px 0}
+.battery::before{content:"";position:absolute;left:1px;top:1px;bottom:1px;width:80%;background:var(--ink);border-radius:1px}
+.appbar{display:flex;align-items:center;justify-content:space-between;padding:6px 20px 14px}
+.brandmark{display:flex;align-items:center;gap:10px}
+.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg, var(--green-800), var(--green-900));display:grid;place-items:center;position:relative;overflow:hidden;box-shadow:0 4px 10px -4px rgba(27,94,32,.45)}
+.logo::before{content:"";position:absolute;inset:0;opacity:.18;background-image:repeating-linear-gradient(180deg, rgba(180,255,180,.6) 0 1px, transparent 1px 3px);mix-blend-mode:screen}
+.logo span{font-family:'Cormorant Garamond',Georgia,serif;color:#E6F4E6;font-weight:700;font-size:16px;line-height:1;position:relative;letter-spacing:.5px}
+.logo sup{font-size:9px;font-weight:600;margin-left:-1px;top:-4px;position:relative}
+.brandtext{display:flex;flex-direction:column;line-height:1.05}
+.brandtext .t1{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.brandtext .t2{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--green-800);font-weight:700}
+.lang{display:flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
+.lang button{border:0;background:transparent;font:600 11px/1 'Inter',sans-serif;padding:6px 10px;border-radius:999px;color:var(--muted);cursor:pointer;transition:.2s}
+.lang button.on{background:var(--green-800);color:#fff}
+.hello{padding:4px 22px 8px}
+.hello h1{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:30px;color:var(--ink);letter-spacing:-.01em}
+.hello .date{color:var(--muted);font-size:13px;margin-top:2px}
+.scroll{flex:1;overflow-y:auto;padding:8px 16px 12px}
+.scroll::-webkit-scrollbar{width:0}
+.brief{margin:8px 6px 14px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px;cursor:pointer;display:flex;gap:12px;align-items:center;transition:.2s;box-shadow:0 1px 0 rgba(0,0,0,.02)}
+.brief:hover{transform:translateY(-1px);box-shadow:0 6px 18px -10px rgba(0,0,0,.18)}
+.brief .ico{width:38px;height:38px;border-radius:12px;background:var(--green-100);display:grid;place-items:center;color:var(--green-800);flex:none}
+.brief .txt h3{font-size:14px;font-weight:600;color:var(--ink)}
+.brief .txt p{font-size:12.5px;color:var(--muted);margin-top:2px}
+.brief .pill{margin-left:auto;font-size:11px;font-weight:600;color:#fff;background:var(--green-800);padding:4px 8px;border-radius:999px;flex:none}
+.suglabel{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:4px 8px 8px}
+.sugs{display:flex;flex-direction:column;gap:8px;padding:0 6px}
+.sug{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:.18s}
+.sug:hover{border-color:var(--green-500);background:var(--green-50)}
+.sug .q{font-size:13.5px;color:var(--ink-2);font-weight:500;line-height:1.35}
+.sug .arrow{margin-left:auto;color:var(--muted);flex:none}
+.thread{display:flex;flex-direction:column;gap:14px;padding:8px 4px 6px}
+.bubble-user{align-self:flex-end;max-width:84%;background:var(--green-800);color:#fff;border-radius:18px 18px 4px 18px;padding:10px 14px;font-size:14px;line-height:1.4;box-shadow:0 6px 14px -8px rgba(27,94,32,.45)}
+.answer{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px}
+.answer .head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.answer .head .badge{width:22px;height:22px;border-radius:6px;background:var(--green-800);display:grid;place-items:center;color:#fff;font:700 10px 'Cormorant Garamond',serif}
+.answer .head .by{font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.answer h4{font-size:14px;font-weight:600;color:var(--ink);margin:8px 0 4px}
+.answer p{font-size:13.5px;color:var(--ink-2);line-height:1.55;margin:6px 0}
+.answer ul{margin:6px 0 6px 4px;padding:0;list-style:none}
+.answer ul li{font-size:13px;color:var(--ink-2);padding:4px 0 4px 22px;position:relative;line-height:1.45}
+.answer ul li .ic{position:absolute;left:0;top:5px;width:16px;height:16px;border-radius:4px;display:grid;place-items:center;font-size:10px;font-weight:700}
+.ic-ok{background:var(--ok-bg);color:var(--ok)}
+.ic-warn{background:var(--warn-bg);color:var(--warn)}
+.ic-bad{background:var(--bad-bg);color:var(--bad)}
+.kpi{display:flex;gap:8px;margin:8px 0 4px;flex-wrap:wrap}
+.kpi .b{background:var(--green-50);border:1px solid var(--green-100);border-radius:10px;padding:8px 10px;flex:1;min-width:90px}
+.kpi .b .v{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--green-800);line-height:1}
+.kpi .b .l{font-size:10.5px;color:var(--muted);margin-top:3px;letter-spacing:.02em}
+.sources{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);display:flex;flex-wrap:wrap;gap:6px}
+.sources .lab{font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;width:100%;margin-bottom:2px}
+.src{display:inline-flex;align-items:center;gap:6px;background:var(--green-50);border:1px solid var(--green-100);color:var(--green-800);font-size:11.5px;font-weight:500;padding:5px 9px;border-radius:999px;cursor:pointer}
+.src .who{color:var(--muted);font-weight:500}
+.thinking{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12.5px;padding:10px 14px;background:#fff;border:1px solid var(--line);border-radius:14px}
+.thinking .matrix{width:18px;height:18px;border-radius:5px;background:var(--green-800);position:relative;overflow:hidden}
+.thinking .matrix::after{content:"01·10·11·00·10·11";position:absolute;inset:0;font:700 7px/1 'Inter',monospace;color:#9ae39a;letter-spacing:1px;white-space:nowrap;animation:rain 1.4s linear infinite;text-align:center;padding-top:2px}
+@keyframes rain{0%{transform:translateY(-50%)}100%{transform:translateY(50%)}}
+.dots{display:inline-flex;gap:3px}
+.dots i{width:5px;height:5px;background:var(--green-800);border-radius:50%;opacity:.4;animation:blink 1.1s ease-in-out infinite}
+.dots i:nth-child(2){animation-delay:.18s}
+.dots i:nth-child(3){animation-delay:.36s}
+@keyframes blink{0%,100%{opacity:.25;transform:scale(.85)}50%{opacity:1;transform:scale(1)}}
+.composer{border-top:1px solid var(--line);background:#fff;padding:10px 14px 18px;display:flex;align-items:center;gap:8px}
+.composer .field{flex:1;display:flex;align-items:center;gap:8px;background:var(--green-50);border:1px solid var(--green-100);border-radius:999px;padding:10px 14px}
+.composer input{flex:1;border:0;background:transparent;outline:none;font:500 14px 'Inter',sans-serif;color:var(--ink)}
+.composer input::placeholder{color:var(--muted)}
+.icon-btn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;border:0;background:var(--green-800);color:#fff;cursor:pointer;flex:none;transition:.2s}
+.icon-btn:hover{background:var(--green-900)}
+.icon-btn.ghost{background:transparent;color:var(--green-800);border:1px solid var(--green-100);background:var(--green-50)}
+.handle{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:130px;height:4px;background:#1a1a1a;border-radius:3px;z-index:4}
+.fade-in{animation:fade .35s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.reset{background:transparent;border:0;color:var(--muted);font:600 11px 'Inter',sans-serif;cursor:pointer;padding:4px 8px;border-radius:6px}
+.reset:hover{color:var(--green-800);background:var(--green-50)}
+.hint{max-width:420px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.5}
+.hint b{color:var(--ink-2)}
+.answer.empty .head .badge{background:#B45309;font-family:'Inter',sans-serif;font-size:13px;font-weight:700}
+.answer.empty .head .by{color:#B45309}
+.cta{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.cta-btn{width:100%;display:flex;align-items:center;gap:10px;background:var(--green-800);color:#fff;border:0;border-radius:12px;padding:11px 14px;font:600 12.5px 'Inter',sans-serif;cursor:pointer;box-shadow:0 6px 14px -8px rgba(27,94,32,.45);transition:.2s;text-align:left}
+.cta-btn:hover{background:var(--green-900)}
+.cta-btn span{flex:1;line-height:1.3}
+.cta-btn .arrow{margin-left:auto;flex:none;opacity:.85}
+.cta-btn.sent{background:var(--ok-bg);color:var(--ok);cursor:default;box-shadow:none;animation:sentPulse .35s ease}
+@keyframes sentPulse{0%{transform:scale(.98)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
+.cta-btn.sent svg{flex:none}
+
+/* report picker */
+.picker{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.picker-item{background:var(--green-50);border:1px solid var(--green-100);border-radius:12px;padding:11px 13px;cursor:pointer;display:flex;align-items:center;gap:11px;transition:.18s}
+.picker-item:hover{background:#fff;border-color:var(--green-500);transform:translateX(2px)}
+.picker-item .pico{width:28px;height:28px;border-radius:8px;background:var(--green-800);color:#fff;display:grid;place-items:center;font:700 13px 'Cormorant Garamond',serif;flex:none}
+.picker-item .ptxt{flex:1;min-width:0}
+.picker-item .ptxt .pl{font-size:13px;font-weight:600;color:var(--ink);line-height:1.2}
+.picker-item .ptxt .pd{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.3}
+.picker-item .parrow{color:var(--muted);flex:none}
+
+/* report cover */
+.report-cover{margin-top:6px;background:linear-gradient(135deg,#0F3D14 0%,#1B5E20 65%,#2E7D32 100%);color:#E6F4E6;border-radius:14px;padding:14px 16px;position:relative;overflow:hidden}
+.report-cover::before{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(180deg,rgba(180,255,180,.08) 0 1px,transparent 1px 4px);mix-blend-mode:screen;pointer-events:none}
+.report-cover .classification{font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:#A8E0B0;margin-bottom:4px;position:relative}
+.report-cover h5{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;line-height:1.2;margin:4px 0;color:#fff;position:relative}
+.report-cover .csub{font-size:12px;line-height:1.45;color:#D5EBD8;position:relative;margin-top:4px}
+.report-cover .audience{font-size:11px;color:#A8E0B0;margin-top:8px;position:relative;letter-spacing:.02em}
+
+.report-sections{margin-top:10px;display:flex;flex-direction:column;gap:4px}
+.report-sections .lab{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.report-sections .sec{font-size:12.5px;color:var(--ink-2);padding:5px 0 5px 18px;position:relative;line-height:1.4;border-bottom:1px dashed var(--line)}
+.report-sections .sec:last-child{border-bottom:0}
+.report-sections .sec::before{content:counter(sect);counter-increment:sect;position:absolute;left:0;top:5px;width:14px;height:14px;border-radius:50%;background:var(--green-100);color:var(--green-800);font:700 9px 'Inter',sans-serif;display:grid;place-items:center}
+.report-sections{counter-reset:sect}
+
+.report-actions{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.act-btn{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--green-100);color:var(--green-800);border-radius:10px;padding:10px 12px;font:600 12.5px 'Inter',sans-serif;cursor:pointer;transition:.2s;text-align:left}
+.act-btn:hover{background:var(--green-50);border-color:var(--green-500)}
+.act-btn:first-child{background:var(--green-800);color:#fff}
+.act-btn:first-child:hover{background:var(--green-900)}
+.act-btn .aico{width:18px;height:18px;flex:none}
+.act-btn span{flex:1;line-height:1.2}
+.act-btn .arrow{margin-left:auto;flex:none;opacity:.7}
+.act-btn.sent{background:var(--ok-bg);color:var(--ok);border-color:var(--ok-bg);cursor:default}
+
+*{-webkit-tap-highlight-color:transparent}
+.sug,.brief,.icon-btn,.lang button,.reset,.src,.bubble-user,.picker-item,.act-btn{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.composer input{-webkit-user-select:text;user-select:text;font-size:16px}
+
+@media (max-width:600px){
+  body{padding:0;background:var(--bg);display:block;min-height:100dvh;overscroll-behavior:none}
+  .stage{gap:0}
+  .legend,.hint{display:none}
+  .phone{width:100%;height:100dvh;height:100vh;border-radius:0;padding:0;background:var(--bg);box-shadow:none}
+  .notch,.handle{display:none}
+  .screen{border-radius:0;padding-top:env(safe-area-inset-top)}
+  .status{display:none}
+  .appbar{padding-top:12px}
+  .composer{padding-bottom:calc(14px + env(safe-area-inset-bottom))}
+  .scroll{padding-bottom:18px}
+}
+@media (display-mode:standalone),(display-mode:fullscreen){.status{display:none}}
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <div class="legend">
+    <div>Atlas — prototype de démonstration</div>
+    <div class="brand">Conçu par D²nAI · OCP Nutricrops</div>
+  </div>
+
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+
+      <div class="status">
+        <span id="clock">9:41</span>
+        <span class="icons">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span style="margin-left:6px" class="battery"></span>
+        </span>
+      </div>
+
+      <div class="appbar">
+        <div class="brandmark">
+          <div class="logo"><span>D<sup>2</sup>n</span></div>
+          <div class="brandtext">
+            <div class="t1">OCP Nutricrops · Data, Digital &amp; AI</div>
+            <div class="t2">Atlas</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button class="reset" id="reset" title="Recommencer">↻</button>
+          <div class="lang">
+            <button data-l="fr" class="on">FR</button>
+            <button data-l="en">EN</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="hello">
+        <h1 data-i18n="greeting">Bonjour, Hamza</h1>
+        <div class="date" data-i18n="date">Lundi 8 juin 2026</div>
+      </div>
+
+      <div class="scroll" id="scroll">
+
+        <div id="initial">
+          <div class="brief" id="briefCard" data-q="brief">
+            <div class="ico">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>
+            </div>
+            <div class="txt">
+              <h3 data-i18n="briefTitle">Brief du jour</h3>
+              <p data-i18n="briefSub">5 sujets demandent ton attention.</p>
+            </div>
+            <span class="pill">5</span>
+          </div>
+
+          <div class="brief" id="reportsCard" data-q="reports">
+            <div class="ico">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+            </div>
+            <div class="txt">
+              <h3 data-i18n="reportsTitle">Générer un livrable</h3>
+              <p data-i18n="reportsSub">5 modèles · Comex, Roadmap, Adoption…</p>
+            </div>
+            <span class="pill">5</span>
+          </div>
+
+          <div class="suglabel" data-i18n="sugLabel">Questions suggérées</div>
+          <div class="sugs" id="sugs"></div>
+        </div>
+
+        <div class="thread" id="thread"></div>
+      </div>
+
+      <div class="composer">
+        <div class="field">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7268" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="qinput" data-i18n-ph="placeholder" placeholder="Pose une question à Atlas…" />
+        </div>
+        <button class="icon-btn ghost" title="Voix">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10a7 7 0 0 1-14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+        </button>
+        <button class="icon-btn" id="send" title="Envoyer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4 20-7z"/></svg>
+        </button>
+      </div>
+
+    </div>
+    <div class="handle"></div>
+  </div>
+
+  <div class="hint">
+    <b>Comment utiliser :</b> appuie sur une question suggérée — sur le « Brief du jour » — ou sur « Générer un livrable » pour voir Atlas composer une réponse ou un livrable prêt à partager. Toutes les données sont fictives.
+  </div>
+
+</div>
+
+<script>
+const i18n = {
+  fr: {
+    greeting: "Bonjour, Hamza",
+    date: "Lundi 8 juin 2026",
+    briefTitle: "Brief du jour",
+    briefSub: "5 sujets demandent ton attention.",
+    sugLabel: "Questions suggérées",
+    placeholder: "Pose une question à Atlas…",
+    thinking: "Consolidation du portefeuille Data, Digital &amp; AI…",
+    sourcesLabel: "Sources",
+    reportsTitle: "Générer un livrable",
+    reportsSub: "5 modèles · Comex, Roadmap, Adoption…",
+    hint: "<b>Comment utiliser :</b> appuie sur une question suggérée — sur le « Brief du jour » — ou sur « Générer un livrable » pour voir Atlas composer une réponse ou un livrable prêt à partager. Toutes les données sont fictives.",
+    questions: [
+      { id: "portfolio",   q: "Où en est le portefeuille D²nAI cette semaine ?" },
+      { id: "adoption",    q: "Quelles BUs adoptent le plus nos plateformes ?" },
+      { id: "risques",     q: "Quels projets data sont à risque ce trimestre ?" },
+      { id: "incidents",   q: "Synthèse des incidents data &amp; cyber" }
+    ],
+    routes: [
+      { id:"report_comex",      kw:["livrable comex","slide comex","slide pack","comex digital","note comex"] },
+      { id:"report_roadmap",    kw:["livrable roadmap","roadmap 2027","roadmap data","plan stratégique","note roadmap"] },
+      { id:"report_adoption",   kw:["livrable adoption","bilan adoption","rapport adoption","note adoption"] },
+      { id:"report_gov",        kw:["livrable gouvernance","comité data governance","rapport gouvernance","mdm board"] },
+      { id:"report_vendor",     kw:["livrable vendor","scorecard","fournisseur","databricks scorecard","comparatif vendors"] },
+      { id:"report_picker",     kw:["livrable","livrables","modèle","modele","génère","genere","générer","generate"] },
+      { id:"portfolio",         kw:["portefeuille","projets","cgm","nutriplan","nutritrials","portefeuille d²nai","roadmap","avancement"] },
+      { id:"adoption",          kw:["adoption","utilisateurs","actifs","mau","dau","bu","utilisation"] },
+      { id:"adoption_cgm",      kw:["adoption cgm","cgm cockpit","cgm","cockpit","blend pricing"] },
+      { id:"adoption_nutriplan",kw:["adoption nutriplan","nutriplan","trial intake","steering committee"] },
+      { id:"risques",           kw:["risque","risques","à risque","critique","critiques","retard","délai"] },
+      { id:"incidents",         kw:["incident","incidents","cyber","phishing","fuite","data leak","downtime"] },
+      { id:"mdm",               kw:["mdm","master data","référentiel","référentiels","data quality","gouvernance","ownership"] },
+      { id:"talents",           kw:["recrutement","recrutements","embauche","talent","talents","équipe","data engineer","data scientist","mlops"] },
+      { id:"roi_data",          kw:["roi","retour","investissement","valeur","business case","économie","cout"] },
+      { id:"comites",           kw:["comité","comites","comités","prochaine session","steering","gouvernance"] },
+      { id:"partenaires",       kw:["partenaire","partenaires","um6p","institut","fournisseur","databricks","vendor"] },
+      { id:"infra",             kw:["infra","databricks","azure","unity catalog","plateforme","compute","data lake"] },
+      { id:"brief",             kw:["brief","synthèse","résumé","semaine","jour","hebdo","aujourd'hui"] }
+    ],
+    answers: {
+      brief: {
+        title: "Brief D&amp;A — semaine 23",
+        intro: "Cinq sujets remontent en priorité depuis vendredi :",
+        list: [
+          { t:"bad",  txt:"<b>CGM Cockpit · Sc3 Blend Pricing</b> : retour métier négatif sur le solveur — refonte Vague 3 à arbitrer." },
+          { t:"warn", txt:"<b>NutriPlan</b> : équipe Process &amp; Control attend ta réponse formelle au framework v1.0 signé." },
+          { t:"warn", txt:"<b>MDM</b> : taxonomie en attente d'alignement BOUAYAD avant clôture du Lot 6." },
+          { t:"ok",   txt:"<b>NutriTrials</b> : rollout Fertinagro &amp; UM6P Canada en cours — 5-42 trials en intégration." },
+          { t:"ok",   txt:"<b>Recrutement</b> : 2 candidats Senior Data Engineer en short list, décision attendue cette semaine." }
+        ],
+        sources: [
+          { d:"CGM Cockpit · feedback métier S22.json",      w:"Tarik R. · Customization BU" },
+          { d:"Note process Trial Management v1.0.pdf",      w:"Mehdi CHHIH · BPM Director" },
+          { d:"Roadmap MDM v2 · attente BOUAYAD",            w:"Aniss B. · D&amp;A" },
+          { d:"Suivi rollout NutriTrials S22.xlsx",          w:"Randa A. · Customization BU" }
+        ]
+      },
+      portfolio: {
+        title: "Portefeuille D²nAI — état S23",
+        kpis: [
+          { v:"6",  l:"projets actifs" },
+          { v:"4",  l:"en pilote" },
+          { v:"1",  l:"en GA" }
+        ],
+        intro: "Vue consolidée des projets data &amp; digital portés par l'équipe :",
+        list: [
+          { t:"ok",   txt:"<b>NutriTrials</b> · <i>GA</i> · 5 BUs onboardées, généralisation Q3 en cours." },
+          { t:"ok",   txt:"<b>NutriPlan</b> · <i>pilote</i> · démo aboutie, prêt pour V1 pilote — attente sponsor exécutif." },
+          { t:"warn", txt:"<b>CGM Cockpit</b> · <i>pilote</i> · Vague 3 livrée, refonte Sc3 à arbitrer avec le métier." },
+          { t:"warn", txt:"<b>MDM</b> · <i>refonte</i> · attente alignement taxonomie BOUAYAD." },
+          { t:"ok",   txt:"<b>Radar Intrants</b> · <i>pilote</i> · 2 BUs early adopters, retours positifs." },
+          { t:"ok",   txt:"<b>D²nAI Office</b> · <i>POC</i> · cockpit mobile-first livré, démo interne planifiée." }
+        ],
+        decision: "Décision attendue : arbitrage Vague 3 CGM Sc3 (refonte solveur) au prochain Steering.",
+        sources: [
+          { d:"Portefeuille D&amp;A · S23.xlsx",   w:"Aniss B. · D²nAI PMO" },
+          { d:"Recap pilotes Q2.pdf",              w:"Hamza K. · Head of D&amp;A" }
+        ]
+      },
+      adoption: {
+        title: "Adoption des plateformes par BU",
+        kpis: [
+          { v:"217",  l:"utilisateurs actifs/mois" },
+          { v:"+34%", l:"vs Q1" },
+          { v:"5/8",  l:"BUs en traction" }
+        ],
+        intro: "L'adoption progresse régulièrement, +34% d'utilisateurs actifs mensuels vs Q1. Détail par BU :",
+        list: [
+          { t:"ok",   txt:"<b>BU Brésil</b> · 67 MAU · championne sur NutriPlan + CGM, leader d'usage." },
+          { t:"ok",   txt:"<b>BU Inde</b> · 48 MAU · forte traction Radar Intrants, démarrage NutriPlan." },
+          { t:"ok",   txt:"<b>Customization BU</b> · 39 MAU · pilote CGM Cockpit avec Tarik R." },
+          { t:"warn", txt:"<b>BU Europe</b> · 22 MAU · usage en retrait, à relancer Q3." },
+          { t:"warn", txt:"<b>BU Afrique</b> · 15 MAU · faible utilisation, manque d'onboarding local." },
+          { t:"bad",  txt:"<b>BU Asie-Pacifique</b> · 4 MAU · adoption quasi nulle, à investiguer." }
+        ],
+        decision: "Action : revue adoption avec EVP Asia-Pacifique programmée le 18/06.",
+        sources: [
+          { d:"Dashboard adoption Q2 S23.xlsx",     w:"Sarah B. · D²nAI Analytics" },
+          { d:"Note relance EU Q3.pdf",             w:"Hamza K. · Head of D&amp;A" }
+        ]
+      },
+      adoption_cgm: {
+        title: "Adoption CGM Cockpit",
+        kpis: [
+          { v:"39",   l:"utilisateurs actifs" },
+          { v:"+12",  l:"vs S22" },
+          { v:"3",    l:"BUs déployées" }
+        ],
+        intro: "Le CGM Cockpit gagne 12 utilisateurs cette semaine, principalement côté Customization BU et BU Brésil.",
+        list: [
+          { t:"ok",   txt:"<b>Customization BU (Tarik R.)</b> · usage quotidien · 100% des managers pricing onboardés." },
+          { t:"ok",   txt:"<b>BU Brésil (Karim B.)</b> · usage hebdo · feedback positif sur Vague 2." },
+          { t:"warn", txt:"<b>BU Inde</b> · 4 utilisateurs · démarrage timide, attente formation locale." },
+          { t:"bad",  txt:"<b>Sc3 Blend Pricing</b> · feedback négatif métier · refonte Vague 3 à valider." }
+        ],
+        decision: "Recommandation : prioriser refonte Sc3 avant d'étendre aux autres BUs.",
+        sources: [
+          { d:"Activity log · CGM Cockpit S23.json", w:"D²nAI Analytics" },
+          { d:"Feedback métier Sc3.json",            w:"Tarik R. · Customization BU" }
+        ]
+      },
+      adoption_nutriplan: {
+        title: "Adoption NutriPlan",
+        kpis: [
+          { v:"71",  l:"trials gérés" },
+          { v:"4",   l:"BUs actives" },
+          { v:"V1",  l:"pilote planifié" }
+        ],
+        intro: "Le pilote D'NutriPlan touche déjà 71 trials. Process &amp; Control attend ta réponse sur la suite.",
+        list: [
+          { t:"ok",   txt:"<b>BU Brésil</b> · 28 trials · pilote leader avec EMBRAPA en partenaire." },
+          { t:"ok",   txt:"<b>Customization BU</b> · 19 trials · UM6P comme partenaire technique." },
+          { t:"ok",   txt:"<b>BU Inde</b> · 14 trials · onboarding récent." },
+          { t:"warn", txt:"<b>Steering Committee</b> · ordre du jour à clôturer avec Mehdi CHHIH." }
+        ],
+        decision: "Décision attendue : confirmer le sponsor exécutif V1 et lancer le pilote 5 BUs.",
+        sources: [
+          { d:"NutriPlan · trial register S23.xlsx", w:"Aniss B. · D²nAI" },
+          { d:"Mail Mehdi CHHIH · process v1.0",     w:"BPM Director" }
+        ]
+      },
+      risques: {
+        title: "Projets data &amp; digital à risque · Q2",
+        kpis: [
+          { v:"3",  l:"projets à risque" },
+          { v:"1",  l:"critique" },
+          { v:"6",  l:"on track" }
+        ],
+        intro: "Trois projets nécessitent ton arbitrage cette semaine :",
+        list: [
+          { t:"bad",  txt:"<b>CGM Cockpit · Vague 3 Sc3</b> · retour métier négatif sur le solveur — décision refonte vs maintien à prendre." },
+          { t:"warn", txt:"<b>MDM Lot 6</b> · attente alignement taxonomie BOUAYAD depuis 3 semaines." },
+          { t:"warn", txt:"<b>NutriPlan V1</b> · sponsor exécutif non confirmé, risque de glissement Q3." }
+        ],
+        decision: "Action : porter les 3 sujets au Steering D&amp;A du 12/06.",
+        sources: [
+          { d:"Status report projets D²nAI Q2.pptx", w:"Aniss B. · D²nAI PMO" },
+          { d:"Notes Steering S22.docx",             w:"Hamza K. · Head of D&amp;A" }
+        ]
+      },
+      incidents: {
+        title: "Incidents data &amp; cyber — semaine 23",
+        kpis: [
+          { v:"3",  l:"incidents" },
+          { v:"0",  l:"data leak" },
+          { v:"1",  l:"prod down" }
+        ],
+        intro: "Trois incidents remontés cette semaine, aucun n'a entraîné de fuite de données.",
+        list: [
+          { t:"warn", txt:"<b>NutriPlan · downtime 22 min</b> · panne Azure Front Door, recovery automatique." },
+          { t:"warn", txt:"<b>Phishing ciblé équipe Data</b> · 3 mails bloqués par défenses, 0 clic." },
+          { t:"ok",   txt:"<b>CGM Cockpit · query Databricks lente</b> · résolu, ajustement compute Q3 planifié." }
+        ],
+        decision: "Action : revue post-mortem Azure Front Door avec CISO le 11/06.",
+        sources: [
+          { d:"Bulletin CSIRT S23",             w:"Walid B. · CISO" },
+          { d:"Post-mortem · Azure FD downtime",w:"Sarah B. · D²nAI Ops" }
+        ]
+      },
+      mdm: {
+        title: "Master Data Management — état",
+        kpis: [
+          { v:"73%",  l:"complétude données" },
+          { v:"6/8",  l:"BUs onboardées" },
+          { v:"Lot 6",l:"en cours" }
+        ],
+        intro: "Le programme MDM est <b>à 73% de complétude</b>, blocage actuel sur la taxonomie multi-produits.",
+        list: [
+          { t:"ok",   txt:"<b>Référentiel produits</b> · 92% aligné, version stable." },
+          { t:"ok",   txt:"<b>Référentiel clients</b> · 88% aligné, intégration NutriTrials OK." },
+          { t:"warn", txt:"<b>Référentiel partenaires</b> · 64% · à reprendre avec sourcing." },
+          { t:"bad",  txt:"<b>Taxonomie multi-produits (Lot 6)</b> · bloqué · attente alignement BOUAYAD." }
+        ],
+        decision: "Action : escalader le blocage taxonomie au prochain Comité Data Governance.",
+        sources: [
+          { d:"Tableau de bord MDM Q2.xlsx",  w:"Aniss B. · D²nAI MDM" },
+          { d:"Plan MDM v2 · Lot 6.pdf",      w:"Hamza K. · Head of D&amp;A" }
+        ]
+      },
+      talents: {
+        title: "Recrutement équipe D²nAI",
+        kpis: [
+          { v:"4",  l:"postes ouverts" },
+          { v:"2",  l:"short list" },
+          { v:"12", l:"semaines · délai moyen" }
+        ],
+        intro: "Quatre postes ouverts sur la team, deux candidats à arbitrer cette semaine.",
+        list: [
+          { t:"ok",   txt:"<b>Senior Data Engineer</b> · 2 candidats en short list, décision finale à prendre." },
+          { t:"warn", txt:"<b>Senior ML Engineer</b> · 1 candidat en attente de feedback technique." },
+          { t:"warn", txt:"<b>Data Product Manager</b> · sourcing en cours, faible pipeline." },
+          { t:"bad",  txt:"<b>Senior Cloud Architect Databricks</b> · poste ouvert depuis 16 sem, profil rare." }
+        ],
+        decision: "Décision : valider l'embauche du candidat Senior DE avant la fin de semaine.",
+        sources: [
+          { d:"Plan recrutement D²nAI 2026.xlsx", w:"Nadia H. · DRH" },
+          { d:"Short list Senior DE",             w:"Hamza K. · Head of D&amp;A" }
+        ]
+      },
+      roi_data: {
+        title: "ROI des projets data — H1 2026",
+        kpis: [
+          { v:"4,2×", l:"ratio bénéfice/coût" },
+          { v:"3,1",  l:"M MAD investis" },
+          { v:"13,1", l:"M MAD valeur créée" }
+        ],
+        intro: "Le portefeuille génère un retour estimé de <b>4,2×</b> son coût H1, principalement via NutriPlan et CGM Cockpit.",
+        list: [
+          { t:"ok",   txt:"<b>NutriPlan + NutriTrials</b> · 8,4 M MAD de valeur estimée (temps RD économisé, qualité claims)." },
+          { t:"ok",   txt:"<b>CGM Cockpit</b> · 3,2 M MAD (uplift pricing, exhaustivité couverture produits)." },
+          { t:"ok",   txt:"<b>Radar Intrants</b> · 1,5 M MAD (anticipation prix matières premières)." },
+          { t:"warn", txt:"<b>MDM</b> · ROI structurel mais difficile à quantifier court-terme." }
+        ],
+        decision: "Recommandation : préparer le pitch Comex pour étendre l'enveloppe D&amp;A 2027.",
+        sources: [
+          { d:"Bilan ROI D&amp;A H1 2026.pdf", w:"Hamza K. · Head of D&amp;A" },
+          { d:"Note méthodo valorisation",     w:"Aniss B. · D²nAI PMO" }
+        ]
+      },
+      comites: {
+        title: "Prochains comités &amp; arbitrages",
+        kpis: [
+          { v:"4",  l:"comités · 3 sem" },
+          { v:"7",  l:"arbitrages" },
+          { v:"2",  l:"livrables CEO" }
+        ],
+        intro: "Quatre comités prévus dans les trois prochaines semaines :",
+        list: [
+          { t:"ok",   txt:"<b>10/06 · Steering D²nAI mensuel</b> · arbitrage CGM Vague 3 + revue portefeuille." },
+          { t:"ok",   txt:"<b>12/06 · Comité Data Governance</b> · blocage MDM Lot 6 à escalader." },
+          { t:"warn", txt:"<b>18/06 · Revue adoption EU · Q3</b> · avec EVP Europe." },
+          { t:"ok",   txt:"<b>25/06 · Comex Digital</b> · pitch Roadmap D&amp;A 2027 + enveloppe budgétaire." }
+        ],
+        decision: "Préparer la note Comex Roadmap 2027 cette semaine.",
+        sources: [
+          { d:"Calendrier comités Q2.ics",       w:"Hamza K. · Head of D&amp;A" },
+          { d:"Note préparatoire Comex 25/06",   w:"Aniss B. · D²nAI" }
+        ]
+      },
+      partenaires: {
+        title: "Partenariats stratégiques",
+        kpis: [
+          { v:"4",  l:"partenaires actifs" },
+          { v:"2",  l:"renégociations" },
+          { v:"1",  l:"nouveau · Q3" }
+        ],
+        intro: "État des partenariats stratégiques pour la fonction data :",
+        list: [
+          { t:"ok",   txt:"<b>UM6P</b> · partenariat 5 ans · NutriTrials Canada, NutriPlan Maroc · solide." },
+          { t:"ok",   txt:"<b>Databricks</b> · contrat ELA en place · renégo Q4 prévue." },
+          { t:"warn", txt:"<b>Vendor X (DataOps)</b> · contrat en revue, SLA non tenus 3 mois consécutifs." },
+          { t:"ok",   txt:"<b>EMBRAPA</b> · partenaire NutriTrials Brésil · démarrage Q1 réussi." }
+        ],
+        decision: "Action : préparer un scorecard Vendor X pour le steering du 10/06.",
+        sources: [
+          { d:"Vendor scorecard Q1.xlsx",    w:"Aniss B. · D²nAI" },
+          { d:"Note partenariat UM6P 5 ans", w:"Hamza K. · Head of D&amp;A" }
+        ]
+      },
+      infra: {
+        title: "Infra Databricks &amp; Azure — état",
+        kpis: [
+          { v:"99,4%", l:"uptime 30j" },
+          { v:"4,2 To",l:"data lake" },
+          { v:"+18%",  l:"compute MoM" }
+        ],
+        intro: "Plateforme stable, croissance compute liée à la généralisation NutriTrials.",
+        list: [
+          { t:"ok",   txt:"<b>Unity Catalog</b> · 4,2 To de données gouvernées, 73 tables Gold." },
+          { t:"ok",   txt:"<b>Foundation Models</b> · 480k requêtes/mois · stable." },
+          { t:"warn", txt:"<b>Compute SQL Warehouse</b> · +18% MoM · prévoir un ajustement Q3 budget." },
+          { t:"ok",   txt:"<b>Sécurité</b> · 0 incident critique, audit SOC2 à mi-parcours." }
+        ],
+        decision: "Recommandation : valider l'enveloppe compute supplémentaire pour Q3.",
+        sources: [
+          { d:"Dashboard infra D&amp;A.xlsx",  w:"Sarah B. · D²nAI Ops" },
+          { d:"Audit SOC2 · mi-parcours",     w:"Walid B. · CISO" }
+        ]
+      },
+      report_picker: {
+        kind: "picker",
+        title: "Quel livrable souhaites-tu générer ?",
+        intro: "Sélectionne un modèle. Atlas agrège depuis le portefeuille D²nAI et produit un livrable prêt à partager.",
+        options: [
+          { id:"report_comex",     icon:"§",  label:"Slide pack · Comex Digital",        desc:"Roadmap, KPIs adoption, ROI, arbitrages" },
+          { id:"report_roadmap",   icon:"➤",  label:"Roadmap Data &amp; AI 2027",         desc:"Vision, jalons, enveloppe, dépendances" },
+          { id:"report_adoption",  icon:"%",  label:"Bilan adoption plateformes",        desc:"MAU par BU, top features, trajectoire" },
+          { id:"report_gov",       icon:"✓",  label:"Comité Data Governance mensuel",    desc:"Statut MDM, qualité, ownership, décisions" },
+          { id:"report_vendor",    icon:"⚖", label:"Vendor scorecard trimestriel",       desc:"Partenaires, SLA, coûts, renégociations" }
+        ]
+      },
+      report_comex: {
+        kind: "report",
+        title: "Slide pack · Comex Digital — juin 2026",
+        cover: {
+          classification: "Confidentiel · Comex",
+          subtitle: "Synthèse pour le Comex Digital · roadmap Data &amp; AI, adoption des plateformes, ROI consolidé H1, arbitrages prioritaires.",
+          pages: 18,
+          audience: "Comex · CEO Office"
+        },
+        kpis: [
+          { v:"18", l:"pages" },
+          { v:"4,2×", l:"ROI H1" },
+          { v:"7",  l:"arbitrages" }
+        ],
+        sections: [
+          "Synthèse exécutive",
+          "Adoption des plateformes par BU",
+          "Bilan financier H1 et projection H2",
+          "Roadmap 2027 · priorités &amp; enveloppe",
+          "Risques majeurs (CGM Sc3, MDM, recrutement)",
+          "Arbitrages soumis au Comex"
+        ],
+        actions: [
+          { id:"dl",  label:"Télécharger PDF",       sent:"PDF téléchargé" },
+          { id:"eml", label:"Mailer au Comex Office",sent:"Envoyé au Comex" },
+          { id:"sch", label:"Programmer mensuel",    sent:"Récurrence activée" }
+        ],
+        sources: [
+          { d:"Portefeuille D&amp;A · S23.xlsx",       w:"Aniss B. · D²nAI PMO" },
+          { d:"Bilan ROI D&amp;A H1 2026.pdf",         w:"Hamza K. · Head of D&amp;A" },
+          { d:"Dashboard adoption Q2 S23.xlsx",        w:"Sarah B. · D²nAI Analytics" }
+        ]
+      },
+      report_roadmap: {
+        kind: "report",
+        title: "Roadmap Data &amp; AI · 2027",
+        cover: {
+          classification: "Confidentiel · COMEX &amp; Board",
+          subtitle: "Vision 12 mois pour la fonction Data, Digital &amp; AI · jalons, enveloppe budgétaire 2027, dépendances inter-BU et points de décision Comex.",
+          pages: 24,
+          audience: "Comex · CEO · CDO Office"
+        },
+        kpis: [
+          { v:"24", l:"pages" },
+          { v:"9",  l:"chantiers majeurs" },
+          { v:"6",  l:"jalons clés" }
+        ],
+        sections: [
+          "Vision &amp; ambition 2027",
+          "Chantiers majeurs (NutriTrials GA, NutriPlan V1, MDM v3, AI Foundation)",
+          "Calendrier de déploiement BU par BU",
+          "Enveloppe budgétaire &amp; arbitrages",
+          "Plan de recrutement &amp; partenaires",
+          "KPIs de pilotage 2027"
+        ],
+        actions: [
+          { id:"dl",  label:"Télécharger PDF",       sent:"PDF téléchargé" },
+          { id:"eml", label:"Envoyer au Comex",      sent:"Envoyé au Comex" },
+          { id:"sch", label:"Programmer revue trim.",sent:"Récurrence activée" }
+        ],
+        sources: [
+          { d:"Vision Data &amp; AI 2027 · v3.pptx", w:"Hamza K. · Head of D&amp;A" },
+          { d:"Plan recrutement D²nAI 2026.xlsx",    w:"Nadia H. · DRH" },
+          { d:"Note partenariat UM6P 5 ans",         w:"Aniss B. · D²nAI" }
+        ]
+      },
+      report_adoption: {
+        kind: "report",
+        title: "Bilan adoption plateformes · H1 2026",
+        cover: {
+          classification: "Restreint · Direction D&amp;A &amp; CFOs BU",
+          subtitle: "État détaillé de l'adoption de NutriTrials, NutriPlan, CGM Cockpit et Radar Intrants par Business Unit, top features utilisées et plan de relance Q3.",
+          pages: 16,
+          audience: "EVPs BU · CFOs BU · D²nAI"
+        },
+        kpis: [
+          { v:"16", l:"pages" },
+          { v:"217",l:"MAU consolidés" },
+          { v:"5/8",l:"BUs en traction" }
+        ],
+        sections: [
+          "Vue d'ensemble · 4 plateformes",
+          "Détail par BU (Brésil, Inde, Customization, etc.)",
+          "Top features utilisées par produit",
+          "Comparaison vs benchmark interne",
+          "Plan de relance BU Europe &amp; Afrique",
+          "Recommandations Q3"
+        ],
+        actions: [
+          { id:"dl",  label:"Télécharger PDF",      sent:"PDF téléchargé" },
+          { id:"eml", label:"Envoyer aux EVPs BU",  sent:"Envoyé aux EVPs" },
+          { id:"sch", label:"Programmer trim.",     sent:"Récurrence activée" }
+        ],
+        sources: [
+          { d:"Dashboard adoption Q2 S23.xlsx",  w:"Sarah B. · D²nAI Analytics" },
+          { d:"Note relance EU Q3.pdf",          w:"Hamza K. · Head of D&amp;A" }
+        ]
+      },
+      report_gov: {
+        kind: "report",
+        title: "Comité Data Governance · juin 2026",
+        cover: {
+          classification: "Restreint · D&amp;A Governance",
+          subtitle: "Reporting mensuel pour le Comité Data Governance · état MDM, qualité des données, ownership, alertes et décisions à prendre.",
+          pages: 12,
+          audience: "Data Council · D&amp;A Steering"
+        },
+        kpis: [
+          { v:"12", l:"pages" },
+          { v:"73%",l:"complétude MDM" },
+          { v:"3",  l:"décisions" }
+        ],
+        sections: [
+          "Synthèse data quality H1",
+          "État MDM · 4 référentiels",
+          "Ownership · revue par BU",
+          "Alertes &amp; incidents data du mois",
+          "Décisions soumises (taxonomie multi-produits)",
+          "Plan d'actions juillet"
+        ],
+        actions: [
+          { id:"dl",  label:"Télécharger PDF",         sent:"PDF téléchargé" },
+          { id:"eml", label:"Envoyer Data Council",    sent:"Envoyé au Council" },
+          { id:"sch", label:"Programmer mensuel",      sent:"Récurrence activée" }
+        ],
+        sources: [
+          { d:"Tableau de bord MDM Q2.xlsx",  w:"Aniss B. · D²nAI MDM" },
+          { d:"Plan MDM v2 · Lot 6.pdf",       w:"Hamza K. · Head of D&amp;A" }
+        ]
+      },
+      report_vendor: {
+        kind: "report",
+        title: "Vendor scorecard trimestriel · Q2",
+        cover: {
+          classification: "Confidentiel · Achats &amp; D&amp;A",
+          subtitle: "Évaluation des partenaires technologiques de la fonction Data &amp; AI · SLA, coûts, satisfaction interne, recommandations de renégociation.",
+          pages: 14,
+          audience: "Achats Group · D&amp;A Steering"
+        },
+        kpis: [
+          { v:"14", l:"pages" },
+          { v:"4",  l:"vendors" },
+          { v:"1",  l:"renégo Q3" }
+        ],
+        sections: [
+          "Cadre méthodologique du scorecard",
+          "Databricks · ELA en place, renégo Q4",
+          "Vendor X · SLA non tenus, à arbitrer",
+          "UM6P &amp; EMBRAPA · partenariats recherche",
+          "Comparaison coûts vs benchmarks",
+          "Recommandations actions Q3"
+        ],
+        actions: [
+          { id:"dl",  label:"Télécharger PDF",     sent:"PDF téléchargé" },
+          { id:"eml", label:"Envoyer aux Achats",  sent:"Envoyé aux Achats" },
+          { id:"sch", label:"Programmer trim.",    sent:"Récurrence activée" }
+        ],
+        sources: [
+          { d:"Vendor scorecard Q1.xlsx",        w:"Aniss B. · D²nAI" },
+          { d:"Contrat Databricks ELA.pdf",      w:"Achats Group" }
+        ]
+      }
+    }
+  },
+  en: {
+    greeting: "Good morning, Hamza",
+    date: "Monday, June 8, 2026",
+    briefTitle: "Today's brief",
+    briefSub: "5 topics need your attention.",
+    sugLabel: "Suggested questions",
+    placeholder: "Ask Atlas anything…",
+    thinking: "Consolidating the Data, Digital &amp; AI portfolio…",
+    sourcesLabel: "Sources",
+    reportsTitle: "Generate a deliverable",
+    reportsSub: "5 templates · Comex, Roadmap, Adoption…",
+    hint: "<b>How to use:</b> tap a suggested question — the « Today's brief » — or « Generate a deliverable » to see Atlas compose an answer or a ready-to-share output. All data is fictional.",
+    questions: [
+      { id: "portfolio", q: "Where does the D²nAI portfolio stand this week?" },
+      { id: "adoption",  q: "Which BUs adopt our platforms the most?" },
+      { id: "risques",   q: "Which data projects are at risk this quarter?" },
+      { id: "incidents", q: "Synthesis of data &amp; cyber incidents" }
+    ],
+    routes: [
+      { id:"report_comex",      kw:["comex deliverable","comex slide","comex pack","comex digital","comex note"] },
+      { id:"report_roadmap",    kw:["roadmap deliverable","roadmap 2027","data roadmap","strategic plan","roadmap note"] },
+      { id:"report_adoption",   kw:["adoption report","adoption deliverable","adoption review","adoption note"] },
+      { id:"report_gov",        kw:["governance deliverable","data governance","governance report","mdm board"] },
+      { id:"report_vendor",     kw:["vendor deliverable","scorecard","supplier","databricks scorecard","vendor comparison"] },
+      { id:"report_picker",     kw:["deliverable","deliverables","template","templates","generate","produce"] },
+      { id:"portfolio",         kw:["portfolio","projects","cgm","nutriplan","nutritrials","roadmap","progress"] },
+      { id:"adoption",          kw:["adoption","users","active","mau","dau","bu","usage"] },
+      { id:"adoption_cgm",      kw:["cgm adoption","cgm cockpit","cgm","cockpit","blend pricing"] },
+      { id:"adoption_nutriplan",kw:["nutriplan adoption","nutriplan","trial intake","steering committee"] },
+      { id:"risques",           kw:["risk","risks","at risk","critical","delayed","slippage"] },
+      { id:"incidents",         kw:["incident","incidents","cyber","phishing","leak","data leak","downtime"] },
+      { id:"mdm",               kw:["mdm","master data","reference","data quality","governance","ownership"] },
+      { id:"talents",           kw:["hiring","recruitment","talent","talents","team","data engineer","data scientist","mlops"] },
+      { id:"roi_data",          kw:["roi","return","investment","value","business case","savings","cost"] },
+      { id:"comites",           kw:["committee","committees","next session","steering","governance"] },
+      { id:"partenaires",       kw:["partner","partners","um6p","institute","vendor","databricks","supplier"] },
+      { id:"infra",             kw:["infra","databricks","azure","unity catalog","platform","compute","data lake"] },
+      { id:"brief",             kw:["brief","summary","weekly","daily","today"] }
+    ],
+    answers: {
+      brief: {
+        title: "D&amp;A Brief — week 23",
+        intro: "Five topics rise to the top since Friday:",
+        list: [
+          { t:"bad",  txt:"<b>CGM Cockpit · Sc3 Blend Pricing</b>: negative business feedback on the solver — Wave 3 refactor to arbitrate." },
+          { t:"warn", txt:"<b>NutriPlan</b>: Process &amp; Control team awaiting your formal reply on the signed framework v1.0." },
+          { t:"warn", txt:"<b>MDM</b>: taxonomy pending BOUAYAD alignment before closing Lot 6." },
+          { t:"ok",   txt:"<b>NutriTrials</b>: Fertinagro &amp; UM6P Canada rollout in progress — 5-42 trials being integrated." },
+          { t:"ok",   txt:"<b>Hiring</b>: 2 candidates in the Senior Data Engineer short list, decision due this week." }
+        ],
+        sources: [
+          { d:"CGM Cockpit · business feedback W22.json", w:"Tarik R. · Customization BU" },
+          { d:"Trial Management process v1.0.pdf",        w:"Mehdi CHHIH · BPM Director" },
+          { d:"MDM roadmap v2 · awaiting BOUAYAD",        w:"Aniss B. · D&amp;A" },
+          { d:"NutriTrials rollout tracking W22.xlsx",    w:"Randa A. · Customization BU" }
+        ]
+      },
+      portfolio: {
+        title: "D²nAI portfolio — week 23 status",
+        kpis: [
+          { v:"6", l:"active projects" },
+          { v:"4", l:"in pilot" },
+          { v:"1", l:"in GA" }
+        ],
+        intro: "Consolidated view of the data &amp; digital projects led by the team:",
+        list: [
+          { t:"ok",   txt:"<b>NutriTrials</b> · <i>GA</i> · 5 BUs onboarded, Q3 generalisation in progress." },
+          { t:"ok",   txt:"<b>NutriPlan</b> · <i>pilot</i> · demo completed, ready for V1 pilot — executive sponsor pending." },
+          { t:"warn", txt:"<b>CGM Cockpit</b> · <i>pilot</i> · Wave 3 shipped, Sc3 refactor to arbitrate with the business." },
+          { t:"warn", txt:"<b>MDM</b> · <i>refactor</i> · awaiting BOUAYAD taxonomy alignment." },
+          { t:"ok",   txt:"<b>Radar Intrants</b> · <i>pilot</i> · 2 BU early adopters, positive feedback." },
+          { t:"ok",   txt:"<b>D²nAI Office</b> · <i>POC</i> · mobile-first cockpit shipped, internal demo planned." }
+        ],
+        decision: "Decision needed: arbitration on CGM Wave 3 Sc3 (solver refactor) at the next Steering.",
+        sources: [
+          { d:"D&amp;A portfolio · W23.xlsx",   w:"Aniss B. · D²nAI PMO" },
+          { d:"Q2 pilots recap.pdf",            w:"Hamza K. · Head of D&amp;A" }
+        ]
+      },
+      adoption: {
+        title: "Platform adoption by BU",
+        kpis: [
+          { v:"217",  l:"monthly active users" },
+          { v:"+34%", l:"vs Q1" },
+          { v:"5/8",  l:"BUs in traction" }
+        ],
+        intro: "Adoption is growing steadily, +34% monthly active users vs Q1. BU-level breakdown:",
+        list: [
+          { t:"ok",   txt:"<b>BU Brazil</b> · 67 MAU · champion on NutriPlan + CGM, usage leader." },
+          { t:"ok",   txt:"<b>BU India</b> · 48 MAU · strong Radar Intrants traction, NutriPlan ramp-up." },
+          { t:"ok",   txt:"<b>Customization BU</b> · 39 MAU · CGM Cockpit pilot with Tarik R." },
+          { t:"warn", txt:"<b>BU Europe</b> · 22 MAU · usage flat, to be relaunched Q3." },
+          { t:"warn", txt:"<b>BU Africa</b> · 15 MAU · low usage, lacking local onboarding." },
+          { t:"bad",  txt:"<b>BU Asia-Pacific</b> · 4 MAU · near-zero adoption, to investigate." }
+        ],
+        decision: "Action: adoption review with EVP Asia-Pacific scheduled on 18/06.",
+        sources: [
+          { d:"Adoption dashboard Q2 W23.xlsx", w:"Sarah B. · D²nAI Analytics" },
+          { d:"EU Q3 relaunch note.pdf",        w:"Hamza K. · Head of D&amp;A" }
+        ]
+      },
+      adoption_cgm: {
+        title: "CGM Cockpit adoption",
+        kpis: [
+          { v:"39",  l:"active users" },
+          { v:"+12", l:"vs W22" },
+          { v:"3",   l:"BUs deployed" }
+        ],
+        intro: "CGM Cockpit gains 12 users this week, mostly Customization BU and BU Brazil.",
+        list: [
+          { t:"ok",   txt:"<b>Customization BU (Tarik R.)</b> · daily usage · 100% of pricing managers onboarded." },
+          { t:"ok",   txt:"<b>BU Brazil (Karim B.)</b> · weekly usage · positive Wave 2 feedback." },
+          { t:"warn", txt:"<b>BU India</b> · 4 users · slow start, awaiting local training." },
+          { t:"bad",  txt:"<b>Sc3 Blend Pricing</b> · negative business feedback · Wave 3 refactor pending." }
+        ],
+        decision: "Recommendation: prioritize Sc3 refactor before extending to other BUs.",
+        sources: [
+          { d:"Activity log · CGM Cockpit W23.json", w:"D²nAI Analytics" },
+          { d:"Business feedback Sc3.json",          w:"Tarik R. · Customization BU" }
+        ]
+      },
+      adoption_nutriplan: {
+        title: "NutriPlan adoption",
+        kpis: [
+          { v:"71", l:"trials managed" },
+          { v:"4",  l:"active BUs" },
+          { v:"V1", l:"pilot planned" }
+        ],
+        intro: "The NutriPlan pilot already covers 71 trials. Process &amp; Control awaiting your reply on next steps.",
+        list: [
+          { t:"ok",   txt:"<b>BU Brazil</b> · 28 trials · pilot leader with EMBRAPA as partner." },
+          { t:"ok",   txt:"<b>Customization BU</b> · 19 trials · UM6P as technical partner." },
+          { t:"ok",   txt:"<b>BU India</b> · 14 trials · recent onboarding." },
+          { t:"warn", txt:"<b>Steering Committee</b> · agenda to close with Mehdi CHHIH." }
+        ],
+        decision: "Decision needed: confirm V1 executive sponsor and launch the 5-BU pilot.",
+        sources: [
+          { d:"NutriPlan · trial register W23.xlsx", w:"Aniss B. · D²nAI" },
+          { d:"Email Mehdi CHHIH · process v1.0",    w:"BPM Director" }
+        ]
+      },
+      risques: {
+        title: "Data &amp; digital projects at risk · Q2",
+        kpis: [
+          { v:"3", l:"projects at risk" },
+          { v:"1", l:"critical" },
+          { v:"6", l:"on track" }
+        ],
+        intro: "Three projects need your arbitration this week:",
+        list: [
+          { t:"bad",  txt:"<b>CGM Cockpit · Wave 3 Sc3</b> · negative business feedback on the solver — refactor vs maintain decision needed." },
+          { t:"warn", txt:"<b>MDM Lot 6</b> · awaiting BOUAYAD taxonomy alignment for 3 weeks." },
+          { t:"warn", txt:"<b>NutriPlan V1</b> · executive sponsor not confirmed, Q3 slippage risk." }
+        ],
+        decision: "Action: bring the 3 topics to the D&amp;A Steering on 12/06.",
+        sources: [
+          { d:"D²nAI projects status Q2.pptx", w:"Aniss B. · D²nAI PMO" },
+          { d:"Steering notes W22.docx",       w:"Hamza K. · Head of D&amp;A" }
+        ]
+      },
+      incidents: {
+        title: "Data &amp; cyber incidents — week 23",
+        kpis: [
+          { v:"3", l:"incidents" },
+          { v:"0", l:"data leak" },
+          { v:"1", l:"prod down" }
+        ],
+        intro: "Three incidents this week, none caused a data leak.",
+        list: [
+          { t:"warn", txt:"<b>NutriPlan · 22 min downtime</b> · Azure Front Door outage, auto-recovery." },
+          { t:"warn", txt:"<b>Phishing targeting Data team</b> · 3 mails blocked by defenses, 0 click." },
+          { t:"ok",   txt:"<b>CGM Cockpit · slow Databricks query</b> · resolved, Q3 compute adjustment planned." }
+        ],
+        decision: "Action: post-mortem review on Azure Front Door with CISO on 11/06.",
+        sources: [
+          { d:"CSIRT bulletin W23",            w:"Walid B. · CISO" },
+          { d:"Post-mortem · Azure FD outage", w:"Sarah B. · D²nAI Ops" }
+        ]
+      },
+      mdm: {
+        title: "Master Data Management — status",
+        kpis: [
+          { v:"73%",  l:"data completeness" },
+          { v:"6/8",  l:"BUs onboarded" },
+          { v:"Lot 6",l:"in progress" }
+        ],
+        intro: "The MDM programme stands at <b>73% completeness</b>, current blocker on the multi-product taxonomy.",
+        list: [
+          { t:"ok",   txt:"<b>Product master</b> · 92% aligned, stable version." },
+          { t:"ok",   txt:"<b>Customer master</b> · 88% aligned, NutriTrials integration OK." },
+          { t:"warn", txt:"<b>Partner master</b> · 64% · to revisit with Sourcing." },
+          { t:"bad",  txt:"<b>Multi-product taxonomy (Lot 6)</b> · blocked · awaiting BOUAYAD alignment." }
+        ],
+        decision: "Action: escalate the taxonomy blocker at the next Data Governance Committee.",
+        sources: [
+          { d:"MDM dashboard Q2.xlsx",  w:"Aniss B. · D²nAI MDM" },
+          { d:"MDM plan v2 · Lot 6.pdf", w:"Hamza K. · Head of D&amp;A" }
+        ]
+      },
+      talents: {
+        title: "D²nAI team hiring",
+        kpis: [
+          { v:"4",  l:"open roles" },
+          { v:"2",  l:"short list" },
+          { v:"12", l:"weeks · avg lead time" }
+        ],
+        intro: "Four open roles on the team, two candidates to arbitrate this week.",
+        list: [
+          { t:"ok",   txt:"<b>Senior Data Engineer</b> · 2 candidates short-listed, final decision pending." },
+          { t:"warn", txt:"<b>Senior ML Engineer</b> · 1 candidate awaiting tech feedback." },
+          { t:"warn", txt:"<b>Data Product Manager</b> · sourcing in progress, weak pipeline." },
+          { t:"bad",  txt:"<b>Senior Cloud Architect Databricks</b> · open for 16 weeks, rare profile." }
+        ],
+        decision: "Decision: validate Senior DE hire by end of week.",
+        sources: [
+          { d:"D²nAI 2026 hiring plan.xlsx", w:"Nadia H. · HR" },
+          { d:"Senior DE short list",        w:"Hamza K. · Head of D&amp;A" }
+        ]
+      },
+      roi_data: {
+        title: "Data projects ROI — H1 2026",
+        kpis: [
+          { v:"4.2×", l:"benefit/cost" },
+          { v:"3.1",  l:"M MAD invested" },
+          { v:"13.1", l:"M MAD value" }
+        ],
+        intro: "Portfolio generates an estimated <b>4.2× return</b> on cost in H1, mostly via NutriPlan and CGM Cockpit.",
+        list: [
+          { t:"ok",   txt:"<b>NutriPlan + NutriTrials</b> · 8.4 M MAD estimated value (R&amp;D time saved, claims quality)." },
+          { t:"ok",   txt:"<b>CGM Cockpit</b> · 3.2 M MAD (pricing uplift, product coverage)." },
+          { t:"ok",   txt:"<b>Radar Intrants</b> · 1.5 M MAD (raw material price anticipation)." },
+          { t:"warn", txt:"<b>MDM</b> · structural ROI but hard to quantify short-term." }
+        ],
+        decision: "Recommendation: prepare the Comex pitch to expand the D&amp;A 2027 envelope.",
+        sources: [
+          { d:"D&amp;A ROI report H1 2026.pdf", w:"Hamza K. · Head of D&amp;A" },
+          { d:"Valuation methodology note",     w:"Aniss B. · D²nAI PMO" }
+        ]
+      },
+      comites: {
+        title: "Upcoming committees &amp; arbitrations",
+        kpis: [
+          { v:"4", l:"committees · 3 wks" },
+          { v:"7", l:"arbitrations" },
+          { v:"2", l:"CEO deliverables" }
+        ],
+        intro: "Four committees scheduled in the next three weeks:",
+        list: [
+          { t:"ok",   txt:"<b>10/06 · Monthly D²nAI Steering</b> · CGM Wave 3 arbitration + portfolio review." },
+          { t:"ok",   txt:"<b>12/06 · Data Governance Committee</b> · MDM Lot 6 blocker to escalate." },
+          { t:"warn", txt:"<b>18/06 · EU adoption review · Q3</b> · with EVP Europe." },
+          { t:"ok",   txt:"<b>25/06 · Comex Digital</b> · 2027 D&amp;A Roadmap pitch + budget envelope." }
+        ],
+        decision: "Prepare the 2027 Roadmap Comex note this week.",
+        sources: [
+          { d:"Q2 committees calendar.ics",    w:"Hamza K. · Head of D&amp;A" },
+          { d:"Comex prep note 25/06",         w:"Aniss B. · D²nAI" }
+        ]
+      },
+      partenaires: {
+        title: "Strategic partnerships",
+        kpis: [
+          { v:"4", l:"active partners" },
+          { v:"2", l:"renegotiations" },
+          { v:"1", l:"new · Q3" }
+        ],
+        intro: "Status of strategic partnerships for the data function:",
+        list: [
+          { t:"ok",   txt:"<b>UM6P</b> · 5-year partnership · NutriTrials Canada, NutriPlan Morocco · solid." },
+          { t:"ok",   txt:"<b>Databricks</b> · ELA in place · Q4 renegotiation planned." },
+          { t:"warn", txt:"<b>Vendor X (DataOps)</b> · contract under review, SLA missed 3 consecutive months." },
+          { t:"ok",   txt:"<b>EMBRAPA</b> · NutriTrials Brazil partner · successful Q1 ramp-up." }
+        ],
+        decision: "Action: prepare a Vendor X scorecard for the 10/06 Steering.",
+        sources: [
+          { d:"Vendor scorecard Q1.xlsx",     w:"Aniss B. · D²nAI" },
+          { d:"UM6P 5-year partnership note", w:"Hamza K. · Head of D&amp;A" }
+        ]
+      },
+      infra: {
+        title: "Databricks &amp; Azure infra — status",
+        kpis: [
+          { v:"99.4%", l:"uptime 30d" },
+          { v:"4.2 TB",l:"data lake" },
+          { v:"+18%",  l:"compute MoM" }
+        ],
+        intro: "Platform is stable, compute growth driven by NutriTrials generalisation.",
+        list: [
+          { t:"ok",   txt:"<b>Unity Catalog</b> · 4.2 TB of governed data, 73 Gold tables." },
+          { t:"ok",   txt:"<b>Foundation Models</b> · 480k requests/month · stable." },
+          { t:"warn", txt:"<b>SQL Warehouse compute</b> · +18% MoM · plan a Q3 budget adjustment." },
+          { t:"ok",   txt:"<b>Security</b> · 0 critical incident, SOC2 audit mid-way." }
+        ],
+        decision: "Recommendation: validate additional Q3 compute envelope.",
+        sources: [
+          { d:"D&amp;A infra dashboard.xlsx", w:"Sarah B. · D²nAI Ops" },
+          { d:"SOC2 audit · mid-way",         w:"Walid B. · CISO" }
+        ]
+      },
+      report_picker: {
+        kind: "picker",
+        title: "Which deliverable do you want to generate?",
+        intro: "Pick a template. Atlas aggregates from the D²nAI portfolio and produces a ready-to-share deliverable.",
+        options: [
+          { id:"report_comex",    icon:"§", label:"Slide pack · Digital Comex",        desc:"Roadmap, adoption KPIs, ROI, arbitrations" },
+          { id:"report_roadmap",  icon:"➤", label:"2027 Data &amp; AI Roadmap",         desc:"Vision, milestones, envelope, dependencies" },
+          { id:"report_adoption", icon:"%", label:"Platform adoption review",          desc:"MAU per BU, top features, trajectory" },
+          { id:"report_gov",      icon:"✓", label:"Monthly Data Governance Committee", desc:"MDM status, quality, ownership, decisions" },
+          { id:"report_vendor",   icon:"⚖",label:"Quarterly vendor scorecard",         desc:"Partners, SLAs, costs, renegotiations" }
+        ]
+      },
+      report_comex: {
+        kind: "report",
+        title: "Slide pack · Digital Comex — June 2026",
+        cover: {
+          classification: "Confidential · Comex",
+          subtitle: "Synthesis for the Digital Comex · Data &amp; AI roadmap, platform adoption, H1 consolidated ROI, priority arbitrations.",
+          pages: 18,
+          audience: "Comex · CEO Office"
+        },
+        kpis: [
+          { v:"18", l:"pages" },
+          { v:"4.2×", l:"H1 ROI" },
+          { v:"7",  l:"arbitrations" }
+        ],
+        sections: [
+          "Executive summary",
+          "Platform adoption by BU",
+          "H1 financial review and H2 outlook",
+          "2027 Roadmap · priorities &amp; envelope",
+          "Major risks (CGM Sc3, MDM, hiring)",
+          "Arbitrations submitted to Comex"
+        ],
+        actions: [
+          { id:"dl",  label:"Download PDF",         sent:"PDF downloaded" },
+          { id:"eml", label:"Email Comex Office",   sent:"Sent to Comex" },
+          { id:"sch", label:"Schedule monthly",     sent:"Recurrence enabled" }
+        ],
+        sources: [
+          { d:"D&amp;A portfolio · W23.xlsx",        w:"Aniss B. · D²nAI PMO" },
+          { d:"D&amp;A ROI report H1 2026.pdf",      w:"Hamza K. · Head of D&amp;A" },
+          { d:"Adoption dashboard Q2 W23.xlsx",      w:"Sarah B. · D²nAI Analytics" }
+        ]
+      },
+      report_roadmap: {
+        kind: "report",
+        title: "2027 Data &amp; AI Roadmap",
+        cover: {
+          classification: "Confidential · COMEX &amp; Board",
+          subtitle: "12-month vision for the Data, Digital &amp; AI function · milestones, 2027 budget envelope, cross-BU dependencies and Comex decision points.",
+          pages: 24,
+          audience: "Comex · CEO · CDO Office"
+        },
+        kpis: [
+          { v:"24", l:"pages" },
+          { v:"9",  l:"major streams" },
+          { v:"6",  l:"key milestones" }
+        ],
+        sections: [
+          "2027 vision &amp; ambition",
+          "Major streams (NutriTrials GA, NutriPlan V1, MDM v3, AI Foundation)",
+          "BU-by-BU deployment calendar",
+          "Budget envelope &amp; arbitrations",
+          "Hiring &amp; partner plan",
+          "2027 steering KPIs"
+        ],
+        actions: [
+          { id:"dl",  label:"Download PDF",          sent:"PDF downloaded" },
+          { id:"eml", label:"Email Comex",           sent:"Sent to Comex" },
+          { id:"sch", label:"Schedule quarterly",    sent:"Recurrence enabled" }
+        ],
+        sources: [
+          { d:"2027 Data &amp; AI Vision · v3.pptx", w:"Hamza K. · Head of D&amp;A" },
+          { d:"D²nAI 2026 hiring plan.xlsx",         w:"Nadia H. · HR" },
+          { d:"UM6P 5-year partnership note",        w:"Aniss B. · D²nAI" }
+        ]
+      },
+      report_adoption: {
+        kind: "report",
+        title: "Platform adoption review · H1 2026",
+        cover: {
+          classification: "Restricted · D&amp;A Direction &amp; BU CFOs",
+          subtitle: "Detailed adoption status of NutriTrials, NutriPlan, CGM Cockpit and Radar Intrants per Business Unit, top features used and Q3 relaunch plan.",
+          pages: 16,
+          audience: "BU EVPs · BU CFOs · D²nAI"
+        },
+        kpis: [
+          { v:"16",  l:"pages" },
+          { v:"217", l:"consolidated MAU" },
+          { v:"5/8", l:"BUs in traction" }
+        ],
+        sections: [
+          "Overview · 4 platforms",
+          "Per-BU breakdown (Brazil, India, Customization, etc.)",
+          "Top features by product",
+          "Comparison vs internal benchmark",
+          "BU Europe &amp; Africa relaunch plan",
+          "Q3 recommendations"
+        ],
+        actions: [
+          { id:"dl",  label:"Download PDF",        sent:"PDF downloaded" },
+          { id:"eml", label:"Email BU EVPs",       sent:"Sent to EVPs" },
+          { id:"sch", label:"Schedule quarterly",  sent:"Recurrence enabled" }
+        ],
+        sources: [
+          { d:"Adoption dashboard Q2 W23.xlsx", w:"Sarah B. · D²nAI Analytics" },
+          { d:"EU Q3 relaunch note.pdf",        w:"Hamza K. · Head of D&amp;A" }
+        ]
+      },
+      report_gov: {
+        kind: "report",
+        title: "Data Governance Committee · June 2026",
+        cover: {
+          classification: "Restricted · D&amp;A Governance",
+          subtitle: "Monthly reporting for the Data Governance Committee · MDM status, data quality, ownership, alerts and decisions to be taken.",
+          pages: 12,
+          audience: "Data Council · D&amp;A Steering"
+        },
+        kpis: [
+          { v:"12", l:"pages" },
+          { v:"73%",l:"MDM completeness" },
+          { v:"3",  l:"decisions" }
+        ],
+        sections: [
+          "H1 data quality summary",
+          "MDM status · 4 references",
+          "Ownership · BU-by-BU review",
+          "Monthly data alerts &amp; incidents",
+          "Decisions submitted (multi-product taxonomy)",
+          "July action plan"
+        ],
+        actions: [
+          { id:"dl",  label:"Download PDF",            sent:"PDF downloaded" },
+          { id:"eml", label:"Email Data Council",      sent:"Sent to Council" },
+          { id:"sch", label:"Schedule monthly",        sent:"Recurrence enabled" }
+        ],
+        sources: [
+          { d:"MDM dashboard Q2.xlsx",   w:"Aniss B. · D²nAI MDM" },
+          { d:"MDM plan v2 · Lot 6.pdf",  w:"Hamza K. · Head of D&amp;A" }
+        ]
+      },
+      report_vendor: {
+        kind: "report",
+        title: "Quarterly vendor scorecard · Q2",
+        cover: {
+          classification: "Confidential · Procurement &amp; D&amp;A",
+          subtitle: "Evaluation of the Data &amp; AI function's technology partners · SLAs, costs, internal satisfaction, renegotiation recommendations.",
+          pages: 14,
+          audience: "Group Procurement · D&amp;A Steering"
+        },
+        kpis: [
+          { v:"14", l:"pages" },
+          { v:"4",  l:"vendors" },
+          { v:"1",  l:"Q3 renego" }
+        ],
+        sections: [
+          "Scorecard methodology",
+          "Databricks · ELA in place, Q4 renegotiation",
+          "Vendor X · missed SLAs, arbitration needed",
+          "UM6P &amp; EMBRAPA · research partnerships",
+          "Cost comparison vs benchmarks",
+          "Q3 action recommendations"
+        ],
+        actions: [
+          { id:"dl",  label:"Download PDF",         sent:"PDF downloaded" },
+          { id:"eml", label:"Email Procurement",    sent:"Sent to Procurement" },
+          { id:"sch", label:"Schedule quarterly",   sent:"Recurrence enabled" }
+        ],
+        sources: [
+          { d:"Vendor scorecard Q1.xlsx",      w:"Aniss B. · D²nAI" },
+          { d:"Databricks ELA contract.pdf",   w:"Group Procurement" }
+        ]
+      }
+    }
+  }
+};
+
+let lang = "fr";
+
+function tEl(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    if(i18n[lang][k]!==undefined) el.innerHTML=i18n[lang][k];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    el.setAttribute('placeholder', i18n[lang][el.getAttribute('data-i18n-ph')]);
+  });
+  document.querySelector('.hint').innerHTML = i18n[lang].hint;
+  document.documentElement.lang = lang;
+}
+
+function renderSugs(){
+  const root=document.getElementById('sugs'); root.innerHTML="";
+  i18n[lang].questions.forEach(q=>{
+    const el=document.createElement('div');
+    el.className='sug'; el.dataset.q=q.id;
+    el.innerHTML=`
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div class="q">${q.q}</div>
+      <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`;
+    el.addEventListener('click', ()=>ask(q.id, q.q));
+    root.appendChild(el);
+  });
+}
+
+function ask(id, label){
+  document.getElementById('initial').style.display='none';
+  const thread=document.getElementById('thread');
+
+  if(label){
+    const u=document.createElement('div');
+    u.className='bubble-user fade-in'; u.textContent=label;
+    thread.appendChild(u);
+  }
+
+  const t=document.createElement('div');
+  t.className='thinking fade-in';
+  t.innerHTML=`<div class="matrix"></div><span>${i18n[lang].thinking}</span><span class="dots"><i></i><i></i><i></i></span>`;
+  thread.appendChild(t);
+  scrollDown();
+
+  setTimeout(()=>{
+    t.remove();
+    const a=renderAnswer(id);
+    thread.appendChild(a);
+    scrollDown();
+  }, 1200);
+}
+
+function renderAnswer(id){
+  const data=i18n[lang].answers[id]; if(!data) return document.createElement('div');
+  const el=document.createElement('div'); el.className='answer fade-in';
+  const isEmpty = data.state==='empty';
+  const isPicker = data.kind==='picker';
+  const isReport = data.kind==='report';
+  if(isEmpty) el.classList.add('empty');
+  const icMap = { ok:'✓', warn:'!', bad:'×' };
+  const headerLabel = isEmpty
+    ? (lang==='fr'?"Information non disponible":"Information unavailable")
+    : (isReport
+        ? (lang==='fr'?"Livrable généré · Atlas":"Deliverable generated · Atlas")
+        : (lang==='fr'?"Synthèse Atlas":"Atlas synthesis"));
+  const badgeContent = isEmpty ? "i" : "D²";
+
+  if(isPicker){
+    const optsHTML = data.options.map(o=>`
+      <div class="picker-item" data-target="${o.id}">
+        <div class="pico">${o.icon}</div>
+        <div class="ptxt"><div class="pl">${o.label}</div><div class="pd">${o.desc}</div></div>
+        <svg class="parrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </div>`).join('');
+    el.innerHTML = `
+      <div class="head"><div class="badge">${badgeContent}</div><div class="by">${headerLabel}</div></div>
+      <h4>${data.title}</h4>
+      ${data.intro?`<p>${data.intro}</p>`:''}
+      <div class="picker">${optsHTML}</div>
+    `;
+    el.querySelectorAll('.picker-item').forEach(it=>{
+      it.addEventListener('click', ()=>ask(it.dataset.target, null));
+    });
+    return el;
+  }
+
+  if(isReport){
+    const coverHTML = data.cover ? `
+      <div class="report-cover">
+        <div class="classification">${data.cover.classification}</div>
+        <h5>${data.title}</h5>
+        <div class="csub">${data.cover.subtitle}</div>
+        <div class="audience">→ ${data.cover.audience}</div>
+      </div>` : '';
+    const kpisHTML = data.kpis ? `<div class="kpi">${data.kpis.map(k=>`<div class="b"><div class="v">${k.v}</div><div class="l">${k.l}</div></div>`).join('')}</div>` : '';
+    const sectionsHTML = data.sections ? `
+      <div class="report-sections">
+        <div class="lab">${lang==='fr'?'Plan du livrable':'Deliverable outline'}</div>
+        ${data.sections.map(s=>`<div class="sec">${s}</div>`).join('')}
+      </div>` : '';
+    const actionsHTML = data.actions ? `
+      <div class="report-actions">
+        ${data.actions.map(a=>`<button class="act-btn" data-act="${a.id}" data-sent="${a.sent}">
+          <svg class="aico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${a.id==='dl'?'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>':a.id==='eml'?'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>':'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>'}</svg>
+          <span>${a.label}</span>
+          <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>`).join('')}
+      </div>` : '';
+    const sourcesHTML = data.sources ? `
+      <div class="sources">
+        <div class="lab">${i18n[lang].sourcesLabel}</div>
+        ${data.sources.map(s=>`<span class="src">📄 ${s.d} <span class="who">— ${s.w}</span></span>`).join('')}
+      </div>` : '';
+    el.innerHTML = `
+      <div class="head"><div class="badge">${badgeContent}</div><div class="by">${headerLabel}</div></div>
+      ${coverHTML}
+      ${kpisHTML}
+      ${sectionsHTML}
+      ${actionsHTML}
+      ${sourcesHTML}
+    `;
+    el.querySelectorAll('.act-btn').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        b.classList.add('sent');
+        b.innerHTML = `<svg class="aico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>${b.dataset.sent}</span>`;
+        b.disabled = true;
+      });
+    });
+    return el;
+  }
+
+  // standard answer
+  let kpisHTML='';
+  if(data.kpis){
+    kpisHTML=`<div class="kpi">${data.kpis.map(k=>`<div class="b"><div class="v">${k.v}</div><div class="l">${k.l}</div></div>`).join('')}</div>`;
+  }
+  const listHTML = data.list ? `<ul>${data.list.map(it=>`<li><span class="ic ic-${it.t}">${icMap[it.t]||'•'}</span>${it.txt}</li>`).join('')}</ul>` : '';
+  const decisionHTML = data.decision ? `<p style="margin-top:8px;padding:8px 10px;background:var(--green-50);border-left:3px solid var(--green-800);border-radius:6px;font-size:13px;color:var(--green-900)"><b>↳</b> ${data.decision}</p>` : '';
+  const ctaHTML = data.cta ? `
+    <div class="cta">
+      <button class="cta-btn" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <span>${data.cta.label}</span>
+        <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>` : '';
+  const sourcesHTML = data.sources ? `
+    <div class="sources">
+      <div class="lab">${i18n[lang].sourcesLabel}</div>
+      ${data.sources.map(s=>`<span class="src">📄 ${s.d} <span class="who">— ${s.w}</span></span>`).join('')}
+    </div>` : '';
+
+  el.innerHTML = `
+    <div class="head"><div class="badge">${badgeContent}</div><div class="by">${headerLabel}</div></div>
+    <h4>${data.title}</h4>
+    ${kpisHTML}
+    ${data.intro?`<p>${data.intro}</p>`:''}
+    ${listHTML}
+    ${decisionHTML}
+    ${ctaHTML}
+    ${sourcesHTML}
+  `;
+
+  if(data.cta){
+    const btn=el.querySelector('.cta-btn');
+    btn.addEventListener('click', ()=>{
+      btn.classList.add('sent');
+      btn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M20 6 9 17l-5-5"/></svg>
+        <span>${data.cta.sent}</span>
+      `;
+      btn.disabled = true;
+    });
+  }
+
+  return el;
+}
+
+function scrollDown(){
+  const s=document.getElementById('scroll');
+  s.scrollTo({ top:s.scrollHeight, behavior:'smooth' });
+}
+
+function reset(){
+  document.getElementById('thread').innerHTML='';
+  document.getElementById('initial').style.display='';
+  document.getElementById('qinput').value='';
+  document.getElementById('scroll').scrollTo({top:0});
+}
+
+document.querySelectorAll('.lang button').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('.lang button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    lang=b.dataset.l;
+    tEl(); renderSugs(); reset();
+  });
+});
+document.getElementById('reset').addEventListener('click', reset);
+document.getElementById('briefCard').addEventListener('click', ()=>ask('brief', i18n[lang].briefTitle));
+document.getElementById('reportsCard').addEventListener('click', ()=>ask('report_picker', i18n[lang].reportsTitle));
+document.getElementById('send').addEventListener('click', ()=>{
+  const v=document.getElementById('qinput').value.trim();
+  if(!v) return;
+  const t=v.toLowerCase();
+  let id='brief', best=0;
+  (i18n[lang].routes||[]).forEach(r=>{
+    let score=0;
+    r.kw.forEach(k=>{ if(t.includes(k)) score++; });
+    if(score>best){best=score;id=r.id;}
+  });
+  ask(id, v);
+  document.getElementById('qinput').value='';
+});
+document.getElementById('qinput').addEventListener('keydown', e=>{
+  if(e.key==='Enter') document.getElementById('send').click();
+});
+
+function tick(){
+  const d=new Date();
+  document.getElementById('clock').textContent =
+    d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+}
+tick(); setInterval(tick, 30000);
+
+tEl(); renderSugs();
+</script>
+</body>
+</html>
