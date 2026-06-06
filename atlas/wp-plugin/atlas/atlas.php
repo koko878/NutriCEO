@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Atlas — Second cerveau D²nAI
  * Description:       Cockpit mobile-first pour Hamza Koh (Head of Data, Digital & AI) — branché sur un agent Copilot Studio (Microsoft 365 Agents SDK / Power Platform API). Authentification SSO Microsoft 365 obligatoire (OAuth 2.0 Authorization Code + PKCE), relais côté serveur pour appeler l'API Copilot Studio sans exposer le token au browser.
- * Version:           0.2.5
+ * Version:           0.2.6
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       atlas
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'ATLAS_VER', '0.2.5' );
+define( 'ATLAS_VER', '0.2.6' );
 define( 'ATLAS_URL', plugin_dir_url( __FILE__ ) );
 define( 'ATLAS_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -41,6 +41,7 @@ function atlas_defaults() {
 		'azure_client_id'        => '',
 		'azure_client_secret'    => '',
 		'cps_connection_string'  => '', // Copilot Studio "Application Web" connection URL
+		'sharepoint_base_url'    => '', // ex https://eocp.sharepoint.com/sites/DataNutricrops — pour construire des URLs de recherche quand l'agent cite un fichier sans URL
 		'allowed_upns'           => '',
 		'display_name'           => 'Hamza',
 	);
@@ -230,15 +231,16 @@ add_action( 'template_redirect', function () {
 	$html = file_get_contents( $f );
 
 	$bridge = '<script>window.ATLAS=' . wp_json_encode( array(
-		'start_url'  => esc_url_raw( rest_url( 'atlas/v1/start' ) ),
-		'send_url'   => esc_url_raw( rest_url( 'atlas/v1/send' ) ),
-		'logout_url' => esc_url_raw( add_query_arg( 'atlas_sso', 'logout', home_url( '/' ) ) ),
-		'user'       => array(
+		'start_url'    => esc_url_raw( rest_url( 'atlas/v1/start' ) ),
+		'send_url'     => esc_url_raw( rest_url( 'atlas/v1/send' ) ),
+		'logout_url'   => esc_url_raw( add_query_arg( 'atlas_sso', 'logout', home_url( '/' ) ) ),
+		'sp_base'      => esc_url_raw( atlas_opt( 'sharepoint_base_url' ) ),
+		'user'         => array(
 			'name' => $name,
 			'upn'  => $upn,
 		),
-		'nonce'      => wp_create_nonce( 'wp_rest' ),
-		'ver'        => ATLAS_VER,
+		'nonce'        => wp_create_nonce( 'wp_rest' ),
+		'ver'          => ATLAS_VER,
 	) ) . ';</script>';
 
 	echo str_replace( '</head>', $bridge . "\n</head>", $html );

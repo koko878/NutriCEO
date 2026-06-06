@@ -1,6 +1,6 @@
 === Atlas — Second cerveau D²nAI ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.2.5
+Stable tag: 0.2.6
 Requires at least: 6.0
 Requires PHP: 8.0
 License: GPL-2.0-or-later
@@ -109,6 +109,21 @@ L'embed est un iframe vers /atlas → bénéficie de la même auth SSO et
 des mêmes endpoints REST, isolé du CSS du thème WP.
 
 == Changelog ==
+
+= 0.2.6 =
+* Toutes les sources sont maintenant cliquables (le motif principal :
+  l'agent ne donne pas toujours d'URL dans les citations).
+* Nouveau setting "URL de base SharePoint" — utilisé pour construire
+  des URLs de recherche SharePoint vers le nom de fichier quand
+  aucune URL directe n'est disponible.
+* extractSources étendu : recherche d'URLs dans plus de champs et
+  dans les sous-objets (source/metadata/documentReference/appearance).
+* Nouveau linkifyFilenames : détection des noms de fichiers
+  (.pdf/.docx/.pptx/.xlsx/.eml/.msg/.txt) écrits dans le corps des
+  réponses → wrap en lien cliquable (vers source URL si dispo, sinon
+  vers la recherche SharePoint).
+* CSS dédié pour .inline-file (lien underline pointillé vert discret
+  dans le texte, plein au hover).
 
 = 0.2.5 =
 * UI : abandon du cadre iPhone sur desktop, layout carte responsive

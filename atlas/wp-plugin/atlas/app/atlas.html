@@ -167,6 +167,18 @@ body{
 .inline-src .label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;color:var(--green-800)}
 .inline-src .meta{margin-left:auto;flex:none;color:var(--muted);font-size:11px}
 
+/* Inline filename link — when the agent writes a filename in the middle
+   of its text, it gets wrapped as a discreet clickable link. */
+.answer .body a.inline-file{
+  color:var(--green-800);font-weight:600;text-decoration:none;
+  border-bottom:1px dashed var(--green-500);
+  transition:.15s;
+}
+.answer .body a.inline-file:hover{
+  border-bottom-style:solid;background:var(--green-50);
+  padding:1px 3px;border-radius:4px;
+}
+
 .thinking{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12.5px;padding:10px 14px;background:#fff;border:1px solid var(--line);border-radius:14px}
 .thinking .matrix{width:18px;height:18px;border-radius:5px;background:var(--green-800);position:relative;overflow:hidden}
 .thinking .matrix::after{
@@ -589,7 +601,12 @@ function appendAnswer({ title, body, sources, isEmpty }) {
   // Render markdown, then weave inline source chips between cited
   // lines. The chips replace the old bottom "Sources" panel entirely.
   const html = renderMarkdownLite(bodyText);
-  const woven = weaveInlineSources(html, sources || []);
+  const wovenChips = weaveInlineSources(html, sources || []);
+  // Inline filename detection — if the agent writes a filename in the
+  // middle of its text (e.g. "selon Monthly_Sync_xxx.pptx"), wrap it as
+  // a clickable link to either the matching extracted source's URL, or
+  // to a SharePoint search URL if a base is configured.
+  const woven = linkifyFilenames(wovenChips, sources || []);
 
   el.innerHTML = `
     <div class="head">
@@ -652,12 +669,28 @@ function weaveInlineSources(html, sources) {
 function renderInlineSourceChip(s, n) {
   if (!s) return '';
   const label = escapeHtml(shortSourceLabel(s));
-  const meta  = s.date || (s.abstract ? '' : '');  // reserve for future
+  const meta  = s.date || (s.abstract ? '' : '');
   const ico = '<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>';
-  if (s.url) {
-    return `<a class="inline-src" href="${escapeAttr(s.url)}" target="_blank" rel="noopener" title="${escapeAttr(s.name || s.url)}">${ico}<span class="label">${label}</span>${meta ? `<span class="meta">${escapeHtml(meta)}</span>` : ''}</a>`;
+  const tip = '🔎 ' + (s.name || s.url || 'source');
+  // Prefer direct URL; fallback to SharePoint search URL built from the
+  // configured base + the filename. Last resort: non-clickable span.
+  const href = s.url || sharepointSearchUrl(s.name);
+  if (href) {
+    return `<a class="inline-src" href="${escapeAttr(href)}" target="_blank" rel="noopener" title="${escapeAttr(tip)}">${ico}<span class="label">${label}</span>${meta ? `<span class="meta">${escapeHtml(meta)}</span>` : ''}</a>`;
   }
   return `<span class="inline-src" title="${escapeAttr(s.name || '')}">${ico}<span class="label">${label}</span>${meta ? `<span class="meta">${escapeHtml(meta)}</span>` : ''}</span>`;
+}
+
+// Build a SharePoint search URL pointing to the configured base.
+// Returns '' if no base configured or no name to search.
+function sharepointSearchUrl(name) {
+  if (!name) return '';
+  const base = (window.ATLAS && window.ATLAS.sp_base) || '';
+  if (!base) return '';
+  // SharePoint Modern search endpoint pattern.
+  // /_layouts/15/search.aspx/?q= works against most tenants.
+  const q = encodeURIComponent(String(name).replace(/\.(pdf|docx?|pptx?|xlsx?|eml|msg|txt)$/i, ''));
+  return base.replace(/\/$/, '') + '/_layouts/15/search.aspx/?q=' + q;
 }
 
 // Returns a short, human-readable label for a source object.
@@ -697,6 +730,48 @@ function linkifyCitationMarkers(html, sources) {
     if (!n || n < 1 || n > sources.length) return m;
     return `<a href="#" class="cite-mark" data-n="${n}" title="Voir source ${n}">[${n}]</a>`;
   });
+}
+
+// Detect filenames mentioned inline in the body text and wrap them as
+// clickable links. The agent often writes raw filenames like
+// "Monthly_Sync_xxx.pptx" instead of a proper [n] citation — we catch
+// these heuristically and make them openable.
+//
+// Resolution order for each detected filename:
+//   1. Match by basename against extracted sources → use that source's URL
+//   2. SharePoint search URL (if sp_base is configured in admin)
+//   3. Fall back to plain bold formatting (no link)
+function linkifyFilenames(html, sources) {
+  // Don't touch text that is already inside an <a> tag — split, process,
+  // and re-join so we never wrap a link inside a link.
+  const re = /<a\b[^>]*>.*?<\/a>/gi;
+  const parts = [];
+  let last = 0;
+  let m;
+  while ((m = re.exec(html)) !== null) {
+    parts.push({ link: false, text: html.slice(last, m.index) });
+    parts.push({ link: true,  text: m[0] });
+    last = m.index + m[0].length;
+  }
+  parts.push({ link: false, text: html.slice(last) });
+
+  // File extension allowlist — only well-known document types.
+  const FN_RE = /([A-Za-z0-9À-ſ][A-Za-z0-9_\-À-ſ. ]{2,90}\.(?:pdf|docx?|pptx?|xlsx?|eml|msg|txt))(?=[\s,.;:!?)<>"']|$)/g;
+
+  return parts.map(p => {
+    if (p.link) return p.text;
+    return p.text.replace(FN_RE, (match) => {
+      const cleanName = match.trim();
+      const lower = cleanName.toLowerCase();
+      const matchedSrc = (sources || []).find(s =>
+        s && s.name && String(s.name).toLowerCase().includes(lower)
+      );
+      const href = (matchedSrc && matchedSrc.url) || sharepointSearchUrl(cleanName);
+      const label = cleanName.replace(/_/g, ' ');
+      if (!href) return `<strong>${escapeHtml(label)}</strong>`;
+      return `<a class="inline-file" href="${escapeAttr(href)}" target="_blank" rel="noopener" title="${escapeAttr('🔎 ' + cleanName)}">${escapeHtml(label)}</a>`;
+    });
+  }).join('');
 }
 
 function showReportsPicker() {
@@ -967,10 +1042,17 @@ function pullCitations(list, out) {
   if (!Array.isArray(list)) return;
   list.forEach(c => {
     if (!c) return;
+    // Some Copilot Studio citations nest the useful fields under .source,
+    // .metadata, .documentReference, .appearance. Flatten them out before
+    // picking name/url so we capture URLs that live one level deep.
+    const flat = Object.assign({}, c,
+      c.source || {}, c.metadata || {}, c.documentReference || {}, c.appearance || {});
     out.push({
-      name: c.title || c.name || c.fileName || c.documentName || c.text || '',
-      url:  c.url   || c.uri  || c.path     || c.link         || c.webUrl || '',
-      abstract: c.abstract || c.snippet || c.description || '',
+      name: flat.title || flat.name || flat.fileName || flat.documentName || flat.filename || flat.text || '',
+      url:  flat.url   || flat.URL  || flat.uri || flat.path || flat.link
+            || flat.webUrl || flat.documentUrl || flat.sourceFileUrl
+            || flat.previewUrl || flat.urlReference || '',
+      abstract: flat.abstract || flat.snippet || flat.description || '',
     });
   });
 }

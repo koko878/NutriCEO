@@ -32,11 +32,16 @@ function atlas_handle_settings_save() {
 	$display     = isset( $_POST['display_name'] )          ? sanitize_text_field( wp_unslash( $_POST['display_name'] ) )          : '';
 	$upns        = isset( $_POST['allowed_upns'] )          ? sanitize_textarea_field( wp_unslash( $_POST['allowed_upns'] ) )      : '';
 	$conn        = isset( $_POST['cps_connection_string'] ) ? esc_url_raw( trim( wp_unslash( $_POST['cps_connection_string'] ) ) ) : '';
+	$spbase      = isset( $_POST['sharepoint_base_url'] )   ? esc_url_raw( trim( wp_unslash( $_POST['sharepoint_base_url'] ) ) )   : '';
+
+	// Strip trailing slash for cleaner URL composition.
+	$spbase = rtrim( $spbase, '/' );
 
 	$new = array(
 		'azure_tenant_id'        => $tenant,
 		'azure_client_id'        => $client,
 		'cps_connection_string'  => $conn,
+		'sharepoint_base_url'    => $spbase,
 		'allowed_upns'           => $upns,
 		'display_name'           => $display ?: 'Hamza',
 	);
@@ -94,6 +99,15 @@ function atlas_render_settings_page() {
 						<?php elseif ( $o['cps_connection_string'] ) : ?>
 							<p class="description" style="color:#B91C1C;">⚠️ Le format de l'URL n'est pas reconnu. Vérifie qu'elle contient bien <code>/conversations</code> et <code>api-version=</code>.</p>
 						<?php endif; ?>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="sharepoint_base_url">URL de base SharePoint <em style="font-weight:400;color:#6B7268;">(optionnel mais recommandé)</em></label></th>
+					<td>
+						<input type="url" name="sharepoint_base_url" id="sharepoint_base_url" value="<?php echo esc_attr( $o['sharepoint_base_url'] ); ?>" class="large-text code" placeholder="https://eocp.sharepoint.com/sites/DataNutricrops" />
+						<p class="description">
+							Quand l'agent cite un fichier dans sa réponse sans URL directe (ex : "Monthly_Sync_xxx.pptx"), Atlas construit un lien de recherche SharePoint vers cette base pour que le chip soit cliquable. Ouvre les résultats SharePoint dans un nouvel onglet. Si laissé vide, les chips sans URL directe ne seront pas cliquables.
+						</p>
 					</td>
 				</tr>
 			</table>
