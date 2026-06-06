@@ -13,7 +13,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.botframework.com/botframework-webchat/latest/directLine.js" crossorigin="anonymous"></script>
 <style>
 :root{
   --green-900:#0F3D14;
@@ -396,9 +395,7 @@ const i18n = {
  * ======================================================================= */
 const state = {
   lang: 'fr',
-  directLine: null,
   conversationId: null,
-  userId: null,
   pendingThinkingNode: null,
   ready: false,
 };
@@ -465,8 +462,10 @@ els.reset.addEventListener('click', () => {
   els.thread.innerHTML = '';
   els.initial.style.display = '';
   els.input.value = '';
-  // Open a fresh conversation
-  initDirectLine();
+  state.conversationId = null;
+  state.ready = false;
+  els.send.disabled = true;
+  initAtlas();
 });
 
 els.brief.addEventListener('click', () => {
@@ -610,52 +609,56 @@ function renderMarkdownLite(s) {
 }
 
 /* ===========================================================================
- * Direct Line plumbing — talks to Copilot Studio via the WP token endpoint
+ * Server-relay plumbing — talks to Copilot Studio via /wp-json/atlas/v1/*
+ *
+ * The browser only knows two URLs (start + send) and a WordPress nonce.
+ * Access tokens, refresh tokens, the Copilot Studio connection string,
+ * and the Power Platform API itself stay on the server.
  * ======================================================================= */
-async function fetchToken() {
-  if (!window.ATLAS || !window.ATLAS.token_url) throw new Error('Bridge not initialised');
-  const res = await fetch(window.ATLAS.token_url, {
+async function wpFetch(url, body) {
+  const res = await fetch(url, {
     method: 'POST',
     credentials: 'same-origin',
     headers: {
       'Content-Type': 'application/json',
       'X-WP-Nonce': window.ATLAS.nonce || '',
     },
+    body: body ? JSON.stringify(body) : '{}',
   });
-  if (!res.ok) throw new Error('token http ' + res.status);
-  return await res.json();
+  let json = null;
+  try { json = await res.json(); } catch (_) { /* non-json */ }
+  if (!res.ok) {
+    const err = new Error('atlas ' + res.status);
+    err.status = res.status;
+    err.detail = json && json.detail ? json.detail : json;
+    err.code = json && json.error ? json.error : null;
+    throw err;
+  }
+  return json;
 }
 
-async function initDirectLine() {
-  if (!window.DirectLine || !window.DirectLine.DirectLine) {
+async function initAtlas() {
+  if (!window.ATLAS || !window.ATLAS.start_url) {
     showConnError();
     return;
   }
   try {
-    const t = await fetchToken();
-    state.userId = t.user.id;
-    state.conversationId = t.conversationId;
-    // Tear down any previous channel.
-    if (state.directLine && typeof state.directLine.end === 'function') {
-      try { state.directLine.end(); } catch(_) {}
-    }
-    state.directLine = window.DirectLine.DirectLine({
-      token: t.token,
-      conversationId: t.conversationId || undefined,
+    const r = await wpFetch(window.ATLAS.start_url, {
+      locale: state.lang === 'fr' ? 'fr-FR' : 'en-GB',
     });
-
-    state.directLine.activity$
-      .subscribe(activity => {
-        if (!activity || activity.type !== 'message') return;
-        if (activity.from && activity.from.id === state.userId) return; // echo
-        handleIncomingActivity(activity);
-      });
-
+    state.conversationId = r.conversationId;
+    // Render any greeting activities the agent emitted on conversation start.
+    (r.activities || []).forEach(renderActivity);
     state.ready = true;
     els.send.disabled = false;
     els.connError.style.display = 'none';
   } catch (e) {
-    console.error('Atlas Direct Line init failed', e);
+    console.error('Atlas init failed', e);
+    if (e.status === 401) {
+      // Session expired mid-page — bounce to SSO.
+      window.location.reload();
+      return;
+    }
     showConnError();
   }
 }
@@ -665,25 +668,35 @@ function showConnError() {
   els.send.disabled = true;
 }
 
-function handleIncomingActivity(activity) {
+function renderActivity(activity) {
+  if (!activity || activity.type !== 'message') return;
+  if (activity.from && activity.from.role === 'user') return; // server echo, skip
+  if (activity.from && activity.from.id && activity.from.id.indexOf('user-') === 0) return;
   const text = activity.text || '';
-  // Sources can come via channelData (Copilot Studio convention) or attachments.
-  const sources = extractSources(activity);
+  if (!text && !(activity.attachments && activity.attachments.length)) return;
   appendAnswer({
     title: 'Atlas',
     body: text,
-    sources,
+    sources: extractSources(activity),
   });
 }
 
 function extractSources(activity) {
   const out = [];
-  // Copilot Studio "citations" pattern
+  // Copilot Studio citations live in channelData.
   const cd = activity.channelData || {};
   if (Array.isArray(cd.citations)) {
     cd.citations.forEach(c => out.push({ name: c.title || c.name, url: c.url }));
   }
-  // Adaptive card or generic attachments with URLs
+  // Some agents return them under entities[*] with type=citation.
+  if (Array.isArray(activity.entities)) {
+    activity.entities.forEach(e => {
+      if (e['@type'] === 'Citation' || e.type === 'citation') {
+        out.push({ name: e.name || e.title, url: e.url });
+      }
+    });
+  }
+  // Adaptive cards / generic attachments.
   if (Array.isArray(activity.attachments)) {
     activity.attachments.forEach(att => {
       if (att.content && att.content.title && att.content.tap && att.content.tap.value) {
@@ -693,9 +706,9 @@ function extractSources(activity) {
       }
     });
   }
-  // Dedup
   const seen = new Set();
   return out.filter(s => {
+    if (!s.name && !s.url) return false;
     const key = (s.name || '') + '|' + (s.url || '');
     if (seen.has(key)) return false;
     seen.add(key);
@@ -703,32 +716,45 @@ function extractSources(activity) {
   });
 }
 
-function sendUserMessage(text) {
-  if (!state.ready) {
+async function sendUserMessage(text) {
+  if (!state.ready || !state.conversationId) {
     showConnError();
     return;
   }
   appendUserBubble(text);
   appendThinking();
-  state.directLine.postActivity({
-    type: 'message',
-    from: { id: state.userId, name: (window.ATLAS && window.ATLAS.user && window.ATLAS.user.name) || 'Hamza' },
-    text,
-    locale: state.lang === 'fr' ? 'fr-FR' : 'en-GB',
-  }).subscribe(
-    () => {}, // posted
-    err => {
-      removeThinking();
+  els.send.disabled = true;
+  try {
+    const r = await wpFetch(window.ATLAS.send_url, {
+      conversationId: state.conversationId,
+      text,
+      locale: state.lang === 'fr' ? 'fr-FR' : 'en-GB',
+    });
+    removeThinking();
+    (r.activities || []).forEach(renderActivity);
+  } catch (e) {
+    removeThinking();
+    console.error('atlas send failed', e);
+    if (e.status === 401) {
       appendAnswer({
         title: 'Atlas',
         body: state.lang === 'fr'
-          ? "Impossible d'envoyer le message à l'agent. Réessaie dans un instant."
-          : "Failed to send message to the agent. Please try again.",
+          ? "Session expirée. Recharge la page pour te reconnecter."
+          : "Session expired. Reload the page to re-authenticate.",
         isEmpty: true,
       });
-      console.error('postActivity failed', err);
+    } else {
+      appendAnswer({
+        title: 'Atlas',
+        body: state.lang === 'fr'
+          ? "Impossible de joindre l'agent (" + (e.code || e.status || 'erreur') + "). Réessaie dans un instant."
+          : "Could not reach the agent (" + (e.code || e.status || 'error') + "). Please retry.",
+        isEmpty: true,
+      });
     }
-  );
+  } finally {
+    els.send.disabled = false;
+  }
 }
 
 /* ===========================================================================
@@ -746,7 +772,7 @@ function sendUserMessage(text) {
 })();
 
 applyLang();
-initDirectLine();
+initAtlas();
 </script>
 </body>
 </html>
