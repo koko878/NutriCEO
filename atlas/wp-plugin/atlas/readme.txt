@@ -1,6 +1,6 @@
 === Atlas — Second cerveau D²nAI ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.2.2
+Stable tag: 0.2.3
 Requires at least: 6.0
 Requires PHP: 8.0
 License: GPL-2.0-or-later
@@ -109,6 +109,21 @@ L'embed est un iframe vers /atlas → bénéficie de la même auth SSO et
 des mêmes endpoints REST, isolé du CSS du thème WP.
 
 == Changelog ==
+
+= 0.2.3 =
+* Extraction de texte étendue : Adaptive Card (TextBlock, RichTextBlock,
+  FactSet, walks récursifs des containers), Hero Card / Thumbnail Card,
+  champ speak, champ summary.
+* Console.log diagnostique de chaque activité reçue + du payload complet
+  /start et /send (ouvre DevTools → Console pour inspecter).
+* Mode debug : ajouter ?atlas_debug=1 à l'URL /atlas → le body SSE brut
+  renvoyé par Microsoft est aussi loggé en console (utile pour reverse
+  engineer un format d'activité inconnu).
+* Parser SSE plus permissif : accepte n'importe quel event name
+  (Microsoft varie selon les pipelines) tant que data: décode en objet
+  ressemblant à une Activity.
+* Si l'agent répond sans contenu extractible, affichage explicite
+  "(réponse dans un format non reconnu)" au lieu d'un cadre vide.
 
 = 0.2.2 =
 * Fix bloquant : le callback SSO faisait 2 appels /token avec le même

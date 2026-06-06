@@ -93,10 +93,15 @@ function atlas_chat_start( $req ) {
 		$conv_id = $hdrs['x-ms-conversationid'] ?? ( $hdrs['conversationid'] ?? null );
 	}
 
-	return new WP_REST_Response( array(
+	$ret = array(
 		'conversationId' => $conv_id,
 		'activities'     => $parsed['activities'],
-	), 200 );
+	);
+	if ( ! empty( $_GET['atlas_debug'] ) || ! empty( $body['debug'] ) ) {
+		$ret['__raw_body'] = wp_remote_retrieve_body( $resp );
+		$ret['__status']   = wp_remote_retrieve_response_code( $resp );
+	}
+	return new WP_REST_Response( $ret, 200 );
 }
 
 /* -------------------------------------------------------------------------
@@ -156,9 +161,15 @@ function atlas_chat_send( $req ) {
 	$parsed = atlas_chat_parse_response( $resp );
 	if ( $parsed instanceof WP_REST_Response ) return $parsed;
 
-	return new WP_REST_Response( array(
-		'activities' => $parsed['activities'],
-	), 200 );
+	$ret = array( 'activities' => $parsed['activities'] );
+	// Debug echo of the raw SSE body — only when ?atlas_debug=1 is on the
+	// request URL. Lets the operator see exactly what Microsoft sent if
+	// rendering looks weird.
+	if ( ! empty( $_GET['atlas_debug'] ) || ! empty( $body['debug'] ) ) {
+		$ret['__raw_body'] = wp_remote_retrieve_body( $resp );
+		$ret['__status']   = wp_remote_retrieve_response_code( $resp );
+	}
+	return new WP_REST_Response( $ret, 200 );
 }
 
 /* -------------------------------------------------------------------------
@@ -210,7 +221,6 @@ function atlas_chat_parse_response( $resp ) {
  * ---------------------------------------------------------------------- */
 function atlas_chat_parse_sse_activities( $body ) {
 	$out = array();
-	// Normalize line endings, split on blank-line delimiter.
 	$body = str_replace( "\r\n", "\n", $body );
 	foreach ( explode( "\n\n", $body ) as $block ) {
 		$block = trim( $block );
@@ -226,14 +236,27 @@ function atlas_chat_parse_sse_activities( $body ) {
 			}
 		}
 
-		if ( $event === 'activity' && ! empty( $data_lines ) ) {
-			$decoded = json_decode( implode( "\n", $data_lines ), true );
-			if ( is_array( $decoded ) ) {
-				$out[] = $decoded;
-			}
+		if ( empty( $data_lines ) ) continue;
+
+		// Permissive — accept any block with a `data:` payload that decodes
+		// to an object resembling a Bot Framework Activity. Microsoft has
+		// been seen emitting different event names depending on the agent's
+		// pipeline ("activity", "message", "dynamicEvent", "data" or none).
+		$decoded = json_decode( implode( "\n", $data_lines ), true );
+		if ( ! is_array( $decoded ) ) continue;
+
+		// Skip explicit terminator events.
+		if ( $event === 'end' || $event === 'error' ) continue;
+
+		// Heuristic for "this looks like an Activity" — has `type` field,
+		// or has `text`/`attachments`/`speak`. Otherwise skip (could be a
+		// subscription envelope or other plumbing).
+		if ( isset( $decoded['type'] )
+		     || isset( $decoded['text'] )
+		     || isset( $decoded['attachments'] )
+		     || isset( $decoded['speak'] ) ) {
+			$out[] = $decoded;
 		}
-		// Other events (end, error, subscriptionData, etc.) are ignored —
-		// the browser only needs the activity payloads.
 	}
 	return $out;
 }

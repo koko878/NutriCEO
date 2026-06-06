@@ -643,11 +643,15 @@ async function initAtlas() {
     return;
   }
   try {
-    const r = await wpFetch(window.ATLAS.start_url, {
+    const debug = window.location.search.indexOf('atlas_debug=1') !== -1;
+    const r = await wpFetch(window.ATLAS.start_url + (debug ? '?atlas_debug=1' : ''), {
       locale: state.lang === 'fr' ? 'fr-FR' : 'en-GB',
     });
+    try { console.log('[atlas] start response', r); } catch (_) {}
+    if (r.__raw_body) {
+      try { console.log('[atlas] start raw SSE body:\n' + r.__raw_body); } catch (_) {}
+    }
     state.conversationId = r.conversationId;
-    // Render any greeting activities the agent emitted on conversation start.
     (r.activities || []).forEach(renderActivity);
     state.ready = true;
     els.send.disabled = false;
@@ -669,15 +673,85 @@ function showConnError() {
 }
 
 function renderActivity(activity) {
-  if (!activity || activity.type !== 'message') return;
-  if (activity.from && activity.from.role === 'user') return; // server echo, skip
+  // Log every received activity for diagnostics — open DevTools → Console
+  // to see what the agent actually emits. Critical for debugging when a
+  // response looks empty or misshapen.
+  try { console.log('[atlas] activity', JSON.parse(JSON.stringify(activity))); } catch (_) {}
+
+  if (!activity) return;
+  if (activity.from && activity.from.role === 'user') return;
   if (activity.from && activity.from.id && activity.from.id.indexOf('user-') === 0) return;
-  const text = activity.text || '';
-  if (!text && !(activity.attachments && activity.attachments.length)) return;
+
+  // Skip typing indicators and other non-message activity types.
+  if (activity.type && activity.type !== 'message') {
+    // Still log so we know it came through; just don't render a bubble.
+    return;
+  }
+
+  const text = extractActivityText(activity);
+  const sources = extractSources(activity);
+
+  // If we got nothing visible at all, render a fallback rather than an
+  // empty card — gives the user a clue that the agent did respond but
+  // in a shape we couldn't render. Console.log above will have the raw.
+  if (!text && (!sources || sources.length === 0)) {
+    appendAnswer({
+      title: 'Atlas',
+      body: (state.lang === 'fr')
+        ? "_(réponse de l'agent dans un format non reconnu — ouvre la console pour voir le contenu brut)_"
+        : "_(agent reply in an unrecognised format — open the console to inspect the raw payload)_",
+      isEmpty: true,
+    });
+    return;
+  }
+
   appendAnswer({
     title: 'Atlas',
-    body: text,
-    sources: extractSources(activity),
+    body: text || '',
+    sources,
+  });
+}
+
+// Try every place text can live in a Bot Framework Activity:
+//   - top-level .text (plain message)
+//   - .speak (text-to-speech variant)
+//   - attachments[].content.text (HeroCard, ThumbnailCard)
+//   - attachments[].content.body[].text (AdaptiveCard TextBlocks)
+//   - .summary (some agents put a fallback there)
+function extractActivityText(activity) {
+  if (activity.text && String(activity.text).trim()) return String(activity.text);
+  if (activity.speak && String(activity.speak).trim()) return String(activity.speak);
+  if (activity.summary && String(activity.summary).trim()) return String(activity.summary);
+
+  const out = [];
+  if (Array.isArray(activity.attachments)) {
+    activity.attachments.forEach(att => {
+      const c = att && att.content;
+      if (!c) return;
+      if (typeof c.text === 'string' && c.text.trim()) out.push(c.text);
+      if (typeof c.title === 'string' && c.title.trim()) out.push('**' + c.title + '**');
+      if (typeof c.subtitle === 'string' && c.subtitle.trim()) out.push(c.subtitle);
+      // Adaptive Card body walk — recursively pull TextBlock content.
+      if (Array.isArray(c.body)) {
+        walkAdaptive(c.body, out);
+      }
+    });
+  }
+  return out.join('\n\n');
+}
+
+function walkAdaptive(items, out) {
+  items.forEach(it => {
+    if (!it) return;
+    if (it.type === 'TextBlock' && typeof it.text === 'string') out.push(it.text);
+    if (it.type === 'RichTextBlock' && Array.isArray(it.inlines)) {
+      it.inlines.forEach(inl => { if (inl && inl.text) out.push(inl.text); });
+    }
+    if (it.type === 'FactSet' && Array.isArray(it.facts)) {
+      it.facts.forEach(f => out.push('**' + f.title + '** : ' + f.value));
+    }
+    if (Array.isArray(it.items)) walkAdaptive(it.items, out);
+    if (Array.isArray(it.columns)) it.columns.forEach(col => Array.isArray(col.items) && walkAdaptive(col.items, out));
   });
 }
 
@@ -725,13 +799,27 @@ async function sendUserMessage(text) {
   appendThinking();
   els.send.disabled = true;
   try {
-    const r = await wpFetch(window.ATLAS.send_url, {
+    const debug = window.location.search.indexOf('atlas_debug=1') !== -1;
+    const r = await wpFetch(window.ATLAS.send_url + (debug ? '?atlas_debug=1' : ''), {
       conversationId: state.conversationId,
       text,
       locale: state.lang === 'fr' ? 'fr-FR' : 'en-GB',
     });
     removeThinking();
+    try { console.log('[atlas] send response', r); } catch (_) {}
+    if (r.__raw_body) {
+      try { console.log('[atlas] raw SSE body (' + (r.__raw_body.length) + ' chars):\n' + r.__raw_body); } catch (_) {}
+    }
     (r.activities || []).forEach(renderActivity);
+    if (!r.activities || r.activities.length === 0) {
+      appendAnswer({
+        title: 'Atlas',
+        body: (state.lang === 'fr')
+          ? "_(aucune activité renvoyée par l'agent — vérifie la console DevTools)_"
+          : "_(no activity returned by the agent — check the DevTools console)_",
+        isEmpty: true,
+      });
+    }
   } catch (e) {
     removeThinking();
     console.error('atlas send failed', e);
