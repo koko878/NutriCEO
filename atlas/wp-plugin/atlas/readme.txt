@@ -1,6 +1,6 @@
 === Atlas — Second cerveau D²nAI ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.2.3
+Stable tag: 0.2.4
 Requires at least: 6.0
 Requires PHP: 8.0
 License: GPL-2.0-or-later
@@ -109,6 +109,21 @@ L'embed est un iframe vers /atlas → bénéficie de la même auth SSO et
 des mêmes endpoints REST, isolé du CSS du thème WP.
 
 == Changelog ==
+
+= 0.2.4 =
+* Citations cliquables : les marqueurs inline [1], [2], [^1], 【1†source】,
+  ⟦1⟧ sont rewrites en superscripts cliquables qui ouvrent la source
+  correspondante (ou scrollent jusqu'au chip en bas s'il n'y a pas
+  d'URL). Tag de pulse au scroll-to.
+* Labels de sources raccourcis et propres : décodage URL, _ → espace,
+  troncature 50 chars, basename pour les URLs SharePoint.
+* extractSources couvre beaucoup plus de shapes Copilot Studio :
+  channelData.{citations,SourceFiles,sourceFiles,search_results,references},
+  feedback.citations, pvaGptFeedback.citations, entities avec type
+  Citation/Reference/Source/WebPage/Book/Article, Adaptive Card
+  Action.OpenUrl, HeroCard tap, attachment top-level name+contentUrl.
+* CSS : badges numériques (•1 •2) dans les chips de sources, hover
+  feedback, ellipsis sur les longs noms.
 
 = 0.2.3 =
 * Extraction de texte étendue : Adaptive Card (TextBlock, RichTextBlock,

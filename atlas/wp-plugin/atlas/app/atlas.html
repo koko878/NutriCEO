@@ -133,7 +133,13 @@ body{
 
 .sources{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);display:flex;flex-wrap:wrap;gap:6px}
 .sources .lab{font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;width:100%;margin-bottom:2px}
-.src{display:inline-flex;align-items:center;gap:6px;background:var(--green-50);border:1px solid var(--green-100);color:var(--green-800);font-size:11.5px;font-weight:500;padding:5px 9px;border-radius:999px;cursor:pointer;text-decoration:none}
+.src{display:inline-flex;align-items:center;gap:6px;background:var(--green-50);border:1px solid var(--green-100);color:var(--green-800);font-size:11.5px;font-weight:500;padding:5px 9px;border-radius:999px;cursor:pointer;text-decoration:none;transition:.18s;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.src:hover{background:var(--green-100);border-color:var(--green-500)}
+.src .src-num{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--green-800);color:#fff;font:700 10px 'Inter',sans-serif;flex:none}
+.src.src-flash{animation:srcFlash 1.2s ease}
+@keyframes srcFlash{0%,100%{box-shadow:none;background:var(--green-50)}30%{box-shadow:0 0 0 4px rgba(46,125,50,.25);background:#fff}}
+.answer .body .cite-mark{display:inline-block;font:700 10px 'Inter',sans-serif;color:var(--green-800);background:var(--green-50);border:1px solid var(--green-100);padding:0 5px;border-radius:6px;vertical-align:super;line-height:1.2;margin:0 2px;text-decoration:none;transition:.15s}
+.answer .body .cite-mark:hover{background:var(--green-800);color:#fff;border-color:var(--green-800)}
 
 .thinking{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12.5px;padding:10px 14px;background:#fff;border:1px solid var(--line);border-radius:14px}
 .thinking .matrix{width:18px;height:18px;border-radius:5px;background:var(--green-800);position:relative;overflow:hidden}
@@ -542,14 +548,25 @@ function appendAnswer({ title, body, sources, isEmpty }) {
   const el = document.createElement('div');
   el.className = 'answer fade-in' + (isEmpty ? ' empty' : '');
   const safeTitle = title ? escapeHtml(title) : 'Atlas';
-  const safeBody  = renderMarkdownLite(body || '');
+
+  // Index citation markers in the body. We accept several conventions:
+  //   [1], [^1], 【1†source】, ⟦doc1⟧.
+  // Each marker is rewritten into a clickable superscript that jumps to
+  // the corresponding source chip below.
+  const bodyText = String(body || '');
+  const renderedBody = renderMarkdownLite(bodyText);
+  const linkedBody = linkifyCitationMarkers(renderedBody, sources || []);
+
   let srcHtml = '';
   if (sources && sources.length) {
     srcHtml = `<div class="sources"><span class="lab">${i18n[state.lang].sourcesLabel}</span>` +
-      sources.map(s => {
-        const label = escapeHtml(s.name || s.title || s.url || 'source');
-        if (s.url) return `<a class="src" href="${escapeAttr(s.url)}" target="_blank" rel="noopener">📄 ${label}</a>`;
-        return `<span class="src">📄 ${label}</span>`;
+      sources.map((s, i) => {
+        const n = (i + 1);
+        const label = escapeHtml(shortSourceLabel(s));
+        const id = 'atlas-src-' + Date.now().toString(36) + '-' + n;
+        s.__id = id;
+        if (s.url) return `<a id="${id}" class="src" href="${escapeAttr(s.url)}" target="_blank" rel="noopener" title="${escapeAttr(s.name || s.url)}"><span class="src-num">${n}</span>${label}</a>`;
+        return `<span id="${id}" class="src" title="${escapeAttr(s.name || '')}"><span class="src-num">${n}</span>${label}</span>`;
       }).join('') + '</div>';
   }
   el.innerHTML = `
@@ -557,10 +574,68 @@ function appendAnswer({ title, body, sources, isEmpty }) {
       <div class="badge">A</div>
       <div class="by">${safeTitle}</div>
     </div>
-    <div class="body">${safeBody}</div>
+    <div class="body">${linkedBody}</div>
     ${srcHtml}`;
   els.thread.appendChild(el);
+
+  // Wire the inline marker clicks to scroll the source into view.
+  el.querySelectorAll('.cite-mark').forEach(mk => {
+    mk.addEventListener('click', e => {
+      e.preventDefault();
+      const n = parseInt(mk.dataset.n, 10) - 1;
+      const src = sources && sources[n];
+      if (src && src.url) { window.open(src.url, '_blank', 'noopener'); return; }
+      if (src && src.__id) {
+        const target = document.getElementById(src.__id);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          target.classList.add('src-flash');
+          setTimeout(() => target.classList.remove('src-flash'), 1200);
+        }
+      }
+    });
+  });
+
   scrollToBottom();
+}
+
+// Returns a short, human-readable label for a source object.
+// "Mail de Mehdi CHHIH (4 juin 2026)" → keep as-is
+// "/sites/x/Shared%20Documents/Atlas-KB/2026-06-04_Note-MDM.pdf" → "2026-06-04 Note MDM"
+// "https://tenant.sharepoint.com/.../report.pdf" → "report.pdf"
+function shortSourceLabel(s) {
+  if (s.name) {
+    // Strip any common SharePoint encoding artifacts and trim length.
+    const cleaned = decodeURIComponent(String(s.name))
+      .replace(/_/g, ' ')
+      .replace(/%20/g, ' ');
+    return truncate(cleaned, 50);
+  }
+  if (s.url) {
+    try {
+      const u = new URL(s.url);
+      const last = decodeURIComponent(u.pathname.split('/').filter(Boolean).pop() || u.hostname);
+      return truncate(last.replace(/_/g, ' '), 50);
+    } catch (_) { return truncate(s.url, 50); }
+  }
+  return 'source';
+}
+
+function truncate(s, n) {
+  return s.length <= n ? s : s.slice(0, n - 1) + '…';
+}
+
+// Replace citation markers in the rendered HTML with clickable superscripts.
+// We do this AFTER markdown rendering so the regex matches plain text inside
+// the already-escaped HTML (markers are alphanumeric — safe from injection).
+function linkifyCitationMarkers(html, sources) {
+  if (!sources || !sources.length) return html;
+  // Matches  [1]  [^1]  【1†source】  ⟦1⟧  〔1〕
+  return html.replace(/\[\^?(\d{1,3})\]|【(\d{1,3})[^】]*】|⟦(\d{1,3})⟧|〔(\d{1,3})〕/g, (m, a, b, c, d) => {
+    const n = parseInt(a || b || c || d, 10);
+    if (!n || n < 1 || n > sources.length) return m;
+    return `<a href="#" class="cite-mark" data-n="${n}" title="Voir source ${n}">[${n}]</a>`;
+  });
 }
 
 function showReportsPicker() {
@@ -755,38 +830,87 @@ function walkAdaptive(items, out) {
   });
 }
 
+// Pull source citations from every shape Copilot Studio is known to emit.
+// Each output entry: { name, url, abstract? }. Numbering is positional
+// (1-based) and aligned with [1], [2]... markers in the body text.
 function extractSources(activity) {
   const out = [];
-  // Copilot Studio citations live in channelData.
   const cd = activity.channelData || {};
-  if (Array.isArray(cd.citations)) {
-    cd.citations.forEach(c => out.push({ name: c.title || c.name, url: c.url }));
+
+  // 1. channelData.citations  (most common, Generative Answers)
+  pullCitations(cd.citations, out);
+  pullCitations(cd.SourceFiles, out);      // older agents capitalize differently
+  pullCitations(cd.sourceFiles, out);
+  pullCitations(cd.search_results, out);
+  pullCitations(cd.references, out);
+
+  // 2. Adaptive Card-embedded citations (newer agents bundle them inline)
+  if (cd.feedback && Array.isArray(cd.feedback.citations)) {
+    pullCitations(cd.feedback.citations, out);
   }
-  // Some agents return them under entities[*] with type=citation.
+  if (cd.pvaGptFeedback && Array.isArray(cd.pvaGptFeedback.citations)) {
+    pullCitations(cd.pvaGptFeedback.citations, out);
+  }
+
+  // 3. entities[*]  with various typings
   if (Array.isArray(activity.entities)) {
     activity.entities.forEach(e => {
-      if (e['@type'] === 'Citation' || e.type === 'citation') {
-        out.push({ name: e.name || e.title, url: e.url });
+      if (!e) return;
+      const t = e['@type'] || e.type || '';
+      if (/citation|reference|source|webpage|book|article/i.test(String(t))) {
+        out.push({
+          name: e.name || e.title || e.text || '',
+          url:  e.url  || e['@id'] || (e.appearance && e.appearance.url) || '',
+          abstract: e.abstract || e.description || '',
+        });
       }
     });
   }
-  // Adaptive cards / generic attachments.
+
+  // 4. Generic attachments with tap actions
   if (Array.isArray(activity.attachments)) {
     activity.attachments.forEach(att => {
-      if (att.content && att.content.title && att.content.tap && att.content.tap.value) {
-        out.push({ name: att.content.title, url: att.content.tap.value });
-      } else if (att.name) {
+      const c = att && att.content;
+      if (!c) return;
+      // HeroCard / ThumbnailCard tap
+      if (c.tap && c.tap.value && (c.title || c.subtitle)) {
+        out.push({ name: c.title || c.subtitle, url: String(c.tap.value) });
+      }
+      // Adaptive Card actions of type Action.OpenUrl
+      if (Array.isArray(c.actions)) {
+        c.actions.forEach(a => {
+          if (a && a.type === 'Action.OpenUrl' && a.url) {
+            out.push({ name: a.title || a.url, url: a.url });
+          }
+        });
+      }
+      // Top-level attachment name + contentUrl
+      if (att.name && att.contentUrl) {
         out.push({ name: att.name, url: att.contentUrl });
       }
     });
   }
+
+  // Dedup on (name|url), keep insertion order.
   const seen = new Set();
   return out.filter(s => {
     if (!s.name && !s.url) return false;
-    const key = (s.name || '') + '|' + (s.url || '');
+    const key = (s.name || '').toLowerCase().trim() + '|' + (s.url || '').toLowerCase().trim();
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
+  });
+}
+
+function pullCitations(list, out) {
+  if (!Array.isArray(list)) return;
+  list.forEach(c => {
+    if (!c) return;
+    out.push({
+      name: c.title || c.name || c.fileName || c.documentName || c.text || '',
+      url:  c.url   || c.uri  || c.path     || c.link         || c.webUrl || '',
+      abstract: c.abstract || c.snippet || c.description || '',
+    });
   });
 }
 
