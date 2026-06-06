@@ -23,18 +23,18 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 const ATLAS_SSO_TRANSIENT_PREFIX = 'atlas_sso_state_';
 const ATLAS_SSO_AUTH_URL_TPL     = 'https://login.microsoftonline.com/%s/oauth2/v2.0/authorize';
 const ATLAS_SSO_TOKEN_URL_TPL    = 'https://login.microsoftonline.com/%s/oauth2/v2.0/token';
-const ATLAS_SSO_USERINFO_URL     = 'https://graph.microsoft.com/oidc/userinfo';
 
-// The Copilot Studio scope cannot be combined with Graph scopes in a single
-// /token call because Microsoft refuses cross-resource scope grants. Our
-// approach: ask for openid + profile + email + offline_access + the
-// Copilot Studio scope at /authorize (this gives us the consent banner with
-// both resources listed), then make TWO /token calls in the callback —
-// one for Graph (to identify the user) and one for Power Platform (to chat
-// with the agent). Both use the same authorization code.
-const ATLAS_SSO_SCOPES_AUTHORIZE = 'openid profile email offline_access https://api.powerplatform.com/CopilotStudio.Copilots.Invoke User.Read';
-const ATLAS_SSO_SCOPE_CPS        = 'https://api.powerplatform.com/CopilotStudio.Copilots.Invoke offline_access';
-const ATLAS_SSO_SCOPE_GRAPH      = 'openid profile email User.Read offline_access';
+// Single-shot scope: OIDC claims (openid+profile+email) give us an id_token
+// that carries the user's identity (UPN, name) directly, so we don't need a
+// second call to Microsoft Graph. The Power Platform scope returns the
+// access_token we use to call Copilot Studio. offline_access gives us a
+// refresh_token. All four can be combined in one /token exchange — the
+// OIDC scopes are not a "resource" and may piggyback on any single-resource
+// token request.
+//
+// IMPORTANT: an OAuth authorization code is SINGLE-USE. We must do the
+// exchange exactly once per login flow.
+const ATLAS_SSO_SCOPES = 'openid profile email offline_access https://api.powerplatform.com/CopilotStudio.Copilots.Invoke';
 
 add_action( 'template_redirect', 'atlas_sso_router', 5 );
 
@@ -78,7 +78,7 @@ function atlas_sso_start() {
 		'response_type'         => 'code',
 		'redirect_uri'          => atlas_sso_redirect_uri(),
 		'response_mode'         => 'query',
-		'scope'                 => ATLAS_SSO_SCOPES_AUTHORIZE,
+		'scope'                 => ATLAS_SSO_SCOPES,
 		'state'                 => $state,
 		'code_challenge'        => $challenge,
 		'code_challenge_method' => 'S256',
@@ -94,17 +94,16 @@ function atlas_sso_start() {
 /* -------------------------------------------------------------------------
  * STEP 2 — handle the redirect back.
  *
- * We make TWO token calls with the same authorization code:
- *   (a) scope = Graph (User.Read) → access_token usable against Graph
- *                                     → call /oidc/userinfo to identify
- *                                       the user (UPN, name)
- *   (b) scope = Power Platform (CopilotStudio.Copilots.Invoke)
- *                                   → access_token + refresh_token usable
- *                                     against Copilot Studio
+ * Single /token exchange combining OIDC + Power Platform scopes. The
+ * response carries:
+ *   - id_token      : JWT whose claims (preferred_username, name) give
+ *                     us the user's identity — no Graph round-trip needed
+ *   - access_token  : usable against api.powerplatform.com (Copilot Studio)
+ *   - refresh_token : long-lived, usable to mint new access_tokens
  *
- * Microsoft allows reusing the same auth code as long as both calls
- * happen quickly. (b) is the one we actually persist; (a) is consumed
- * once and discarded.
+ * Microsoft authorization codes are SINGLE-USE — calling /token twice
+ * with the same code triggers AADSTS54005. That's why we ask for
+ * everything we need in one shot.
  * ---------------------------------------------------------------------- */
 function atlas_sso_callback() {
 	if ( isset( $_GET['error'] ) ) {
@@ -126,42 +125,42 @@ function atlas_sso_callback() {
 
 	$code = sanitize_text_field( wp_unslash( $_GET['code'] ) );
 
-	// (a) Graph token — used once to identify the user.
-	$graph_tokens = atlas_sso_exchange_code( $code, ATLAS_SSO_SCOPE_GRAPH, $ctx['verifier'] );
-	if ( ! $graph_tokens || empty( $graph_tokens['access_token'] ) ) {
-		wp_die( esc_html( 'Identity token exchange rejected : ' . ( $graph_tokens['error_description'] ?? 'unknown' ) ), 'Atlas SSO', array( 'response' => 500 ) );
+	$tokens = atlas_sso_exchange_code( $code, ATLAS_SSO_SCOPES, $ctx['verifier'] );
+
+	if ( ! $tokens || empty( $tokens['access_token'] ) ) {
+		$detail = $tokens['error_description'] ?? 'no detail';
+		// Diagnose common failure modes by inspecting the MS error code.
+		$hint = '';
+		if ( strpos( (string) $detail, 'AADSTS65001' ) !== false || strpos( (string) $detail, 'AADSTS650056' ) !== false ) {
+			$hint = " — La permission « Power Platform API → CopilotStudio.Copilots.Invoke » n'est pas grantée. Va dans Azure AD → ton App Registration → API permissions → Grant admin consent.";
+		} elseif ( strpos( (string) $detail, 'AADSTS500011' ) !== false ) {
+			$hint = " — Le service principal « Power Platform API » n'existe pas dans le tenant. IT doit lancer : Add-MgServicePrincipal -AppId 8578e004-a5c6-46e7-913e-12f58912df43";
+		} elseif ( strpos( (string) $detail, 'AADSTS70011' ) !== false ) {
+			$hint = " — Scope invalide. Le scope CopilotStudio.Copilots.Invoke n'est pas autorisé pour cette app — vérifie qu'il est bien ajouté dans API permissions.";
+		}
+		wp_die( esc_html( 'Échec du token exchange : ' . $detail . $hint ), 'Atlas SSO', array( 'response' => 500 ) );
 	}
 
-	$user = atlas_sso_fetch_userinfo( $graph_tokens['access_token'] );
-	if ( ! $user ) {
-		wp_die( 'Could not resolve Microsoft 365 identity.', 'Atlas SSO', array( 'response' => 500 ) );
+	if ( empty( $tokens['id_token'] ) ) {
+		wp_die( "Microsoft n'a pas renvoyé d'id_token — vérifie que le scope « openid » est bien autorisé sur l'App Registration.", 'Atlas SSO', array( 'response' => 500 ) );
 	}
 
-	$upn = $user['upn'];
+	$claims = atlas_sso_decode_jwt_payload( $tokens['id_token'] );
+	if ( ! is_array( $claims ) ) {
+		wp_die( "id_token Microsoft illisible.", 'Atlas SSO', array( 'response' => 500 ) );
+	}
+
+	$upn  = $claims['preferred_username'] ?? ( $claims['email'] ?? '' );
+	$name = $claims['name'] ?? $upn;
+	if ( ! $upn ) {
+		wp_die( "id_token ne contient pas d'identifiant utilisateur — vérifie que les scopes « profile » et « email » sont bien autorisés.", 'Atlas SSO', array( 'response' => 500 ) );
+	}
+
 	if ( ! atlas_upn_allowed( $upn ) ) {
 		wp_die( esc_html( "L'utilisateur $upn n'est pas autorisé à utiliser Atlas. Contactez l'administrateur." ), 'Atlas SSO', array( 'response' => 403 ) );
 	}
 
-	// (b) Power Platform token — the one we persist for Copilot Studio calls.
-	// We reuse the SAME authorization code (Microsoft allows this for
-	// distinct resources within the consent grant).
-	$cps_tokens = atlas_sso_exchange_code( $code, ATLAS_SSO_SCOPE_CPS, $ctx['verifier'] );
-
-	// Some tenants return an error here even when (a) succeeded — usually
-	// because the user wasn't granted CopilotStudio.Copilots.Invoke or the
-	// Power Platform service principal doesn't exist in the tenant. Surface
-	// a clear error rather than silently logging in without a usable token.
-	if ( ! $cps_tokens || empty( $cps_tokens['access_token'] ) ) {
-		$detail = $cps_tokens['error_description'] ?? 'no detail';
-		wp_die( esc_html(
-			"Authentification réussie côté identité, mais Microsoft refuse le token Copilot Studio. " .
-			"Vérifier dans Azure AD que l'App Registration a la permission déléguée " .
-			"« Power Platform API → CopilotStudio.Copilots.Invoke » et qu'un admin a fait « Grant admin consent ». " .
-			"Détail : $detail"
-		), 'Atlas SSO', array( 'response' => 500 ) );
-	}
-
-	$wp_user_id = atlas_sso_provision_wp_user( $upn, $user['name'] );
+	$wp_user_id = atlas_sso_provision_wp_user( $upn, $name );
 
 	wp_clear_auth_cookie();
 	wp_set_current_user( $wp_user_id );
@@ -170,15 +169,34 @@ function atlas_sso_callback() {
 	atlas_session_set(
 		$wp_user_id,
 		$upn,
-		$user['name'],
-		$cps_tokens['access_token'],
-		$cps_tokens['refresh_token'] ?? '',
-		(int) ( $cps_tokens['expires_in'] ?? 3600 )
+		$name,
+		$tokens['access_token'],
+		$tokens['refresh_token'] ?? '',
+		(int) ( $tokens['expires_in'] ?? 3600 )
 	);
 
 	$redirect_to = ! empty( $ctx['redirect_to'] ) ? $ctx['redirect_to'] : home_url( '/atlas' );
 	wp_safe_redirect( $redirect_to );
 	exit;
+}
+
+/* -------------------------------------------------------------------------
+ * Decode a JWT payload without signature validation.
+ *
+ * Safe here because the id_token comes back over TLS from Microsoft's
+ * /token endpoint as a direct response to OUR HTTPS request — we trust
+ * the channel, not a JWT signature. (If we were accepting JWTs from
+ * arbitrary parties, we'd validate the signature against MS's JWKS.)
+ * ---------------------------------------------------------------------- */
+function atlas_sso_decode_jwt_payload( $jwt ) {
+	$parts = explode( '.', $jwt );
+	if ( count( $parts ) < 2 ) return null;
+	$payload = strtr( $parts[1], '-_', '+/' );
+	$payload .= str_repeat( '=', ( 4 - strlen( $payload ) % 4 ) % 4 );
+	$decoded = base64_decode( $payload, true );
+	if ( $decoded === false ) return null;
+	$json = json_decode( $decoded, true );
+	return is_array( $json ) ? $json : null;
 }
 
 /* -------------------------------------------------------------------------
@@ -224,7 +242,7 @@ function atlas_sso_get_fresh_cps_token( $user_id ) {
 		'body'    => array(
 			'client_id'     => $client_id,
 			'client_secret' => $client_secret,
-			'scope'         => ATLAS_SSO_SCOPE_CPS,
+			'scope'         => 'https://api.powerplatform.com/CopilotStudio.Copilots.Invoke offline_access',
 			'refresh_token' => $refresh,
 			'grant_type'    => 'refresh_token',
 		),
@@ -275,22 +293,6 @@ function atlas_sso_exchange_code( $code, $scope, $verifier ) {
 
 	if ( is_wp_error( $resp ) ) return null;
 	return json_decode( wp_remote_retrieve_body( $resp ), true );
-}
-
-function atlas_sso_fetch_userinfo( $access_token ) {
-	$resp = wp_remote_get( ATLAS_SSO_USERINFO_URL, array(
-		'timeout' => 10,
-		'headers' => array( 'Authorization' => 'Bearer ' . $access_token ),
-	) );
-	if ( is_wp_error( $resp ) ) return null;
-	$data = json_decode( wp_remote_retrieve_body( $resp ), true );
-	if ( ! is_array( $data ) ) return null;
-	$upn = isset( $data['email'] ) ? $data['email'] : ( isset( $data['preferred_username'] ) ? $data['preferred_username'] : null );
-	if ( ! $upn ) return null;
-	return array(
-		'upn'  => $upn,
-		'name' => isset( $data['name'] ) ? $data['name'] : $upn,
-	);
 }
 
 function atlas_sso_provision_wp_user( $upn, $name ) {

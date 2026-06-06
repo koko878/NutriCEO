@@ -1,6 +1,6 @@
 === Atlas — Second cerveau D²nAI ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.2.1
+Stable tag: 0.2.2
 Requires at least: 6.0
 Requires PHP: 8.0
 License: GPL-2.0-or-later
@@ -109,6 +109,14 @@ L'embed est un iframe vers /atlas → bénéficie de la même auth SSO et
 des mêmes endpoints REST, isolé du CSS du thème WP.
 
 == Changelog ==
+
+= 0.2.2 =
+* Fix bloquant : le callback SSO faisait 2 appels /token avec le même
+  authorization code (AADSTS54005). Bascule en un seul exchange avec
+  scope combiné OIDC + Power Platform. Identité tirée directement des
+  claims de l'id_token (preferred_username, name) — plus de call Graph.
+* Messages d'erreur callback enrichis : décode AADSTS65001 / 500011 /
+  70011 pour suggérer l'action corrective précise.
 
 = 0.2.1 =
 * Fix shortcode [atlas] : bascule en iframe vers /atlas plutôt que
