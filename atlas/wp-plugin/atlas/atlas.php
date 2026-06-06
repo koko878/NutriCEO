@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Atlas — Second cerveau D²nAI
  * Description:       Cockpit mobile-first pour Hamza Koh (Head of Data, Digital & AI) — branché sur un agent Copilot Studio (Microsoft 365 Agents SDK / Power Platform API). Authentification SSO Microsoft 365 obligatoire (OAuth 2.0 Authorization Code + PKCE), relais côté serveur pour appeler l'API Copilot Studio sans exposer le token au browser.
- * Version:           0.2.6
+ * Version:           0.2.7
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       atlas
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'ATLAS_VER', '0.2.6' );
+define( 'ATLAS_VER', '0.2.7' );
 define( 'ATLAS_URL', plugin_dir_url( __FILE__ ) );
 define( 'ATLAS_DIR', plugin_dir_path( __FILE__ ) );
 

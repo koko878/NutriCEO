@@ -1,6 +1,6 @@
 === Atlas — Second cerveau D²nAI ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.2.6
+Stable tag: 0.2.7
 Requires at least: 6.0
 Requires PHP: 8.0
 License: GPL-2.0-or-later
@@ -109,6 +109,19 @@ L'embed est un iframe vers /atlas → bénéficie de la même auth SSO et
 des mêmes endpoints REST, isolé du CSS du thème WP.
 
 == Changelog ==
+
+= 0.2.7 =
+* Fix critique : les marqueurs [1] [2] dans le texte de l'agent
+  n'étaient pas reliés à des chips parce que l'agent met la liste
+  des sources en footer "Sources :" (markdown) plutôt que dans
+  channelData.citations. v0.2.6 stripait ce footer SANS le parser
+  → orphelins, aucun chip cliquable.
+* Nouveau parseSourcesFooter : extrait la liste numérotée des
+  sources depuis le footer (formats supportés : [1] desc, 1. desc,
+  1) desc, (1) desc, 1 — desc) avant strip. Position-aligned sur
+  les marqueurs [n].
+* Nouveau mergeSources : fusion channelData (URLs) + footer (noms)
+  par position, préférant les URLs structurées quand dispo.
 
 = 0.2.6 =
 * Toutes les sources sont maintenant cliquables (le motif principal :

@@ -594,19 +594,21 @@ function appendAnswer({ title, body, sources, isEmpty }) {
   const safeTitle = title ? escapeHtml(title) : 'Atlas';
 
   // The agent emits a "Sources :" / "Sources:" footer per our system
-  // prompt. Strip it before rendering — we re-show sources as inline
-  // chips placed exactly below each cited line, no bottom scroll needed.
-  let bodyText = stripSourcesFooter(String(body || ''));
+  // prompt. Parse it BEFORE stripping — the footer is where the agent
+  // usually puts the source descriptions for the [n] markers in text
+  // (channelData.citations is often empty in this setup). We merge
+  // footer-parsed sources with structured ones from the activity.
+  const parsed = parseSourcesFooter(String(body || ''));
+  const bodyText = parsed.stripped;
+  const mergedSources = mergeSources(sources || [], parsed.sources);
 
   // Render markdown, then weave inline source chips between cited
-  // lines. The chips replace the old bottom "Sources" panel entirely.
+  // lines using the merged source list.
   const html = renderMarkdownLite(bodyText);
-  const wovenChips = weaveInlineSources(html, sources || []);
-  // Inline filename detection — if the agent writes a filename in the
-  // middle of its text (e.g. "selon Monthly_Sync_xxx.pptx"), wrap it as
-  // a clickable link to either the matching extracted source's URL, or
-  // to a SharePoint search URL if a base is configured.
-  const woven = linkifyFilenames(wovenChips, sources || []);
+  const wovenChips = weaveInlineSources(html, mergedSources);
+  // Inline filename detection — when the agent writes a filename in
+  // the body, wrap it as a clickable link.
+  const woven = linkifyFilenames(wovenChips, mergedSources);
 
   el.innerHTML = `
     <div class="head">
@@ -619,15 +621,64 @@ function appendAnswer({ title, body, sources, isEmpty }) {
   scrollToBottom();
 }
 
-// Strip the trailing "Sources :" / "Sources:" / "[1] ... [n] ..." block
-// the agent appends per the prompt. Anything after that header gets
-// removed since we re-render those sources inline below the cited lines.
-function stripSourcesFooter(text) {
-  // Match: "Sources :" or "Sources:" (case-insensitive, French/English),
-  // optionally preceded by a separator (--- or blank lines).
-  const re = /\n[\s-]*\n?\s*Sources?\s*[:：][\s\S]*$/i;
-  const stripped = text.replace(re, '');
-  return stripped !== text ? stripped : text;
+// Parse the trailing "Sources :" / "Sources:" block the agent appends
+// per the system prompt. Returns:
+//   { stripped: text without footer,
+//     sources:  array indexed by [n]-1 → { name: '...' } }
+//
+// The footer is where the agent usually puts source descriptions for
+// the [n] markers it sprinkled in the text. Without this parse, we
+// strip the footer AND lose the mapping → orphan markers, no chips.
+function parseSourcesFooter(text) {
+  // Match: optional separators (--- or blank), then "Sources :" / "Sources:"
+  // (case-insensitive, French/English colon variants), then everything after.
+  const re = /(?:\n|^)(?:[\s\-—=*_]*\n)?\s*Sources?\s*[:：]\s*([\s\S]+?)\s*$/i;
+  const m = text.match(re);
+  if (!m) return { stripped: text, sources: [] };
+
+  const stripped = text.slice(0, m.index).replace(/\s+$/, '');
+  const footer   = m[1];
+
+  // Parse each line of the footer for "[1] desc" / "1. desc" / "1) desc" /
+  // "(1) desc" / "1 — desc". Tolerant — most agents emit "[n] descr".
+  const lineRe = /(?:^|\n)\s*[(\[]?\s*(\d{1,3})\s*[)\].\-—]\s*([^\n]+)/g;
+  const map = {};
+  let lm;
+  while ((lm = lineRe.exec(footer)) !== null) {
+    const n = parseInt(lm[1], 10);
+    const desc = lm[2].trim()
+      .replace(/^[*_\-—]+\s*/, '')   // strip leading markdown bullets
+      .replace(/[\s*_]+$/, '');       // strip trailing markdown
+    if (n >= 1 && n <= 50 && desc) map[n] = desc;
+  }
+
+  // Convert to position-aligned array (indexed by n-1, so [1] → [0]).
+  const maxN = Math.max(0, ...Object.keys(map).map(Number));
+  const sources = [];
+  for (let i = 1; i <= maxN; i++) {
+    sources.push(map[i] ? { name: map[i], url: '' } : { name: '', url: '' });
+  }
+
+  return { stripped, sources };
+}
+
+// Merge two source lists by index, preferring fields from `primary`.
+// Used to combine channelData.citations (which has URLs but may be
+// empty) with footer-parsed sources (which have names but no URLs).
+function mergeSources(primary, secondary) {
+  const max = Math.max(primary.length, secondary.length);
+  const out = [];
+  for (let i = 0; i < max; i++) {
+    const p = primary[i]   || {};
+    const s = secondary[i] || {};
+    const merged = {
+      name: p.name || s.name || '',
+      url:  p.url  || s.url  || '',
+      abstract: p.abstract || s.abstract || '',
+    };
+    if (merged.name || merged.url) out.push(merged);
+  }
+  return out;
 }
 
 // Walk through the rendered HTML line by line. For each line that
