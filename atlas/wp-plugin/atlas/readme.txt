@@ -1,6 +1,6 @@
 === Atlas — Second cerveau D²nAI ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.2.4
+Stable tag: 0.2.5
 Requires at least: 6.0
 Requires PHP: 8.0
 License: GPL-2.0-or-later
@@ -109,6 +109,19 @@ L'embed est un iframe vers /atlas → bénéficie de la même auth SSO et
 des mêmes endpoints REST, isolé du CSS du thème WP.
 
 == Changelog ==
+
+= 0.2.5 =
+* UI : abandon du cadre iPhone sur desktop, layout carte responsive
+  (max-width 780px standard, 880px wide screens, full-screen mobile).
+  Box-shadow douce, padding aéré, font-size augmenté sur grands écrans.
+* Citations passées en chips INLINE directement sous chaque ligne
+  citée (au lieu du panneau "Sources" en bas qui forçait à scroller).
+  Format : ligne du fait → chip vert avec icône doc + nom court (+ url).
+* Strip automatique de la section "Sources :" que l'agent ajoute
+  désormais à la fin de ses réponses (re-rendue inline donc inutile
+  en footer).
+* Plus de "ico .handle" / ".notch" — les éléments cosmétiques iPhone
+  sont entièrement display:none.
 
 = 0.2.4 =
 * Citations cliquables : les marqueurs inline [1], [2], [^1], 【1†source】,

@@ -51,15 +51,24 @@ body{
 .legend{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
 .legend .brand{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;color:var(--green-800);font-size:14px;text-transform:none;letter-spacing:.02em}
 
+/* Responsive card — no more iPhone frame. Centered on desktop with a
+   comfortable max width; full-screen on mobile (handled by @media). */
 .phone{
-  position:relative;width:390px;height:844px;
-  background:#0a0a0a;border-radius:54px;padding:14px;
-  box-shadow:0 30px 60px -20px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.06) inset,0 0 0 2px #1a1a1a;
+  position:relative;
+  width:100%;
+  max-width:780px;
+  height:min(880px, calc(100vh - 48px));
+  background:var(--bg);
+  border-radius:24px;
+  padding:0;
+  box-shadow:0 24px 60px -24px rgba(15,61,20,.25), 0 0 0 1px rgba(0,0,0,.04);
+  overflow:hidden;
 }
-.notch{position:absolute;left:50%;top:18px;transform:translateX(-50%);width:120px;height:32px;background:#000;border-radius:20px;z-index:5}
-.screen{position:relative;width:100%;height:100%;background:var(--bg);border-radius:42px;overflow:hidden;display:flex;flex-direction:column}
+.notch,.handle{display:none}
+.screen{position:relative;width:100%;height:100%;background:var(--bg);border-radius:24px;overflow:hidden;display:flex;flex-direction:column}
 
-.status{height:48px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 6px;font-size:14px;font-weight:600;color:var(--ink)}
+.status{display:none}
+._status{height:48px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 6px;font-size:14px;font-weight:600;color:var(--ink)}
 .status .icons{display:flex;gap:5px;align-items:center}
 .dot{width:4px;height:4px;background:var(--ink);border-radius:50%}
 .battery{width:22px;height:11px;border:1.2px solid var(--ink);border-radius:3px;position:relative}
@@ -141,6 +150,23 @@ body{
 .answer .body .cite-mark{display:inline-block;font:700 10px 'Inter',sans-serif;color:var(--green-800);background:var(--green-50);border:1px solid var(--green-100);padding:0 5px;border-radius:6px;vertical-align:super;line-height:1.2;margin:0 2px;text-decoration:none;transition:.15s}
 .answer .body .cite-mark:hover{background:var(--green-800);color:#fff;border-color:var(--green-800)}
 
+/* Inline source chip — rendered directly under the cited fact, replaces
+   the old bottom "Sources" list that forced scrolling. */
+.inline-src{
+  display:flex;align-items:center;gap:8px;
+  margin:4px 0 10px 0;padding:7px 11px 7px 9px;
+  background:var(--green-50);border:1px solid var(--green-100);
+  border-left:3px solid var(--green-800);
+  border-radius:8px;
+  font-size:12.5px;color:var(--ink-2);text-decoration:none;
+  cursor:pointer;transition:.15s;
+  line-height:1.35;max-width:100%;
+}
+.inline-src:hover{background:var(--green-100);border-left-color:var(--green-900)}
+.inline-src .ico{flex:none;color:var(--green-800)}
+.inline-src .label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;color:var(--green-800)}
+.inline-src .meta{margin-left:auto;flex:none;color:var(--muted);font-size:11px}
+
 .thinking{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12.5px;padding:10px 14px;background:#fff;border:1px solid var(--line);border-radius:14px}
 .thinking .matrix{width:18px;height:18px;border-radius:5px;background:var(--green-800);position:relative;overflow:hidden}
 .thinking .matrix::after{
@@ -198,19 +224,25 @@ body{
 }
 .composer input{-webkit-user-select:text;user-select:text;font-size:16px}
 
-@media (max-width: 600px) {
+/* Mobile — full-screen, no card, no shadow */
+@media (max-width: 700px) {
   body{padding:0;background:var(--bg);display:block;min-height:100dvh;overscroll-behavior:none}
   .stage{gap:0}
   .legend,.hint{display:none}
-  .phone{width:100%;height:100dvh;height:100vh;border-radius:0;padding:0;background:var(--bg);box-shadow:none}
-  .notch,.handle{display:none}
+  .phone{width:100%;max-width:none;height:100dvh;border-radius:0;padding:0;background:var(--bg);box-shadow:none}
   .screen{border-radius:0;padding-top:env(safe-area-inset-top)}
-  .status{display:none}
   .appbar{padding-top:12px}
   .composer{padding-bottom:calc(14px + env(safe-area-inset-bottom))}
   .scroll{padding-bottom:18px}
 }
-@media (display-mode: standalone),(display-mode: fullscreen){.status{display:none}}
+
+/* Wide desktop — bigger card with breathing room */
+@media (min-width: 1024px) {
+  .phone{max-width:880px;height:min(920px, calc(100vh - 64px))}
+  .hello h1{font-size:34px}
+  .answer .body, .bubble-user{font-size:14.5px}
+  .scroll{padding:8px 24px 16px}
+}
 </style>
 </head>
 <body>
@@ -549,54 +581,83 @@ function appendAnswer({ title, body, sources, isEmpty }) {
   el.className = 'answer fade-in' + (isEmpty ? ' empty' : '');
   const safeTitle = title ? escapeHtml(title) : 'Atlas';
 
-  // Index citation markers in the body. We accept several conventions:
-  //   [1], [^1], 【1†source】, ⟦doc1⟧.
-  // Each marker is rewritten into a clickable superscript that jumps to
-  // the corresponding source chip below.
-  const bodyText = String(body || '');
-  const renderedBody = renderMarkdownLite(bodyText);
-  const linkedBody = linkifyCitationMarkers(renderedBody, sources || []);
+  // The agent emits a "Sources :" / "Sources:" footer per our system
+  // prompt. Strip it before rendering — we re-show sources as inline
+  // chips placed exactly below each cited line, no bottom scroll needed.
+  let bodyText = stripSourcesFooter(String(body || ''));
 
-  let srcHtml = '';
-  if (sources && sources.length) {
-    srcHtml = `<div class="sources"><span class="lab">${i18n[state.lang].sourcesLabel}</span>` +
-      sources.map((s, i) => {
-        const n = (i + 1);
-        const label = escapeHtml(shortSourceLabel(s));
-        const id = 'atlas-src-' + Date.now().toString(36) + '-' + n;
-        s.__id = id;
-        if (s.url) return `<a id="${id}" class="src" href="${escapeAttr(s.url)}" target="_blank" rel="noopener" title="${escapeAttr(s.name || s.url)}"><span class="src-num">${n}</span>${label}</a>`;
-        return `<span id="${id}" class="src" title="${escapeAttr(s.name || '')}"><span class="src-num">${n}</span>${label}</span>`;
-      }).join('') + '</div>';
-  }
+  // Render markdown, then weave inline source chips between cited
+  // lines. The chips replace the old bottom "Sources" panel entirely.
+  const html = renderMarkdownLite(bodyText);
+  const woven = weaveInlineSources(html, sources || []);
+
   el.innerHTML = `
     <div class="head">
       <div class="badge">A</div>
       <div class="by">${safeTitle}</div>
     </div>
-    <div class="body">${linkedBody}</div>
-    ${srcHtml}`;
+    <div class="body">${woven}</div>`;
   els.thread.appendChild(el);
 
-  // Wire the inline marker clicks to scroll the source into view.
-  el.querySelectorAll('.cite-mark').forEach(mk => {
-    mk.addEventListener('click', e => {
-      e.preventDefault();
-      const n = parseInt(mk.dataset.n, 10) - 1;
-      const src = sources && sources[n];
-      if (src && src.url) { window.open(src.url, '_blank', 'noopener'); return; }
-      if (src && src.__id) {
-        const target = document.getElementById(src.__id);
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          target.classList.add('src-flash');
-          setTimeout(() => target.classList.remove('src-flash'), 1200);
-        }
-      }
-    });
-  });
-
   scrollToBottom();
+}
+
+// Strip the trailing "Sources :" / "Sources:" / "[1] ... [n] ..." block
+// the agent appends per the prompt. Anything after that header gets
+// removed since we re-render those sources inline below the cited lines.
+function stripSourcesFooter(text) {
+  // Match: "Sources :" or "Sources:" (case-insensitive, French/English),
+  // optionally preceded by a separator (--- or blank lines).
+  const re = /\n[\s-]*\n?\s*Sources?\s*[:：][\s\S]*$/i;
+  const stripped = text.replace(re, '');
+  return stripped !== text ? stripped : text;
+}
+
+// Walk through the rendered HTML line by line. For each line that
+// contains a [n] citation marker, replace the marker with a small
+// superscript AND append an inline source chip immediately below.
+//
+// Lines are split on <br/>. Each line's HTML is preserved (markdown
+// already applied); we just insert chip blocks between them.
+function weaveInlineSources(html, sources) {
+  if (!sources || sources.length === 0) return html;
+  const lines = html.split(/<br\s*\/?>/i);
+  const out = [];
+  lines.forEach((line, idx) => {
+    // Find every [n] marker in this line (incl. variants).
+    const re = /\[\^?(\d{1,3})\]|【(\d{1,3})[^】]*】|⟦(\d{1,3})⟧|〔(\d{1,3})〕/g;
+    const nums = new Set();
+    let m;
+    while ((m = re.exec(line)) !== null) {
+      const n = parseInt(m[1] || m[2] || m[3] || m[4], 10);
+      if (n >= 1 && n <= sources.length) nums.add(n);
+    }
+
+    // Rewrite markers to superscripts (kept compact for inline reading).
+    const linked = linkifyCitationMarkers(line, sources);
+    out.push(linked);
+
+    // Append a chip per unique source cited on this line.
+    if (nums.size > 0) {
+      [...nums].sort((a, b) => a - b).forEach(n => {
+        out.push(renderInlineSourceChip(sources[n - 1], n));
+      });
+    }
+    // Re-inject the line break between original lines.
+    if (idx < lines.length - 1) out.push('<br/>');
+  });
+  return out.join('');
+}
+
+function renderInlineSourceChip(s, n) {
+  if (!s) return '';
+  const label = escapeHtml(shortSourceLabel(s));
+  const meta  = s.date || (s.abstract ? '' : '');  // reserve for future
+  const ico = '<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>';
+  if (s.url) {
+    return `<a class="inline-src" href="${escapeAttr(s.url)}" target="_blank" rel="noopener" title="${escapeAttr(s.name || s.url)}">${ico}<span class="label">${label}</span>${meta ? `<span class="meta">${escapeHtml(meta)}</span>` : ''}</a>`;
+  }
+  return `<span class="inline-src" title="${escapeAttr(s.name || '')}">${ico}<span class="label">${label}</span>${meta ? `<span class="meta">${escapeHtml(meta)}</span>` : ''}</span>`;
 }
 
 // Returns a short, human-readable label for a source object.
