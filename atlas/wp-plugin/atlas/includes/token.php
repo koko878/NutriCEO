@@ -26,7 +26,7 @@ add_action( 'rest_api_init', function () {
 } );
 
 function atlas_token_perm() {
-	if ( ! atlas_session_is_valid() ) return false;
+	if ( ! atlas_user_can_access() ) return false;
 	$nonce = isset( $_SERVER['HTTP_X_WP_NONCE'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_WP_NONCE'] ) ) : '';
 	if ( ! $nonce || ! wp_verify_nonce( $nonce, 'wp_rest' ) ) return false;
 	return true;
@@ -38,12 +38,21 @@ function atlas_token_handler( $req ) {
 		return new WP_REST_Response( array( 'error' => 'directline_not_configured' ), 500 );
 	}
 
-	$uid  = get_current_user_id();
-	$upn  = get_user_meta( $uid, 'atlas_session_upn',  true );
-	$name = get_user_meta( $uid, 'atlas_session_name', true );
+	$uid = get_current_user_id();
+	if ( atlas_mode() === 'sso' ) {
+		$upn  = get_user_meta( $uid, 'atlas_session_upn',  true );
+		$name = get_user_meta( $uid, 'atlas_session_name', true );
+	} else {
+		$wp_user = wp_get_current_user();
+		$upn  = $wp_user->user_email;
+		$name = $wp_user->display_name ?: atlas_opt( 'display_name', 'Hamza' );
+	}
 
 	// Direct Line user.id must be stable and prefixed (MS convention).
-	$dl_user_id = 'dl_' . substr( hash( 'sha256', $upn ), 0, 32 );
+	// Stable across sessions for the same WP / SSO identity, so the agent's
+	// memory of "this is Hamza" survives reconnects.
+	$identity_seed = $upn ? $upn : ( 'wp-user-' . $uid );
+	$dl_user_id = 'dl_' . substr( hash( 'sha256', $identity_seed ), 0, 32 );
 
 	$resp = wp_remote_post( ATLAS_DIRECTLINE_GENERATE_URL, array(
 		'timeout' => 12,

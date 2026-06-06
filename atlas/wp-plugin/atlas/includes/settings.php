@@ -70,18 +70,35 @@ function atlas_render_settings_page() {
 			<div class="notice notice-success is-dismissible"><p>Paramètres enregistrés.</p></div>
 		<?php endif; ?>
 
+		<?php $mode = atlas_mode(); ?>
+		<div class="notice notice-info inline" style="margin:12px 0;padding:10px 12px;">
+			<p style="margin:0;">
+				<strong>Mode actuel : <?php echo $mode === 'sso' ? '🔐 SSO Microsoft 365' : '🟢 Atlas Lite (login WordPress standard)'; ?></strong><br/>
+				<?php if ( $mode === 'lite' ) : ?>
+					Tu peux utiliser Atlas dès que la section <strong>2. Direct Line</strong> est remplie. La section 1 (Microsoft 365 SSO) est optionnelle — la remplir bascule automatiquement en mode SSO.
+				<?php else : ?>
+					Les 3 champs Azure AD sont remplis : l'authentification passe par Microsoft 365 et la whitelist UPN. Vider l'un des trois champs Azure AD revient au mode Lite.
+				<?php endif; ?>
+			</p>
+		</div>
+
 		<p>
 			Atlas est servi à <code><?php echo esc_html( $atlas_url ); ?></code>.
-			Accès restreint aux UPN ci-dessous, authentifiés via Microsoft 365.
 		</p>
 
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 			<input type="hidden" name="action" value="atlas_save_settings" />
 			<?php wp_nonce_field( 'atlas_save_settings' ); ?>
 
-			<h2>1. Microsoft 365 SSO (Azure AD App Registration)</h2>
+			<h2>1. Microsoft 365 SSO (Azure AD App Registration) <span style="font-size:13px;font-weight:400;color:#6B7268;">— optionnel</span></h2>
 			<p>
-				Crée une <em>App Registration</em> dans le portail Azure AD de ton tenant OCP.
+				<strong>Tu peux ignorer cette section pour démarrer.</strong> Tant qu'elle reste vide,
+				l'accès à Atlas se fait via login WordPress standard (mode Lite). Remplir les 3 champs
+				ci-dessous bascule en mode SSO Microsoft 365 — utile si tu veux que plusieurs personnes
+				accèdent à Atlas avec leur compte OCP.
+			</p>
+			<p>
+				En mode SSO : crée une <em>App Registration</em> dans le portail Azure AD de ton tenant OCP.
 				Permissions <strong>déléguées</strong> requises (Microsoft Graph) :
 				<code>openid</code>, <code>profile</code>, <code>email</code>, <code>User.Read</code>, <code>offline_access</code>.
 				Ajoute l'URI de redirection ci-dessous comme <em>Web Redirect URI</em>.
@@ -111,9 +128,9 @@ function atlas_render_settings_page() {
 				</tr>
 			</table>
 
-			<h2>2. Copilot Studio — Direct Line</h2>
+			<h2>2. Copilot Studio — Direct Line <span style="font-size:13px;font-weight:400;color:#B91C1C;">— requis</span></h2>
 			<p>
-				Dans Copilot Studio → ton agent Atlas → <em>Channels → Direct Line</em> → copie l'une des deux clés.
+				Dans Copilot Studio → ton agent Atlas → <em>Settings → Channels → Direct Line</em> → "Add this channel" si pas déjà fait → copie une des deux <em>Secret keys</em> (clique sur l'icône œil pour la révéler).
 			</p>
 			<table class="form-table" role="presentation">
 				<tr>
@@ -126,9 +143,16 @@ function atlas_render_settings_page() {
 			</table>
 
 			<h2>3. Contrôle d'accès</h2>
+			<p>
+				<?php if ( $mode === 'sso' ) : ?>
+					En mode SSO, seuls les UPN listés ici peuvent accéder à Atlas après authentification Microsoft.
+				<?php else : ?>
+					En mode Lite, le contrôle d'accès passe par les comptes WordPress (gère qui a un compte sur ce site). La whitelist UPN ci-dessous ne s'applique qu'en mode SSO — tu peux la pré-remplir si tu prévois de basculer plus tard.
+				<?php endif; ?>
+			</p>
 			<table class="form-table" role="presentation">
 				<tr>
-					<th scope="row"><label for="allowed_upns">UPN autorisés</label></th>
+					<th scope="row"><label for="allowed_upns">UPN autorisés (mode SSO uniquement)</label></th>
 					<td>
 						<textarea name="allowed_upns" id="allowed_upns" rows="4" class="large-text code" placeholder="hamza.koh@ocp.ma&#10;@ocp.ma (wildcard domaine)"><?php echo esc_textarea( $o['allowed_upns'] ); ?></textarea>
 						<p class="description">Un par ligne. Une ligne qui commence par <code>@</code> autorise tout le domaine (ex : <code>@ocp.ma</code>). Recommandation : commence par ton seul UPN.</p>
@@ -149,9 +173,21 @@ function atlas_render_settings_page() {
 		<hr/>
 		<h2>Diagnostic</h2>
 		<ul>
-			<li>SSO : <?php echo $o['azure_tenant_id'] && $o['azure_client_id'] && $o['azure_client_secret'] ? '<strong style="color:#15803D">configuré</strong>' : '<strong style="color:#B91C1C">non configuré</strong>'; ?></li>
-			<li>Direct Line : <?php echo $o['directline_secret'] ? '<strong style="color:#15803D">configuré</strong>' : '<strong style="color:#B91C1C">non configuré</strong>'; ?></li>
-			<li>Whitelist : <?php echo trim( $o['allowed_upns'] ) ? '<strong style="color:#15803D">' . count( array_filter( preg_split( "/[\\r\\n,;]+/", $o['allowed_upns'] ) ) ) . ' entrée(s)</strong>' : '<strong style="color:#B91C1C">vide — personne ne peut se connecter</strong>'; ?></li>
+			<li>Direct Line : <?php echo $o['directline_secret'] ? '<strong style="color:#15803D">configuré</strong>' : '<strong style="color:#B91C1C">requis pour démarrer</strong>'; ?></li>
+			<li>SSO Microsoft 365 : <?php echo $o['azure_tenant_id'] && $o['azure_client_id'] && $o['azure_client_secret'] ? '<strong style="color:#15803D">configuré — mode SSO actif</strong>' : '<strong style="color:#6B7268">non configuré — mode Lite actif</strong>'; ?></li>
+			<li>Whitelist UPN (mode SSO) :
+				<?php
+				$n = trim( $o['allowed_upns'] ) ? count( array_filter( preg_split( "/[\\r\\n,;]+/", $o['allowed_upns'] ) ) ) : 0;
+				if ( $mode === 'sso' ) {
+					echo $n ? '<strong style="color:#15803D">' . $n . ' entrée(s)</strong>' : '<strong style="color:#B91C1C">vide — personne ne peut se connecter</strong>';
+				} else {
+					echo $n ? '<strong style="color:#6B7268">' . $n . ' entrée(s) (inactif en mode Lite)</strong>' : '<em style="color:#6B7268">vide (sans impact en mode Lite)</em>';
+				}
+				?>
+			</li>
+			<?php if ( $mode === 'lite' && $o['directline_secret'] ) : ?>
+				<li>WordPress login : <strong style="color:#15803D">tout user avec capability <code>read</code> peut accéder</strong>. Gère qui a un compte via <a href="<?php echo esc_url( admin_url( 'users.php' ) ); ?>">Users → All Users</a>.</li>
+			<?php endif; ?>
 		</ul>
 	</div>
 	<?php
