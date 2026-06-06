@@ -1,6 +1,6 @@
 === Atlas — Second cerveau D²nAI ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.2.0
+Stable tag: 0.2.1
 Requires at least: 6.0
 Requires PHP: 8.0
 License: GPL-2.0-or-later
@@ -101,9 +101,19 @@ URL pleine page (recommandée pour install mobile en PWA) :
   https://YOURSITE/atlas
 
 Shortcode (intégration dans une page WP) :
-  [atlas]
+  [atlas]                            défauts : max-width 430px, height 900px
+  [atlas height="700"]               hauteur personnalisée
+  [atlas width="100%" height="100vh"] pleine page
+
+L'embed est un iframe vers /atlas → bénéficie de la même auth SSO et
+des mêmes endpoints REST, isolé du CSS du thème WP.
 
 == Changelog ==
+
+= 0.2.1 =
+* Fix shortcode [atlas] : bascule en iframe vers /atlas plutôt que
+  d'essayer d'extraire le <body> seul (ce qui privait la UI du bridge
+  JS et des styles). Accepte attributs height + width.
 
 = 0.2.0 =
 * Refactor majeur : abandon du SDK Direct Line classique (déprécié dans

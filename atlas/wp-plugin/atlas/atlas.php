@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Atlas — Second cerveau D²nAI
  * Description:       Cockpit mobile-first pour Hamza Koh (Head of Data, Digital & AI) — branché sur un agent Copilot Studio (Microsoft 365 Agents SDK / Power Platform API). Authentification SSO Microsoft 365 obligatoire (OAuth 2.0 Authorization Code + PKCE), relais côté serveur pour appeler l'API Copilot Studio sans exposer le token au browser.
- * Version:           0.2.0
+ * Version:           0.2.1
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       atlas
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'ATLAS_VER', '0.2.0' );
+define( 'ATLAS_VER', '0.2.1' );
 define( 'ATLAS_URL', plugin_dir_url( __FILE__ ) );
 define( 'ATLAS_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -245,22 +245,49 @@ add_action( 'template_redirect', function () {
 	exit;
 } );
 
-add_shortcode( 'atlas', function () {
+/* -------------------------------------------------------------------------
+ * Shortcode [atlas]  — iframe-based embed.
+ *
+ * The iframe loads /atlas, which serves the fully-wired cockpit (bridge
+ * + styles + JS). This isolates Atlas from the host theme's CSS and
+ * lets the same auth + REST endpoints run regardless of where it's
+ * embedded. X-Frame-Options: SAMEORIGIN (set in template_redirect)
+ * allows same-site iframing only.
+ *
+ * Attributes:
+ *   [atlas]                 → defaults: max-width 430px, height 900px
+ *   [atlas height="700"]    → custom pixel height
+ *   [atlas width="100%"]    → override the desktop max-width
+ * ---------------------------------------------------------------------- */
+add_shortcode( 'atlas', function ( $atts ) {
+	$a = shortcode_atts( array(
+		'height' => '900',
+		'width'  => '430',
+	), $atts, 'atlas' );
+
 	if ( ! atlas_is_configured() ) {
 		return '<p><em>Atlas n\'est pas configuré.</em></p>';
 	}
-	if ( ! atlas_session_is_valid() ) {
-		$start = add_query_arg( array(
-			'atlas_sso'   => 'start',
-			'redirect_to' => rawurlencode( get_permalink() ),
-		), home_url( '/' ) );
-		return '<p><a href="' . esc_url( $start ) . '">Se connecter à Atlas avec Microsoft 365</a></p>';
-	}
-	$f = ATLAS_DIR . 'app/atlas.html';
-	if ( ! file_exists( $f ) ) return '';
-	$html = file_get_contents( $f );
-	if ( preg_match( '/<body[^>]*>(.*)<\\/body>/s', $html, $m ) ) {
-		return '<div class="atlas-embed">' . $m[1] . '</div>';
-	}
-	return $html;
+
+	// Sanitize: digits only for px, or allow a trailing "%"/"vh"/"vw".
+	$sanitize_dim = function ( $v, $default ) {
+		$v = trim( (string) $v );
+		if ( preg_match( '/^\d+(px|%|vh|vw)?$/', $v ) ) {
+			return preg_match( '/[a-z%]$/', $v ) ? $v : $v . 'px';
+		}
+		return $default;
+	};
+	$h = $sanitize_dim( $a['height'], '900px' );
+	$w = $sanitize_dim( $a['width'],  '430px' );
+
+	$src = esc_url( home_url( '/atlas' ) );
+	$style = sprintf(
+		'display:block;margin:0 auto;width:100%%;max-width:%s;height:%s;border:0;border-radius:12px;',
+		esc_attr( $w ), esc_attr( $h )
+	);
+
+	return sprintf(
+		'<iframe src="%s" style="%s" loading="lazy" allowfullscreen referrerpolicy="same-origin" title="Atlas — second cerveau D²nAI"></iframe>',
+		$src, $style
+	);
 } );
