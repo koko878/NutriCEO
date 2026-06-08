@@ -267,6 +267,23 @@ tbody tr.sel{background:var(--green-50)}
 .senstoggle button.on{background:var(--green-700);color:#fff}
 .sens-expl{font-size:12.5px;color:var(--muted);line-height:1.5;margin:8px 0 12px;padding:10px 12px;background:var(--soft);border-left:3px solid var(--green-500);border-radius:0 8px 8px 0}
 .sens-expl b{color:var(--green-800)}
+/* v1.15.0 — toggle pct/abs par MP volatile (Inputs) */
+.sensmode{display:inline-flex;border:1px solid var(--line);border-radius:5px;overflow:hidden;margin-left:4px;flex:none}
+.sensmode button{padding:3px 7px;border:0;background:#fff;color:var(--muted);cursor:pointer;font-weight:700;font-size:11px;line-height:1.1}
+.sensmode button.on{background:var(--green-800);color:#fff}
+.sensmode button:hover:not(.on){background:var(--soft)}
+.varwrap{display:flex;align-items:center;gap:0}
+.varwrap input[type=number]{flex:1;min-width:0}
+/* v1.15.0 — Exposition portefeuille */
+.sensPortfolio{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
+.sensPortfolio-head{display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:8px;flex-wrap:wrap}
+.sensPortfolio-head .meta{font-size:11px;color:var(--muted);font-weight:500}
+.sensPortfolio-tbl{width:100%;border-collapse:collapse;font-size:11.5px;background:#fff}
+.sensPortfolio-tbl th{background:var(--soft);color:var(--muted);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.04em;padding:7px 9px;text-align:right;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:1}
+.sensPortfolio-tbl th:first-child,.sensPortfolio-tbl td:first-child{text-align:left}
+.sensPortfolio-tbl td{padding:7px 9px;text-align:right;border-bottom:1px solid var(--line-soft);font-variant-numeric:tabular-nums;color:var(--ink)}
+.sensPortfolio-tbl tr:hover td{background:var(--soft)}
+.btn.sm{padding:5px 9px;font-size:11px;font-weight:600}
 .cmp-famgroup{margin-bottom:10px}
 .cmp-famhead{display:flex;align-items:center;gap:8px;font:700 11px 'Inter';color:var(--green-700);text-transform:uppercase;letter-spacing:.05em;padding:4px 0 4px;margin-bottom:6px;border-bottom:1px solid var(--green-100)}
 .cmp-famhead .cmp-fct{background:var(--green-50);color:var(--green-700);font-size:10px;padding:1px 6px;border-radius:999px;font-weight:800}
@@ -674,6 +691,8 @@ tbody tr.sel{background:var(--green-50)}
         <div class="kpis" id="sensKpis" style="grid-template-columns:1fr 1fr;margin-bottom:14px"></div>
         <div id="tornado"></div>
         <div class="driver" id="driver"></div>
+        <!-- v1.15.0 — Exposition portefeuille (top 20 produits) + export CSV -->
+        <div id="sensPortfolio" class="sensPortfolio"></div>
       </div>
     </div>
 
@@ -1060,6 +1079,8 @@ const state = {
   refprice: { dap: DATA.defaults.reference_prices.dap, tsp: DATA.defaults.reference_prices.tsp },
   price: 720,
   sens: { rock:(DATA.defaults.sensitivity_pct.rock||0)*100, nh3:(DATA.defaults.sensitivity_pct.nh3||0)*100, sulphur:(DATA.defaults.sensitivity_pct.sulphur||0)*100 },
+  // v1.15.0 — choc en % (défaut) ou en $ absolu par MP volatile
+  sensMode: { rock:'pct', nh3:'pct', sulphur:'pct' },
   compare: [],
   forBlend: _loadBool(LS_FORBLEND, false),
   sensImpact: _loadStr(LS_SENSIMP, 'cgm'),
@@ -1282,10 +1303,17 @@ function renderInputs(){
   document.getElementById('volRows').innerHTML=VOL.map(k=>{
     const req=(p[RM_CS[k]]||0)>0;
     const miInl = miInlineHtml(k, mi[k]);
+    const mode = state.sensMode[k]||'pct';
     return `<div class="rmrow ${req?'':'dim'}">
       <div class="nm">${RM_LABEL[k]} ${req?'<span class="req">'+tr('badge.req')+'</span>':'<span class="opt">'+tr('badge.opt')+'</span>'}${miInl?`<div class="mi-inline" style="flex-basis:100%;margin-top:2px">${miInl}</div>`:''}</div>
       <input type="number" data-rm="${k}" value="${state.rm[k]}" step="1">
-      <div class="varwrap"><input type="number" data-sens="${k}" value="${state.sens[k]}" step="1"></div>
+      <div class="varwrap">
+        <input type="number" data-sens="${k}" value="${state.sens[k]}" step="${mode==='pct'?1:5}">
+        <div class="sensmode" data-mode-for="${k}">
+          <button data-sens-mode="${k}|pct" class="${mode==='pct'?'on':''}" title="Choc en pourcentage">%</button>
+          <button data-sens-mode="${k}|abs" class="${mode==='abs'?'on':''}" title="Choc en $ absolu">$</button>
+        </div>
+      </div>
     </div>`;
   }).join('');
   document.getElementById('stabRows').innerHTML=STAB.map(k=>{
@@ -1305,6 +1333,17 @@ function renderInputs(){
   document.getElementById('miRptsp').innerHTML = miTsp!=null? miInlineHtml('rptsp', miTsp) : '';
   document.querySelectorAll('[data-rm]').forEach(i=>i.oninput=e=>{state.rm[i.dataset.rm]=+e.target.value||0;});
   document.querySelectorAll('[data-sens]').forEach(i=>i.oninput=e=>{state.sens[i.dataset.sens]=+e.target.value||0;});
+  // v1.15.0 — toggle pct/abs par MP volatile
+  document.querySelectorAll('[data-sens-mode]').forEach(btn=>btn.onclick=function(){
+    const parts = this.dataset.sensMode.split('|'); // "nh3|pct"
+    const k = parts[0], mode = parts[1];
+    state.sensMode[k] = mode;
+    // Re-render just the toggles + update step on the input
+    const grp = document.querySelector(`[data-mode-for="${k}"]`);
+    if(grp) grp.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.sensMode===k+'|'+mode));
+    const inp = document.querySelector(`[data-sens="${k}"]`);
+    if(inp) inp.step = mode==='pct' ? 1 : 5;
+  });
   document.getElementById('rpdap').oninput=e=>{state.refprice.dap=+e.target.value||0;};
   document.getElementById('rptsp').oninput=e=>{state.refprice.tsp=+e.target.value||0;};
   document.getElementById('price').oninput=e=>{state.price=+e.target.value||0;};
@@ -1395,14 +1434,23 @@ function scol(cls,ref,m){
     </div></div>`;
 }
 function setSensImpact(mode){ state.sensImpact = (mode==='rmc'?'rmc':'cgm'); _saveStr(LS_SENSIMP, state.sensImpact); renderSensi(curProduct()); }
+// v1.15.0 — applique le choc (mode pct ou abs selon state.sensMode) au RM de base
+function applySensShocks(baseRM, onlyKey){
+  const out = Object.assign({}, baseRM);
+  VOL.forEach(k=>{
+    if(onlyKey && onlyKey !== k) return;
+    const v = state.sens[k] || 0;
+    if(state.sensMode[k] === 'abs') out[k] = baseRM[k] + v;
+    else out[k] = baseRM[k] * (1 + v/100);
+  });
+  return out;
+}
 function renderSensi(p){
   const RM=state.rm, ref=state.ref;
-  const RM2=Object.assign({},RM);
-  VOL.forEach(k=>{ RM2[k]=RM[k]*(1+(state.sens[k]||0)/100); });
+  const RM2 = applySensShocks(RM);
   const rmc=rmCost(p,RM), rmc2=rmCost(p,RM2);
   const cgm=cgmEq(p,state.price,rmc,ref), cgm2=cgmEq(p,state.price,rmc2,ref);
   const dRm=rmc2-rmc, dCgm=cgm2-cgm;
-  // Toggle pills (Vague 2 — #fb-mpyausch55r9: explicit "impact on price/CGM").
   const tog=document.getElementById('sensToggle');
   if(tog){
     tog.querySelectorAll('button').forEach(b=>{
@@ -1415,9 +1463,12 @@ function renderSensi(p){
   document.getElementById('sensKpis').innerHTML=
     `<div class="kpi"><div class="k">${tr('sens.rmcStressed')}</div><div class="v">${f(rmc2,1)}</div><div class="u">${dRm>=0?'+':''}${f(dRm,1)} $/t ${tr('sens.vsBase')}</div></div>
      <div class="kpi"><div class="k">${tr('sens.cgmStressed')} ${ref}</div><div class="v">${f(cgm2,0)}</div><div class="u">${dCgm>=0?'+':''}${f(dCgm,0)} $/t ${tr('sens.vsBase')}</div></div>`;
-  // Driver contribution per VOL key — RM cost basis. For CGM impact, sign-flip and rescale by REF_ACP/p.cs_acp.
-  const scale = isCgm ? (-REF_ACP[ref]/p.cs_acp) : 1; // CGM = (price-rmc)*REF_ACP/cs_acp → ∂CGM/∂rmc = -REF_ACP/cs_acp
-  const drivers=VOL.map(k=>({k:RM_LABEL[k].replace(/ \(.*\)/,''), v:(p[RM_CS[k]]||0)*(RM2[k]-RM[k])*scale})).filter(d=>Math.abs(d.v)>1e-9);
+  // Driver per VOL key — utilise applySensShocks pour le delta réel par variable
+  const scale = isCgm ? (-REF_ACP[ref]/p.cs_acp) : 1;
+  const drivers=VOL.map(k=>{
+    const RMk = applySensShocks(RM, k);
+    return { k: RM_LABEL[k].replace(/ \(.*\)/,''), v: (p[RM_CS[k]]||0)*(RMk[k]-RM[k])*scale };
+  }).filter(d=>Math.abs(d.v)>1e-9);
   drivers.sort((a,b)=>Math.abs(b.v)-Math.abs(a.v));
   const tot=drivers.reduce((s,d)=>s+Math.abs(d.v),0)||1;
   document.getElementById('tornado').innerHTML=tornado(drivers, isCgm);
@@ -1425,7 +1476,103 @@ function renderSensi(p){
   const unitLbl = isCgm ? '$/t CGM éq. '+ref : '$/t coût MP';
   document.getElementById('driver').innerHTML= drivers.length?
     `Driver principal d'impact (${unitLbl}) : <b>${drivers[0].k}</b> — ${f(Math.abs(drivers[0].v)/tot*100,0)} % de l'impact total.`
-    : 'Aucune variation MP appliquée — ajustez les % sur les MP volatiles (écran Inputs).';
+    : 'Aucune variation MP appliquée — ajustez les variations sur les MP volatiles (écran Inputs).';
+  // v1.15.0 — Exposition portefeuille
+  renderSensPortfolio(RM, RM2, ref);
+}
+
+// v1.15.0 — Tableau "Exposition portefeuille" : top 20 produits par |Δ CGM Eq|
+function renderSensPortfolio(RM, RM2, ref){
+  const root = document.getElementById('sensPortfolio');
+  if(!root) return;
+  const refPrice = ref==='TSP' ? state.refprice.tsp : state.refprice.dap;
+  // Si aucun choc actif, masquer
+  const anyShock = VOL.some(k => (state.sens[k]||0) !== 0);
+  if(!anyShock){
+    root.innerHTML = '<div class="muted" style="padding:14px;text-align:center;font-size:12px">Aucun choc appliqué — saisis une variation sur une MP volatile pour voir l\'exposition portefeuille.</div>';
+    return;
+  }
+  const all = products();
+  const rows = all.map(p=>{
+    const baseRmc = rmCost(p, RM);
+    const stressedRmc = rmCost(p, RM2);
+    // Prix de comparaison = nutrientPrice du produit pour neutraliser l'effet du prix de vente
+    const refp = state.refprice[ref.toLowerCase()];
+    const np = nutrientPrice(p, ref, refp);
+    const baseCgm = cgmEq(p, np, baseRmc, ref);
+    const stressedCgm = cgmEq(p, np, stressedRmc, ref);
+    const dRmc = stressedRmc - baseRmc;
+    const dCgm = stressedCgm - baseCgm;
+    const dPct = baseCgm !== 0 ? dCgm / Math.abs(baseCgm) * 100 : 0;
+    return { p, baseRmc, baseCgm, dRmc, dCgm, dPct };
+  });
+  rows.sort((a,b)=>Math.abs(b.dCgm)-Math.abs(a.dCgm));
+  const top = rows.slice(0, 20);
+  const html = `
+    <div class="sensPortfolio-head">
+      <span>📊 Exposition portefeuille</span>
+      <span class="meta">Top 20 produits par |Δ CGM éq.| — chocs actuels appliqués</span>
+      <button class="btn ghost sm" onclick="exportSensCSV()" style="margin-left:auto">⤓ CSV</button>
+    </div>
+    <div class="tblwrap" style="max-height:320px;overflow-y:auto">
+      <table class="sensPortfolio-tbl"><thead><tr>
+        <th>Produit</th><th>Ligne</th><th>Coût MP base</th><th>Δ Coût MP</th><th>CGM éq. base</th><th>Δ CGM éq.</th><th>Δ %</th>
+      </tr></thead><tbody>${top.map(r=>{
+        const cgmCol = r.dCgm>=0 ? '#15803D' : '#B91C1C';
+        const rmcCol = r.dRmc>=0 ? '#B91C1C' : '#15803D';
+        return `<tr>
+          <td>${escapeHtml(r.p.product)}<div class="fam" style="font-size:10px;color:#73796F">${escapeHtml(r.p.family||'')}</div></td>
+          <td style="color:#73796F;font-size:11px">${escapeHtml(r.p.line||'—')}</td>
+          <td>${f(r.baseRmc,1)}</td>
+          <td style="color:${rmcCol};font-weight:600">${r.dRmc>=0?'+':''}${f(r.dRmc,1)}</td>
+          <td>${f(r.baseCgm,0)}</td>
+          <td style="color:${cgmCol};font-weight:700">${r.dCgm>=0?'+':''}${f(r.dCgm,0)}</td>
+          <td style="color:${cgmCol}">${r.dCgm>=0?'+':''}${f(r.dPct,1)}%</td>
+        </tr>`;
+      }).join('')}</tbody></table>
+    </div>`;
+  root.innerHTML = html;
+}
+
+// v1.15.0 — Export CSV de la sensibilité (tous les produits, pas juste top 20)
+function exportSensCSV(){
+  const RM=state.rm, ref=state.ref;
+  const RM2 = applySensShocks(RM);
+  const refp = state.refprice[ref.toLowerCase()];
+  const shocks = VOL.map(k=>{
+    const v = state.sens[k]||0;
+    if(v===0) return null;
+    return `${RM_LABEL[k]}: ${v>=0?'+':''}${v}${state.sensMode[k]==='pct'?'%':'$'}`;
+  }).filter(Boolean).join(' | ');
+  const all = products();
+  const lines = [
+    '# D²nAI CGM Cockpit v1.15.0 — Sensibilité multivariée — ' + new Date().toISOString().slice(0,10),
+    '# Référence: ' + ref + ' · Chocs: ' + (shocks||'aucun'),
+    ['Produit','Famille','Ligne','Coût MP base','Coût MP stressé','Δ Coût MP','CGM éq. base','CGM éq. stressée','Δ CGM éq.','Δ %'].join(';')
+  ];
+  all.forEach(p=>{
+    const baseRmc = rmCost(p, RM);
+    const stressedRmc = rmCost(p, RM2);
+    const np = nutrientPrice(p, ref, refp);
+    const baseCgm = cgmEq(p, np, baseRmc, ref);
+    const stressedCgm = cgmEq(p, np, stressedRmc, ref);
+    const dRmc = stressedRmc - baseRmc;
+    const dCgm = stressedCgm - baseCgm;
+    const dPct = baseCgm !== 0 ? dCgm / Math.abs(baseCgm) * 100 : 0;
+    lines.push([
+      `"${(p.product||'').replace(/"/g,'""')}"`,
+      `"${(p.family||'').replace(/"/g,'""')}"`,
+      `"${(p.line||'').replace(/"/g,'""')}"`,
+      baseRmc.toFixed(2), stressedRmc.toFixed(2), dRmc.toFixed(2),
+      baseCgm.toFixed(2), stressedCgm.toFixed(2), dCgm.toFixed(2), dPct.toFixed(2)
+    ].join(';'));
+  });
+  const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'cgm_sensibilite_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 function tornado(items, isCgm){
   if(!items.length) return '';

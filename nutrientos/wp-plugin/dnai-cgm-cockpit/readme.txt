@@ -1,6 +1,6 @@
 === D²nAI CGM Cockpit — Crisis Center ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 1.14.0
+Stable tag: 1.15.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -21,3 +21,29 @@ Full-screen URL (no theme around it):
   https://YOURSITE/cgm-cockpit
 Shortcode (in a WP page):
   [cgm_cockpit]
+
+== Changelog ==
+
+= 1.15.0 =
+* Analyse de sensibilité enrichie (inspirée d'une initiative BU Ops
+  de F. Ezzebdi) — la carte "Analyse de sensibilité" dans Résultats
+  garde son tornado existant et reçoit en plus :
+  - Toggle %/$ par MP volatile dans l'écran Inputs marché (avant
+    seulement % — désormais permet "NH3 +50$" en absolu).
+  - Tableau "Exposition portefeuille" sous le tornado : top 20
+    produits par |Δ CGM éq.| avec base + Δ Coût MP + Δ CGM colorés.
+    Permet de voir d'un coup d'œil quels produits du catalogue
+    sont les plus exposés aux chocs actuellement configurés.
+  - Bouton "⤓ CSV" en haut du tableau portefeuille : export
+    sensibilité complète (TOUS les produits, pas juste top 20)
+    avec en-tête des chocs appliqués pour partage au contrôle de
+    gestion / comité prix.
+* state.sensMode ajouté en mémoire (pct par défaut, persistance
+  prévue en v1.16). Compat ascendante préservée (state.sens[k]
+  inchangé, lu par AI copilot et historique).
+* applySensShocks() centralise la logique d'application des chocs
+  (utilisé par renderSensi, drivers/tornado, portfolio table,
+  export CSV) — une seule source de vérité.
+
+= 1.14.0 =
+* Vague 3: Sc3 swap-mode + per-nutrient tolerance + admin family/MP
