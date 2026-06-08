@@ -1,6 +1,6 @@
 === D²nAI CGM Cockpit — Crisis Center ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 1.15.0
+Stable tag: 1.16.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -23,6 +23,19 @@ Shortcode (in a WP page):
   [cgm_cockpit]
 
 == Changelog ==
+
+= 1.16.0 =
+* Landing direct sur l'onglet Cockpit (avant : Configuration) — l'utilisateur
+  voit le command deck en premier, pas le formulaire de saisie.
+* Co-pilote IA déplacé tout en haut du Cockpit, en hero pleine largeur — c'est
+  désormais le premier élément que voit l'utilisateur (avant : caché dans une
+  grille 2 colonnes en bas de la page). Style "card hero" avec dégradé vert
+  pour l'attirer immédiatement.
+* Substitution Advisor remonté en row pleine largeur (libéré du grid 2 cols
+  qu'il partageait avec le co-pilote).
+* Fix overflow mobile sur les cartes Scénario DAP/TSP de l'écran Résultats :
+  passage de display:flex en grid 1fr+auto. Les valeurs $/t restent toujours
+  visibles à droite, le label peut ellipser si trop long sur écran étroit.
 
 = 1.15.0 =
 * Analyse de sensibilité enrichie (inspirée d'une initiative BU Ops

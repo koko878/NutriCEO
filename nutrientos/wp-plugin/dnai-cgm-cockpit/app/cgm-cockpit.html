@@ -109,9 +109,11 @@ body.embed .tabs{position:static;top:auto}
 .scol.dap .h{background:linear-gradient(135deg,#1B5E20,#2E7D32)}
 .scol.tsp .h{background:linear-gradient(135deg,#0d3a4f,#15708f)}
 .scol .b{padding:16px}
-.scol .line{display:flex;justify-content:space-between;font-size:13.5px;padding:7px 0;border-top:1px solid var(--line)}
+/* v1.16.0 — fix overflow mobile : grid 1fr+auto pour que la valeur (b) reste toujours visible à droite, label peut ellipser */
+.scol .line{display:grid;grid-template-columns:1fr auto;gap:10px;font-size:13.5px;padding:7px 0;border-top:1px solid var(--line);align-items:baseline}
 .scol .line:first-child{border-top:0}
-.scol .line b{font-weight:700}
+.scol .line > span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;color:var(--muted)}
+.scol .line b{font-weight:700;white-space:nowrap;text-align:right;color:var(--ink)}
 .badge{font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px}
 .badge.ok{background:#dcfce7;color:var(--ok)}
 .badge.bad{background:var(--bad-bg);color:var(--bad)}
@@ -438,6 +440,10 @@ tbody tr.sel{background:var(--green-50)}
 
 /* Co-pilot chat */
 .ck-copilot .ck-chat{flex:1;min-height:160px;max-height:300px;overflow:auto;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:12px;margin-top:10px;display:flex;flex-direction:column;gap:9px;scrollbar-width:thin}
+/* v1.16.0 — co-pilote en hero quand placé tout en haut (avant le ticker/hero) */
+.ck-copilot-top{margin-bottom:18px;background:linear-gradient(135deg,rgba(34,172,20,.18),rgba(34,172,20,.06));border:1px solid rgba(34,172,20,.35);box-shadow:0 8px 24px -12px rgba(34,172,20,.4)}
+.ck-copilot-top .ck-chat{min-height:120px;max-height:220px}
+.ck-copilot-top h3{font-size:17px}
 .ck-msg{font-size:13px;line-height:1.5;padding:9px 12px;border-radius:9px;max-width:90%}
 .ck-msg.user{align-self:flex-end;background:rgba(124,252,154,.14);color:#fff}
 .ck-msg.ai{align-self:flex-start;background:rgba(255,255,255,.06);color:#dff0e3}
@@ -536,6 +542,19 @@ tbody tr.sel{background:var(--green-50)}
   <section class="screen" id="sc-cockpit">
     <div class="ck-ticker" id="ckTicker"></div>
 
+    <!-- v1.16.0 — Co-pilote tout en haut, pleine largeur, premier contact utilisateur -->
+    <div class="ck-panel ck-copilot ck-copilot-top">
+      <div class="ck-row-head">
+        <div><h3>🤖 <span data-k="ck.cpH">Co-pilote pricing</span></h3><span class="muted" data-k="ck.cpSub">Pose une question en langage naturel — D²nAI bot dédié pricing</span></div>
+      </div>
+      <div class="ck-chat" id="ckChat"></div>
+      <div class="ck-cpsugs" id="ckCpSugs"></div>
+      <div class="ck-cpinp">
+        <input type="text" id="ckCpInput" data-kph="ck.cpPh" placeholder="Que se passe-t-il si le souffre monte à $300 ?">
+        <button class="btn primary" onclick="ckCpAsk()" data-k="ck.cpAsk">Demander</button>
+      </div>
+    </div>
+
     <div class="ck-hero" id="ckHero"></div>
 
     <div class="ck-row">
@@ -557,26 +576,13 @@ tbody tr.sel{background:var(--green-50)}
       <div class="ck-rail" id="ckHeat"></div>
     </div>
 
-    <div class="ck-grid2">
-      <div class="ck-panel">
-        <div class="ck-row-head">
-          <div><h3 data-k="ck.subsH">🔁 Substitution Advisor</h3><span class="muted" data-k="ck.subsSub">Alternatives OCP iso-grade, classées par CGM</span></div>
-        </div>
-        <div class="ck-subs"><label class="fl" data-k="ck.subsPick">Produit demandé par le client</label><select id="ckSubProd"></select>
-          <div id="ckSubs"></div></div>
+    <!-- v1.16.0 — Substitution Advisor seul en row pleine largeur (co-pilote remonté au top) -->
+    <div class="ck-row">
+      <div class="ck-row-head">
+        <div><h3 data-k="ck.subsH">🔁 Substitution Advisor</h3><span class="muted" data-k="ck.subsSub">Alternatives OCP iso-grade, classées par CGM</span></div>
       </div>
-
-      <div class="ck-panel ck-copilot">
-        <div class="ck-row-head">
-          <div><h3>🤖 <span data-k="ck.cpH">Co-pilote pricing</span></h3><span class="muted" data-k="ck.cpSub">Pose une question en langage naturel — D²nAI bot dédié pricing</span></div>
-        </div>
-        <div class="ck-chat" id="ckChat"></div>
-        <div class="ck-cpsugs" id="ckCpSugs"></div>
-        <div class="ck-cpinp">
-          <input type="text" id="ckCpInput" data-kph="ck.cpPh" placeholder="Que se passe-t-il si le souffre monte à $300 ?">
-          <button class="btn primary" onclick="ckCpAsk()" data-k="ck.cpAsk">Demander</button>
-        </div>
-      </div>
+      <div class="ck-subs"><label class="fl" data-k="ck.subsPick">Produit demandé par le client</label><select id="ckSubProd"></select>
+        <div id="ckSubs"></div></div>
     </div>
   </section>
 
@@ -1094,7 +1100,7 @@ function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'
 /* ============ profile + tabs ============ */
 let profile='metier';
 const TABSCREEN={cockpit:'sc-cockpit',config:'sc-config',inputs:'sc-inputs',results:'sc-results',sc3:'sc-sc3',market:'sc-market',hist:'sc-hist',ref:'sc-ref',const:'sc-const'};
-let curTab='config';
+let curTab='cockpit'; // v1.16.0 — landing direct sur l'onglet Cockpit (avant: config)
 function tabsFor(p){
   // Vague 2 — Blend pricing is now opt-in via state.forBlend (#fb-mpy9w8kh2ofm).
   if(p==='admin') return [['ref','','tab.ref'],['const','','tab.const']];
