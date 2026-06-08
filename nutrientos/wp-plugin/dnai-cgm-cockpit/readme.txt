@@ -1,6 +1,6 @@
 === D²nAI CGM Cockpit — Crisis Center ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 1.16.0
+Stable tag: 1.17.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -23,6 +23,31 @@ Shortcode (in a WP page):
   [cgm_cockpit]
 
 == Changelog ==
+
+= 1.17.0 =
+* Simulation conversationnelle — le co-pilote peut désormais GUIDER
+  l'utilisateur à travers une simulation CGM par questions interactives,
+  sans qu'il ait besoin de toucher aux formulaires :
+  - ASK_CHOICE : pose une question avec boutons cliquables (ex famille
+    de produit, référence DAP/TSP, choix d'action)
+  - ASK_INPUT : pose une question avec champ texte/nombre (ex prix de
+    vente, valeur d'un choc RM)
+  - SET : applique des modifications au simulateur (produit, ref, prix,
+    RM, chocs, navigation vers un onglet)
+  - SUMMARY : termine avec un résumé + boutons de next-step (stresser,
+    comparer, nouvelle simulation)
+  - ANSWER : mode classique préservé pour les questions informatives
+* Conversation persistée (state.cpConv) — le co-pilote a la mémoire
+  de la conversation, peut enchaîner les tours sans répéter le contexte.
+* System prompt étendu avec catalogue compact + état simulateur + schéma
+  JSON strict des actions. Tolerant aux fences markdown ```...```.
+* Nouvelles bubbles UI : .cp-bubble avec .cp-question, .cp-choice
+  (boutons stackés), .cp-input (input + bouton OK), .cp-set (badge
+  confirmation), .cp-summary (résumé + next_choices).
+* Fix overflow horizontal mobile : .wrap padding 32px → 14px sur < 600px,
+  .card padding 20px → 14px, .scol .b padding 16px → 12px. Réglait le
+  bug visible des cartes Scénario DAP/TSP qui débordaient à droite.
+* Helper escapeAttr() ajouté (alias escapeHtml) pour attributes HTML.
 
 = 1.16.0 =
 * Landing direct sur l'onglet Cockpit (avant : Configuration) — l'utilisateur

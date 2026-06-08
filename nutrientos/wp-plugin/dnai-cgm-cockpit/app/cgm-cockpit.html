@@ -219,6 +219,23 @@ tbody tr.sel{background:var(--green-50)}
 @media(max-width:560px){.sc3trow{grid-template-columns:1fr 1fr}.sc3row{grid-template-columns:1fr 1fr;gap:6px}.sc3lbl{grid-column:1/-1}.sc3sel{grid-column:1/-1}.sc3pval b{font-size:34px}}
 @media(max-width:900px){.cfg2{grid-template-columns:1fr}}
 @media(max-width:820px){.grid2,.grid3,.scen2,.fgrid,.cols3in{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.rmrow{grid-template-columns:1fr 100px 84px}}
+/* v1.17.0 — fix overflow horizontal mobile (cards qui dépassaient à droite) */
+@media(max-width:600px){
+  .wrap{padding:0 14px}
+  .card{padding:14px;margin-bottom:14px;max-width:100%;overflow:hidden}
+  .scol{max-width:100%}
+  .scol .b{padding:12px 14px}
+  .scol .line{font-size:12.5px;gap:8px}
+  .scol .line > span{font-size:12px}
+  .rgrid{gap:14px}
+  .kpis{gap:10px}
+  .kpis .kpi{padding:10px 12px;min-width:0}
+  .kpi .v{font-size:22px}
+}
+@media(max-width:380px){
+  .scol .line{font-size:11.5px;padding:6px 0}
+  .scol .h{padding:10px 12px;font-size:13px}
+}
 @media(max-width:560px){.wrap{padding:0 16px}.rmrow{grid-template-columns:1fr 1fr;column-gap:10px;row-gap:6px}.rmrow.stab{grid-template-columns:1fr}.rmrow .nm{grid-column:1/-1}}
 
 /* ============================================================
@@ -442,8 +459,30 @@ tbody tr.sel{background:var(--green-50)}
 .ck-copilot .ck-chat{flex:1;min-height:160px;max-height:300px;overflow:auto;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:12px;margin-top:10px;display:flex;flex-direction:column;gap:9px;scrollbar-width:thin}
 /* v1.16.0 — co-pilote en hero quand placé tout en haut (avant le ticker/hero) */
 .ck-copilot-top{margin-bottom:18px;background:linear-gradient(135deg,rgba(34,172,20,.18),rgba(34,172,20,.06));border:1px solid rgba(34,172,20,.35);box-shadow:0 8px 24px -12px rgba(34,172,20,.4)}
-.ck-copilot-top .ck-chat{min-height:120px;max-height:220px}
+.ck-copilot-top .ck-chat{min-height:140px;max-height:380px}
 .ck-copilot-top h3{font-size:17px}
+
+/* v1.17.0 — bubbles interactives (simulation conversationnelle) */
+.cp-bubble{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:12px;padding:11px 13px;display:flex;flex-direction:column;gap:9px}
+.cp-bubble.answered{opacity:.65}
+.cp-bubble.answered .cp-choice,.cp-bubble.answered .cp-input,.cp-bubble.answered .btn{pointer-events:none}
+.cp-preface{font-size:12.5px;color:#cfe3d2;font-style:italic}
+.cp-question{font-size:13.5px;font-weight:600;color:#e8f3ea;line-height:1.4}
+.cp-choices{display:flex;flex-direction:column;gap:6px}
+.cp-choice{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#dff0e3;font:600 12.5px 'Inter',sans-serif;padding:8px 12px;border-radius:9px;cursor:pointer;text-align:left;transition:.15s;line-height:1.35}
+.cp-choice:hover{background:rgba(34,172,20,.25);border-color:rgba(34,172,20,.6);color:#fff}
+.cp-choice-next{background:rgba(34,172,20,.2);border-color:rgba(34,172,20,.45)}
+.cp-choice-next:hover{background:rgba(34,172,20,.4)}
+.cp-inputline{display:flex;gap:6px;align-items:center}
+.cp-input{flex:1;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:8px;padding:8px 10px;font:500 13px 'Inter',sans-serif;outline:none;min-width:0}
+.cp-input:focus{border-color:rgba(34,172,20,.7);background:rgba(0,0,0,.4)}
+.cp-set{background:rgba(34,172,20,.12);border-color:rgba(34,172,20,.3)}
+.cp-set-msg{font-size:12.5px;color:#dff0e3}
+.cp-set-msg b{color:#fff}
+.cp-summary{background:rgba(34,172,20,.1);border-color:rgba(34,172,20,.35)}
+.cp-summary-text{font-size:13px;color:#e8f3ea;line-height:1.5}
+.cp-summary-text b{color:#fff;font-weight:700}
+.cp-summary-text code{background:rgba(0,0,0,.3);padding:1px 5px;border-radius:4px;font-size:11.5px}
 .ck-msg{font-size:13px;line-height:1.5;padding:9px 12px;border-radius:9px;max-width:90%}
 .ck-msg.user{align-self:flex-end;background:rgba(124,252,154,.14);color:#fff}
 .ck-msg.ai{align-self:flex-start;background:rgba(255,255,255,.06);color:#dff0e3}
@@ -1096,6 +1135,7 @@ function curProduct(){ return products().find(p=>p.row===state.row) || products(
 function guessRef(fam){ return TSP_FAMILIES.includes(fam) ? 'TSP' : 'DAP'; }
 function f(x,d){ if(!isFinite(x)) return '—'; return Number(x).toLocaleString(LOC[LANG]||'fr-FR',{minimumFractionDigits:d||0,maximumFractionDigits:d||0}); }
 function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);}
+function escapeAttr(s){return escapeHtml(s);} // v1.17.0 — alias pour attributes HTML
 
 /* ============ profile + tabs ============ */
 let profile='metier';
@@ -2180,56 +2220,322 @@ function ckAiBackend(){
   }
   return null;
 }
+/* v1.17.0 — Simulation conversationnelle multi-tours
+ * Le co-pilote peut désormais :
+ * 1. Poser des questions interactives (ASK_CHOICE / ASK_INPUT) → bubbles avec boutons / input
+ * 2. Modifier le simulateur (SET) → product, ref, price, rm, tab
+ * 3. Terminer par un résumé (SUMMARY) avec next-step buttons
+ * 4. Répondre en texte simple (ANSWER) — mode classique préservé
+ *
+ * La conversation est conservée dans state.cpConv pour multi-tours.
+ * Le modèle reçoit l'historique + state simulateur + catalogue compact.
+ */
+state.cpConv = []; // [{role:'user'|'assistant', content:string}]
+
+function ckCpReset(){
+  state.cpConv = [];
+  const c = document.getElementById('ckChat'); if(c) c.innerHTML='';
+}
+
 async function ckCpAsk(){
   const inp=document.getElementById('ckCpInput'); const q=(inp.value||'').trim(); if(!q) return;
   ckChatPush('user', q); inp.value='';
-  const be=ckAiBackend();
+  state.cpConv.push({role:'user', content:q});
+  await ckCpContinue();
+}
+
+// Triggered when user clicks a choice button or submits an input bubble
+async function ckCpAnswer(state_key, value, label){
+  ckChatPush('user', label || String(value));
+  state.cpConv.push({role:'user', content: `[ANSWER ${state_key}] ${JSON.stringify(value)}`});
+  await ckCpContinue();
+}
+
+function ckCpSysPrompt(){
+  // Compact catalog: row + product + family + line (limit 80 for prompt size)
+  const all = products();
+  const cat = all.slice(0, 80).map(p=>`[${p.row}] ${p.product} | ${p.family} | ${p.line}`).join('\n');
+  const moreCnt = Math.max(0, all.length - 80);
+  const cur = curProduct();
+  const stateSnap = {
+    product_index: state.row,
+    product_name: cur ? cur.product : null,
+    ref: state.ref,
+    price: state.price,
+    rm: state.rm,
+    refprice: state.refprice,
+    sens: state.sens,
+    sensMode: state.sensMode
+  };
+  return `Tu es un assistant pricing pour OCP Nutricrops (engrais phosphatés DAP/MAP/TSP/NPS/PHOSGOLD).
+Tu guides l'utilisateur par CONVERSATION INTERACTIVE pour réaliser une simulation CGM.
+
+⚠️ FORMAT DE RÉPONSE : tu retournes UNIQUEMENT un JSON valide (aucun texte avant ou après).
+Structure :
+{
+  "preface": "<court contexte optionnel, max 1 phrase>",
+  "action": { ... }
+}
+
+ACTIONS DISPONIBLES (choisis-en UNE par tour) :
+
+1. ASK_CHOICE — poser une question avec choix cliquables
+{"action": {"type":"ask_choice", "question":"<?>", "state_key":"<id>", "choices":[{"value":"<v>","label":"<lib>"}, ...]}}
+
+2. ASK_INPUT — poser une question avec input texte/nombre
+{"action": {"type":"ask_input", "question":"<?>", "state_key":"<id>", "input_type":"number"|"text", "placeholder":"<ex>"}}
+
+3. SET — appliquer des modifications au simulateur (PAS d'attente utilisateur)
+{"action": {"type":"set", "updates": {
+   "product_index": <row>,      // optionnel — index produit
+   "ref": "DAP"|"TSP",           // optionnel
+   "price": <number>,            // optionnel — prix de vente $/t
+   "rm": {"nh3": <num>, ...},    // optionnel — prix RM (rock/nh3/sulphur/kcl/sam/borax/zno/cuso4/caso4/caco3/gypse/acs)
+   "sens": {"nh3": <num>, ...},  // optionnel — choc % par MP volatile
+   "tab": "cockpit"|"config"|"inputs"|"results"|"market"|"hist"  // optionnel — navigation
+}}}
+
+4. SUMMARY — terminer avec résumé + propose next-step buttons
+{"action": {"type":"summary", "text":"<résumé en markdown léger>", "next_choices":[{"value":"<v>","label":"<lib>"}, ...]}}
+
+5. ANSWER — réponse textuelle simple (questions courtes, pas de simulation)
+{"action": {"type":"answer", "text":"<réponse markdown léger, 2-5 phrases max>"}}
+
+FLOW DE SIMULATION RECOMMANDÉ (quand l'utilisateur veut simuler)
+1. Si famille pas précisée → ASK_CHOICE pour la famille (DAP, MAP, NPS, NPK, TSP, etc.)
+2. Si produit pas précisé → ASK_CHOICE pour le produit de la famille (max 8 choix, value=row)
+3. Si référence pas précisée → ASK_CHOICE { "DAP","TSP" } (sauf si évident d'après la famille)
+4. Si prix pas précisé → ASK_INPUT { input_type:"number", placeholder:"720" }
+5. SET avec product_index + ref + price + tab:"results"
+6. SUMMARY avec verdict (CGM Eq vs marge réf, recommandation) + next_choices :
+   - "Stresser le souffre +20%" (state_key:"stress_S")
+   - "Voir produit alternatif" (state_key:"alt_product")
+   - "Comparer avec un autre MAP" (state_key:"compare")
+   - "Nouvelle simulation" (state_key:"new_sim")
+
+POUR LES ASK_CHOICE de produit, regroupe par famille. Max 8 choix par bubble.
+Si famille a >8 produits, propose les plus représentatifs.
+
+POUR LES SET, applique d'un coup tout ce qui est connu (pas besoin de tour intermédiaire).
+
+POUR LES QUESTIONS NON-SIMULATION (ex "quel est mon produit le plus exposé au souffre"), utilise ANSWER.
+Ne lance PAS un flow de simulation si l'utilisateur pose juste une question informative.
+
+CATALOGUE PRODUITS (extrait, ${all.length} au total) :
+${cat}${moreCnt>0?`\n... +${moreCnt} autres produits`:''}
+
+ÉTAT COURANT DU SIMULATEUR (JSON) :
+${JSON.stringify(stateSnap, null, 2)}
+
+LANG : ${LANG}
+RÉPONDS EN ${LANG === 'fr' ? 'FRANÇAIS' : LANG === 'en' ? 'ENGLISH' : 'PORTUGUÊS'}.
+RAPPEL : UNIQUEMENT du JSON valide, aucun texte autour. Aucun bloc markdown \`\`\`.`;
+}
+
+async function ckCpContinue(){
+  const be = ckAiBackend();
   if(!be){
     ckChatPush('ai','<i class="ck-err">'+tr('ck.cpError')+' backend non configuré.</i>'); return;
   }
   const wait=document.createElement('div'); wait.className='ck-msg ai pending'; wait.innerHTML='<span class="ck-think">'+tr('ck.cpThinking')+'</span>';
   document.getElementById('ckChat').appendChild(wait); wait.scrollIntoView({block:'end'});
-  // Build context payload
-  const stats=ckPortfolioStats();
-  const sc=CRISIS_SCN.find(s=>s.id===CK_SCENARIO);
-  const ctx={
-    scenario:CK_SCENARIO+' ('+tr(sc.key)+')',
-    portfolio:{avg_cgm:Math.round(stats.avg), under_priced:stats.under, total:stats.total},
-    rm_prices:state.rm, ref_prices:state.refprice,
-    top_S_exposed: ckHeatList().slice(0,5).map(x=>({product:x.p.product, line:x.p.line, family:x.p.family, S_sensitivity:+(x.s).toFixed(3)})),
-    current_product: curProduct()?.product
-  };
-  const sys='Tu es un assistant pricing pour OCP Nutricrops — expert engrais phosphatés (DAP/MAP/TSP/NPS/PHOSGOLD), CGM, et marché en crise du soufre. Réponds en '+LANG+', de façon courte et actionnable, avec chiffres. Si la question demande une simulation précise, indique-le et propose le scénario CGM à lancer.';
-  try{
+  try {
+    const sys = ckCpSysPrompt();
     let res, raw;
-    if(be.mode==='chat'){
-      // OpenAI-compatible chat schema (Databricks Foundation Model APIs)
-      const payload={messages:[
-        {role:'system', content:sys+'\n\nCONTEXTE COURANT (JSON):\n'+JSON.stringify(ctx,null,2)+'\n\nRéponds en texte clair (markdown léger), 3-6 phrases max.'},
-        {role:'user', content:q}
-      ], temperature:0.2, max_tokens:700};
-      res=await fetch(be.url,{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':be.nonce},body:JSON.stringify(payload)});
-      raw=await res.json();
+    if(be.mode === 'chat'){
+      // OpenAI-compatible chat schema — send full convo for multi-turn context
+      const payload = {
+        messages: [{role:'system', content:sys}, ...state.cpConv.slice(-20)],
+        temperature: 0.15,
+        max_tokens: 900
+      };
+      res = await fetch(be.url, {method:'POST', headers:{'Content-Type':'application/json','X-WP-Nonce':be.nonce}, body:JSON.stringify(payload)});
+      raw = await res.json();
     } else {
-      // Legacy single-blob path (NutrientOS curate, document-curation style)
-      const payload={title:'CGM Co-pilot Q&A', ftype:'text/plain', content:'SYSTEM:\n'+sys+'\n\nCONTEXT:\n'+JSON.stringify(ctx,null,2)+'\n\nQUESTION:\n'+q+'\n\nRéponds en texte clair (markdown léger possible, pas de JSON), 3-6 phrases max.'};
-      res=await fetch(be.url,{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':be.nonce},body:JSON.stringify(payload)});
-      raw=await res.json();
+      // Curate fallback — flatten convo into single content blob
+      const conv = state.cpConv.map(m=>`${m.role.toUpperCase()}: ${m.content}`).join('\n\n');
+      const payload = {title:'CGM Co-pilot Convo', ftype:'text/plain', content:`SYSTEM:\n${sys}\n\nCONVO:\n${conv}`};
+      res = await fetch(be.url, {method:'POST', headers:{'Content-Type':'application/json','X-WP-Nonce':be.nonce}, body:JSON.stringify(payload)});
+      raw = await res.json();
     }
     wait.remove();
-    let ans='';
-    if(typeof raw==='string') ans=raw;
-    else if(raw && raw.text) ans=raw.text;
-    else if(raw && raw.summary) ans=raw.summary;
-    else if(raw && raw.description) ans=raw.description;
-    else if(raw && raw.answer) ans=raw.answer;
-    else if(raw && raw.message && raw.code) ans='<i class="ck-err">'+tr('ck.cpError')+' '+escapeHtml(raw.message)+'</i>';
-    else if(raw && raw.error) ans='<i class="ck-err">'+tr('ck.cpError')+' '+escapeHtml(raw.error)+'</i>';
-    else ans = '<pre class="ck-raw">'+escapeHtml(JSON.stringify(raw,null,2))+'</pre>';
-    ans=String(ans).replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');
-    const usage = `<div class="ck-usage">D²nAI bot</div>`;
-    ckChatPush('ai', ans+usage);
-  }catch(e){ wait.remove(); ckChatPush('ai','<i class="ck-err">'+tr('ck.cpError')+' '+escapeHtml(e.message||e)+'</i>'); }
+    // Extract text from various response shapes
+    let txt = ckCpExtractText(raw);
+    if(!txt){ ckChatPush('ai','<i class="ck-err">'+tr('ck.cpError')+' réponse vide</i>'); return; }
+    state.cpConv.push({role:'assistant', content:txt});
+    // Try parse JSON action — strip markdown fences if present
+    let payload = ckCpParseAction(txt);
+    if(payload && payload.action){
+      ckCpExecAction(payload);
+    } else {
+      // Fallback : plain text — render as classic bubble
+      ckChatPush('ai', ckCpMdRender(txt) + '<div class="ck-usage">D²nAI bot</div>');
+    }
+  } catch(e){
+    wait.remove();
+    ckChatPush('ai','<i class="ck-err">'+tr('ck.cpError')+' '+escapeHtml(e.message||e)+'</i>');
+  }
+}
+
+function ckCpExtractText(raw){
+  if(typeof raw === 'string') return raw;
+  if(!raw) return '';
+  if(raw.text) return String(raw.text);
+  if(raw.summary) return String(raw.summary);
+  if(raw.answer) return String(raw.answer);
+  if(raw.description) return String(raw.description);
+  if(raw.error || raw.message) return ''; // surface error elsewhere
+  return '';
+}
+
+function ckCpParseAction(txt){
+  if(!txt) return null;
+  // Strip markdown code fences if model wrapped JSON in ```
+  let s = String(txt).trim();
+  s = s.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+  // Find first { and last } for safety
+  const i = s.indexOf('{'), j = s.lastIndexOf('}');
+  if(i < 0 || j < 0 || j < i) return null;
+  try { return JSON.parse(s.slice(i, j+1)); } catch(e){ return null; }
+}
+
+function ckCpMdRender(s){
+  return String(s)
+    .replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>')
+    .replace(/\*([^*]+)\*/g,'<i>$1</i>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\n/g,'<br>');
+}
+
+function ckCpExecAction(payload){
+  const a = payload.action;
+  if(!a || !a.type) return;
+  // Render preface if present
+  const preface = payload.preface ? `<div class="cp-preface">${escapeHtml(payload.preface)}</div>` : '';
+
+  if(a.type === 'ask_choice'){
+    const id = 'cpq_'+Date.now();
+    const html = `<div class="cp-bubble" id="${id}">
+      ${preface}
+      <div class="cp-question">${escapeHtml(a.question||'')}</div>
+      <div class="cp-choices">
+        ${(a.choices||[]).map(c=>`
+          <button class="cp-choice" onclick="ckCpAnswer(${JSON.stringify(a.state_key||'').replace(/"/g,'&quot;')}, ${JSON.stringify(c.value)}, ${JSON.stringify(c.label||String(c.value)).replace(/"/g,'&quot;')}); document.getElementById('${id}').classList.add('answered');">
+            ${escapeHtml(c.label||String(c.value))}
+          </button>
+        `).join('')}
+      </div>
+      <div class="ck-usage">D²nAI bot</div>
+    </div>`;
+    ckChatPush('ai', html);
+    return;
+  }
+
+  if(a.type === 'ask_input'){
+    const id = 'cpi_'+Date.now();
+    const itype = a.input_type === 'number' ? 'number' : 'text';
+    const html = `<div class="cp-bubble" id="${id}">
+      ${preface}
+      <div class="cp-question">${escapeHtml(a.question||'')}</div>
+      <div class="cp-inputline">
+        <input type="${itype}" class="cp-input" id="${id}_in" placeholder="${escapeAttr(a.placeholder||'')}" onkeydown="if(event.key==='Enter') document.getElementById('${id}_btn').click()">
+        <button class="btn primary sm" id="${id}_btn" onclick="
+          var v=document.getElementById('${id}_in').value;
+          if(${itype === 'number' ? 'true':'false'}) v = parseFloat(v) || 0;
+          document.getElementById('${id}').classList.add('answered');
+          ckCpAnswer(${JSON.stringify(a.state_key||'').replace(/"/g,'&quot;')}, v, String(v));
+        ">OK</button>
+      </div>
+      <div class="ck-usage">D²nAI bot</div>
+    </div>`;
+    ckChatPush('ai', html);
+    setTimeout(()=>{ const el=document.getElementById(id+'_in'); if(el) el.focus(); }, 80);
+    return;
+  }
+
+  if(a.type === 'set'){
+    const applied = ckCpApplyUpdates(a.updates||{});
+    const html = `<div class="cp-bubble cp-set">
+      ${preface}
+      <div class="cp-set-msg">⚙️ <b>Simulateur mis à jour</b> ${applied.length ? '— '+applied.join(' · ') : ''}</div>
+      <div class="ck-usage">D²nAI bot</div>
+    </div>`;
+    ckChatPush('ai', html);
+    // After a SET, ask the AI to continue (it may have a follow-up like SUMMARY)
+    setTimeout(()=>{ ckCpContinue(); }, 400);
+    return;
+  }
+
+  if(a.type === 'summary'){
+    const next = (a.next_choices||[]).map(c=>`
+      <button class="cp-choice cp-choice-next" onclick="ckCpAnswer('next', ${JSON.stringify(c.value)}, ${JSON.stringify(c.label||String(c.value)).replace(/"/g,'&quot;')})">
+        ${escapeHtml(c.label||String(c.value))}
+      </button>
+    `).join('');
+    const html = `<div class="cp-bubble cp-summary">
+      ${preface}
+      <div class="cp-summary-text">${ckCpMdRender(a.text||'')}</div>
+      ${next ? `<div class="cp-choices">${next}</div>` : ''}
+      <div class="ck-usage">D²nAI bot</div>
+    </div>`;
+    ckChatPush('ai', html);
+    return;
+  }
+
+  if(a.type === 'answer'){
+    ckChatPush('ai', preface + ckCpMdRender(a.text||'') + '<div class="ck-usage">D²nAI bot</div>');
+    return;
+  }
+
+  // Fallback for unknown action types
+  ckChatPush('ai', '<i class="ck-err">Action inconnue : '+escapeHtml(a.type)+'</i>');
+}
+
+function ckCpApplyUpdates(u){
+  const applied = [];
+  // Product (by row or by name lookup)
+  if(u.product_index != null){
+    const p = products().find(x => x.row === +u.product_index);
+    if(p){ state.row = p.row; applied.push('Produit : '+p.product); }
+  }
+  // Reference
+  if(u.ref && (u.ref === 'DAP' || u.ref === 'TSP')){
+    state.ref = u.ref; state._refTouched = true; applied.push('Référence : '+u.ref);
+  }
+  // Sale price
+  if(u.price != null && isFinite(+u.price)){
+    state.price = +u.price; applied.push('Prix : '+f(state.price,0)+' $/t');
+  }
+  // RM prices
+  if(u.rm && typeof u.rm === 'object'){
+    Object.keys(u.rm).forEach(k=>{
+      if(state.rm.hasOwnProperty(k) && isFinite(+u.rm[k])){
+        state.rm[k] = +u.rm[k]; applied.push(`${RM_LABEL[k]||k} : ${f(state.rm[k],0)} $/t`);
+      }
+    });
+  }
+  // Reference prices
+  if(u.refprice && typeof u.refprice === 'object'){
+    if(u.refprice.dap != null && isFinite(+u.refprice.dap)){ state.refprice.dap = +u.refprice.dap; applied.push('Réf DAP : '+f(state.refprice.dap,0)); }
+    if(u.refprice.tsp != null && isFinite(+u.refprice.tsp)){ state.refprice.tsp = +u.refprice.tsp; applied.push('Réf TSP : '+f(state.refprice.tsp,0)); }
+  }
+  // Sensitivity shocks
+  if(u.sens && typeof u.sens === 'object'){
+    Object.keys(u.sens).forEach(k=>{
+      if(state.sens.hasOwnProperty(k) && isFinite(+u.sens[k])){
+        state.sens[k] = +u.sens[k]; applied.push(`Choc ${RM_LABEL[k]||k} : ${u.sens[k] >= 0 ? '+':''}${u.sens[k]}%`);
+      }
+    });
+  }
+  // Tab navigation (after state updates, refresh UI for that tab)
+  if(u.tab && typeof goTab === 'function'){
+    goTab(u.tab);
+    applied.push('Vue → '+u.tab);
+  } else {
+    // No tab change → still refresh current screen if results
+    if(curTab === 'results' && typeof renderResults === 'function') renderResults();
+  }
+  return applied;
 }
 let _ckTickerTimer=null;
 function renderCockpit(){
