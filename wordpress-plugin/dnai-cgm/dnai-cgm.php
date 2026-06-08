@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI CGM Simulator
  * Description:       Sales margin pricing-scenario simulator (CGM equivalent DAP/TSP, floor price, nutrient-value price, MCV) with an AI copilot. The copilot (an Open WebUI / OpenAI-compatible model — Qwen recommended) only returns a strict JSON action; every number shown comes from the verified in-browser engine, so the model can never hallucinate a margin. Calls go through a server-side proxy, so the API key never reaches the browser and there is no CORS.
- * Version:           1.7.0
+ * Version:           1.8.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-cgm
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_CGM_VER', '1.7.0' );
+define( 'DNAI_CGM_VER', '1.8.0' );
 define( 'DNAI_CGM_URL', plugin_dir_url( __FILE__ ) );
 
 /* -------------------------------------------------------------------------
@@ -843,16 +843,54 @@ function dnai_cgm_shortcode( $atts ) {
 	  </div><!-- /tab scen -->
 
 	  <div class="cgm-tab" data-tab="sensi" hidden>
-	  <!-- SENSITIVITY -->
+	  <!-- SENSITIVITY (multivariée) -->
 	  <div class="panel">
-	    <h2>Sensibilité aux prix matières premières</h2>
-	    <div class="sub">Impact d'une variation NH3 / Soufre sur le coût MP et la marge — driver principal mis en avant.</div>
-	    <div class="sensi-wrap">
-	      <div class="sensi-kpis" id="sensiKpis"></div>
-	      <div>
-	        <div id="tornado"></div>
-	        <div class="driver" id="driverNote"></div>
+	    <h2>Analyse de sensibilité <span style="font-size:13px;color:var(--muted);font-weight:400">— multivariée</span></h2>
+	    <div class="sub">Coche les variables à stresser, applique un choc (% ou $, positif ou négatif), visualise l'impact sur le coût MP, la CGM et la MCV — pour le produit courant et l'ensemble du portefeuille.</div>
+
+	    <div class="sens-grid">
+	      <div class="sens-vars">
+	        <div class="sens-vars-head">Variables à stresser</div>
+	        <div class="sens-vars-list" id="sensVarsList"></div>
+	        <div class="sens-vars-foot">
+	          <button class="btn ghost small" id="sensClearAll">Tout décocher</button>
+	          <button class="btn ghost small" id="sensReset">Reset chocs</button>
+	        </div>
 	      </div>
+
+	      <div class="sens-output">
+	        <div class="sens-section">
+	          <div class="sens-h">Impact combiné — produit courant <span class="sens-h-meta" id="sensProdName"></span></div>
+	          <div id="sensCombined" class="sens-combined"></div>
+	        </div>
+	        <div class="sens-section">
+	          <div class="sens-h">Tornado — contribution par variable au Δ CGM Eq</div>
+	          <div id="sensTornado" class="chart"></div>
+	        </div>
+	      </div>
+	    </div>
+
+	    <div class="sens-section" style="margin-top:18px">
+	      <div class="sens-h">
+	        Impact sur l'ensemble du portefeuille
+	        <span class="sens-h-meta">Top 50 produits par |Δ CGM Eq| — chocs RM appliqués</span>
+	      </div>
+	      <div class="tbl-wrap"><div class="tbl-scroll">
+	        <table id="sensTbl"><thead><tr>
+	          <th>Produit</th><th>Ligne</th><th>Coût MP base</th><th>Δ Coût MP</th><th>CGM Eq base</th><th>Δ CGM Eq</th><th>Δ %</th>
+	        </tr></thead><tbody></tbody></table>
+	      </div></div>
+	    </div>
+
+	    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+	      <button class="btn ghost" id="sensCsv">Export CSV sensibilité</button>
+	    </div>
+
+	    <!-- Legacy hidden — referenced by AI copilot / history -->
+	    <div style="display:none">
+	      <div class="sensi-kpis" id="sensiKpis"></div>
+	      <div id="tornado"></div>
+	      <div class="driver" id="driverNote"></div>
 	    </div>
 	  </div>
 

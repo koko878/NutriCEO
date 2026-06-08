@@ -3,7 +3,7 @@ Contributors: D²nAI · OCP Nutricrops
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.7.0
+Stable tag: 1.8.0
 License: GPLv2 or later
 
 A sales margin pricing-scenario simulator for OCP Nutricrops, with an AI copilot.
@@ -77,3 +77,26 @@ simulator stay in sync.
 == Plug-n-play ==
 Any OpenAI-compatible /chat/completions endpoint works (Open WebUI, vLLM,
 Azure OpenAI via gateway…). Only base URL + path + key + model change.
+
+== Changelog ==
+
+= 1.8.0 =
+* Analyse de sensibilité multivariée — remplace le panneau NH3/Soufre
+  figé par une vraie analyse multi-variable inspirée du SimulateurCGM
+  standalone de F. Ezzebdi (BU Ops), généralisée à nos 11 RM + Prix
+  de vente sur les 141 produits du catalogue v9.
+* Variables sélectionnables avec checkbox + valeur + mode %/$ (positif
+  ou négatif accepté).
+* Impact combiné — produit courant : KPIs Prix / Coût MP / CGM Eq / MCV
+  avec Δ absolu et Δ% colorés (vert/rouge selon better/worse).
+* Tornado SVG des contributions par variable cochée (Δ CGM Eq, trié
+  par |impact|).
+* Tableau portefeuille : top 50 produits par |Δ CGM Eq| avec base + Δ
+  coloré sur Coût MP et CGM Eq.
+* Export CSV avec en-tête des chocs appliqués + tous les produits.
+* AI copilot inchangé (state.sens.nh3/sulphur conservé en backwards
+  compat, rendu legacy hidden).
+* Shortcode [dnai_cgm] inchangé — drop-in upgrade depuis v1.7.x.
+
+= 1.7.0 =
+* Version précédente : sensibilité NH3/Soufre figée + AI copilot

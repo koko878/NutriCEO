@@ -86,9 +86,37 @@
 .dnai-cgm-app .verdict.bad{background:var(--bad-bg);border-color:#f3c0c0;color:#7f1d1d}
 .dnai-cgm-app .verdict.bad b{color:var(--bad)}
 
-/* sensitivity */
+/* sensitivity — multivariée */
+.dnai-cgm-app .sens-grid{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start}
+@media(max-width:900px){.dnai-cgm-app .sens-grid{grid-template-columns:1fr}}
+.dnai-cgm-app .sens-vars{background:var(--green-50);border:1px solid var(--green-100);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.dnai-cgm-app .sens-vars-head{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;padding-bottom:6px;border-bottom:1px solid var(--green-100)}
+.dnai-cgm-app .sens-vars-list{display:flex;flex-direction:column;gap:6px;max-height:430px;overflow-y:auto;padding-right:2px}
+.dnai-cgm-app .sens-var{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;background:#fff;border:1px solid var(--line);transition:.15s}
+.dnai-cgm-app .sens-var.on{border-color:var(--green-500);box-shadow:0 0 0 2px rgba(76,175,80,.12)}
+.dnai-cgm-app .sens-var input[type=checkbox]{margin:0;cursor:pointer;accent-color:var(--green-800);flex:none}
+.dnai-cgm-app .sens-var .name{flex:1;font-size:12.5px;color:var(--ink-2);font-weight:500;cursor:pointer;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dnai-cgm-app .sens-var .name .hint{font-size:10px;color:var(--muted);margin-left:3px;font-style:italic}
+.dnai-cgm-app .sens-var input[type=number]{width:54px;padding:3px 5px;border:1px solid var(--line);border-radius:5px;font-size:12px;text-align:right;font-variant-numeric:tabular-nums;font-family:'Inter',sans-serif;flex:none}
+.dnai-cgm-app .sens-var .mode{display:flex;gap:0;font-size:10.5px;border:1px solid var(--line);border-radius:5px;overflow:hidden;flex:none}
+.dnai-cgm-app .sens-var .mode button{padding:3px 6px;border:0;background:#fff;color:var(--muted);cursor:pointer;font-weight:700;line-height:1.1}
+.dnai-cgm-app .sens-var .mode button.on{background:var(--green-800);color:#fff}
+.dnai-cgm-app .sens-vars-foot{display:flex;gap:6px;margin-top:2px}
+.dnai-cgm-app .btn.small{padding:6px 10px;font-size:11.5px}
+.dnai-cgm-app .sens-output{display:flex;flex-direction:column;gap:14px;min-width:0}
+.dnai-cgm-app .sens-section{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.dnai-cgm-app .sens-h{font-size:12.5px;font-weight:700;color:var(--ink);padding-bottom:8px;border-bottom:1px solid var(--line);margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dnai-cgm-app .sens-h-meta{font-size:11px;color:var(--muted);font-weight:500;margin-left:auto}
+.dnai-cgm-app .sens-combined{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.dnai-cgm-app .sens-c{background:var(--green-50);border:1px solid var(--green-100);border-radius:10px;padding:11px 13px}
+.dnai-cgm-app .sens-c .l{font-size:10.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.dnai-cgm-app .sens-c .v{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;margin-top:4px;line-height:1.1;color:var(--ink)}
+.dnai-cgm-app .sens-c .d{font-size:11.5px;font-weight:600;margin-top:3px}
+.dnai-cgm-app .sens-c .d.up{color:var(--bad)} .dnai-cgm-app .sens-c .d.down{color:var(--ok)} .dnai-cgm-app .sens-c .d.flat{color:var(--muted)}
+.dnai-cgm-app .sens-empty{font-size:12.5px;color:var(--muted);padding:18px;text-align:center;border:1px dashed var(--line);border-radius:10px}
+
+/* legacy sensitivity (kept for AI copilot + history backwards compat) */
 .dnai-cgm-app .sensi-wrap{display:grid;grid-template-columns:1fr 1.2fr;gap:18px;align-items:center}
-@media(max-width:900px){.dnai-cgm-app .sensi-wrap{grid-template-columns:1fr}}
 .dnai-cgm-app .sensi-kpis{display:flex;flex-direction:column;gap:10px}
 .dnai-cgm-app .skpi{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border:1px solid var(--line);border-radius:11px}
 .dnai-cgm-app .skpi .l{font-size:12px;color:var(--muted)}
