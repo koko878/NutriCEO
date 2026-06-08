@@ -87,7 +87,9 @@ body.embed .tabs{position:static;top:auto}
 .rmrow .nm{font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .req{font-size:9px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:#05230f;background:var(--green-300);border-radius:4px;padding:1px 5px}
 .opt{font-size:9px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);background:var(--soft);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
-.rmrow.dim{opacity:.5}
+/* Optional MP rows stay fully editable & readable — just signaled by the .opt chip. */
+.rmrow.dim{opacity:1}
+.rmrow.dim .nm{color:var(--muted)}
 .unit{font-size:11px;color:var(--muted)}
 .varwrap{position:relative}
 .varwrap::after{content:"%";position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted)}
@@ -216,6 +218,203 @@ tbody tr.sel{background:var(--green-50)}
 @media(max-width:900px){.cfg2{grid-template-columns:1fr}}
 @media(max-width:820px){.grid2,.grid3,.scen2,.fgrid,.cols3in{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.rmrow{grid-template-columns:1fr 100px 84px}}
 @media(max-width:560px){.wrap{padding:0 16px}.rmrow{grid-template-columns:1fr 1fr;column-gap:10px;row-gap:6px}.rmrow.stab{grid-template-columns:1fr}.rmrow .nm{grid-column:1/-1}}
+
+/* ============================================================
+ * COCKPIT — Crisis Center (Netflix rails + Spotify nav + Uber actions)
+ * ============================================================ */
+#sc-cockpit{padding:0;margin:-20px -32px 0;background:radial-gradient(1200px 600px at 70% -10%,rgba(76,175,80,.12),transparent 60%),linear-gradient(180deg,#0a1812 0%,#07140c 100%);color:#dff0e3;min-height:80vh}
+#sc-cockpit.on{display:block}
+#sc-cockpit > *{padding-left:32px;padding-right:32px}
+@media(max-width:560px){#sc-cockpit{margin:-20px -16px 0}#sc-cockpit > *{padding-left:16px;padding-right:16px}}
+
+/* ----- Ticker (Bloomberg-like marquee) ----- */
+.ck-ticker{overflow:hidden;border-bottom:1px solid rgba(124,252,154,.15);background:rgba(0,0,0,.35);padding:0!important;height:42px;position:relative;display:flex;align-items:center}
+.ck-tlabel{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:0 16px;font:700 10.5px 'Inter';text-transform:uppercase;letter-spacing:.08em;color:#7cfc9a;border-right:1px solid rgba(124,252,154,.15);height:100%;background:rgba(0,0,0,.4);white-space:nowrap}
+.ck-tlabel i{color:#7c9c87;font-style:normal;font-weight:600;text-transform:none;letter-spacing:0}
+.ck-tedit,.ck-tsync{margin-left:6px;border:0;background:rgba(255,255,255,.07);color:#bfd9c5;font-size:11px;width:22px;height:22px;border-radius:50%;cursor:pointer;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.ck-tedit:hover,.ck-tsync:hover{background:rgba(124,252,154,.18);color:#fff}
+.ck-tsync{background:rgba(124,252,154,.16);color:#7cfc9a;font-weight:700}
+.ck-tsync.spin{animation:ckSpin 1s linear infinite}
+@keyframes ckSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.ck-toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%) translateY(20px);background:#0a1812;color:#dff0e3;border:1px solid rgba(124,252,154,.4);border-radius:10px;padding:10px 18px;font:600 13.5px 'Inter';box-shadow:0 12px 30px -8px rgba(0,0,0,.5);opacity:0;transition:opacity .25s,transform .25s;z-index:9900}
+.ck-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.ck-modal-wrap{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px}
+.ck-modal{background:#0c1f14;color:#dff0e3;border:1px solid rgba(124,252,154,.25);border-radius:16px;padding:22px 24px;max-width:560px;width:100%;box-shadow:0 30px 80px -20px rgba(0,0,0,.6)}
+.ck-modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.ck-modal-head h3{margin:0;font:700 17px 'Inter';color:#fff}
+.ck-modal-x{background:none;border:0;color:#9fb3a6;font-size:18px;cursor:pointer;padding:4px 8px;border-radius:6px}
+.ck-modal-x:hover{background:rgba(255,255,255,.07);color:#fff}
+.ck-modal-sub{font-size:12.5px;color:#9fb3a6;margin:0 0 18px;line-height:1.5}
+.ck-modal-lbl{display:block;font:700 11px 'Inter';text-transform:uppercase;letter-spacing:.06em;color:#7fb98e;margin-bottom:5px}
+.ck-modal input[type="date"],.ck-modal-fld input{width:100%;padding:9px 11px;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:8px;font:600 13.5px 'Inter';font-variant-numeric:tabular-nums}
+.ck-modal input[type="date"]{margin-bottom:16px;color-scheme:dark}
+.ck-modal-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px}
+.ck-modal-fld{display:flex;flex-direction:column;gap:4px}
+.ck-modal-fld span{font-size:10.5px;color:#9fb3a6;font-weight:600}
+.ck-modal-act{display:flex;align-items:center;gap:8px}
+.ck-modal-act .btn.primary{background:#7cfc9a;color:#04100a;border:0}
+@media(max-width:560px){.ck-modal-grid{grid-template-columns:1fr 1fr}.ck-modal{padding:18px}}
+.ck-tpulse{width:7px;height:7px;border-radius:50%;background:#7cfc9a;box-shadow:0 0 0 0 rgba(124,252,154,.7);animation:ckpulseDot 1.6s ease-out infinite}
+@keyframes ckpulseDot{0%{box-shadow:0 0 0 0 rgba(124,252,154,.7)}80%,100%{box-shadow:0 0 0 9px rgba(124,252,154,0)}}
+.ck-trail{display:inline-flex;gap:34px;padding:11px 24px;animation:ckmarq 38s linear infinite;white-space:nowrap;will-change:transform;flex:1;min-width:0}
+@keyframes ckmarq{from{transform:translateX(0)} to{transform:translateX(-50%)}}
+.ck-tik{display:inline-flex;align-items:center;gap:8px;font:600 13px 'Inter';font-variant-numeric:tabular-nums}
+.ck-tnm{color:#8fe0a3;font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.ck-tik b{color:#fff;font-weight:700}
+.ck-tik b i{color:#7c9c87;font-style:normal;font-weight:500;font-size:11px;margin-left:2px}
+.ck-td{font-weight:700;font-size:11.5px;padding:1px 7px;border-radius:999px}
+.ck-td.up{background:rgba(255,82,82,.18);color:#ff8a8a}
+.ck-td.down{background:rgba(124,252,154,.18);color:#7cfc9a}
+.ck-td.flat{background:rgba(255,255,255,.07);color:#9fb3a6}
+
+/* ----- Hero ----- */
+.ck-hero{padding-top:24px;padding-bottom:6px}
+.ck-hero-inner{background:linear-gradient(135deg,rgba(255,255,255,.04),rgba(76,175,80,.06));border:1px solid rgba(124,252,154,.22);border-radius:18px;padding:22px 26px;position:relative;overflow:hidden}
+.ck-hero-inner.ck-tone-hot{background:linear-gradient(135deg,rgba(255,82,82,.10),rgba(255,140,0,.06));border-color:rgba(255,138,138,.32)}
+.ck-hero-inner.ck-tone-warn{background:linear-gradient(135deg,rgba(255,193,7,.10),rgba(255,140,0,.06));border-color:rgba(255,193,7,.32)}
+.ck-hero-inner.ck-tone-cool{background:linear-gradient(135deg,rgba(76,175,80,.10),rgba(0,200,150,.06));border-color:rgba(124,252,154,.32)}
+.ck-hero-meta{display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.ck-pill{display:inline-flex;gap:7px;align-items:center;font:700 12px 'Inter';padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.08);color:#fff}
+.ck-pill.ghost{background:transparent;border:1px solid rgba(255,255,255,.18);color:#9fb3a6;font-weight:600;text-transform:uppercase;font-size:10.5px;letter-spacing:.05em}
+.ck-hero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.ck-hero-stat{padding:6px 0}
+.ck-h-l{font:600 11px 'Inter';text-transform:uppercase;letter-spacing:.07em;color:#7fb98e;margin-bottom:4px}
+.ck-h-v{font:800 38px 'Inter';color:#fff;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.ck-h-v i{font-style:normal;font-size:14px;color:#9fb3a6;font-weight:600;margin-left:4px}
+.ck-h-d{margin-top:5px;font:700 12.5px 'Inter';font-variant-numeric:tabular-nums}
+.ck-h-d.up{color:#ff8a8a}.ck-h-d.down{color:#7cfc9a}.ck-h-d.flat{color:#7c9c87;font-weight:500}
+@media(max-width:780px){.ck-hero-grid{grid-template-columns:1fr;gap:14px}.ck-h-v{font-size:32px}}
+
+/* ----- Row layout (Netflix rails) ----- */
+.ck-row{padding-top:22px;padding-bottom:10px}
+.ck-row-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px;gap:14px;flex-wrap:wrap}
+.ck-row-head h3{margin:0;font:700 17px 'Inter';color:#fff}
+.ck-row-head .muted{color:#8fa597;font-size:12.5px;display:block;margin-top:2px}
+.ck-link{background:none;border:0;color:#7cfc9a;font:700 12.5px 'Inter';cursor:pointer;padding:6px 10px;border-radius:7px}
+.ck-link:hover{background:rgba(124,252,154,.08)}
+.ck-tabs{display:inline-flex;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:3px;gap:2px}
+.ck-tab{border:0;background:none;color:#9fb3a6;font:600 12px 'Inter';padding:6px 12px;border-radius:7px;cursor:pointer}
+.ck-tab.on{background:rgba(124,252,154,.16);color:#fff}
+
+.ck-rail{display:flex;gap:14px;overflow-x:auto;padding:4px 0 16px;scrollbar-width:thin;scrollbar-color:#2E7D32 transparent}
+.ck-rail::-webkit-scrollbar{height:7px}
+.ck-rail::-webkit-scrollbar-thumb{background:#2E7D32;border-radius:4px}
+
+/* ----- Cards (Spotify-ish) ----- */
+.ck-card{flex:0 0 240px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px 16px;cursor:pointer;transition:transform .15s,border-color .15s,background .15s;position:relative;color:#dff0e3}
+.ck-card:hover{transform:translateY(-2px);border-color:rgba(124,252,154,.35);background:rgba(255,255,255,.06)}
+.ck-card.on{border-color:#7cfc9a;background:rgba(124,252,154,.10);box-shadow:0 0 0 1px rgba(124,252,154,.4)}
+.ck-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.ck-card-ico{font-size:20px}
+.ck-card-active{font:800 9.5px 'Inter';letter-spacing:.08em;background:#7cfc9a;color:#04100a;padding:2px 7px;border-radius:999px}
+.ck-card-title{font:700 14px 'Inter';color:#fff;margin-bottom:4px;line-height:1.2;min-height:34px}
+.ck-card-meta{font-size:11.5px;color:#9fb3a6;line-height:1.4}
+
+.ck-card.ck-tone-hot{background:linear-gradient(135deg,rgba(255,82,82,.10),rgba(255,140,0,.04))}
+.ck-card.ck-tone-warn{background:linear-gradient(135deg,rgba(255,193,7,.10),rgba(255,140,0,.04))}
+.ck-card.ck-tone-cool{background:linear-gradient(135deg,rgba(76,175,80,.10),rgba(0,200,150,.04))}
+.ck-card.ck-tone-calm{background:linear-gradient(135deg,rgba(124,252,154,.06),rgba(0,0,0,.10))}
+
+/* heat cards */
+.ck-card.ck-heat{flex:0 0 220px}
+.ck-heat-bar{height:5px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden;margin-bottom:10px}
+.ck-heat.hot .ck-heat-bar div{background:linear-gradient(90deg,#ff8a8a,#ff5252)}
+.ck-heat.cool .ck-heat-bar div{background:linear-gradient(90deg,#7cfc9a,#2E7D32)}
+.ck-heat-bar div{height:100%;transition:width .3s}
+.ck-heat-dt{margin-top:8px;font:700 11.5px 'Inter';color:#ff8a8a}
+.ck-heat.cool .ck-heat-dt{color:#7cfc9a}
+
+/* ----- 2-col bottom (Subs + Copilot) ----- */
+.ck-grid2{display:grid;grid-template-columns:1.05fr 1fr;gap:18px;padding-top:18px;padding-bottom:34px}
+@media(max-width:980px){.ck-grid2{grid-template-columns:1fr}}
+.ck-panel{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:18px 20px;display:flex;flex-direction:column}
+.ck-subs select{width:100%;margin-top:6px;padding:9px 11px;background:rgba(0,0,0,.3);color:#fff;border:1px solid rgba(255,255,255,.12);border-radius:9px;font:600 13px 'Inter'}
+.ck-subs select option{background:#0a1812;color:#fff}
+.ck-sublist{margin-top:12px;display:flex;flex-direction:column;gap:7px}
+.ck-subrow{display:grid;grid-template-columns:1fr auto auto auto;gap:10px;align-items:center;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:10px 12px}
+.ck-subrow.up{border-color:rgba(124,252,154,.3)}
+.ck-subrow.down{border-color:rgba(255,138,138,.3)}
+.ck-sub-name b{color:#fff;font-size:13.5px}
+.ck-sub-name .muted{color:#9fb3a6;font-size:11.5px}
+.ck-sub-cgm{font:800 16px 'Inter';color:#fff;font-variant-numeric:tabular-nums}
+.ck-sub-cgm i{font-style:normal;font-size:10.5px;color:#9fb3a6}
+.ck-sub-dt{font:700 11.5px 'Inter';padding:3px 9px;border-radius:999px}
+.ck-sub-dt.up{background:rgba(124,252,154,.18);color:#7cfc9a}
+.ck-sub-dt.down{background:rgba(255,138,138,.18);color:#ff8a8a}
+.ck-sub-dt.flat{background:rgba(255,255,255,.07);color:#9fb3a6}
+
+/* Co-pilot chat */
+.ck-copilot .ck-chat{flex:1;min-height:160px;max-height:300px;overflow:auto;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:12px;margin-top:10px;display:flex;flex-direction:column;gap:9px;scrollbar-width:thin}
+.ck-msg{font-size:13px;line-height:1.5;padding:9px 12px;border-radius:9px;max-width:90%}
+.ck-msg.user{align-self:flex-end;background:rgba(124,252,154,.14);color:#fff}
+.ck-msg.ai{align-self:flex-start;background:rgba(255,255,255,.06);color:#dff0e3}
+.ck-msg.ai b{color:#fff}
+.ck-msg.pending{opacity:.7}
+.ck-think{display:inline-block;animation:ckpulse 1.4s ease-in-out infinite}
+@keyframes ckpulse{0%,100%{opacity:.45}50%{opacity:1}}
+.ck-err{color:#ffae9c;font-style:italic}
+.ck-raw{font-size:11px;background:#06100a;padding:6px;border-radius:6px;overflow:auto;max-height:120px;color:#bfd9c5}
+.ck-usage{margin-top:8px;font:600 10px 'Inter';letter-spacing:.04em;text-transform:uppercase;color:#7c9c87;border-top:1px dashed rgba(255,255,255,.07);padding-top:6px}
+/* === FEEDBACK EDITION === */
+.fb-highlight{outline:3px dashed #FFC107!important;outline-offset:3px;border-radius:8px;animation:fbPulseHi 1s ease-in-out infinite alternate}
+@keyframes fbPulseHi{from{outline-color:#FFC107}to{outline-color:#ffe082}}
+.fb-badge{position:fixed;right:18px;bottom:18px;z-index:9500;background:linear-gradient(135deg,#FFC107,#FF8F00);color:#1a0f00;border:0;border-radius:999px;padding:11px 18px;font:800 13px 'Inter';cursor:pointer;box-shadow:0 12px 30px -8px rgba(255,143,0,.6);transition:transform .15s,box-shadow .15s}
+.fb-badge:hover{transform:translateY(-2px);box-shadow:0 16px 36px -10px rgba(255,143,0,.7)}
+.fb-badge.hot{background:linear-gradient(135deg,#FF6F00,#E53935);color:#fff}
+.fb-badge.flash{animation:fbFlash .7s ease-out}
+@keyframes fbFlash{0%{transform:scale(1.15);box-shadow:0 0 0 12px rgba(255,235,59,.4)}100%{transform:scale(1);box-shadow:0 12px 30px -8px rgba(255,143,0,.6)}}
+.fb-menu{position:fixed;z-index:9700;background:#0c1f14;border:1px solid rgba(255,193,7,.35);border-radius:11px;padding:5px;box-shadow:0 24px 60px -10px rgba(0,0,0,.7);min-width:230px}
+.fb-mi{display:block;width:100%;text-align:left;background:none;border:0;color:#dff0e3;font:600 13px 'Inter';padding:9px 12px;border-radius:7px;cursor:pointer}
+.fb-mi:hover{background:rgba(255,193,7,.15);color:#fff}
+.fb-modal-wrap{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:9800;display:flex;align-items:center;justify-content:center;padding:20px}
+.fb-modal{background:#0c1f14;color:#dff0e3;border:1px solid rgba(255,193,7,.4);border-radius:16px;padding:22px 24px;max-width:520px;width:100%;box-shadow:0 30px 80px -20px rgba(0,0,0,.7)}
+.fb-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.fb-head h3{margin:0;font:700 17px 'Inter';color:#fff}
+.fb-head .fb-x{background:none;border:0;color:#9fb3a6;font-size:18px;cursor:pointer;padding:4px 8px;border-radius:6px}
+.fb-head .fb-x:hover{background:rgba(255,255,255,.07);color:#fff}
+.fb-ctx{display:flex;flex-direction:column;gap:2px;background:rgba(255,193,7,.08);border:1px solid rgba(255,193,7,.22);border-radius:9px;padding:9px 12px;margin-bottom:14px}
+.fb-ctx .fb-lbl{font:700 10px 'Inter';letter-spacing:.08em;color:#ffc107;text-transform:uppercase}
+.fb-ctx b{color:#fff;font-size:14px}
+.fb-ctx .fb-bread{font-size:12px;color:#9fb3a6}
+.fb-flbl{display:block;font:700 11px 'Inter';text-transform:uppercase;letter-spacing:.06em;color:#7fb98e;margin:8px 0 4px}
+.fb-author,.fb-text{width:100%;padding:9px 11px;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:8px;font:500 13.5px 'Inter';box-sizing:border-box}
+.fb-text{resize:vertical;font-family:'Inter',sans-serif}
+.fb-act{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.fb-act button{border:0;padding:9px 16px;border-radius:9px;font:700 13px 'Inter';cursor:pointer}
+.fb-cancel{background:rgba(255,255,255,.08);color:#dff0e3}
+.fb-save{background:#FFC107;color:#1a0f00}
+.fb-save:hover{background:#ffd54f}
+.fb-panel{position:fixed;right:0;top:0;bottom:0;width:min(420px,92vw);z-index:9600;background:#0a1812;color:#dff0e3;border-left:1px solid rgba(255,193,7,.25);box-shadow:-20px 0 60px -20px rgba(0,0,0,.6);overflow:auto}
+.fb-pinner{padding:18px 18px 50px}
+.fb-phead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.fb-phead h3{margin:0;font:700 17px 'Inter';color:#fff}
+.fb-pacts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.fb-btn{background:rgba(255,193,7,.12);color:#ffd54f;border:1px solid rgba(255,193,7,.3);border-radius:8px;padding:6px 11px;font:700 11.5px 'Inter';cursor:pointer}
+.fb-btn:hover{background:rgba(255,193,7,.2)}
+.fb-btn.danger{background:rgba(229,57,53,.12);color:#ff9999;border-color:rgba(229,57,53,.4)}
+.fb-list{display:flex;flex-direction:column;gap:9px}
+.fb-empty{color:#9fb3a6;font-size:13px;padding:30px 0;text-align:center}
+.fb-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-left:3px solid #FFC107;border-radius:10px;padding:11px 13px}
+.fb-iblock{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.fb-iblock b{color:#fff;font-size:13px}
+.fb-iblock span{font-size:11px;color:#9fb3a6}
+.fb-itext{font-size:13.5px;color:#dff0e3;line-height:1.5;margin-bottom:7px;white-space:pre-wrap}
+.fb-imeta{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;color:#7c9c87}
+.fb-del{background:none;border:0;color:#9fb3a6;cursor:pointer;font-size:13px;padding:2px 6px;border-radius:5px}
+.fb-del:hover{background:rgba(229,57,53,.2);color:#ff9999}
+.ck-cpsugs{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0 6px;align-items:center}
+.ck-sugs-l{font:700 11px 'Inter';color:#7fb98e;text-transform:uppercase;letter-spacing:.06em;margin-right:6px}
+.ck-sug{background:rgba(124,252,154,.08);border:1px solid rgba(124,252,154,.2);color:#dff0e3;font:600 11.5px 'Inter';padding:5px 10px;border-radius:999px;cursor:pointer}
+.ck-sug:hover{background:rgba(124,252,154,.18)}
+.ck-cpinp{display:flex;gap:8px;margin-top:6px}
+.ck-cpinp input{flex:1;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:9px;padding:10px 13px;font:600 13.5px 'Inter'}
+.ck-cpinp input:focus{outline:none;border-color:#7cfc9a}
+.ck-cpinp .btn.primary{background:#7cfc9a;color:#04100a;border:0}
+.ck-cpinp .btn.primary:hover{background:#a8ffbc}
+
+/* Cockpit specific tab look (highlight in nav) */
+.tab[data-t="cockpit"]{color:#1B5E20;font-weight:800}
+.tab[data-t="cockpit"].on{color:var(--green-800)}
 @media(max-width:520px){.kpis{grid-template-columns:1fr}.h2.h,h2.h{font-size:22px}.brand{font-size:18px}.prof button{padding:6px 9px;font-size:11.5px}}
 </style>
 </head>
@@ -239,6 +438,54 @@ tbody tr.sel{background:var(--green-50)}
 <nav class="tabs"><div class="wrap" id="tabbar"></div></nav>
 
 <main class="wrap">
+
+  <!-- ====== COCKPIT — Crisis center ====== -->
+  <section class="screen" id="sc-cockpit">
+    <div class="ck-ticker" id="ckTicker"></div>
+
+    <div class="ck-hero" id="ckHero"></div>
+
+    <div class="ck-row">
+      <div class="ck-row-head">
+        <div><h3 data-k="ck.playH">⚡ Crisis Playbook</h3><span class="muted" data-k="ck.playSub">Scénarios prêts à l'emploi · 1 clic = portefeuille recalculé</span></div>
+        <button class="ck-link" onclick="ckResetScenario()" data-k="ck.reset">↺ Tout calme</button>
+      </div>
+      <div class="ck-rail" id="ckPlaybook"></div>
+    </div>
+
+    <div class="ck-row">
+      <div class="ck-row-head">
+        <div><h3 data-k="ck.heatH">🔥 S-Pressure Heatmap</h3><span class="muted" data-k="ck.heatSub">Exposition au prix du souffre · trié par sensibilité ∂CGM/∂P<sub>S</sub></span></div>
+        <div class="ck-tabs">
+          <button class="ck-tab on" data-hp="exposed" onclick="ckSetHeat('exposed')" data-k="ck.exposed">Exposés</button>
+          <button class="ck-tab" data-hp="protected" onclick="ckSetHeat('protected')" data-k="ck.protected">Protégés</button>
+        </div>
+      </div>
+      <div class="ck-rail" id="ckHeat"></div>
+    </div>
+
+    <div class="ck-grid2">
+      <div class="ck-panel">
+        <div class="ck-row-head">
+          <div><h3 data-k="ck.subsH">🔁 Substitution Advisor</h3><span class="muted" data-k="ck.subsSub">Alternatives OCP iso-grade, classées par CGM</span></div>
+        </div>
+        <div class="ck-subs"><label class="fl" data-k="ck.subsPick">Produit demandé par le client</label><select id="ckSubProd"></select>
+          <div id="ckSubs"></div></div>
+      </div>
+
+      <div class="ck-panel ck-copilot">
+        <div class="ck-row-head">
+          <div><h3>🤖 <span data-k="ck.cpH">Co-pilote pricing</span></h3><span class="muted" data-k="ck.cpSub">Pose une question en langage naturel — D²nAI bot dédié pricing</span></div>
+        </div>
+        <div class="ck-chat" id="ckChat"></div>
+        <div class="ck-cpsugs" id="ckCpSugs"></div>
+        <div class="ck-cpinp">
+          <input type="text" id="ckCpInput" data-kph="ck.cpPh" placeholder="Que se passe-t-il si le souffre monte à $300 ?">
+          <button class="btn primary" onclick="ckCpAsk()" data-k="ck.cpAsk">Demander</button>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- ====== METIER 1: CONFIG ====== -->
   <section class="screen" id="sc-config">
@@ -502,7 +749,16 @@ const LOC={fr:'fr-FR',en:'en-US',pt:'pt-BR'};
 const T={
 fr:{
  'ui.profMetier':'Métier','ui.profAdmin':'Admin référentiel',
- 'tab.config':'Configuration','tab.inputs':'Inputs marché','tab.results':'Résultats','tab.sc3':'Blend pricing','tab.market':'Market Intel','tab.hist':'Historique','tab.ref':'Référentiel','tab.const':'Constantes',
+ 'tab.cockpit':'⚡ Cockpit','tab.config':'Configuration','tab.inputs':'Inputs marché','tab.results':'Résultats','tab.sc3':'Blend pricing','tab.market':'Market Intel','tab.hist':'Historique','tab.ref':'Référentiel','tab.const':'Constantes',
+ 'ck.playH':'⚡ Crisis Playbook','ck.playSub':'Scénarios prêts à l\'emploi · 1 clic = portefeuille recalculé','ck.reset':'↺ Tout calme',
+ 'ck.heatH':'🔥 S-Pressure Heatmap','ck.heatSub':'Exposition au prix du souffre · trié par sensibilité ∂CGM/∂P_S','ck.exposed':'Exposés','ck.protected':'Protégés',
+ 'ck.subsH':'🔁 Substitution Advisor','ck.subsSub':'Alternatives OCP iso-grade, classées par CGM','ck.subsPick':'Produit demandé par le client',
+ 'ck.cpH':'Co-pilote pricing','ck.cpSub':'Pose une question en langage naturel — D²nAI bot dédié pricing','ck.cpAsk':'Demander','ck.cpPh':'Que se passe-t-il si le souffre monte à $300 ?',
+ 'ck.heroBaseline':'Portefeuille en conditions de marché courantes','ck.heroDelta':'Impact vs baseline','ck.heroAvgCgm':'CGM moyenne portefeuille','ck.heroUnder':'produits sous-pricés','ck.heroExposed':'top exposition S','ck.heroSeeMore':'Voir le détail',
+ 'ck.simulate':'Simuler ce produit','ck.subBetter':'meilleur','ck.subWorse':'moins bon','ck.subSame':'iso','ck.subPick':'choisir','ck.noAlt':'Aucune alternative iso-grade trouvée.',
+ 'ck.cpThinking':'D²nAI bot is thinking…','ck.cpError':'D²nAI bot indisponible :','ck.cpHint':'Suggestions :',
+ 'ck.scn.calm':'Tout calme','ck.scn.s50':'Choc Soufre +50 %','ck.scn.s30n15':'Soufre +30 % & NH₃ +15 %','ck.scn.rock20':'Roche +20 % (sanction)','ck.scn.kcl':'KCl tendu (Bélarus −15 %)','ck.scn.recov':'Détente RM (post-pic)',
+ 'ck.baselineCalm':'baseline calme','ck.mktSet':'Mettre à jour la référence Market Intel','ck.mktTitle':'Référence Market Intel','ck.mktSub':'Prix de la période précédente (D-1, D-7, fin de mois…) à utiliser comme base de comparaison du ticker.','ck.mktDate':'Date de référence','ck.mktSave':'Enregistrer','ck.mktClear':'Effacer','ck.cancel':'Annuler','ck.miSync':'Synchroniser depuis Market Intel (Databricks)','ck.miOk':'Market Intel synchronisé ✓',
  'sc1.eyebrow':'Écran 1 · Configuration de la simulation','sc1.h':'Quel produit, quelle référence, quel usage ?','sc1.lead':'Sélectionnez le couple Produit × Ligne de production, l\'usage métier visé, et la référence de comparaison (proposée par défaut selon la famille).',
  'card.product':'Produit × Ligne','lbl.targetProd':'Produit cible','lbl.line':'Ligne de production','card.ref':'Référence de comparaison','card.usage':'Usage métier',
  'btn.continue.inputs':'Continuer → Inputs marché',
@@ -525,13 +781,25 @@ fr:{
  'kpi.rmcost':'Coût MP','kpi.rmcostUnit':'$/t produit','kpi.cgmBrute':'CGM brute','kpi.cgmBruteUnit':'$/t (prix − coût MP)','kpi.cgmEq':'CGM éq.','kpi.cgmEqUnit':'$/t · réf','kpi.mcv':'MCV / t acide P₂O₅','kpi.mcvUnit':'$/t P₂O₅',
  'sc.scenario':'Scénario','sc.marginRef':'Marge réf. (CGM éq.','sc.cgmAtPrice':'CGM éq. à','sc.floor':'Prix plancher iso-marge','sc.nutri':'Prix valeur-nutriment',
  'usage1.t':'Usage 1 — CGM à partir d\'un prix','usage2.t':'Usage 2 — Prix minimum pour égaler la marge de la référence','usage3.t':'Usage 3 — Prix à valeur nutriment (alignement N-P-K-S)',
+ 'usage1.tt':'CGM à partir d\'un prix','usage1.dd':'À un prix de vente saisi : quelle CGM, et comment vs la référence / d\'autres produits.',
+ 'usage2.tt':'Prix minimum (iso-marge)','usage2.dd':'Quel prix de vente pour égaler la marge (CGM) de la référence DAP ou TSP.',
+ 'usage3.tt':'Prix à valeur nutriment','usage3.dd':'Quel prix pour rester aligné en valeur agronomique (N-P-K-S) sur la référence.',
  'usage.refMargin':'Marge de référence','usage.preserved':'✅ Marge préservée','usage.underPriced':'⚠️ Sous-pricé',
  'usage.isoDap':'Iso-marge DAP','usage.isoTsp':'Iso-marge TSP','usage.baseDap':'Base DAP','usage.baseTsp':'Base TSP',
  'sens.rmcStressed':'Coût MP stressé','sens.cgmStressed':'CGM éq. stressée','sens.vsBase':'vs base'
 },
 en:{
  'ui.profMetier':'Business','ui.profAdmin':'Reference admin',
- 'tab.config':'Configuration','tab.inputs':'Market inputs','tab.results':'Results','tab.sc3':'Blend pricing','tab.market':'Market Intel','tab.hist':'History','tab.ref':'Reference','tab.const':'Constants',
+ 'tab.cockpit':'⚡ Cockpit','tab.config':'Configuration','tab.inputs':'Market inputs','tab.results':'Results','tab.sc3':'Blend pricing','tab.market':'Market Intel','tab.hist':'History','tab.ref':'Reference','tab.const':'Constants',
+ 'ck.playH':'⚡ Crisis Playbook','ck.playSub':'Ready-to-use scenarios · 1 click = portfolio repriced','ck.reset':'↺ Calm state',
+ 'ck.heatH':'🔥 S-Pressure Heatmap','ck.heatSub':'Exposure to sulfur price · sorted by ∂CGM/∂P_S sensitivity','ck.exposed':'Exposed','ck.protected':'Protected',
+ 'ck.subsH':'🔁 Substitution Advisor','ck.subsSub':'OCP alternatives at the same grade, ranked by CGM','ck.subsPick':'Product requested by the customer',
+ 'ck.cpH':'Pricing co-pilot','ck.cpSub':'Ask in plain English — D²nAI bot for pricing','ck.cpAsk':'Ask','ck.cpPh':'What if sulfur jumps to $300?',
+ 'ck.heroBaseline':'Portfolio at current market','ck.heroDelta':'Impact vs baseline','ck.heroAvgCgm':'Avg portfolio CGM','ck.heroUnder':'under-priced products','ck.heroExposed':'top S-exposed','ck.heroSeeMore':'See details',
+ 'ck.simulate':'Simulate this product','ck.subBetter':'better','ck.subWorse':'worse','ck.subSame':'iso','ck.subPick':'pick','ck.noAlt':'No iso-grade alternative found.',
+ 'ck.cpThinking':'D²nAI bot is thinking…','ck.cpError':'D²nAI bot unavailable:','ck.cpHint':'Try:',
+ 'ck.scn.calm':'Calm','ck.scn.s50':'Sulfur shock +50%','ck.scn.s30n15':'Sulfur +30% & NH₃ +15%','ck.scn.rock20':'Rock +20% (sanction)','ck.scn.kcl':'KCl tight (Belarus −15%)','ck.scn.recov':'RM relief (post-peak)',
+ 'ck.baselineCalm':'calm baseline','ck.mktSet':'Update the Market Intel reference','ck.mktTitle':'Market Intel reference','ck.mktSub':'Previous-period prices (D-1, D-7, month-end…) used as the ticker baseline.','ck.mktDate':'Reference date','ck.mktSave':'Save','ck.mktClear':'Clear','ck.cancel':'Cancel','ck.miSync':'Sync from Market Intel (Databricks)','ck.miOk':'Market Intel synced ✓',
  'sc1.eyebrow':'Step 1 · Simulation setup','sc1.h':'Which product, which reference, which use case?','sc1.lead':'Pick the Product × Production line pair, the business use case, and the comparison benchmark (defaulted by family).',
  'card.product':'Product × Line','lbl.targetProd':'Target product','lbl.line':'Production line','card.ref':'Benchmark reference','card.usage':'Business use case',
  'btn.continue.inputs':'Continue → Market inputs',
@@ -554,13 +822,25 @@ en:{
  'kpi.rmcost':'RM cost','kpi.rmcostUnit':'$/t product','kpi.cgmBrute':'Gross CGM','kpi.cgmBruteUnit':'$/t (price − RM cost)','kpi.cgmEq':'CGM eq.','kpi.cgmEqUnit':'$/t · ref','kpi.mcv':'MCV / t acid P₂O₅','kpi.mcvUnit':'$/t P₂O₅',
  'sc.scenario':'Scenario','sc.marginRef':'Ref margin (CGM eq.','sc.cgmAtPrice':'CGM eq. at','sc.floor':'Iso-margin floor price','sc.nutri':'Nutrient-value price',
  'usage1.t':'Use 1 — CGM from a given price','usage2.t':'Use 2 — Floor price to match the reference margin','usage3.t':'Use 3 — Nutrient-value price (N-P-K-S alignment)',
+ 'usage1.tt':'CGM from a given price','usage1.dd':'For a given selling price: what is the CGM, and how does it compare to the reference / other products.',
+ 'usage2.tt':'Floor price (iso-margin)','usage2.dd':'What selling price matches the reference (DAP or TSP) margin?',
+ 'usage3.tt':'Nutrient-value price','usage3.dd':'What price keeps the product aligned in agronomic value (N-P-K-S) with the reference?',
  'usage.refMargin':'Reference margin','usage.preserved':'✅ Margin preserved','usage.underPriced':'⚠️ Under-priced',
  'usage.isoDap':'Iso-margin DAP','usage.isoTsp':'Iso-margin TSP','usage.baseDap':'DAP base','usage.baseTsp':'TSP base',
  'sens.rmcStressed':'Stressed RM cost','sens.cgmStressed':'Stressed CGM eq.','sens.vsBase':'vs base'
 },
 pt:{
  'ui.profMetier':'Negócio','ui.profAdmin':'Admin do catálogo',
- 'tab.config':'Configuração','tab.inputs':'Entradas de mercado','tab.results':'Resultados','tab.sc3':'Pricing por blend','tab.market':'Market Intel','tab.hist':'Histórico','tab.ref':'Catálogo','tab.const':'Constantes',
+ 'tab.cockpit':'⚡ Cockpit','tab.config':'Configuração','tab.inputs':'Entradas de mercado','tab.results':'Resultados','tab.sc3':'Pricing por blend','tab.market':'Market Intel','tab.hist':'Histórico','tab.ref':'Catálogo','tab.const':'Constantes',
+ 'ck.playH':'⚡ Crisis Playbook','ck.playSub':'Cenários prontos · 1 clique = portfólio recalculado','ck.reset':'↺ Calmaria',
+ 'ck.heatH':'🔥 S-Pressure Heatmap','ck.heatSub':'Exposição ao preço do enxofre · ordenado por sensibilidade ∂CGM/∂P_S','ck.exposed':'Expostos','ck.protected':'Protegidos',
+ 'ck.subsH':'🔁 Substitution Advisor','ck.subsSub':'Alternativas OCP iso-grade, classificadas por CGM','ck.subsPick':'Produto pedido pelo cliente',
+ 'ck.cpH':'Co-piloto pricing','ck.cpSub':'Pergunte em linguagem natural — D²nAI bot dedicado ao pricing','ck.cpAsk':'Perguntar','ck.cpPh':'E se o enxofre subir para $300?',
+ 'ck.heroBaseline':'Portfólio nas condições atuais','ck.heroDelta':'Impacto vs baseline','ck.heroAvgCgm':'CGM média do portfólio','ck.heroUnder':'produtos subprecificados','ck.heroExposed':'top exposição ao S','ck.heroSeeMore':'Ver detalhe',
+ 'ck.simulate':'Simular este produto','ck.subBetter':'melhor','ck.subWorse':'pior','ck.subSame':'iso','ck.subPick':'escolher','ck.noAlt':'Nenhuma alternativa iso-grade encontrada.',
+ 'ck.cpThinking':'D²nAI bot is thinking…','ck.cpError':'D²nAI bot indisponível:','ck.cpHint':'Sugestões:',
+ 'ck.scn.calm':'Calmaria','ck.scn.s50':'Choque Enxofre +50%','ck.scn.s30n15':'Enxofre +30% & NH₃ +15%','ck.scn.rock20':'Rocha +20% (sanção)','ck.scn.kcl':'KCl tenso (Belarus −15%)','ck.scn.recov':'Distensão MP (pós-pico)',
+ 'ck.baselineCalm':'baseline calma','ck.mktSet':'Atualizar referência Market Intel','ck.mktTitle':'Referência Market Intel','ck.mktSub':'Preços do período anterior (D-1, D-7, fim de mês…) usados como base do ticker.','ck.mktDate':'Data de referência','ck.mktSave':'Salvar','ck.mktClear':'Limpar','ck.cancel':'Cancelar','ck.miSync':'Sincronizar com Market Intel (Databricks)','ck.miOk':'Market Intel sincronizado ✓',
  'sc1.eyebrow':'Etapa 1 · Configuração da simulação','sc1.h':'Qual produto, qual referência, qual uso?','sc1.lead':'Selecione o par Produto × Linha de produção, o uso de negócio visado, e a referência de comparação (padrão por família).',
  'card.product':'Produto × Linha','lbl.targetProd':'Produto alvo','lbl.line':'Linha de produção','card.ref':'Referência de comparação','card.usage':'Uso de negócio',
  'btn.continue.inputs':'Continuar → Entradas de mercado',
@@ -583,6 +863,9 @@ pt:{
  'kpi.rmcost':'Custo MP','kpi.rmcostUnit':'$/t produto','kpi.cgmBrute':'CGM bruta','kpi.cgmBruteUnit':'$/t (preço − custo MP)','kpi.cgmEq':'CGM eq.','kpi.cgmEqUnit':'$/t · ref','kpi.mcv':'MCV / t ácido P₂O₅','kpi.mcvUnit':'$/t P₂O₅',
  'sc.scenario':'Cenário','sc.marginRef':'Margem ref. (CGM eq.','sc.cgmAtPrice':'CGM eq. a','sc.floor':'Preço piso iso-margem','sc.nutri':'Preço valor-nutriente',
  'usage1.t':'Uso 1 — CGM a partir de um preço','usage2.t':'Uso 2 — Preço mínimo para igualar a margem da referência','usage3.t':'Uso 3 — Preço por valor de nutriente (alinhamento N-P-K-S)',
+ 'usage1.tt':'CGM a partir de um preço','usage1.dd':'Para um preço de venda dado: qual CGM, e como vs a referência / outros produtos.',
+ 'usage2.tt':'Preço mínimo (iso-margem)','usage2.dd':'Que preço de venda iguala a margem (CGM) da referência DAP ou TSP?',
+ 'usage3.tt':'Preço por valor de nutriente','usage3.dd':'Que preço mantém o alinhamento em valor agronômico (N-P-K-S) com a referência?',
  'usage.refMargin':'Margem de referência','usage.preserved':'✅ Margem preservada','usage.underPriced':'⚠️ Subprecificado',
  'usage.isoDap':'Iso-margem DAP','usage.isoTsp':'Iso-margem TSP','usage.baseDap':'Base DAP','usage.baseTsp':'Base TSP',
  'sens.rmcStressed':'Custo MP estressado','sens.cgmStressed':'CGM eq. estressada','sens.vsBase':'vs base'
@@ -658,10 +941,10 @@ function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'
 /* ============ profile + tabs ============ */
 let profile='metier';
 const TABS={
-  metier:[['config','1','tab.config'],['inputs','2','tab.inputs'],['results','3','tab.results'],['sc3','4','tab.sc3'],['market','','tab.market'],['hist','','tab.hist']],
+  metier:[['cockpit','','tab.cockpit'],['config','1','tab.config'],['inputs','2','tab.inputs'],['results','3','tab.results'],['sc3','4','tab.sc3'],['market','','tab.market'],['hist','','tab.hist']],
   admin:[['ref','','tab.ref'],['const','','tab.const']]
 };
-const TABSCREEN={config:'sc-config',inputs:'sc-inputs',results:'sc-results',sc3:'sc-sc3',market:'sc-market',hist:'sc-hist',ref:'sc-ref',const:'sc-const'};
+const TABSCREEN={cockpit:'sc-cockpit',config:'sc-config',inputs:'sc-inputs',results:'sc-results',sc3:'sc-sc3',market:'sc-market',hist:'sc-hist',ref:'sc-ref',const:'sc-const'};
 let curTab='config';
 function setProfile(p){
   profile=p;
@@ -683,27 +966,41 @@ function goTab(t){
   if(t==='ref') renderRefTable();
   if(t==='const') renderConst();
   if(t==='inputs') renderInputs();
+  if(t==='cockpit') renderCockpit();
   if(t==='market') renderMarket();
   if(t==='sc3') renderSc3();
   if(t==='hist') renderHist();
-  if(t==='config'){ const lines=[...new Set(products().map(p=>p.line))]; document.getElementById('line').innerHTML=lines.map(l=>`<option>${l}</option>`).join(''); refreshProdSelect(); syncConfig(); }
+  if(t==='config'){
+    // Rebuild the line select if needed, then RESTORE the current state instead of resetting.
+    const lines=[...new Set(products().map(p=>p.line))];
+    const lineEl=document.getElementById('line');
+    if(lineEl.children.length!==lines.length) lineEl.innerHTML=lines.map(l=>`<option>${l}</option>`).join('');
+    const cur=curProduct();
+    if(cur){ lineEl.value=cur.line; }
+    refreshProdSelect();
+    if(cur){ document.getElementById('prod').value=cur.row; state.row=cur.row; }
+    // Re-render usage pills (their labels depend on the current language).
+    const pills=document.getElementById('usagePills');
+    if(pills){ pills.innerHTML=USAGES.map(u=>`<button class="pill" data-u="${u.n}" onclick="setUsage(${u.n})"><div class="t">${u.n}. ${tr(u.tk)}</div><div class="d">${tr(u.dk)}</div></button>`).join(''); setUsage(state.usage); }
+    syncConfig();
+  }
   window.scrollTo({top:0,behavior:'instant'});
 }
 
 /* ============ CONFIG screen ============ */
 const USAGES=[
-  {n:1,t:'CGM à partir d\'un prix',d:'À un prix de vente saisi : quelle CGM, et comment vs la référence / d\'autres produits.'},
-  {n:2,t:'Prix minimum (iso-marge)',d:'Quel prix de vente pour égaler la marge (CGM) de la référence DAP ou TSP.'},
-  {n:3,t:'Prix à valeur nutriment',d:'Quel prix pour rester aligné en valeur agronomique (N-P-K-S) sur la référence.'}
+  {n:1,tk:'usage1.tt',dk:'usage1.dd'},
+  {n:2,tk:'usage2.tt',dk:'usage2.dd'},
+  {n:3,tk:'usage3.tt',dk:'usage3.dd'}
 ];
 function buildConfig(){
   const lines=[...new Set(products().map(p=>p.line))];
   document.getElementById('line').innerHTML=lines.map(l=>`<option>${l}</option>`).join('');
   refreshProdSelect();
   document.getElementById('usagePills').innerHTML=USAGES.map(u=>
-    `<button class="pill" data-u="${u.n}" onclick="setUsage(${u.n})"><div class="t">${u.n}. ${u.t}</div><div class="d">${u.d}</div></button>`).join('');
-  document.querySelectorAll('#refSel button').forEach(b=>b.onclick=()=>{state.ref=b.dataset.r;syncConfig();});
-  document.getElementById('prod').addEventListener('change',e=>{ state.row=+e.target.value; const p=curProduct(); state.ref=guessRef(p.family); syncConfig(); });
+    `<button class="pill" data-u="${u.n}" onclick="setUsage(${u.n})"><div class="t">${u.n}. ${tr(u.tk)}</div><div class="d">${tr(u.dk)}</div></button>`).join('');
+  document.querySelectorAll('#refSel button').forEach(b=>b.onclick=()=>{ state.ref=b.dataset.r; state._refTouched=true; syncConfig(); });
+  document.getElementById('prod').addEventListener('change',e=>{ state.row=+e.target.value; const p=curProduct(); state._refTouched=false; state.ref=guessRef(p.family); syncConfig(); });
   document.getElementById('line').addEventListener('change',refreshProdSelect);
   if(state.row==null) state.row=products()[0].row;
   setUsage(state.usage); syncConfig();
@@ -712,17 +1009,22 @@ function refreshProdSelect(){
   const line=document.getElementById('line').value;
   const list=products().filter(p=>!line||p.line===line);
   document.getElementById('prod').innerHTML=list.map(p=>`<option value="${p.row}">${p.product}</option>`).join('');
-  if(!list.some(p=>p.row===state.row) && list[0]) state.row=list[0].row;
+  if(!list.some(p=>p.row===state.row) && list[0]){ state.row=list[0].row; state.ref=guessRef(list[0].family); }
   document.getElementById('prod').value=state.row;
+  syncConfig(); // keep prodMeta + ref + refHint in sync after any select change
 }
 function setUsage(n){ state.usage=n; document.querySelectorAll('#usagePills .pill').forEach(b=>b.classList.toggle('on',+b.dataset.u===n)); }
 function syncConfig(){
-  const p=curProduct();
+  const p=curProduct(); if(!p) return;
   document.getElementById('prod').value=p.row;
   document.getElementById('line').value=p.line;
-  document.getElementById('prodMeta').innerHTML=`Famille <b>${p.family}</b> · N ${f(p.n,0)} · P₂O₅ ${f(p.p,0)} · K₂O ${f(p.k,0)} · S ${f(p.s,0)} · total nutriments ${f(p.nutrient_total,0)} · cs_acp ${f(p.cs_acp,3)}`;
+  // Business-friendly meta: no internal coefficients exposed.
+  document.getElementById('prodMeta').innerHTML=`Famille <b>${escapeHtml(p.family)}</b> · grade <b>${f(p.n,0)}-${f(p.p,0)}-${f(p.k,0)}${p.s?(' + '+f(p.s,0)+'S'):''}</b> · total nutriments ${f(p.nutrient_total,0)} %`;
+  // Auto-default reference to the family-appropriate one (TSP for TSP-like families) the first time we see this product.
+  const def=guessRef(p.family);
+  if(!state._refTouched){ state.ref=def; }
   document.querySelectorAll('#refSel button').forEach(b=>b.classList.toggle('on',b.dataset.r===state.ref));
-  document.getElementById('refHint').innerHTML=`Référence proposée par défaut pour la famille <b>${p.family}</b> : <b>${guessRef(p.family)}</b>. Vous pouvez la changer.`;
+  document.getElementById('refHint').innerHTML=`Référence par défaut pour la famille <b>${escapeHtml(p.family)}</b> : <b>${def}</b>. Modifiable.`;
 }
 
 /* ============ INPUTS screen ============ */
@@ -1119,6 +1421,315 @@ function applySc3ToCgm(){
   setTimeout(()=>{ alert('Prix Sc3 FOB injecté : '+f(fob,1)+' $/t. Vois les KPIs CGM/MCV/Floor dans Résultats.'); },50);
 }
 
+/* ============================================================
+ * COCKPIT — Crisis center: ticker, playbook, S-heatmap,
+ * substitution advisor, AI co-pilot. Inspired by Netflix rails,
+ * Spotify nav and Uber action hierarchy.
+ * ============================================================ */
+const RM_SHORT={rock:'Roche',nh3:'NH₃',sulphur:'Soufre',kcl:'KCl',sam:'SAM',acs:'H₂SO₄'};
+// Crisis scenarios: each defines RM-price multipliers vs baseline.
+const CRISIS_SCN=[
+  {id:'calm',  key:'ck.scn.calm',  ico:'🟢', mult:{}, tone:'calm', tag:'baseline'},
+  {id:'s50',   key:'ck.scn.s50',   ico:'🟥', mult:{sulphur:1.5, acs:1.4}, tone:'hot'},
+  {id:'s30n15',key:'ck.scn.s30n15',ico:'🟧', mult:{sulphur:1.3, acs:1.25, nh3:1.15}, tone:'hot'},
+  {id:'rock20',key:'ck.scn.rock20',ico:'🟧', mult:{rock:1.2}, tone:'warn'},
+  {id:'kcl',   key:'ck.scn.kcl',   ico:'🟦', mult:{kcl:1.15, sop:1.15}, tone:'warn'},
+  {id:'recov', key:'ck.scn.recov', ico:'🟩', mult:{sulphur:0.85, nh3:0.92, acs:0.85}, tone:'cool'}
+];
+let CK_BASELINE_RM=null; // saved snapshot of "natural" RM prices to revert
+const LS_MKT_REF='cgm_mkt_ref_v1';
+function mktRefLoad(){ try{return JSON.parse(localStorage.getItem(LS_MKT_REF))||null;}catch(e){return null;} }
+function mktRefSave(o){ try{localStorage.setItem(LS_MKT_REF, JSON.stringify(o));}catch(e){} }
+function mktRefClear(){ try{localStorage.removeItem(LS_MKT_REF);}catch(e){} }
+function tickerBaseline(){ const ref=mktRefLoad(); return (ref&&ref.prices)?ref.prices:(CK_BASELINE_RM||{}); }
+function tickerLabel(){
+  const sc=CRISIS_SCN.find(s=>s.id===CK_SCENARIO);
+  if(CK_SCENARIO!=='calm') return tr(sc.key);
+  const ref=mktRefLoad();
+  if(ref&&ref.ts){
+    try{ const d=new Date(ref.ts); return 'Market Intel · '+d.toLocaleDateString(LOC[LANG]||'fr-FR',{day:'2-digit',month:'short',year:'2-digit'}); }
+    catch(e){ return 'Market Intel'; }
+  }
+  return tr('ck.baselineCalm')||'baseline calme';
+}
+let CK_SCENARIO='calm';
+let CK_HEAT_MODE='exposed';
+function ckBaselineSnapshot(){ if(!CK_BASELINE_RM) CK_BASELINE_RM=Object.assign({}, DATA.defaults.rm_prices); }
+function ckApplyScenario(id){
+  ckBaselineSnapshot();
+  const sc=CRISIS_SCN.find(s=>s.id===id)||CRISIS_SCN[0];
+  CK_SCENARIO=id;
+  // Reset to baseline then apply multipliers
+  RM_KEYS.forEach(k=>{ state.rm[k]= (CK_BASELINE_RM[k]||0)*((sc.mult&&sc.mult[k])||1); });
+  if(typeof renderInputs==='function') renderInputs();
+  renderCockpit();
+}
+function ckResetScenario(){ ckApplyScenario('calm'); }
+function ckPortfolioStats(){
+  const list=products(); const refDap=DATA.references.dap.row, refTsp=DATA.references.tsp.row;
+  let totCgm=0, under=0, count=0;
+  list.forEach(p=>{
+    const ref = /TSP|PHOSGOLD|TSP\+/.test(p.family) ? 'TSP':'DAP';
+    const refPrice = ref==='TSP'?state.refprice.tsp:state.refprice.dap;
+    const rmc=rmCost(p,state.rm);
+    const refMarg=refPrice - rmCost({cs_rock:0,cs_acp:DATA.references[ref.toLowerCase()].cs_acp,cs_nh3:0,cs_acs:0,cs_sulfur:0,cs_borax:0,cs_zno:0,cs_cuso4:0,cs_kcl:0,cs_sam:0,cs_caso4:0,cs_caco3:0,cs_gypse:0}, state.rm);
+    // baseline price = nutrient-value price for fair "is product under?" check
+    const nutri = nutrientPrice(p, ref, refPrice);
+    const cgm = cgmEq(p, nutri, rmc, ref);
+    if(isFinite(cgm)){ totCgm+=cgm; count++; if(cgm<refMarg-1) under++; }
+  });
+  return {avg: count?totCgm/count:0, under, total:list.length};
+}
+function ckSensS(p){
+  // Sensitivity ∂CGM/∂P_S in $/t product per $/t sulphur.
+  // CGM ~ (price - rmc), rmc depends on cs_sulfur + cs_acs * sulfur_index_h2so4 (S from H2SO4 path)
+  const dSulf = (p.cs_sulfur||0) + (p.cs_acs||0)*(DATA.constants.sulfur_index_h2so4||0.331);
+  return -dSulf; // negative because higher P_S reduces CGM (rmc up)
+}
+function ckHeatList(){
+  const arr=products().map(p=>({p, s: Math.abs(ckSensS(p)), raw: ckSensS(p)}));
+  arr.sort((a,b)=>b.s-a.s);
+  return CK_HEAT_MODE==='exposed' ? arr.slice(0,10) : arr.slice(-10).reverse();
+}
+function renderCkTicker(){
+  const host=document.getElementById('ckTicker'); if(!host) return;
+  ckBaselineSnapshot();
+  const base=tickerBaseline();
+  const items=['sulphur','nh3','rock','kcl','sam','acs'].map(k=>{
+    const cur=state.rm[k]||0, baseV=base[k]||0;
+    const d= baseV?((cur-baseV)/baseV*100):0;
+    const moved=Math.abs(d)>=0.1;
+    const cls = d>0.1?'up':(d<-0.1?'down':'flat');
+    const dStr = moved ? ((d>=0?'+':'')+d.toFixed(1)+'%') : '';
+    return `<span class="ck-tik"><span class="ck-tnm">${RM_SHORT[k]||k.toUpperCase()}</span><b>${f(cur,0)} <i>$/t</i></b>${moved?`<span class="ck-td ${cls}">${dStr}</span>`:''}</span>`;
+  }).join('');
+  const hasMi = window.DNAI_CGMCK && window.DNAI_CGMCK.mi && window.DNAI_CGMCK.prices;
+  const syncBtn = hasMi ? '<button class="ck-tsync" id="ckTSync" title="'+tr('ck.miSync')+'">⟳</button>' : '';
+  host.innerHTML='<div class="ck-tlabel"><span class="ck-tpulse"></span>LIVE · <i>vs '+escapeHtml(tickerLabel())+'</i>'+syncBtn+'<button class="ck-tedit" onclick="ckOpenMktRef()" title="'+tr('ck.mktSet')+'">⚙</button></div><div class="ck-trail">'+items+items+'</div>';
+  const sb=document.getElementById('ckTSync'); if(sb) sb.onclick=ckSyncMarketIntel;
+}
+async function ckSyncMarketIntel(){
+  if(!window.DNAI_CGMCK || !window.DNAI_CGMCK.prices){ alert('Market Intel non configuré'); return; }
+  const btn=document.getElementById('ckTSync'); if(btn){ btn.classList.add('spin'); btn.disabled=true; }
+  try{
+    const res=await fetch(window.DNAI_CGMCK.prices,{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':window.DNAI_CGMCK.nonce||''},body:'{}'});
+    const j=await res.json();
+    if(j && j.error){ alert('Market Intel : '+j.error); return; }
+    if(j && j.prices){
+      // Apply CURRENT prices to state.rm
+      Object.keys(j.prices).forEach(k=>{ if(j.prices[k]!=null && state.rm.hasOwnProperty(k)) state.rm[k]=+j.prices[k]; });
+      // Set the Market Intel baseline = previous-period prices (for the ticker delta)
+      const prev={}; Object.keys(j.previous||{}).forEach(k=>{ if(j.previous[k]!=null) prev[k]=+j.previous[k]; });
+      if(Object.keys(prev).length){
+        mktRefSave({ts:(j.as_of||new Date().toISOString().slice(0,10)), prices:Object.assign({},tickerBaseline(),prev)});
+      }
+      ckBaselineSnapshot();
+      if(typeof renderInputs==='function') renderInputs();
+      renderCockpit();
+      toast(typeof tr==='function'?(tr('ck.miOk')||'Market Intel synchronisé'):'Market Intel synchronisé');
+    }
+  }catch(e){ alert('Erreur Market Intel: '+e.message); }
+  finally{ if(btn){ btn.classList.remove('spin'); btn.disabled=false; } }
+}
+function toast(msg){ const t=document.createElement('div'); t.className='ck-toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>{t.classList.add('show')},10); setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300)},2500); }
+function ckOpenMktRef(){
+  const ref=mktRefLoad()||{ts:new Date().toISOString().slice(0,10), prices:Object.assign({},state.rm)};
+  const RM=['sulphur','nh3','rock','kcl','sam','acs'];
+  const html='<div class="ck-modal-wrap" onclick="if(event.target===this)ckCloseMktRef()">'
+    +'<div class="ck-modal">'
+    +'<div class="ck-modal-head"><h3>'+tr('ck.mktTitle')+'</h3><button class="ck-modal-x" onclick="ckCloseMktRef()">✕</button></div>'
+    +'<p class="ck-modal-sub">'+tr('ck.mktSub')+'</p>'
+    +'<label class="ck-modal-lbl">'+tr('ck.mktDate')+'</label>'
+    +'<input type="date" id="ckRefDate" value="'+escapeHtml(ref.ts||'')+'">'
+    +'<div class="ck-modal-grid">'+RM.map(k=>'<label class="ck-modal-fld"><span>'+(RM_SHORT[k]||k.toUpperCase())+' ($/t)</span><input type="number" min="0" step="1" id="ckRef-'+k+'" value="'+(ref.prices&&ref.prices[k]||0)+'"></label>').join('')+'</div>'
+    +'<div class="ck-modal-act"><button class="btn ghost sm" onclick="ckClearMktRef()">'+tr('ck.mktClear')+'</button><span style="flex:1"></span><button class="btn ghost sm" onclick="ckCloseMktRef()">'+tr('ck.cancel')+'</button><button class="btn primary" onclick="ckSaveMktRef()">'+tr('ck.mktSave')+'</button></div>'
+    +'</div></div>';
+  const div=document.createElement('div'); div.id='ckMktModal'; div.innerHTML=html; document.body.appendChild(div);
+}
+function ckCloseMktRef(){ const m=document.getElementById('ckMktModal'); if(m)m.remove(); }
+function ckSaveMktRef(){
+  const RM=['sulphur','nh3','rock','kcl','sam','acs']; const prices={};
+  RM.forEach(k=>{ const el=document.getElementById('ckRef-'+k); prices[k]=el?(parseFloat(el.value)||0):0; });
+  const ts=(document.getElementById('ckRefDate').value)||new Date().toISOString().slice(0,10);
+  mktRefSave({ts:ts, prices:prices});
+  ckCloseMktRef(); renderCockpit();
+}
+function ckClearMktRef(){ mktRefClear(); ckCloseMktRef(); renderCockpit(); }
+function renderCkHero(){
+  const host=document.getElementById('ckHero'); if(!host) return;
+  const sc=CRISIS_SCN.find(s=>s.id===CK_SCENARIO)||CRISIS_SCN[0];
+  const stats=ckPortfolioStats();
+  ckBaselineSnapshot();
+  // baseline stats (only if scenario != calm)
+  let dCgm=0; if(CK_SCENARIO!=='calm'){
+    const savedRm=Object.assign({},state.rm); state.rm=Object.assign({},CK_BASELINE_RM);
+    const base=ckPortfolioStats(); state.rm=savedRm;
+    dCgm = stats.avg - base.avg;
+  }
+  const heat=ckHeatList()[0];
+  host.innerHTML=`<div class="ck-hero-inner ck-tone-${sc.tone}">
+    <div class="ck-hero-meta">
+      <span class="ck-pill">${sc.ico} ${tr(sc.key)}</span>
+      <span class="ck-pill ghost">${CK_SCENARIO==='calm'?tr('ck.heroBaseline'):tr('ck.heroDelta')}</span>
+    </div>
+    <div class="ck-hero-grid">
+      <div class="ck-hero-stat"><div class="ck-h-l">${tr('ck.heroAvgCgm')}</div><div class="ck-h-v">${f(stats.avg,0)} <i>$/t</i></div>${CK_SCENARIO!=='calm'?`<div class="ck-h-d ${dCgm<0?'down':'up'}">${dCgm>=0?'+':''}${f(dCgm,0)} $/t vs baseline</div>`:'<div class="ck-h-d flat">référence</div>'}</div>
+      <div class="ck-hero-stat"><div class="ck-h-l">${tr('ck.heroUnder')}</div><div class="ck-h-v">${stats.under}<i style="font-size:14px"> / ${stats.total}</i></div><div class="ck-h-d ${stats.under>10?'down':'flat'}">${(stats.under/Math.max(stats.total,1)*100).toFixed(0)}% du catalogue</div></div>
+      <div class="ck-hero-stat"><div class="ck-h-l">${tr('ck.heroExposed')}</div><div class="ck-h-v" style="font-size:18px;line-height:1.2">${heat?escapeHtml(heat.p.product):'—'}</div><div class="ck-h-d flat">${heat?escapeHtml(heat.p.family+' · '+heat.p.line):''}</div></div>
+    </div>
+  </div>`;
+}
+function renderCkPlaybook(){
+  const host=document.getElementById('ckPlaybook'); if(!host) return;
+  ckBaselineSnapshot();
+  host.innerHTML = CRISIS_SCN.map(sc=>{
+    const active=CK_SCENARIO===sc.id;
+    const deltas=Object.keys(sc.mult||{}).map(k=>`${RM_SHORT[k]||k.toUpperCase()} ${sc.mult[k]>=1?'+':''}${Math.round((sc.mult[k]-1)*100)}%`).slice(0,3).join(' · ')||'—';
+    return `<div class="ck-card ck-scn ck-tone-${sc.tone} ${active?'on':''}" onclick="ckApplyScenario('${sc.id}')">
+      <div class="ck-card-top"><span class="ck-card-ico">${sc.ico}</span>${active?'<span class="ck-card-active">ACTIF</span>':''}</div>
+      <div class="ck-card-title">${tr(sc.key)}</div>
+      <div class="ck-card-meta">${escapeHtml(deltas)}</div>
+    </div>`;
+  }).join('');
+}
+function renderCkHeat(){
+  document.querySelectorAll('.ck-tab').forEach(b=>b.classList.toggle('on',b.dataset.hp===CK_HEAT_MODE));
+  const host=document.getElementById('ckHeat'); if(!host) return;
+  const list=ckHeatList(); const max=list.length?list[0].s:1;
+  host.innerHTML = list.map(({p,s})=>{
+    const pct=Math.round(s/max*100);
+    const cls= CK_HEAT_MODE==='exposed'?'hot':'cool';
+    const dCGM = (state.rm.sulphur||100)*0.5*(-ckSensS(p)); // est impact if S goes +50%
+    return `<div class="ck-card ck-heat ${cls}" onclick="ckOpenProduct(${p.row})">
+      <div class="ck-heat-bar"><div style="width:${pct}%"></div></div>
+      <div class="ck-card-title">${escapeHtml(p.product)}</div>
+      <div class="ck-card-meta">${escapeHtml(p.family+' · '+p.line)} · S-cs <b>${(s).toFixed(3)}</b></div>
+      <div class="ck-heat-dt">si S +50% → CGM ${dCGM<0?'':'+'}${f(dCGM,0)} $/t</div>
+    </div>`;
+  }).join('');
+}
+function ckOpenProduct(row){ state.row=row; refreshProdSelect(); syncConfig(); goTab('results'); }
+function ckSetHeat(m){ CK_HEAT_MODE=m; renderCkHeat(); }
+function renderCkSubs(){
+  const sel=document.getElementById('ckSubProd'); if(!sel) return;
+  const list=products().slice().sort((a,b)=>a.product.localeCompare(b.product));
+  if(!sel.children.length) sel.innerHTML=list.map(p=>`<option value="${p.row}">${escapeHtml(p.product)} · ${p.line} (N${p.n} P${p.p} K${p.k} S${p.s})</option>`).join('');
+  if(!sel._wired){ sel.onchange=function(){ ckRenderSubs(parseInt(this.value,10)); }; sel._wired=true; }
+  ckRenderSubs(parseInt(sel.value,10));
+}
+function ckRenderSubs(row){
+  const host=document.getElementById('ckSubs'); if(!host) return;
+  const list=products(); const tgt=list.find(p=>p.row===row); if(!tgt){host.innerHTML='';return;}
+  const refTgt = /TSP|PHOSGOLD|TSP\+/.test(tgt.family) ? 'TSP':'DAP';
+  const refPriceTgt = refTgt==='TSP'?state.refprice.tsp:state.refprice.dap;
+  const cgmTgt = cgmEq(tgt, nutrientPrice(tgt,refTgt,refPriceTgt), rmCost(tgt,state.rm), refTgt);
+  const tol=2;
+  const alts=list.filter(p=>p.row!==row
+      && Math.abs((p.n||0)-(tgt.n||0))<=tol
+      && Math.abs((p.p||0)-(tgt.p||0))<=tol
+      && Math.abs((p.k||0)-(tgt.k||0))<=tol
+      && Math.abs((p.s||0)-(tgt.s||0))<=tol)
+    .map(p=>{
+      const r= /TSP|PHOSGOLD|TSP\+/.test(p.family) ? 'TSP':'DAP';
+      const rp= r==='TSP'?state.refprice.tsp:state.refprice.dap;
+      const c = cgmEq(p, nutrientPrice(p,r,rp), rmCost(p,state.rm), r);
+      return {p, cgm:c, delta:c-cgmTgt};
+    })
+    .sort((a,b)=>b.cgm-a.cgm).slice(0,6);
+  if(!alts.length){ host.innerHTML='<p class="muted" style="font-size:13px">'+tr('ck.noAlt')+'</p>'; return; }
+  host.innerHTML='<div class="ck-sublist">'+alts.map(a=>{
+    const cls=a.delta>2?'up':(a.delta<-2?'down':'flat');
+    const lbl=a.delta>2?tr('ck.subBetter'):(a.delta<-2?tr('ck.subWorse'):tr('ck.subSame'));
+    return `<div class="ck-subrow ${cls}">
+      <div class="ck-sub-name"><b>${escapeHtml(a.p.product)}</b><span class="muted"> · ${escapeHtml(a.p.line)} · N${a.p.n} P${a.p.p} K${a.p.k} S${a.p.s}</span></div>
+      <div class="ck-sub-cgm">${f(a.cgm,0)} <i>$/t</i></div>
+      <div class="ck-sub-dt ${cls}">${a.delta>=0?'+':''}${f(a.delta,0)} ${lbl}</div>
+      <button class="btn ghost sm" onclick="ckOpenProduct(${a.p.row})">${tr('ck.subPick')}</button>
+    </div>`;
+  }).join('')+'</div>';
+}
+function ckCpSugs(){
+  const host=document.getElementById('ckCpSugs'); if(!host) return;
+  const sugs={fr:['Quel est mon produit le plus exposé au souffre ?','Quels NPS devrais-je pousser si NH3 monte de 20 % ?','Donne-moi la stratégie de prix pour le DAP Standard si S atteint $300','Compare PHOSGOLD vs NPS sous un choc S +50 %'],
+              en:['What product is most exposed to sulfur?','Which NPS should I push if NH3 rises 20%?','Pricing strategy for DAP Standard if S hits $300','Compare PHOSGOLD vs NPS under a S +50% shock'],
+              pt:['Qual produto está mais exposto ao enxofre?','Quais NPS devo empurrar se NH3 subir 20%?','Estratégia de preço para o DAP Standard se S atingir $300','Comparar PHOSGOLD vs NPS sob um choque S +50%']};
+  host.innerHTML='<div class="ck-sugs-l">'+tr('ck.cpHint')+'</div>'+(sugs[LANG]||sugs.fr).map(s=>`<button class="ck-sug" onclick="ckCpFill(${JSON.stringify(s)})">${escapeHtml(s)}</button>`).join('');
+}
+function ckCpFill(s){ const i=document.getElementById('ckCpInput'); if(i){i.value=s;i.focus();} }
+function ckChatPush(role, text){
+  const c=document.getElementById('ckChat'); if(!c) return;
+  const div=document.createElement('div'); div.className='ck-msg '+role; div.innerHTML=role==='ai'?text:('<b>›</b> '+escapeHtml(text));
+  c.appendChild(div); c.scrollTop=c.scrollHeight;
+}
+/* AI backend resolution: prefer Claude via Databricks (DNAI_CGMCK), fallback to NutrientOS curator. */
+function ckAiBackend(){
+  if(window.DNAI_CGMCK && window.DNAI_CGMCK.ai && window.DNAI_CGMCK.chat){
+    return {name:'D²nAI bot', url:window.DNAI_CGMCK.chat, nonce:window.DNAI_CGMCK.nonce||'', mode:'chat'};
+  }
+  if(window.DNAI_NOS && window.DNAI_NOS.curate){
+    return {name:'D²nAI bot', url:window.DNAI_NOS.curate, nonce:window.DNAI_NOS.nonce||'', mode:'curate'};
+  }
+  return null;
+}
+async function ckCpAsk(){
+  const inp=document.getElementById('ckCpInput'); const q=(inp.value||'').trim(); if(!q) return;
+  ckChatPush('user', q); inp.value='';
+  const be=ckAiBackend();
+  if(!be){
+    ckChatPush('ai','<i class="ck-err">'+tr('ck.cpError')+' backend non configuré.</i>'); return;
+  }
+  const wait=document.createElement('div'); wait.className='ck-msg ai pending'; wait.innerHTML='<span class="ck-think">'+tr('ck.cpThinking')+'</span>';
+  document.getElementById('ckChat').appendChild(wait); wait.scrollIntoView({block:'end'});
+  // Build context payload
+  const stats=ckPortfolioStats();
+  const sc=CRISIS_SCN.find(s=>s.id===CK_SCENARIO);
+  const ctx={
+    scenario:CK_SCENARIO+' ('+tr(sc.key)+')',
+    portfolio:{avg_cgm:Math.round(stats.avg), under_priced:stats.under, total:stats.total},
+    rm_prices:state.rm, ref_prices:state.refprice,
+    top_S_exposed: ckHeatList().slice(0,5).map(x=>({product:x.p.product, line:x.p.line, family:x.p.family, S_sensitivity:+(x.s).toFixed(3)})),
+    current_product: curProduct()?.product
+  };
+  const sys='Tu es un assistant pricing pour OCP Nutricrops — expert engrais phosphatés (DAP/MAP/TSP/NPS/PHOSGOLD), CGM, et marché en crise du soufre. Réponds en '+LANG+', de façon courte et actionnable, avec chiffres. Si la question demande une simulation précise, indique-le et propose le scénario CGM à lancer.';
+  try{
+    let res, raw;
+    if(be.mode==='chat'){
+      // OpenAI-compatible chat schema (Databricks Foundation Model APIs)
+      const payload={messages:[
+        {role:'system', content:sys+'\n\nCONTEXTE COURANT (JSON):\n'+JSON.stringify(ctx,null,2)+'\n\nRéponds en texte clair (markdown léger), 3-6 phrases max.'},
+        {role:'user', content:q}
+      ], temperature:0.2, max_tokens:700};
+      res=await fetch(be.url,{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':be.nonce},body:JSON.stringify(payload)});
+      raw=await res.json();
+    } else {
+      // Legacy single-blob path (NutrientOS curate, document-curation style)
+      const payload={title:'CGM Co-pilot Q&A', ftype:'text/plain', content:'SYSTEM:\n'+sys+'\n\nCONTEXT:\n'+JSON.stringify(ctx,null,2)+'\n\nQUESTION:\n'+q+'\n\nRéponds en texte clair (markdown léger possible, pas de JSON), 3-6 phrases max.'};
+      res=await fetch(be.url,{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':be.nonce},body:JSON.stringify(payload)});
+      raw=await res.json();
+    }
+    wait.remove();
+    let ans='';
+    if(typeof raw==='string') ans=raw;
+    else if(raw && raw.text) ans=raw.text;
+    else if(raw && raw.summary) ans=raw.summary;
+    else if(raw && raw.description) ans=raw.description;
+    else if(raw && raw.answer) ans=raw.answer;
+    else if(raw && raw.message && raw.code) ans='<i class="ck-err">'+tr('ck.cpError')+' '+escapeHtml(raw.message)+'</i>';
+    else if(raw && raw.error) ans='<i class="ck-err">'+tr('ck.cpError')+' '+escapeHtml(raw.error)+'</i>';
+    else ans = '<pre class="ck-raw">'+escapeHtml(JSON.stringify(raw,null,2))+'</pre>';
+    ans=String(ans).replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');
+    const usage = `<div class="ck-usage">D²nAI bot</div>`;
+    ckChatPush('ai', ans+usage);
+  }catch(e){ wait.remove(); ckChatPush('ai','<i class="ck-err">'+tr('ck.cpError')+' '+escapeHtml(e.message||e)+'</i>'); }
+}
+let _ckTickerTimer=null;
+function renderCockpit(){
+  ckBaselineSnapshot();
+  renderCkTicker(); renderCkHero(); renderCkPlaybook(); renderCkHeat(); renderCkSubs(); ckCpSugs();
+  if(_ckTickerTimer) clearInterval(_ckTickerTimer);
+  _ckTickerTimer=setInterval(renderCkTicker, 5000); // refresh ticker (in case state.rm changes)
+}
+
 /* ============ MARKET INTEL (Power BI / Fabric) ============ */
 const MKT_PLATFORM_URL='https://app.fabric.microsoft.com/links/J0Afkgg1kT?ctid=eb5d9cdc-7d97-42ed-82de-41dbcbb698fb&pbi_source=linkShare';
 function renderMarket(){
@@ -1286,12 +1897,162 @@ function grow(scope){
 const _goTab = goTab;
 goTab = function(t){ _goTab(t); tagReveal(); setTimeout(postHeight, 60); };
 
+/* ============================================================
+ * FEEDBACK EDITION — right-click any block to drop a comment
+ * tied to its context (view/tab/block/breadcrumb). All comments
+ * stay in localStorage; export JSON/CSV at the end.
+ * ============================================================ */
+const FB = (function(){
+  const LS='cgmck_feedback_v1', LS_AUTHOR='cgmck_feedback_author_v1';
+  let list = []; try{ list = JSON.parse(localStorage.getItem(LS))||[]; }catch(e){ list=[]; }
+  let author = ''; try{ author = localStorage.getItem(LS_AUTHOR)||''; }catch(e){}
+  function save(){ try{ localStorage.setItem(LS, JSON.stringify(list)); }catch(e){} renderBadge(); }
+  function setAuthor(a){ author=(a||'').trim(); try{ localStorage.setItem(LS_AUTHOR, author); }catch(e){} }
+  function uid(){ return 'fb-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+  function viewLabel(){
+    const on=document.querySelector('.screen.on'); if(!on) return '(global)';
+    const id = on.id || '';
+    const t = TABS[profile]||[];
+    const tab = t.find(x=>TABSCREEN[x[0]]===id);
+    return tab ? tr(tab[2]) : id;
+  }
+  function blockLabel(el){
+    if(!el) return '(zone)';
+    // 1) explicit data-fb-name on closest ancestor
+    let n=el.closest('[data-fb-name]'); if(n) return n.getAttribute('data-fb-name');
+    // 2) nearest container of interest
+    const known=el.closest('.ck-card, .ck-panel, .ck-row, .ck-hero-inner, .ck-ticker, .ck-modal, .card, .pcard, .sc3card, .sc3hero, .scol, .kpi, .panel, .scen2');
+    if(known){
+      const h=known.querySelector('h3,h4,h2'); if(h && h.textContent.trim()) return h.textContent.trim().slice(0,80);
+      const cls=(known.className||'').split(/\s+/).find(c=>/^(ck-|sc3|p)/.test(c)); if(cls) return cls;
+    }
+    // 3) fallback: nearest header text
+    let p=el; for(let i=0;i<8 && p;i++,p=p.parentElement){ const hh=p.querySelector && p.querySelector('h2,h3,h4'); if(hh) return hh.textContent.trim().slice(0,80); }
+    return '(zone non identifiée)';
+  }
+  function selectorOf(el){
+    if(!el) return '';
+    if(el.id) return '#'+el.id;
+    const path=[];
+    while(el && el.nodeType===1 && path.length<5){
+      let p=el.nodeName.toLowerCase();
+      if(el.className && typeof el.className==='string'){ const c=el.className.trim().split(/\s+/).slice(0,2).join('.'); if(c) p+='.'+c; }
+      path.unshift(p);
+      el=el.parentElement;
+    }
+    return path.join(' > ');
+  }
+  let hoveredEl=null, modal=null;
+  function addAt(el, x, y){
+    hoveredEl=el; closeMenu();
+    el && el.classList.add('fb-highlight');
+    const view=viewLabel(); const block=blockLabel(el); const sel=selectorOf(el);
+    modal=document.createElement('div'); modal.className='fb-modal-wrap';
+    modal.innerHTML='<div class="fb-modal" onclick="event.stopPropagation()">'
+      +'<div class="fb-head"><h3>💬 Ajouter un commentaire</h3><button class="fb-x">✕</button></div>'
+      +'<div class="fb-ctx"><span class="fb-lbl">SUR</span><b>'+escapeHtml(block)+'</b><span class="fb-bread">'+escapeHtml(view)+'</span></div>'
+      +'<label class="fb-flbl">Auteur</label><input class="fb-author" type="text" placeholder="ton prénom" value="'+escapeHtml(author)+'">'
+      +'<label class="fb-flbl">Commentaire</label><textarea class="fb-text" rows="4" placeholder="Que faut-il changer / ajouter / corriger ?"></textarea>'
+      +'<div class="fb-act"><button class="fb-cancel">Annuler</button><button class="fb-save">Enregistrer</button></div>'
+      +'</div>';
+    document.body.appendChild(modal);
+    const close=()=>{ if(modal){modal.remove();modal=null;} if(hoveredEl) hoveredEl.classList.remove('fb-highlight'); };
+    modal.addEventListener('click', e=>{ if(e.target===modal) close(); });
+    modal.querySelector('.fb-x').onclick=close;
+    modal.querySelector('.fb-cancel').onclick=close;
+    setTimeout(()=>{ const t=modal.querySelector('.fb-text'); if(t) t.focus(); },50);
+    modal.querySelector('.fb-save').onclick=function(){
+      const a=modal.querySelector('.fb-author').value.trim();
+      const text=modal.querySelector('.fb-text').value.trim();
+      if(!text){ alert('Le commentaire est vide.'); return; }
+      setAuthor(a);
+      list.unshift({id:uid(), ts:new Date().toISOString(), author:a, view:view, block:block, selector:sel, lang:LANG, scenario:CK_SCENARIO, comment:text});
+      save(); close(); flashBadge();
+    };
+  }
+  // CONTEXT MENU
+  let menu=null;
+  function closeMenu(){ if(menu){menu.remove();menu=null;} }
+  function openMenu(e){
+    closeMenu(); const target=e.target;
+    // ignore native form controls so users can still right-click in inputs
+    if(target.closest && target.closest('input, select, textarea, .fb-modal, .fb-panel')) return;
+    e.preventDefault();
+    menu=document.createElement('div'); menu.className='fb-menu';
+    menu.style.left=Math.min(e.clientX, window.innerWidth-220)+'px';
+    menu.style.top =Math.min(e.clientY, window.innerHeight-110)+'px';
+    menu.innerHTML='<button class="fb-mi" data-act="add">💬 Ajouter un commentaire ici</button>'
+      +'<button class="fb-mi" data-act="open">📋 Voir tous les commentaires ('+list.length+')</button>';
+    document.body.appendChild(menu);
+    menu.querySelector('[data-act=add]').onclick=()=>{ closeMenu(); addAt(target, e.clientX, e.clientY); };
+    menu.querySelector('[data-act=open]').onclick=()=>{ closeMenu(); openPanel(); };
+  }
+  document.addEventListener('contextmenu', openMenu);
+  document.addEventListener('click', e=>{ if(menu && !menu.contains(e.target)) closeMenu(); });
+  // BADGE + PANEL
+  let badge=null, panel=null;
+  function renderBadge(){ if(!badge) return; badge.innerHTML='💬 '+list.length+' commentaire'+(list.length>1?'s':''); badge.classList.toggle('hot', list.length>0); }
+  function flashBadge(){ if(!badge) return; badge.classList.add('flash'); setTimeout(()=>badge.classList.remove('flash'), 700); }
+  function openPanel(){
+    if(panel){ panel.remove(); panel=null; return; }
+    panel=document.createElement('div'); panel.className='fb-panel';
+    const head='<div class="fb-phead"><h3>📋 Commentaires ('+list.length+')</h3><button class="fb-x">✕</button></div>'
+      +'<div class="fb-pacts"><button class="fb-btn" data-act="exjson">⤓ JSON</button><button class="fb-btn" data-act="excsv">⤓ CSV</button><button class="fb-btn" data-act="excopy">📋 Copier markdown</button><span style="flex:1"></span><button class="fb-btn danger" data-act="clear">🗑 Tout effacer</button></div>';
+    const body=list.length?
+      '<div class="fb-list">'+list.map(c=>`<div class="fb-item" data-id="${c.id}">
+        <div class="fb-iblock"><b>${escapeHtml(c.block)}</b><span>${escapeHtml(c.view)}${c.scenario&&c.scenario!=='calm'?(' · '+escapeHtml(c.scenario)):''}</span></div>
+        <div class="fb-itext">${escapeHtml(c.comment)}</div>
+        <div class="fb-imeta"><span>${escapeHtml(c.author||'anonyme')}</span><span>${new Date(c.ts).toLocaleString('fr-FR')}</span><button class="fb-del" title="Supprimer">🗑</button></div>
+      </div>`).join('')+'</div>':
+      '<p class="fb-empty">Aucun commentaire pour le moment. Clic-droit sur n\'importe quel bloc pour en ajouter un.</p>';
+    panel.innerHTML='<div class="fb-pinner">'+head+body+'</div>';
+    document.body.appendChild(panel);
+    panel.querySelector('.fb-x').onclick=()=>{ panel.remove(); panel=null; };
+    panel.querySelectorAll('.fb-del').forEach(b=>b.onclick=function(e){ e.stopPropagation();
+      const id=this.closest('.fb-item').dataset.id; list=list.filter(x=>x.id!==id); save(); panel.remove(); panel=null; openPanel();
+    });
+    panel.querySelector('[data-act=clear]').onclick=function(){ if(!confirm('Effacer tous les commentaires ?')) return; list=[]; save(); panel.remove(); panel=null; openPanel(); };
+    panel.querySelector('[data-act=exjson]').onclick=()=>exportFile('cgm-cockpit-feedback-'+stamp()+'.json', JSON.stringify({exportedAt:new Date().toISOString(),count:list.length,comments:list},null,2), 'application/json');
+    panel.querySelector('[data-act=excsv]').onclick=()=>exportFile('cgm-cockpit-feedback-'+stamp()+'.csv', toCsv(), 'text/csv;charset=utf-8');
+    panel.querySelector('[data-act=excopy]').onclick=()=>{ navigator.clipboard.writeText(toMarkdown()).then(()=>alert('Copié en markdown — colle dans Teams/Slack/Notion.')); };
+  }
+  function stamp(){ const d=new Date(); return d.toISOString().slice(0,16).replace(/[:T]/g,'-'); }
+  function csvQ(s){ s=String(s==null?'':s); return '"'+s.replace(/"/g,'""')+'"'; }
+  function toCsv(){
+    const head=['ts','author','view','block','scenario','comment','selector','lang'];
+    const rows=list.map(c=>[c.ts,c.author||'',c.view,c.block,c.scenario||'',c.comment,c.selector||'',c.lang||''].map(csvQ).join(','));
+    return '﻿'+head.join(',')+'\n'+rows.join('\n');
+  }
+  function toMarkdown(){
+    if(!list.length) return '_(aucun commentaire)_';
+    return list.map((c,i)=>`### ${i+1}. ${c.block} *(${c.view})*\n- **Par** ${c.author||'anonyme'} — ${new Date(c.ts).toLocaleString('fr-FR')}${c.scenario&&c.scenario!=='calm'?(' — scénario `'+c.scenario+'`'):''}\n\n${c.comment}\n`).join('\n---\n\n');
+  }
+  function exportFile(name, content, mime){
+    const blob=new Blob([content],{type:mime}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); a.remove();
+  }
+  function mountBadge(){
+    badge=document.createElement('button'); badge.className='fb-badge'; badge.onclick=openPanel;
+    badge.title='Voir les commentaires · clic-droit sur un bloc pour en ajouter un';
+    document.body.appendChild(badge); renderBadge();
+  }
+  return {mount:mountBadge, openPanel:openPanel, count:()=>list.length};
+})();
+FB.mount();
+
 /* ============ init ============ */
 buildTabs();
 buildConfig();
-goTab('config');
+goTab('cockpit');
 applyLang();
 tagReveal();
+/* Discover the Cockpit AI proxy (Claude via Databricks) when embedded
+   via shortcode (no <head> injection): fetch /v1/config once. */
+if(!window.DNAI_CGMCK){
+  try{
+    fetch('/wp-json/dnai-cgm-cockpit/v1/config',{headers:{'Accept':'application/json'}})
+      .then(r=>r.ok?r.json():null).then(c=>{ if(c&&c.chat){ window.DNAI_CGMCK=c; } }).catch(function(){});
+  }catch(e){}
+}
 postHeight();
 </script>
 </body>

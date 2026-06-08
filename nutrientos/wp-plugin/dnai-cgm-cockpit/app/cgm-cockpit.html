@@ -109,9 +109,11 @@ body.embed .tabs{position:static;top:auto}
 .scol.dap .h{background:linear-gradient(135deg,#1B5E20,#2E7D32)}
 .scol.tsp .h{background:linear-gradient(135deg,#0d3a4f,#15708f)}
 .scol .b{padding:16px}
-.scol .line{display:flex;justify-content:space-between;font-size:13.5px;padding:7px 0;border-top:1px solid var(--line)}
+/* v1.16.0 — fix overflow mobile : grid 1fr+auto pour que la valeur (b) reste toujours visible à droite, label peut ellipser */
+.scol .line{display:grid;grid-template-columns:1fr auto;gap:10px;font-size:13.5px;padding:7px 0;border-top:1px solid var(--line);align-items:baseline}
 .scol .line:first-child{border-top:0}
-.scol .line b{font-weight:700}
+.scol .line > span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;color:var(--muted)}
+.scol .line b{font-weight:700;white-space:nowrap;text-align:right;color:var(--ink)}
 .badge{font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px}
 .badge.ok{background:#dcfce7;color:var(--ok)}
 .badge.bad{background:var(--bad-bg);color:var(--bad)}
@@ -217,6 +219,23 @@ tbody tr.sel{background:var(--green-50)}
 @media(max-width:560px){.sc3trow{grid-template-columns:1fr 1fr}.sc3row{grid-template-columns:1fr 1fr;gap:6px}.sc3lbl{grid-column:1/-1}.sc3sel{grid-column:1/-1}.sc3pval b{font-size:34px}}
 @media(max-width:900px){.cfg2{grid-template-columns:1fr}}
 @media(max-width:820px){.grid2,.grid3,.scen2,.fgrid,.cols3in{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.rmrow{grid-template-columns:1fr 100px 84px}}
+/* v1.17.0 — fix overflow horizontal mobile (cards qui dépassaient à droite) */
+@media(max-width:600px){
+  .wrap{padding:0 14px}
+  .card{padding:14px;margin-bottom:14px;max-width:100%;overflow:hidden}
+  .scol{max-width:100%}
+  .scol .b{padding:12px 14px}
+  .scol .line{font-size:12.5px;gap:8px}
+  .scol .line > span{font-size:12px}
+  .rgrid{gap:14px}
+  .kpis{gap:10px}
+  .kpis .kpi{padding:10px 12px;min-width:0}
+  .kpi .v{font-size:22px}
+}
+@media(max-width:380px){
+  .scol .line{font-size:11.5px;padding:6px 0}
+  .scol .h{padding:10px 12px;font-size:13px}
+}
 @media(max-width:560px){.wrap{padding:0 16px}.rmrow{grid-template-columns:1fr 1fr;column-gap:10px;row-gap:6px}.rmrow.stab{grid-template-columns:1fr}.rmrow .nm{grid-column:1/-1}}
 
 /* ============================================================
@@ -267,6 +286,23 @@ tbody tr.sel{background:var(--green-50)}
 .senstoggle button.on{background:var(--green-700);color:#fff}
 .sens-expl{font-size:12.5px;color:var(--muted);line-height:1.5;margin:8px 0 12px;padding:10px 12px;background:var(--soft);border-left:3px solid var(--green-500);border-radius:0 8px 8px 0}
 .sens-expl b{color:var(--green-800)}
+/* v1.15.0 — toggle pct/abs par MP volatile (Inputs) */
+.sensmode{display:inline-flex;border:1px solid var(--line);border-radius:5px;overflow:hidden;margin-left:4px;flex:none}
+.sensmode button{padding:3px 7px;border:0;background:#fff;color:var(--muted);cursor:pointer;font-weight:700;font-size:11px;line-height:1.1}
+.sensmode button.on{background:var(--green-800);color:#fff}
+.sensmode button:hover:not(.on){background:var(--soft)}
+.varwrap{display:flex;align-items:center;gap:0}
+.varwrap input[type=number]{flex:1;min-width:0}
+/* v1.15.0 — Exposition portefeuille */
+.sensPortfolio{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
+.sensPortfolio-head{display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:8px;flex-wrap:wrap}
+.sensPortfolio-head .meta{font-size:11px;color:var(--muted);font-weight:500}
+.sensPortfolio-tbl{width:100%;border-collapse:collapse;font-size:11.5px;background:#fff}
+.sensPortfolio-tbl th{background:var(--soft);color:var(--muted);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.04em;padding:7px 9px;text-align:right;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:1}
+.sensPortfolio-tbl th:first-child,.sensPortfolio-tbl td:first-child{text-align:left}
+.sensPortfolio-tbl td{padding:7px 9px;text-align:right;border-bottom:1px solid var(--line-soft);font-variant-numeric:tabular-nums;color:var(--ink)}
+.sensPortfolio-tbl tr:hover td{background:var(--soft)}
+.btn.sm{padding:5px 9px;font-size:11px;font-weight:600}
 .cmp-famgroup{margin-bottom:10px}
 .cmp-famhead{display:flex;align-items:center;gap:8px;font:700 11px 'Inter';color:var(--green-700);text-transform:uppercase;letter-spacing:.05em;padding:4px 0 4px;margin-bottom:6px;border-bottom:1px solid var(--green-100)}
 .cmp-famhead .cmp-fct{background:var(--green-50);color:var(--green-700);font-size:10px;padding:1px 6px;border-radius:999px;font-weight:800}
@@ -421,6 +457,33 @@ tbody tr.sel{background:var(--green-50)}
 
 /* Co-pilot chat */
 .ck-copilot .ck-chat{flex:1;min-height:160px;max-height:300px;overflow:auto;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:12px;margin-top:10px;display:flex;flex-direction:column;gap:9px;scrollbar-width:thin}
+/* v1.16.0 — co-pilote en hero quand placé tout en haut (avant le ticker/hero) */
+.ck-copilot-top{margin-bottom:18px;background:linear-gradient(135deg,rgba(34,172,20,.18),rgba(34,172,20,.06));border:1px solid rgba(34,172,20,.35);box-shadow:0 8px 24px -12px rgba(34,172,20,.4)}
+.ck-copilot-top .ck-chat{min-height:140px;max-height:380px}
+.ck-copilot-top h3{font-size:17px}
+
+/* v1.17.0 — bubbles interactives (simulation conversationnelle) */
+.cp-bubble{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:12px;padding:11px 13px;display:flex;flex-direction:column;gap:9px}
+.cp-bubble.cp-welcome{background:linear-gradient(135deg,rgba(255,193,7,.18),rgba(255,193,7,.06));border-color:rgba(255,193,7,.45);color:#fff8e1;font:600 13px 'Inter';line-height:1.5}
+.cp-bubble.answered{opacity:.65}
+.cp-bubble.answered .cp-choice,.cp-bubble.answered .cp-input,.cp-bubble.answered .btn{pointer-events:none}
+.cp-preface{font-size:12.5px;color:#cfe3d2;font-style:italic}
+.cp-question{font-size:13.5px;font-weight:600;color:#e8f3ea;line-height:1.4}
+.cp-choices{display:flex;flex-direction:column;gap:6px}
+.cp-choice{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#dff0e3;font:600 12.5px 'Inter',sans-serif;padding:8px 12px;border-radius:9px;cursor:pointer;text-align:left;transition:.15s;line-height:1.35}
+.cp-choice:hover{background:rgba(34,172,20,.25);border-color:rgba(34,172,20,.6);color:#fff}
+.cp-choice-next{background:rgba(34,172,20,.2);border-color:rgba(34,172,20,.45)}
+.cp-choice-next:hover{background:rgba(34,172,20,.4)}
+.cp-inputline{display:flex;gap:6px;align-items:center}
+.cp-input{flex:1;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:8px;padding:8px 10px;font:500 13px 'Inter',sans-serif;outline:none;min-width:0}
+.cp-input:focus{border-color:rgba(34,172,20,.7);background:rgba(0,0,0,.4)}
+.cp-set{background:rgba(34,172,20,.12);border-color:rgba(34,172,20,.3)}
+.cp-set-msg{font-size:12.5px;color:#dff0e3}
+.cp-set-msg b{color:#fff}
+.cp-summary{background:rgba(34,172,20,.1);border-color:rgba(34,172,20,.35)}
+.cp-summary-text{font-size:13px;color:#e8f3ea;line-height:1.5}
+.cp-summary-text b{color:#fff;font-weight:700}
+.cp-summary-text code{background:rgba(0,0,0,.3);padding:1px 5px;border-radius:4px;font-size:11.5px}
 .ck-msg{font-size:13px;line-height:1.5;padding:9px 12px;border-radius:9px;max-width:90%}
 .ck-msg.user{align-self:flex-end;background:rgba(124,252,154,.14);color:#fff}
 .ck-msg.ai{align-self:flex-start;background:rgba(255,255,255,.06);color:#dff0e3}
@@ -482,6 +545,10 @@ tbody tr.sel{background:var(--green-50)}
 .ck-sugs-l{font:700 11px 'Inter';color:#7fb98e;text-transform:uppercase;letter-spacing:.06em;margin-right:6px}
 .ck-sug{background:rgba(124,252,154,.08);border:1px solid rgba(124,252,154,.2);color:#dff0e3;font:600 11.5px 'Inter';padding:5px 10px;border-radius:999px;cursor:pointer}
 .ck-sug:hover{background:rgba(124,252,154,.18)}
+.ck-newsim{background:#FFC107;color:#1a0f00;border:0;border-radius:10px;padding:9px 16px;font:800 13px 'Inter';cursor:pointer;letter-spacing:.01em;display:inline-flex;align-items:center;gap:6px;box-shadow:0 4px 12px -4px rgba(255,193,7,.55);transition:transform .12s,box-shadow .12s,background .12s;white-space:nowrap}
+.ck-newsim:hover{background:#ffd54f;transform:translateY(-1px);box-shadow:0 8px 18px -6px rgba(255,193,7,.7)}
+.ck-newsim:active{transform:translateY(0)}
+@media(max-width:600px){.ck-newsim{width:100%;justify-content:center;padding:11px 14px;font-size:13.5px}}
 .ck-cpinp{display:flex;gap:8px;margin-top:6px}
 .ck-cpinp input{flex:1;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:9px;padding:10px 13px;font:600 13.5px 'Inter'}
 .ck-cpinp input:focus{outline:none;border-color:#7cfc9a}
@@ -519,6 +586,20 @@ tbody tr.sel{background:var(--green-50)}
   <section class="screen" id="sc-cockpit">
     <div class="ck-ticker" id="ckTicker"></div>
 
+    <!-- v1.16.0 — Co-pilote tout en haut, pleine largeur, premier contact utilisateur -->
+    <div class="ck-panel ck-copilot ck-copilot-top">
+      <div class="ck-row-head">
+        <div><h3>🤖 <span data-k="ck.cpH">Co-pilote pricing</span></h3><span class="muted" data-k="ck.cpSub">Pose une question en langage naturel — D²nAI bot dédié pricing</span></div>
+        <button class="ck-newsim" onclick="ckCpReset()" data-k="ck.newSim" title="Réinitialise la conversation et redémarre une simulation guidée">＋ Commencer nouvelle simulation</button>
+      </div>
+      <div class="ck-chat" id="ckChat"></div>
+      <div class="ck-cpsugs" id="ckCpSugs"></div>
+      <div class="ck-cpinp">
+        <input type="text" id="ckCpInput" data-kph="ck.cpPh" placeholder="Que se passe-t-il si le souffre monte à $300 ?">
+        <button class="btn primary" onclick="ckCpAsk()" data-k="ck.cpAsk">Demander</button>
+      </div>
+    </div>
+
     <div class="ck-hero" id="ckHero"></div>
 
     <div class="ck-row">
@@ -540,26 +621,13 @@ tbody tr.sel{background:var(--green-50)}
       <div class="ck-rail" id="ckHeat"></div>
     </div>
 
-    <div class="ck-grid2">
-      <div class="ck-panel">
-        <div class="ck-row-head">
-          <div><h3 data-k="ck.subsH">🔁 Substitution Advisor</h3><span class="muted" data-k="ck.subsSub">Alternatives OCP iso-grade, classées par CGM</span></div>
-        </div>
-        <div class="ck-subs"><label class="fl" data-k="ck.subsPick">Produit demandé par le client</label><select id="ckSubProd"></select>
-          <div id="ckSubs"></div></div>
+    <!-- v1.16.0 — Substitution Advisor seul en row pleine largeur (co-pilote remonté au top) -->
+    <div class="ck-row">
+      <div class="ck-row-head">
+        <div><h3 data-k="ck.subsH">🔁 Substitution Advisor</h3><span class="muted" data-k="ck.subsSub">Alternatives OCP iso-grade, classées par CGM</span></div>
       </div>
-
-      <div class="ck-panel ck-copilot">
-        <div class="ck-row-head">
-          <div><h3>🤖 <span data-k="ck.cpH">Co-pilote pricing</span></h3><span class="muted" data-k="ck.cpSub">Pose une question en langage naturel — D²nAI bot dédié pricing</span></div>
-        </div>
-        <div class="ck-chat" id="ckChat"></div>
-        <div class="ck-cpsugs" id="ckCpSugs"></div>
-        <div class="ck-cpinp">
-          <input type="text" id="ckCpInput" data-kph="ck.cpPh" placeholder="Que se passe-t-il si le souffre monte à $300 ?">
-          <button class="btn primary" onclick="ckCpAsk()" data-k="ck.cpAsk">Demander</button>
-        </div>
-      </div>
+      <div class="ck-subs"><label class="fl" data-k="ck.subsPick">Produit demandé par le client</label><select id="ckSubProd"></select>
+        <div id="ckSubs"></div></div>
     </div>
   </section>
 
@@ -674,6 +742,8 @@ tbody tr.sel{background:var(--green-50)}
         <div class="kpis" id="sensKpis" style="grid-template-columns:1fr 1fr;margin-bottom:14px"></div>
         <div id="tornado"></div>
         <div class="driver" id="driver"></div>
+        <!-- v1.15.0 — Exposition portefeuille (top 20 produits) + export CSV -->
+        <div id="sensPortfolio" class="sensPortfolio"></div>
       </div>
     </div>
 
@@ -853,7 +923,7 @@ fr:{
  'ck.playH':'⚡ Crisis Playbook','ck.playSub':'Scénarios prêts à l\'emploi · 1 clic = portefeuille recalculé','ck.reset':'↺ Tout calme',
  'ck.heatH':'🔥 S-Pressure Heatmap','ck.heatSub':'Exposition au prix du souffre · trié par sensibilité ∂CGM/∂P_S','ck.exposed':'Exposés','ck.protected':'Protégés',
  'ck.subsH':'🔁 Substitution Advisor','ck.subsSub':'Alternatives OCP iso-grade, classées par CGM','ck.subsPick':'Produit demandé par le client',
- 'ck.cpH':'Co-pilote pricing','ck.cpSub':'Pose une question en langage naturel — D²nAI bot dédié pricing','ck.cpAsk':'Demander','ck.cpPh':'Que se passe-t-il si le souffre monte à $300 ?',
+ 'ck.cpH':'Co-pilote pricing','ck.cpSub':'Pose une question en langage naturel — D²nAI bot dédié pricing','ck.cpAsk':'Demander','ck.cpPh':'Que se passe-t-il si le souffre monte à $300 ?','ck.newSim':'＋ Commencer nouvelle simulation','ck.newSimWelcome':'Nouvelle simulation. Décris ton besoin (« simule le 00-18-10 à 720 $/t » ou « propose-moi un produit pour blé Maroc »), ou clique une suggestion ci-dessous — je te guide pas à pas.',
  'ck.heroBaseline':'Portefeuille en conditions de marché courantes','ck.heroDelta':'Impact vs baseline','ck.heroAvgCgm':'CGM moyenne portefeuille','ck.heroUnder':'produits sous-pricés','ck.heroExposed':'top exposition S','ck.heroSeeMore':'Voir le détail',
  'ck.simulate':'Simuler ce produit','ck.subBetter':'meilleur','ck.subWorse':'moins bon','ck.subSame':'iso','ck.subPick':'choisir','ck.noAlt':'Aucune alternative iso-grade trouvée.',
  'ck.cpThinking':'D²nAI bot is thinking…','ck.cpError':'D²nAI bot indisponible :','ck.cpHint':'Suggestions :',
@@ -902,7 +972,7 @@ en:{
  'ck.playH':'⚡ Crisis Playbook','ck.playSub':'Ready-to-use scenarios · 1 click = portfolio repriced','ck.reset':'↺ Calm state',
  'ck.heatH':'🔥 S-Pressure Heatmap','ck.heatSub':'Exposure to sulfur price · sorted by ∂CGM/∂P_S sensitivity','ck.exposed':'Exposed','ck.protected':'Protected',
  'ck.subsH':'🔁 Substitution Advisor','ck.subsSub':'OCP alternatives at the same grade, ranked by CGM','ck.subsPick':'Product requested by the customer',
- 'ck.cpH':'Pricing co-pilot','ck.cpSub':'Ask in plain English — D²nAI bot for pricing','ck.cpAsk':'Ask','ck.cpPh':'What if sulfur jumps to $300?',
+ 'ck.cpH':'Pricing co-pilot','ck.cpSub':'Ask in plain English — D²nAI bot for pricing','ck.cpAsk':'Ask','ck.cpPh':'What if sulfur jumps to $300?','ck.newSim':'＋ Start a new simulation','ck.newSimWelcome':'New simulation. Tell me what you need ("simulate 00-18-10 at $720/t" or "suggest a product for wheat in Morocco"), or click a suggestion below — I will walk you through it step by step.',
  'ck.heroBaseline':'Portfolio at current market','ck.heroDelta':'Impact vs baseline','ck.heroAvgCgm':'Avg portfolio CGM','ck.heroUnder':'under-priced products','ck.heroExposed':'top S-exposed','ck.heroSeeMore':'See details',
  'ck.simulate':'Simulate this product','ck.subBetter':'better','ck.subWorse':'worse','ck.subSame':'iso','ck.subPick':'pick','ck.noAlt':'No iso-grade alternative found.',
  'ck.cpThinking':'D²nAI bot is thinking…','ck.cpError':'D²nAI bot unavailable:','ck.cpHint':'Try:',
@@ -951,7 +1021,7 @@ pt:{
  'ck.playH':'⚡ Crisis Playbook','ck.playSub':'Cenários prontos · 1 clique = portfólio recalculado','ck.reset':'↺ Calmaria',
  'ck.heatH':'🔥 S-Pressure Heatmap','ck.heatSub':'Exposição ao preço do enxofre · ordenado por sensibilidade ∂CGM/∂P_S','ck.exposed':'Expostos','ck.protected':'Protegidos',
  'ck.subsH':'🔁 Substitution Advisor','ck.subsSub':'Alternativas OCP iso-grade, classificadas por CGM','ck.subsPick':'Produto pedido pelo cliente',
- 'ck.cpH':'Co-piloto pricing','ck.cpSub':'Pergunte em linguagem natural — D²nAI bot dedicado ao pricing','ck.cpAsk':'Perguntar','ck.cpPh':'E se o enxofre subir para $300?',
+ 'ck.cpH':'Co-piloto pricing','ck.cpSub':'Pergunte em linguagem natural — D²nAI bot dedicado ao pricing','ck.cpAsk':'Perguntar','ck.cpPh':'E se o enxofre subir para $300?','ck.newSim':'＋ Iniciar nova simulação','ck.newSimWelcome':'Nova simulação. Diga o que precisa ("simule o 00-18-10 a $720/t" ou "sugira um produto para trigo no Marrocos"), ou clique numa sugestão abaixo — eu te guio passo a passo.',
  'ck.heroBaseline':'Portfólio nas condições atuais','ck.heroDelta':'Impacto vs baseline','ck.heroAvgCgm':'CGM média do portfólio','ck.heroUnder':'produtos subprecificados','ck.heroExposed':'top exposição ao S','ck.heroSeeMore':'Ver detalhe',
  'ck.simulate':'Simular este produto','ck.subBetter':'melhor','ck.subWorse':'pior','ck.subSame':'iso','ck.subPick':'escolher','ck.noAlt':'Nenhuma alternativa iso-grade encontrada.',
  'ck.cpThinking':'D²nAI bot is thinking…','ck.cpError':'D²nAI bot indisponível:','ck.cpHint':'Sugestões:',
@@ -1060,6 +1130,8 @@ const state = {
   refprice: { dap: DATA.defaults.reference_prices.dap, tsp: DATA.defaults.reference_prices.tsp },
   price: 720,
   sens: { rock:(DATA.defaults.sensitivity_pct.rock||0)*100, nh3:(DATA.defaults.sensitivity_pct.nh3||0)*100, sulphur:(DATA.defaults.sensitivity_pct.sulphur||0)*100 },
+  // v1.15.0 — choc en % (défaut) ou en $ absolu par MP volatile
+  sensMode: { rock:'pct', nh3:'pct', sulphur:'pct' },
   compare: [],
   forBlend: _loadBool(LS_FORBLEND, false),
   sensImpact: _loadStr(LS_SENSIMP, 'cgm'),
@@ -1069,11 +1141,12 @@ function curProduct(){ return products().find(p=>p.row===state.row) || products(
 function guessRef(fam){ return TSP_FAMILIES.includes(fam) ? 'TSP' : 'DAP'; }
 function f(x,d){ if(!isFinite(x)) return '—'; return Number(x).toLocaleString(LOC[LANG]||'fr-FR',{minimumFractionDigits:d||0,maximumFractionDigits:d||0}); }
 function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);}
+function escapeAttr(s){return escapeHtml(s);} // v1.17.0 — alias pour attributes HTML
 
 /* ============ profile + tabs ============ */
 let profile='metier';
 const TABSCREEN={cockpit:'sc-cockpit',config:'sc-config',inputs:'sc-inputs',results:'sc-results',sc3:'sc-sc3',market:'sc-market',hist:'sc-hist',ref:'sc-ref',const:'sc-const'};
-let curTab='config';
+let curTab='cockpit'; // v1.16.0 — landing direct sur l'onglet Cockpit (avant: config)
 function tabsFor(p){
   // Vague 2 — Blend pricing is now opt-in via state.forBlend (#fb-mpy9w8kh2ofm).
   if(p==='admin') return [['ref','','tab.ref'],['const','','tab.const']];
@@ -1282,10 +1355,17 @@ function renderInputs(){
   document.getElementById('volRows').innerHTML=VOL.map(k=>{
     const req=(p[RM_CS[k]]||0)>0;
     const miInl = miInlineHtml(k, mi[k]);
+    const mode = state.sensMode[k]||'pct';
     return `<div class="rmrow ${req?'':'dim'}">
       <div class="nm">${RM_LABEL[k]} ${req?'<span class="req">'+tr('badge.req')+'</span>':'<span class="opt">'+tr('badge.opt')+'</span>'}${miInl?`<div class="mi-inline" style="flex-basis:100%;margin-top:2px">${miInl}</div>`:''}</div>
       <input type="number" data-rm="${k}" value="${state.rm[k]}" step="1">
-      <div class="varwrap"><input type="number" data-sens="${k}" value="${state.sens[k]}" step="1"></div>
+      <div class="varwrap">
+        <input type="number" data-sens="${k}" value="${state.sens[k]}" step="${mode==='pct'?1:5}">
+        <div class="sensmode" data-mode-for="${k}">
+          <button data-sens-mode="${k}|pct" class="${mode==='pct'?'on':''}" title="Choc en pourcentage">%</button>
+          <button data-sens-mode="${k}|abs" class="${mode==='abs'?'on':''}" title="Choc en $ absolu">$</button>
+        </div>
+      </div>
     </div>`;
   }).join('');
   document.getElementById('stabRows').innerHTML=STAB.map(k=>{
@@ -1305,6 +1385,17 @@ function renderInputs(){
   document.getElementById('miRptsp').innerHTML = miTsp!=null? miInlineHtml('rptsp', miTsp) : '';
   document.querySelectorAll('[data-rm]').forEach(i=>i.oninput=e=>{state.rm[i.dataset.rm]=+e.target.value||0;});
   document.querySelectorAll('[data-sens]').forEach(i=>i.oninput=e=>{state.sens[i.dataset.sens]=+e.target.value||0;});
+  // v1.15.0 — toggle pct/abs par MP volatile
+  document.querySelectorAll('[data-sens-mode]').forEach(btn=>btn.onclick=function(){
+    const parts = this.dataset.sensMode.split('|'); // "nh3|pct"
+    const k = parts[0], mode = parts[1];
+    state.sensMode[k] = mode;
+    // Re-render just the toggles + update step on the input
+    const grp = document.querySelector(`[data-mode-for="${k}"]`);
+    if(grp) grp.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.sensMode===k+'|'+mode));
+    const inp = document.querySelector(`[data-sens="${k}"]`);
+    if(inp) inp.step = mode==='pct' ? 1 : 5;
+  });
   document.getElementById('rpdap').oninput=e=>{state.refprice.dap=+e.target.value||0;};
   document.getElementById('rptsp').oninput=e=>{state.refprice.tsp=+e.target.value||0;};
   document.getElementById('price').oninput=e=>{state.price=+e.target.value||0;};
@@ -1395,14 +1486,23 @@ function scol(cls,ref,m){
     </div></div>`;
 }
 function setSensImpact(mode){ state.sensImpact = (mode==='rmc'?'rmc':'cgm'); _saveStr(LS_SENSIMP, state.sensImpact); renderSensi(curProduct()); }
+// v1.15.0 — applique le choc (mode pct ou abs selon state.sensMode) au RM de base
+function applySensShocks(baseRM, onlyKey){
+  const out = Object.assign({}, baseRM);
+  VOL.forEach(k=>{
+    if(onlyKey && onlyKey !== k) return;
+    const v = state.sens[k] || 0;
+    if(state.sensMode[k] === 'abs') out[k] = baseRM[k] + v;
+    else out[k] = baseRM[k] * (1 + v/100);
+  });
+  return out;
+}
 function renderSensi(p){
   const RM=state.rm, ref=state.ref;
-  const RM2=Object.assign({},RM);
-  VOL.forEach(k=>{ RM2[k]=RM[k]*(1+(state.sens[k]||0)/100); });
+  const RM2 = applySensShocks(RM);
   const rmc=rmCost(p,RM), rmc2=rmCost(p,RM2);
   const cgm=cgmEq(p,state.price,rmc,ref), cgm2=cgmEq(p,state.price,rmc2,ref);
   const dRm=rmc2-rmc, dCgm=cgm2-cgm;
-  // Toggle pills (Vague 2 — #fb-mpyausch55r9: explicit "impact on price/CGM").
   const tog=document.getElementById('sensToggle');
   if(tog){
     tog.querySelectorAll('button').forEach(b=>{
@@ -1415,9 +1515,12 @@ function renderSensi(p){
   document.getElementById('sensKpis').innerHTML=
     `<div class="kpi"><div class="k">${tr('sens.rmcStressed')}</div><div class="v">${f(rmc2,1)}</div><div class="u">${dRm>=0?'+':''}${f(dRm,1)} $/t ${tr('sens.vsBase')}</div></div>
      <div class="kpi"><div class="k">${tr('sens.cgmStressed')} ${ref}</div><div class="v">${f(cgm2,0)}</div><div class="u">${dCgm>=0?'+':''}${f(dCgm,0)} $/t ${tr('sens.vsBase')}</div></div>`;
-  // Driver contribution per VOL key — RM cost basis. For CGM impact, sign-flip and rescale by REF_ACP/p.cs_acp.
-  const scale = isCgm ? (-REF_ACP[ref]/p.cs_acp) : 1; // CGM = (price-rmc)*REF_ACP/cs_acp → ∂CGM/∂rmc = -REF_ACP/cs_acp
-  const drivers=VOL.map(k=>({k:RM_LABEL[k].replace(/ \(.*\)/,''), v:(p[RM_CS[k]]||0)*(RM2[k]-RM[k])*scale})).filter(d=>Math.abs(d.v)>1e-9);
+  // Driver per VOL key — utilise applySensShocks pour le delta réel par variable
+  const scale = isCgm ? (-REF_ACP[ref]/p.cs_acp) : 1;
+  const drivers=VOL.map(k=>{
+    const RMk = applySensShocks(RM, k);
+    return { k: RM_LABEL[k].replace(/ \(.*\)/,''), v: (p[RM_CS[k]]||0)*(RMk[k]-RM[k])*scale };
+  }).filter(d=>Math.abs(d.v)>1e-9);
   drivers.sort((a,b)=>Math.abs(b.v)-Math.abs(a.v));
   const tot=drivers.reduce((s,d)=>s+Math.abs(d.v),0)||1;
   document.getElementById('tornado').innerHTML=tornado(drivers, isCgm);
@@ -1425,7 +1528,103 @@ function renderSensi(p){
   const unitLbl = isCgm ? '$/t CGM éq. '+ref : '$/t coût MP';
   document.getElementById('driver').innerHTML= drivers.length?
     `Driver principal d'impact (${unitLbl}) : <b>${drivers[0].k}</b> — ${f(Math.abs(drivers[0].v)/tot*100,0)} % de l'impact total.`
-    : 'Aucune variation MP appliquée — ajustez les % sur les MP volatiles (écran Inputs).';
+    : 'Aucune variation MP appliquée — ajustez les variations sur les MP volatiles (écran Inputs).';
+  // v1.15.0 — Exposition portefeuille
+  renderSensPortfolio(RM, RM2, ref);
+}
+
+// v1.15.0 — Tableau "Exposition portefeuille" : top 20 produits par |Δ CGM Eq|
+function renderSensPortfolio(RM, RM2, ref){
+  const root = document.getElementById('sensPortfolio');
+  if(!root) return;
+  const refPrice = ref==='TSP' ? state.refprice.tsp : state.refprice.dap;
+  // Si aucun choc actif, masquer
+  const anyShock = VOL.some(k => (state.sens[k]||0) !== 0);
+  if(!anyShock){
+    root.innerHTML = '<div class="muted" style="padding:14px;text-align:center;font-size:12px">Aucun choc appliqué — saisis une variation sur une MP volatile pour voir l\'exposition portefeuille.</div>';
+    return;
+  }
+  const all = products();
+  const rows = all.map(p=>{
+    const baseRmc = rmCost(p, RM);
+    const stressedRmc = rmCost(p, RM2);
+    // Prix de comparaison = nutrientPrice du produit pour neutraliser l'effet du prix de vente
+    const refp = state.refprice[ref.toLowerCase()];
+    const np = nutrientPrice(p, ref, refp);
+    const baseCgm = cgmEq(p, np, baseRmc, ref);
+    const stressedCgm = cgmEq(p, np, stressedRmc, ref);
+    const dRmc = stressedRmc - baseRmc;
+    const dCgm = stressedCgm - baseCgm;
+    const dPct = baseCgm !== 0 ? dCgm / Math.abs(baseCgm) * 100 : 0;
+    return { p, baseRmc, baseCgm, dRmc, dCgm, dPct };
+  });
+  rows.sort((a,b)=>Math.abs(b.dCgm)-Math.abs(a.dCgm));
+  const top = rows.slice(0, 20);
+  const html = `
+    <div class="sensPortfolio-head">
+      <span>📊 Exposition portefeuille</span>
+      <span class="meta">Top 20 produits par |Δ CGM éq.| — chocs actuels appliqués</span>
+      <button class="btn ghost sm" onclick="exportSensCSV()" style="margin-left:auto">⤓ CSV</button>
+    </div>
+    <div class="tblwrap" style="max-height:320px;overflow-y:auto">
+      <table class="sensPortfolio-tbl"><thead><tr>
+        <th>Produit</th><th>Ligne</th><th>Coût MP base</th><th>Δ Coût MP</th><th>CGM éq. base</th><th>Δ CGM éq.</th><th>Δ %</th>
+      </tr></thead><tbody>${top.map(r=>{
+        const cgmCol = r.dCgm>=0 ? '#15803D' : '#B91C1C';
+        const rmcCol = r.dRmc>=0 ? '#B91C1C' : '#15803D';
+        return `<tr>
+          <td>${escapeHtml(r.p.product)}<div class="fam" style="font-size:10px;color:#73796F">${escapeHtml(r.p.family||'')}</div></td>
+          <td style="color:#73796F;font-size:11px">${escapeHtml(r.p.line||'—')}</td>
+          <td>${f(r.baseRmc,1)}</td>
+          <td style="color:${rmcCol};font-weight:600">${r.dRmc>=0?'+':''}${f(r.dRmc,1)}</td>
+          <td>${f(r.baseCgm,0)}</td>
+          <td style="color:${cgmCol};font-weight:700">${r.dCgm>=0?'+':''}${f(r.dCgm,0)}</td>
+          <td style="color:${cgmCol}">${r.dCgm>=0?'+':''}${f(r.dPct,1)}%</td>
+        </tr>`;
+      }).join('')}</tbody></table>
+    </div>`;
+  root.innerHTML = html;
+}
+
+// v1.15.0 — Export CSV de la sensibilité (tous les produits, pas juste top 20)
+function exportSensCSV(){
+  const RM=state.rm, ref=state.ref;
+  const RM2 = applySensShocks(RM);
+  const refp = state.refprice[ref.toLowerCase()];
+  const shocks = VOL.map(k=>{
+    const v = state.sens[k]||0;
+    if(v===0) return null;
+    return `${RM_LABEL[k]}: ${v>=0?'+':''}${v}${state.sensMode[k]==='pct'?'%':'$'}`;
+  }).filter(Boolean).join(' | ');
+  const all = products();
+  const lines = [
+    '# D²nAI CGM Cockpit v1.15.0 — Sensibilité multivariée — ' + new Date().toISOString().slice(0,10),
+    '# Référence: ' + ref + ' · Chocs: ' + (shocks||'aucun'),
+    ['Produit','Famille','Ligne','Coût MP base','Coût MP stressé','Δ Coût MP','CGM éq. base','CGM éq. stressée','Δ CGM éq.','Δ %'].join(';')
+  ];
+  all.forEach(p=>{
+    const baseRmc = rmCost(p, RM);
+    const stressedRmc = rmCost(p, RM2);
+    const np = nutrientPrice(p, ref, refp);
+    const baseCgm = cgmEq(p, np, baseRmc, ref);
+    const stressedCgm = cgmEq(p, np, stressedRmc, ref);
+    const dRmc = stressedRmc - baseRmc;
+    const dCgm = stressedCgm - baseCgm;
+    const dPct = baseCgm !== 0 ? dCgm / Math.abs(baseCgm) * 100 : 0;
+    lines.push([
+      `"${(p.product||'').replace(/"/g,'""')}"`,
+      `"${(p.family||'').replace(/"/g,'""')}"`,
+      `"${(p.line||'').replace(/"/g,'""')}"`,
+      baseRmc.toFixed(2), stressedRmc.toFixed(2), dRmc.toFixed(2),
+      baseCgm.toFixed(2), stressedCgm.toFixed(2), dCgm.toFixed(2), dPct.toFixed(2)
+    ].join(';'));
+  });
+  const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'cgm_sensibilite_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 function tornado(items, isCgm){
   if(!items.length) return '';
@@ -2027,56 +2226,325 @@ function ckAiBackend(){
   }
   return null;
 }
+/* v1.17.0 — Simulation conversationnelle multi-tours
+ * Le co-pilote peut désormais :
+ * 1. Poser des questions interactives (ASK_CHOICE / ASK_INPUT) → bubbles avec boutons / input
+ * 2. Modifier le simulateur (SET) → product, ref, price, rm, tab
+ * 3. Terminer par un résumé (SUMMARY) avec next-step buttons
+ * 4. Répondre en texte simple (ANSWER) — mode classique préservé
+ *
+ * La conversation est conservée dans state.cpConv pour multi-tours.
+ * Le modèle reçoit l'historique + state simulateur + catalogue compact.
+ */
+state.cpConv = []; // [{role:'user'|'assistant', content:string}]
+
+function ckCpReset(){
+  state.cpConv = [];
+  const c = document.getElementById('ckChat'); if(c) c.innerHTML='';
+  const inp = document.getElementById('ckCpInput'); if(inp){ inp.value=''; }
+  ckChatPush('ai', '<div class="cp-bubble cp-welcome">'+escapeHtml(tr('ck.newSimWelcome'))+'</div>');
+  if(inp) try{ inp.focus(); }catch(e){}
+}
+
 async function ckCpAsk(){
   const inp=document.getElementById('ckCpInput'); const q=(inp.value||'').trim(); if(!q) return;
   ckChatPush('user', q); inp.value='';
-  const be=ckAiBackend();
+  state.cpConv.push({role:'user', content:q});
+  await ckCpContinue();
+}
+
+// Triggered when user clicks a choice button or submits an input bubble
+async function ckCpAnswer(state_key, value, label){
+  ckChatPush('user', label || String(value));
+  state.cpConv.push({role:'user', content: `[ANSWER ${state_key}] ${JSON.stringify(value)}`});
+  await ckCpContinue();
+}
+
+function ckCpSysPrompt(){
+  // Compact catalog: row + product + family + line (limit 80 for prompt size)
+  const all = products();
+  const cat = all.slice(0, 80).map(p=>`[${p.row}] ${p.product} | ${p.family} | ${p.line}`).join('\n');
+  const moreCnt = Math.max(0, all.length - 80);
+  const cur = curProduct();
+  const stateSnap = {
+    product_index: state.row,
+    product_name: cur ? cur.product : null,
+    ref: state.ref,
+    price: state.price,
+    rm: state.rm,
+    refprice: state.refprice,
+    sens: state.sens,
+    sensMode: state.sensMode
+  };
+  return `Tu es un assistant pricing pour OCP Nutricrops (engrais phosphatés DAP/MAP/TSP/NPS/PHOSGOLD).
+Tu guides l'utilisateur par CONVERSATION INTERACTIVE pour réaliser une simulation CGM.
+
+⚠️ FORMAT DE RÉPONSE : tu retournes UNIQUEMENT un JSON valide (aucun texte avant ou après).
+Structure :
+{
+  "preface": "<court contexte optionnel, max 1 phrase>",
+  "action": { ... }
+}
+
+ACTIONS DISPONIBLES (choisis-en UNE par tour) :
+
+1. ASK_CHOICE — poser une question avec choix cliquables
+{"action": {"type":"ask_choice", "question":"<?>", "state_key":"<id>", "choices":[{"value":"<v>","label":"<lib>"}, ...]}}
+
+2. ASK_INPUT — poser une question avec input texte/nombre
+{"action": {"type":"ask_input", "question":"<?>", "state_key":"<id>", "input_type":"number"|"text", "placeholder":"<ex>"}}
+
+3. SET — appliquer des modifications au simulateur (PAS d'attente utilisateur)
+{"action": {"type":"set", "updates": {
+   "product_index": <row>,      // optionnel — index produit
+   "ref": "DAP"|"TSP",           // optionnel
+   "price": <number>,            // optionnel — prix de vente $/t
+   "rm": {"nh3": <num>, ...},    // optionnel — prix RM (rock/nh3/sulphur/kcl/sam/borax/zno/cuso4/caso4/caco3/gypse/acs)
+   "sens": {"nh3": <num>, ...},  // optionnel — choc % par MP volatile
+   "tab": "cockpit"|"config"|"inputs"|"results"|"market"|"hist"  // optionnel — navigation
+}}}
+
+4. SUMMARY — terminer avec résumé + propose next-step buttons
+{"action": {"type":"summary", "text":"<résumé en markdown léger>", "next_choices":[{"value":"<v>","label":"<lib>"}, ...]}}
+
+5. ANSWER — réponse textuelle simple (questions courtes, pas de simulation)
+{"action": {"type":"answer", "text":"<réponse markdown léger, 2-5 phrases max>"}}
+
+FLOW DE SIMULATION RECOMMANDÉ (quand l'utilisateur veut simuler)
+1. Si famille pas précisée → ASK_CHOICE pour la famille (DAP, MAP, NPS, NPK, TSP, etc.)
+2. Si produit pas précisé → ASK_CHOICE pour le produit de la famille (max 8 choix, value=row)
+3. Si référence pas précisée → ASK_CHOICE { "DAP","TSP" } (sauf si évident d'après la famille)
+4. Si prix pas précisé → ASK_INPUT { input_type:"number", placeholder:"720" }
+5. SET avec product_index + ref + price + tab:"results"
+6. SUMMARY avec verdict (CGM Eq vs marge réf, recommandation) + next_choices :
+   - "Stresser le souffre +20%" (state_key:"stress_S")
+   - "Voir produit alternatif" (state_key:"alt_product")
+   - "Comparer avec un autre MAP" (state_key:"compare")
+   - "Nouvelle simulation" (state_key:"new_sim")
+
+POUR LES ASK_CHOICE de produit, regroupe par famille. Max 8 choix par bubble.
+Si famille a >8 produits, propose les plus représentatifs.
+
+POUR LES SET, applique d'un coup tout ce qui est connu (pas besoin de tour intermédiaire).
+
+POUR LES QUESTIONS NON-SIMULATION (ex "quel est mon produit le plus exposé au souffre"), utilise ANSWER.
+Ne lance PAS un flow de simulation si l'utilisateur pose juste une question informative.
+
+CATALOGUE PRODUITS (extrait, ${all.length} au total) :
+${cat}${moreCnt>0?`\n... +${moreCnt} autres produits`:''}
+
+ÉTAT COURANT DU SIMULATEUR (JSON) :
+${JSON.stringify(stateSnap, null, 2)}
+
+LANG : ${LANG}
+RÉPONDS EN ${LANG === 'fr' ? 'FRANÇAIS' : LANG === 'en' ? 'ENGLISH' : 'PORTUGUÊS'}.
+RAPPEL : UNIQUEMENT du JSON valide, aucun texte autour. Aucun bloc markdown \`\`\`.`;
+}
+
+async function ckCpContinue(){
+  const be = ckAiBackend();
   if(!be){
     ckChatPush('ai','<i class="ck-err">'+tr('ck.cpError')+' backend non configuré.</i>'); return;
   }
   const wait=document.createElement('div'); wait.className='ck-msg ai pending'; wait.innerHTML='<span class="ck-think">'+tr('ck.cpThinking')+'</span>';
   document.getElementById('ckChat').appendChild(wait); wait.scrollIntoView({block:'end'});
-  // Build context payload
-  const stats=ckPortfolioStats();
-  const sc=CRISIS_SCN.find(s=>s.id===CK_SCENARIO);
-  const ctx={
-    scenario:CK_SCENARIO+' ('+tr(sc.key)+')',
-    portfolio:{avg_cgm:Math.round(stats.avg), under_priced:stats.under, total:stats.total},
-    rm_prices:state.rm, ref_prices:state.refprice,
-    top_S_exposed: ckHeatList().slice(0,5).map(x=>({product:x.p.product, line:x.p.line, family:x.p.family, S_sensitivity:+(x.s).toFixed(3)})),
-    current_product: curProduct()?.product
-  };
-  const sys='Tu es un assistant pricing pour OCP Nutricrops — expert engrais phosphatés (DAP/MAP/TSP/NPS/PHOSGOLD), CGM, et marché en crise du soufre. Réponds en '+LANG+', de façon courte et actionnable, avec chiffres. Si la question demande une simulation précise, indique-le et propose le scénario CGM à lancer.';
-  try{
+  try {
+    const sys = ckCpSysPrompt();
     let res, raw;
-    if(be.mode==='chat'){
-      // OpenAI-compatible chat schema (Databricks Foundation Model APIs)
-      const payload={messages:[
-        {role:'system', content:sys+'\n\nCONTEXTE COURANT (JSON):\n'+JSON.stringify(ctx,null,2)+'\n\nRéponds en texte clair (markdown léger), 3-6 phrases max.'},
-        {role:'user', content:q}
-      ], temperature:0.2, max_tokens:700};
-      res=await fetch(be.url,{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':be.nonce},body:JSON.stringify(payload)});
-      raw=await res.json();
+    if(be.mode === 'chat'){
+      // OpenAI-compatible chat schema — send full convo for multi-turn context
+      const payload = {
+        messages: [{role:'system', content:sys}, ...state.cpConv.slice(-20)],
+        temperature: 0.15,
+        max_tokens: 900
+      };
+      res = await fetch(be.url, {method:'POST', headers:{'Content-Type':'application/json','X-WP-Nonce':be.nonce}, body:JSON.stringify(payload)});
+      raw = await res.json();
     } else {
-      // Legacy single-blob path (NutrientOS curate, document-curation style)
-      const payload={title:'CGM Co-pilot Q&A', ftype:'text/plain', content:'SYSTEM:\n'+sys+'\n\nCONTEXT:\n'+JSON.stringify(ctx,null,2)+'\n\nQUESTION:\n'+q+'\n\nRéponds en texte clair (markdown léger possible, pas de JSON), 3-6 phrases max.'};
-      res=await fetch(be.url,{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':be.nonce},body:JSON.stringify(payload)});
-      raw=await res.json();
+      // Curate fallback — flatten convo into single content blob
+      const conv = state.cpConv.map(m=>`${m.role.toUpperCase()}: ${m.content}`).join('\n\n');
+      const payload = {title:'CGM Co-pilot Convo', ftype:'text/plain', content:`SYSTEM:\n${sys}\n\nCONVO:\n${conv}`};
+      res = await fetch(be.url, {method:'POST', headers:{'Content-Type':'application/json','X-WP-Nonce':be.nonce}, body:JSON.stringify(payload)});
+      raw = await res.json();
     }
     wait.remove();
-    let ans='';
-    if(typeof raw==='string') ans=raw;
-    else if(raw && raw.text) ans=raw.text;
-    else if(raw && raw.summary) ans=raw.summary;
-    else if(raw && raw.description) ans=raw.description;
-    else if(raw && raw.answer) ans=raw.answer;
-    else if(raw && raw.message && raw.code) ans='<i class="ck-err">'+tr('ck.cpError')+' '+escapeHtml(raw.message)+'</i>';
-    else if(raw && raw.error) ans='<i class="ck-err">'+tr('ck.cpError')+' '+escapeHtml(raw.error)+'</i>';
-    else ans = '<pre class="ck-raw">'+escapeHtml(JSON.stringify(raw,null,2))+'</pre>';
-    ans=String(ans).replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');
-    const usage = `<div class="ck-usage">D²nAI bot</div>`;
-    ckChatPush('ai', ans+usage);
-  }catch(e){ wait.remove(); ckChatPush('ai','<i class="ck-err">'+tr('ck.cpError')+' '+escapeHtml(e.message||e)+'</i>'); }
+    // Extract text from various response shapes
+    let txt = ckCpExtractText(raw);
+    if(!txt){ ckChatPush('ai','<i class="ck-err">'+tr('ck.cpError')+' réponse vide</i>'); return; }
+    state.cpConv.push({role:'assistant', content:txt});
+    // Try parse JSON action — strip markdown fences if present
+    let payload = ckCpParseAction(txt);
+    if(payload && payload.action){
+      ckCpExecAction(payload);
+    } else {
+      // Fallback : plain text — render as classic bubble
+      ckChatPush('ai', ckCpMdRender(txt) + '<div class="ck-usage">D²nAI bot</div>');
+    }
+  } catch(e){
+    wait.remove();
+    ckChatPush('ai','<i class="ck-err">'+tr('ck.cpError')+' '+escapeHtml(e.message||e)+'</i>');
+  }
+}
+
+function ckCpExtractText(raw){
+  if(typeof raw === 'string') return raw;
+  if(!raw) return '';
+  if(raw.text) return String(raw.text);
+  if(raw.summary) return String(raw.summary);
+  if(raw.answer) return String(raw.answer);
+  if(raw.description) return String(raw.description);
+  if(raw.error || raw.message) return ''; // surface error elsewhere
+  return '';
+}
+
+function ckCpParseAction(txt){
+  if(!txt) return null;
+  // Strip markdown code fences if model wrapped JSON in ```
+  let s = String(txt).trim();
+  s = s.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+  // Find first { and last } for safety
+  const i = s.indexOf('{'), j = s.lastIndexOf('}');
+  if(i < 0 || j < 0 || j < i) return null;
+  try { return JSON.parse(s.slice(i, j+1)); } catch(e){ return null; }
+}
+
+function ckCpMdRender(s){
+  return String(s)
+    .replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>')
+    .replace(/\*([^*]+)\*/g,'<i>$1</i>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\n/g,'<br>');
+}
+
+function ckCpExecAction(payload){
+  const a = payload.action;
+  if(!a || !a.type) return;
+  // Render preface if present
+  const preface = payload.preface ? `<div class="cp-preface">${escapeHtml(payload.preface)}</div>` : '';
+
+  if(a.type === 'ask_choice'){
+    const id = 'cpq_'+Date.now();
+    const html = `<div class="cp-bubble" id="${id}">
+      ${preface}
+      <div class="cp-question">${escapeHtml(a.question||'')}</div>
+      <div class="cp-choices">
+        ${(a.choices||[]).map(c=>`
+          <button class="cp-choice" onclick="ckCpAnswer(${JSON.stringify(a.state_key||'').replace(/"/g,'&quot;')}, ${JSON.stringify(c.value)}, ${JSON.stringify(c.label||String(c.value)).replace(/"/g,'&quot;')}); document.getElementById('${id}').classList.add('answered');">
+            ${escapeHtml(c.label||String(c.value))}
+          </button>
+        `).join('')}
+      </div>
+      <div class="ck-usage">D²nAI bot</div>
+    </div>`;
+    ckChatPush('ai', html);
+    return;
+  }
+
+  if(a.type === 'ask_input'){
+    const id = 'cpi_'+Date.now();
+    const itype = a.input_type === 'number' ? 'number' : 'text';
+    const html = `<div class="cp-bubble" id="${id}">
+      ${preface}
+      <div class="cp-question">${escapeHtml(a.question||'')}</div>
+      <div class="cp-inputline">
+        <input type="${itype}" class="cp-input" id="${id}_in" placeholder="${escapeAttr(a.placeholder||'')}" onkeydown="if(event.key==='Enter') document.getElementById('${id}_btn').click()">
+        <button class="btn primary sm" id="${id}_btn" onclick="
+          var v=document.getElementById('${id}_in').value;
+          if(${itype === 'number' ? 'true':'false'}) v = parseFloat(v) || 0;
+          document.getElementById('${id}').classList.add('answered');
+          ckCpAnswer(${JSON.stringify(a.state_key||'').replace(/"/g,'&quot;')}, v, String(v));
+        ">OK</button>
+      </div>
+      <div class="ck-usage">D²nAI bot</div>
+    </div>`;
+    ckChatPush('ai', html);
+    setTimeout(()=>{ const el=document.getElementById(id+'_in'); if(el) el.focus(); }, 80);
+    return;
+  }
+
+  if(a.type === 'set'){
+    const applied = ckCpApplyUpdates(a.updates||{});
+    const html = `<div class="cp-bubble cp-set">
+      ${preface}
+      <div class="cp-set-msg">⚙️ <b>Simulateur mis à jour</b> ${applied.length ? '— '+applied.join(' · ') : ''}</div>
+      <div class="ck-usage">D²nAI bot</div>
+    </div>`;
+    ckChatPush('ai', html);
+    // After a SET, ask the AI to continue (it may have a follow-up like SUMMARY)
+    setTimeout(()=>{ ckCpContinue(); }, 400);
+    return;
+  }
+
+  if(a.type === 'summary'){
+    const next = (a.next_choices||[]).map(c=>`
+      <button class="cp-choice cp-choice-next" onclick="ckCpAnswer('next', ${JSON.stringify(c.value)}, ${JSON.stringify(c.label||String(c.value)).replace(/"/g,'&quot;')})">
+        ${escapeHtml(c.label||String(c.value))}
+      </button>
+    `).join('');
+    const html = `<div class="cp-bubble cp-summary">
+      ${preface}
+      <div class="cp-summary-text">${ckCpMdRender(a.text||'')}</div>
+      ${next ? `<div class="cp-choices">${next}</div>` : ''}
+      <div class="ck-usage">D²nAI bot</div>
+    </div>`;
+    ckChatPush('ai', html);
+    return;
+  }
+
+  if(a.type === 'answer'){
+    ckChatPush('ai', preface + ckCpMdRender(a.text||'') + '<div class="ck-usage">D²nAI bot</div>');
+    return;
+  }
+
+  // Fallback for unknown action types
+  ckChatPush('ai', '<i class="ck-err">Action inconnue : '+escapeHtml(a.type)+'</i>');
+}
+
+function ckCpApplyUpdates(u){
+  const applied = [];
+  // Product (by row or by name lookup)
+  if(u.product_index != null){
+    const p = products().find(x => x.row === +u.product_index);
+    if(p){ state.row = p.row; applied.push('Produit : '+p.product); }
+  }
+  // Reference
+  if(u.ref && (u.ref === 'DAP' || u.ref === 'TSP')){
+    state.ref = u.ref; state._refTouched = true; applied.push('Référence : '+u.ref);
+  }
+  // Sale price
+  if(u.price != null && isFinite(+u.price)){
+    state.price = +u.price; applied.push('Prix : '+f(state.price,0)+' $/t');
+  }
+  // RM prices
+  if(u.rm && typeof u.rm === 'object'){
+    Object.keys(u.rm).forEach(k=>{
+      if(state.rm.hasOwnProperty(k) && isFinite(+u.rm[k])){
+        state.rm[k] = +u.rm[k]; applied.push(`${RM_LABEL[k]||k} : ${f(state.rm[k],0)} $/t`);
+      }
+    });
+  }
+  // Reference prices
+  if(u.refprice && typeof u.refprice === 'object'){
+    if(u.refprice.dap != null && isFinite(+u.refprice.dap)){ state.refprice.dap = +u.refprice.dap; applied.push('Réf DAP : '+f(state.refprice.dap,0)); }
+    if(u.refprice.tsp != null && isFinite(+u.refprice.tsp)){ state.refprice.tsp = +u.refprice.tsp; applied.push('Réf TSP : '+f(state.refprice.tsp,0)); }
+  }
+  // Sensitivity shocks
+  if(u.sens && typeof u.sens === 'object'){
+    Object.keys(u.sens).forEach(k=>{
+      if(state.sens.hasOwnProperty(k) && isFinite(+u.sens[k])){
+        state.sens[k] = +u.sens[k]; applied.push(`Choc ${RM_LABEL[k]||k} : ${u.sens[k] >= 0 ? '+':''}${u.sens[k]}%`);
+      }
+    });
+  }
+  // Tab navigation (after state updates, refresh UI for that tab)
+  if(u.tab && typeof goTab === 'function'){
+    goTab(u.tab);
+    applied.push('Vue → '+u.tab);
+  } else {
+    // No tab change → still refresh current screen if results
+    if(curTab === 'results' && typeof renderResults === 'function') renderResults();
+  }
+  return applied;
 }
 let _ckTickerTimer=null;
 function renderCockpit(){
