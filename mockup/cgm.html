@@ -80,9 +80,37 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 .verdict{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--green-50);border:1px solid var(--green-100);font-size:13.5px;color:var(--ink-2);line-height:1.5}
 .verdict b{color:var(--green-800)}
 
-/* sensitivity */
+/* sensitivity — multivariée */
+.sens-grid{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start}
+@media(max-width:900px){.sens-grid{grid-template-columns:1fr}}
+.sens-vars{background:var(--green-50);border:1px solid var(--green-100);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.sens-vars-head{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;padding-bottom:6px;border-bottom:1px solid var(--green-100)}
+.sens-vars-list{display:flex;flex-direction:column;gap:6px;max-height:430px;overflow-y:auto;padding-right:2px}
+.sens-var{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;background:#fff;border:1px solid var(--line);transition:.15s}
+.sens-var.on{border-color:var(--green-500);box-shadow:0 0 0 2px rgba(76,175,80,.12)}
+.sens-var input[type=checkbox]{margin:0;cursor:pointer;accent-color:var(--green-800);flex:none}
+.sens-var .name{flex:1;font-size:12.5px;color:var(--ink-2);font-weight:500;cursor:pointer;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sens-var .name .hint{font-size:10px;color:var(--muted);margin-left:3px;font-style:italic}
+.sens-var input[type=number]{width:54px;padding:3px 5px;border:1px solid var(--line);border-radius:5px;font-size:12px;text-align:right;font-variant-numeric:tabular-nums;font-family:'Inter',sans-serif;flex:none}
+.sens-var .mode{display:flex;gap:0;font-size:10.5px;border:1px solid var(--line);border-radius:5px;overflow:hidden;flex:none}
+.sens-var .mode button{padding:3px 6px;border:0;background:#fff;color:var(--muted);cursor:pointer;font-weight:700;line-height:1.1}
+.sens-var .mode button.on{background:var(--green-800);color:#fff}
+.sens-vars-foot{display:flex;gap:6px;margin-top:2px}
+.btn.small{padding:6px 10px;font-size:11.5px}
+.sens-output{display:flex;flex-direction:column;gap:14px;min-width:0}
+.sens-section{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.sens-h{font-size:12.5px;font-weight:700;color:var(--ink);padding-bottom:8px;border-bottom:1px solid var(--line);margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sens-h-meta{font-size:11px;color:var(--muted);font-weight:500;margin-left:auto}
+.sens-combined{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.sens-c{background:var(--green-50);border:1px solid var(--green-100);border-radius:10px;padding:11px 13px}
+.sens-c .l{font-size:10.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.sens-c .v{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;margin-top:4px;line-height:1.1;color:var(--ink)}
+.sens-c .d{font-size:11.5px;font-weight:600;margin-top:3px}
+.sens-c .d.up{color:var(--bad)} .sens-c .d.down{color:var(--ok)} .sens-c .d.flat{color:var(--muted)}
+.sens-empty{font-size:12.5px;color:var(--muted);padding:18px;text-align:center;border:1px dashed var(--line);border-radius:10px}
+
+/* keep legacy sensitivity classes (used elsewhere in history rendering) */
 .sensi-wrap{display:grid;grid-template-columns:1fr 1.2fr;gap:18px;align-items:center}
-@media(max-width:900px){.sensi-wrap{grid-template-columns:1fr}}
 .sensi-kpis{display:flex;flex-direction:column;gap:10px}
 .skpi{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border:1px solid var(--line);border-radius:11px}
 .skpi .l{font-size:12px;color:var(--muted)}
@@ -172,8 +200,9 @@ tr.sel td{background:var(--green-50)}
       <div class="fld"><label>Gypse</label><input data-rm="gypse" type="number" step="1"></div>
       <div class="fld"><label>Prix réf. DAP</label><input data-ref="dap" type="number" step="1"></div>
       <div class="fld"><label>Prix réf. TSP</label><input data-ref="tsp" type="number" step="1"></div>
-      <div class="fld"><label>Sensi. NH3 %</label><input data-sens="nh3" type="number" step="1"></div>
-      <div class="fld"><label>Sensi. Soufre %</label><input data-sens="sulphur" type="number" step="1"></div>
+    </div>
+    <div class="sub" style="margin-top:8px;font-size:11.5px">
+      💡 Pour stresser les RM ou le prix de vente, va dans l'onglet <b>Analyse de sensibilité</b> ci-dessous — choc multivariée par produit et par portefeuille.
     </div>
   </div>
 
@@ -185,16 +214,56 @@ tr.sel td{background:var(--green-50)}
     <div class="verdict" id="verdict"></div>
   </div>
 
-  <!-- SENSITIVITY -->
+  <!-- SENSITIVITY (multivariate) -->
   <div class="panel">
-    <h2>Sensibilité aux prix matières premières</h2>
-    <div class="sub">Impact d'une variation NH3 / Soufre sur le coût MP et la marge — driver principal mis en avant.</div>
-    <div class="sensi-wrap">
-      <div class="sensi-kpis" id="sensiKpis"></div>
-      <div>
-        <div id="tornado"></div>
-        <div class="driver" id="driverNote"></div>
+    <h2>Analyse de sensibilité <span style="font-size:13px;color:var(--muted);font-weight:400">— multivariée</span></h2>
+    <div class="sub">Coche les variables à stresser, applique un choc (% ou $, positif ou négatif), visualise l'impact sur le coût MP, la CGM et la MCV — pour le produit courant et l'ensemble du portefeuille (141 formules).</div>
+
+    <div class="sens-grid">
+      <!-- Variables panel -->
+      <div class="sens-vars">
+        <div class="sens-vars-head">Variables à stresser</div>
+        <div class="sens-vars-list" id="sensVarsList"></div>
+        <div class="sens-vars-foot">
+          <button class="btn ghost small" id="sensClearAll">Tout décocher</button>
+          <button class="btn ghost small" id="sensReset">Reset chocs</button>
+        </div>
       </div>
+
+      <!-- Output panel -->
+      <div class="sens-output">
+        <!-- Combined impact for current product -->
+        <div class="sens-section">
+          <div class="sens-h">
+            Impact combiné — produit courant
+            <span class="sens-h-meta" id="sensProdName"></span>
+          </div>
+          <div id="sensCombined" class="sens-combined"></div>
+        </div>
+
+        <!-- Tornado for current product -->
+        <div class="sens-section">
+          <div class="sens-h">Tornado — contribution par variable au Δ CGM Eq</div>
+          <div id="sensTornado" class="chart"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Portfolio table -->
+    <div class="sens-section" style="margin-top:18px">
+      <div class="sens-h">
+        Impact sur l'ensemble du portefeuille
+        <span class="sens-h-meta">Top 50 produits par |Δ CGM Eq| — chocs RM appliqués (le choc Prix de vente ne s'applique qu'au produit courant)</span>
+      </div>
+      <div class="tbl-wrap"><div class="tbl-scroll">
+        <table id="sensTbl"><thead><tr>
+          <th>Produit</th><th>Ligne</th><th>Coût MP base</th><th>Δ Coût MP</th><th>CGM Eq base</th><th>Δ CGM Eq</th><th>Δ %</th>
+        </tr></thead><tbody></tbody></table>
+      </div></div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+      <button class="btn ghost" id="sensCsv">Export CSV sensibilité</button>
     </div>
   </div>
 
@@ -5461,31 +5530,208 @@ function render(){
   renderComparison(r);
 }
 
-/* ---------- sensitivity ---------- */
-function renderSensitivity(r){
-  const p = r.p, RM = state.rm;
-  const RM2 = Object.assign({}, RM);
-  RM2.nh3 = RM.nh3*(1+state.sens.nh3/100);
-  RM2.sulphur = RM.sulphur*(1+state.sens.sulphur/100);
-  const rmc2 = rmCost(p, RM2);
-  const cgm2 = cgmEq(p, r.sc0.price, rmc2, r.ref);
-  const dRm = rmc2 - r.rmc, dCgm = cgm2 - r.sc0.cgm;
+/* ---------- sensitivity (multivariate) ----------
+ * Inspirée d'un travail de F. Ezzebdi (BU Ops) — généralisée à nos 11 RM
+ * + Prix de vente, sur les 141 produits du catalogue, avec tornado et
+ * impact portefeuille.
+ */
+const SENS_VARS = [
+  { key: 'rock',    label: 'Rock',     rm: true,  defStep: 5 },
+  { key: 'nh3',     label: 'NH3',      rm: true,  defStep: 5 },
+  { key: 'sulphur', label: 'Soufre',   rm: true,  defStep: 5 },
+  { key: 'kcl',     label: 'KCl',      rm: true,  defStep: 5 },
+  { key: 'sam',     label: 'SAM',      rm: true,  defStep: 5 },
+  { key: 'borax',   label: 'Borax',    rm: true,  defStep: 10 },
+  { key: 'zno',     label: 'ZnO',      rm: true,  defStep: 50 },
+  { key: 'cuso4',   label: 'CuSO4',    rm: true,  defStep: 50 },
+  { key: 'caso4',   label: 'CaSO4',    rm: true,  defStep: 5 },
+  { key: 'caco3',   label: 'CaCO3',    rm: true,  defStep: 5 },
+  { key: 'gypse',   label: 'Gypse',    rm: true,  defStep: 5 },
+  { key: 'price',   label: 'Prix vente', rm: false, hint: 'agit sur le revenu', defStep: 10 }
+];
 
-  // per-driver impact on RM cost
-  const impNh3 = p.cs_nh3 * (RM2.nh3 - RM.nh3);
-  const impS   = p.s_total * (RM2.sulphur - RM.sulphur);
-  const drivers = [{k:'NH3',v:impNh3},{k:'Soufre',v:impS}];
-  drivers.sort((a,b)=>Math.abs(b.v)-Math.abs(a.v));
-  const tot = Math.abs(impNh3)+Math.abs(impS) || 1;
+// État sensibilité initial — rien d'activé
+state.sensVars = {};
+SENS_VARS.forEach(v => state.sensVars[v.key] = { on: false, val: 0, mode: 'pct' });
 
-  document.getElementById('sensiKpis').innerHTML =
-    `<div class="skpi"><span class="l">Coût MP stressé</span><span class="v ${dRm>=0?'up':'down'}">${f(rmc2,1)} <span style="font-size:13px">(${dRm>=0?'+':''}${f(dRm,1)})</span></span></div>
-     <div class="skpi"><span class="l">CGM ${r.ref} Eq stressée</span><span class="v ${dCgm<=0?'up':'down'}">${f(cgm2,0)} <span style="font-size:13px">(${dCgm>=0?'+':''}${f(dCgm,0)})</span></span></div>`;
-  document.getElementById('tornado').innerHTML = tornadoSVG(drivers);
-  document.getElementById('driverNote').innerHTML =
-    `Driver principal : <b>${drivers[0].k}</b> — ${f(Math.abs(drivers[0].v)/tot*100,0)} % de l'impact total sur le coût MP ` +
-    `(NH3 ${state.sens.nh3>=0?'+':''}${f(state.sens.nh3,0)} %, Soufre ${state.sens.sulphur>=0?'+':''}${f(state.sens.sulphur,0)} %).`;
+// Applique les chocs cochés au RM de base + au prix de base, renvoie {RM, price}
+function applyShocks(basePrice, only) {
+  const RM = Object.assign({}, state.rm);
+  let price = basePrice;
+  SENS_VARS.forEach(v => {
+    const s = state.sensVars[v.key];
+    if (!s.on) return;
+    if (only && only !== v.key) return;
+    if (v.rm) {
+      RM[v.key] = s.mode === 'pct' ? RM[v.key] * (1 + s.val/100) : RM[v.key] + s.val;
+    } else if (v.key === 'price') {
+      price = s.mode === 'pct' ? price * (1 + s.val/100) : price + s.val;
+    }
+  });
+  return { RM, price };
 }
+
+function renderSensVarsList() {
+  const html = SENS_VARS.map(v => {
+    const s = state.sensVars[v.key];
+    return `<div class="sens-var ${s.on ? 'on' : ''}" data-k="${v.key}">
+      <input type="checkbox" id="sxon_${v.key}" ${s.on ? 'checked' : ''}>
+      <label for="sxon_${v.key}" class="name">${v.label}${v.hint ? ` <span class="hint">(${v.hint})</span>` : ''}</label>
+      <input type="number" id="sxval_${v.key}" value="${s.val}" step="${s.mode === 'pct' ? 1 : v.defStep}">
+      <div class="mode">
+        <button data-var="${v.key}" data-mode="pct" class="${s.mode === 'pct' ? 'on' : ''}">%</button>
+        <button data-var="${v.key}" data-mode="abs" class="${s.mode === 'abs' ? 'on' : ''}">$</button>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('sensVarsList').innerHTML = html;
+
+  // Wiring
+  SENS_VARS.forEach(v => {
+    document.getElementById('sxon_' + v.key).addEventListener('change', e => {
+      state.sensVars[v.key].on = e.target.checked;
+      document.querySelector(`.sens-var[data-k="${v.key}"]`).classList.toggle('on', e.target.checked);
+      renderMultiSens();
+    });
+    document.getElementById('sxval_' + v.key).addEventListener('input', e => {
+      state.sensVars[v.key].val = parseFloat(e.target.value) || 0;
+      renderMultiSens();
+    });
+  });
+  document.querySelectorAll('.sens-var .mode button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const k = btn.dataset.var, m = btn.dataset.mode;
+      state.sensVars[k].mode = m;
+      renderSensVarsList();
+      renderMultiSens();
+    });
+  });
+}
+
+function renderMultiSens() {
+  const r = compute();
+  const p = r.p, ref = r.ref;
+  const stressed = applyShocks(r.sc0.price);
+
+  // ---- Combined impact on current product ----
+  const rmc2 = rmCost(p, stressed.RM);
+  const cgm2 = cgmEq(p, stressed.price, rmc2, ref);
+  const mcv2 = mcv(p, stressed.price, rmc2);
+
+  document.getElementById('sensProdName').textContent = '· ' + p.product + ' · ' + p.line;
+  document.getElementById('sensCombined').innerHTML = `
+    ${combinedCard('Prix vente $/t', r.sc0.price, stressed.price, false)}
+    ${combinedCard('Coût MP $/t',    r.rmc,        rmc2,           true)}
+    ${combinedCard('CGM ' + ref + ' Eq $/t', r.sc0.cgm, cgm2, false)}
+    ${combinedCard('MCV/t P₂O₅',     r.sc0.mcv,     mcv2,           false)}
+  `;
+
+  // ---- Tornado: per-variable Δ CGM Eq for current product ----
+  const drivers = SENS_VARS.filter(v => state.sensVars[v.key].on).map(v => {
+    const single = applyShocks(r.sc0.price, v.key);
+    const r2 = rmCost(p, single.RM);
+    const c2 = cgmEq(p, single.price, r2, ref);
+    return { k: v.label, v: c2 - r.sc0.cgm };
+  });
+  drivers.sort((a, b) => Math.abs(b.v) - Math.abs(a.v));
+  document.getElementById('sensTornado').innerHTML = drivers.length
+    ? tornadoSVG(drivers)
+    : '<div class="sens-empty">Coche au moins une variable pour voir le tornado.</div>';
+
+  // ---- Portfolio table ----
+  renderSensTable(stressed, ref);
+}
+
+function combinedCard(label, base, stressed, lowerIsBetter) {
+  const d = stressed - base;
+  const flat = Math.abs(d) < 0.5;
+  const better = lowerIsBetter ? (d < 0) : (d > 0);
+  const cls = flat ? 'flat' : (better ? 'down' : 'up');
+  const sign = d >= 0 ? '+' : '';
+  const pct = base !== 0 ? ' (' + sign + f(d / Math.abs(base) * 100, 1) + '%)' : '';
+  return `<div class="sens-c">
+    <div class="l">${label}</div>
+    <div class="v">${f(stressed, 1)}</div>
+    <div class="d ${cls}">${flat ? '—' : sign + f(d, 1) + pct}</div>
+  </div>`;
+}
+
+function renderSensTable(stressed, ref) {
+  // Per-product impact on Coût MP and CGM Eq (using a virtual price = floor)
+  const rows = PRODUCTS.map(p => {
+    const baseRmc = rmCost(p, state.rm);
+    const stressedRmc = rmCost(p, stressed.RM);
+    // For CGM comparison: use floor price as constant proxy (so the variation
+    // reflects only the RM cost change, not a per-product sale price guess).
+    const refPrice = state.refprice[ref.toLowerCase()];
+    const baseFloor = floorPrice(p, baseRmc, ref, state.rm, refPrice);
+    const stressedFloor = floorPrice(p, stressedRmc, ref, stressed.RM, refPrice);
+    const baseCgm = cgmEq(p, baseFloor, baseRmc, ref);
+    const stressedCgm = cgmEq(p, stressedFloor, stressedRmc, ref);
+    const dRmc = stressedRmc - baseRmc;
+    const dCgm = stressedCgm - baseCgm;
+    const dPct = baseCgm !== 0 ? dCgm / Math.abs(baseCgm) * 100 : 0;
+    return { p, baseRmc, baseCgm, dRmc, dCgm, dPct };
+  });
+  rows.sort((a, b) => Math.abs(b.dCgm) - Math.abs(a.dCgm));
+  const tbody = rows.slice(0, 50).map(row => {
+    const cgmCol = row.dCgm >= 0 ? 'var(--ok)' : 'var(--bad)';
+    const rmcCol = row.dRmc >= 0 ? 'var(--bad)' : 'var(--ok)';
+    return `<tr>
+      <td>${row.p.product}</td>
+      <td style="color:var(--muted);font-size:11.5px">${row.p.line || '—'}</td>
+      <td>${f(row.baseRmc, 1)}</td>
+      <td style="color:${rmcCol};font-weight:600">${row.dRmc >= 0 ? '+' : ''}${f(row.dRmc, 1)}</td>
+      <td>${f(row.baseCgm, 0)}</td>
+      <td style="color:${cgmCol};font-weight:700">${row.dCgm >= 0 ? '+' : ''}${f(row.dCgm, 0)}</td>
+      <td style="color:${cgmCol}">${row.dCgm >= 0 ? '+' : ''}${f(row.dPct, 1)}%</td>
+    </tr>`;
+  }).join('');
+  document.querySelector('#sensTbl tbody').innerHTML = tbody;
+}
+
+function exportSensCSV() {
+  const ref = state.ref;
+  const refPrice = state.refprice[ref.toLowerCase()];
+  const stressed = applyShocks(0); // RM only for portfolio
+  const lines = [];
+  // Header
+  lines.push(['Produit', 'Ligne', 'Famille', 'Coût MP base', 'Coût MP stressé', 'Δ Coût MP', 'CGM Eq base', 'CGM Eq stressé', 'Δ CGM Eq', 'Δ %'].join(';'));
+  // Active shocks
+  const shocks = SENS_VARS.filter(v => state.sensVars[v.key].on).map(v => {
+    const s = state.sensVars[v.key];
+    return `${v.label}: ${s.val >= 0 ? '+' : ''}${s.val}${s.mode === 'pct' ? '%' : '$'}`;
+  }).join(' | ');
+  // Data rows
+  PRODUCTS.forEach(p => {
+    const baseRmc = rmCost(p, state.rm);
+    const stressedRmc = rmCost(p, stressed.RM);
+    const baseFloor = floorPrice(p, baseRmc, ref, state.rm, refPrice);
+    const stressedFloor = floorPrice(p, stressedRmc, ref, stressed.RM, refPrice);
+    const baseCgm = cgmEq(p, baseFloor, baseRmc, ref);
+    const stressedCgm = cgmEq(p, stressedFloor, stressedRmc, ref);
+    const dRmc = stressedRmc - baseRmc;
+    const dCgm = stressedCgm - baseCgm;
+    const dPct = baseCgm !== 0 ? dCgm / Math.abs(baseCgm) * 100 : 0;
+    lines.push([
+      `"${p.product}"`, `"${p.line || ''}"`, `"${p.family || ''}"`,
+      baseRmc.toFixed(2), stressedRmc.toFixed(2), dRmc.toFixed(2),
+      baseCgm.toFixed(2), stressedCgm.toFixed(2), dCgm.toFixed(2), dPct.toFixed(2)
+    ].join(';'));
+  });
+  lines.unshift('# Chocs appliqués: ' + (shocks || 'aucun'));
+  lines.unshift('# CGM Simulator — Sensibilité multivariée — ' + new Date().toISOString().slice(0, 10));
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'cgm_sensibilite_' + new Date().toISOString().slice(0, 10) + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* Legacy: kept for backwards-compat (history rendering may still call it). */
+function renderSensitivity(r) { renderMultiSens(); }
 function tornadoSVG(items){
   const W=460,h=34,gap=14,pad=90;
   const max=Math.max(1,...items.map(i=>Math.abs(i.v)));
@@ -5600,8 +5846,6 @@ function syncInputs(){
   document.querySelectorAll('[data-rm]').forEach(i=>i.value=state.rm[i.dataset.rm]);
   document.querySelector('[data-ref="dap"]').value=state.refprice.dap;
   document.querySelector('[data-ref="tsp"]').value=state.refprice.tsp;
-  document.querySelector('[data-sens="nh3"]').value=state.sens.nh3;
-  document.querySelector('[data-sens="sulphur"]').value=state.sens.sulphur;
 }
 function selectProduct(i, resetPrice){
   state.idx=i;
@@ -5627,8 +5871,19 @@ function init(){
   document.getElementById('price').addEventListener('input',e=>{state.price=+e.target.value||0;render();});
   document.querySelectorAll('[data-rm]').forEach(inp=>inp.addEventListener('input',e=>{state.rm[inp.dataset.rm]=+e.target.value||0;render();}));
   document.querySelectorAll('[data-ref]').forEach(inp=>inp.addEventListener('input',e=>{state.refprice[inp.dataset.ref]=+e.target.value||0;render();}));
-  document.querySelectorAll('[data-sens]').forEach(inp=>inp.addEventListener('input',e=>{state.sens[inp.dataset.sens]=+e.target.value||0;render();}));
   document.getElementById('rmToggle').addEventListener('click',function(){document.getElementById('rmGrid').classList.toggle('show');this.textContent=(document.getElementById('rmGrid').classList.contains('show')?'▾':'▸')+' Prix matières premières & références';});
+
+  // Sensitivity panel (multivariée) — init list, boutons reset/csv
+  renderSensVarsList();
+  document.getElementById('sensClearAll').addEventListener('click',()=>{
+    SENS_VARS.forEach(v=>{ state.sensVars[v.key].on=false; });
+    renderSensVarsList(); renderMultiSens();
+  });
+  document.getElementById('sensReset').addEventListener('click',()=>{
+    SENS_VARS.forEach(v=>{ state.sensVars[v.key].val=0; state.sensVars[v.key].mode='pct'; });
+    renderSensVarsList(); renderMultiSens();
+  });
+  document.getElementById('sensCsv').addEventListener('click',exportSensCSV);
 
   document.getElementById('saveBtn').addEventListener('click',()=>{history.unshift(snapshot());history=history.slice(0,100);saveHist();renderHist();});
   document.getElementById('clearBtn').addEventListener('click',()=>{if(confirm('Effacer tout l\'historique ?')){history=[];saveHist();renderHist();}});
