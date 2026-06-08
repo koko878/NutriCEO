@@ -1,6 +1,6 @@
 === D²nAI CGM Cockpit — Crisis Center ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 1.17.0
+Stable tag: 1.18.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -23,6 +23,21 @@ Shortcode (in a WP page):
   [cgm_cockpit]
 
 == Changelog ==
+
+= 1.18.0 =
+* Bouton dédié « ＋ Commencer nouvelle simulation » dans l'en-tête du
+  co-pilote IA — visible et bien identifié (style amber sur fond vert
+  pour appeler l'œil), permet à l'utilisateur de relancer une nouvelle
+  conversation/simulation à tout moment sans avoir à recharger la page.
+* Au clic : la conversation est purgée (state.cpConv vidée), le chat
+  est nettoyé, le champ input remis à zéro puis re-focalisé, et une
+  bulle d'accueil amber invite l'utilisateur à formuler son besoin ou
+  à cliquer une suggestion pour démarrer la simulation guidée.
+* Trilingue FR / EN / PT-BR (ck.newSim + ck.newSimWelcome).
+* CSS .ck-newsim avec hover + shadow ; sur mobile (< 600px) le bouton
+  passe pleine largeur dans le header pour rester tappable.
+* Nouvelle classe .cp-bubble.cp-welcome pour la bulle de réinitialisation
+  (dégradé amber discret cohérent avec le bouton déclencheur).
 
 = 1.17.0 =
 * Simulation conversationnelle — le co-pilote peut désormais GUIDER

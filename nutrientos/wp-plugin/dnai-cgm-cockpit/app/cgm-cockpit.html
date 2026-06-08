@@ -464,6 +464,7 @@ tbody tr.sel{background:var(--green-50)}
 
 /* v1.17.0 — bubbles interactives (simulation conversationnelle) */
 .cp-bubble{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:12px;padding:11px 13px;display:flex;flex-direction:column;gap:9px}
+.cp-bubble.cp-welcome{background:linear-gradient(135deg,rgba(255,193,7,.18),rgba(255,193,7,.06));border-color:rgba(255,193,7,.45);color:#fff8e1;font:600 13px 'Inter';line-height:1.5}
 .cp-bubble.answered{opacity:.65}
 .cp-bubble.answered .cp-choice,.cp-bubble.answered .cp-input,.cp-bubble.answered .btn{pointer-events:none}
 .cp-preface{font-size:12.5px;color:#cfe3d2;font-style:italic}
@@ -544,6 +545,10 @@ tbody tr.sel{background:var(--green-50)}
 .ck-sugs-l{font:700 11px 'Inter';color:#7fb98e;text-transform:uppercase;letter-spacing:.06em;margin-right:6px}
 .ck-sug{background:rgba(124,252,154,.08);border:1px solid rgba(124,252,154,.2);color:#dff0e3;font:600 11.5px 'Inter';padding:5px 10px;border-radius:999px;cursor:pointer}
 .ck-sug:hover{background:rgba(124,252,154,.18)}
+.ck-newsim{background:#FFC107;color:#1a0f00;border:0;border-radius:10px;padding:9px 16px;font:800 13px 'Inter';cursor:pointer;letter-spacing:.01em;display:inline-flex;align-items:center;gap:6px;box-shadow:0 4px 12px -4px rgba(255,193,7,.55);transition:transform .12s,box-shadow .12s,background .12s;white-space:nowrap}
+.ck-newsim:hover{background:#ffd54f;transform:translateY(-1px);box-shadow:0 8px 18px -6px rgba(255,193,7,.7)}
+.ck-newsim:active{transform:translateY(0)}
+@media(max-width:600px){.ck-newsim{width:100%;justify-content:center;padding:11px 14px;font-size:13.5px}}
 .ck-cpinp{display:flex;gap:8px;margin-top:6px}
 .ck-cpinp input{flex:1;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:9px;padding:10px 13px;font:600 13.5px 'Inter'}
 .ck-cpinp input:focus{outline:none;border-color:#7cfc9a}
@@ -585,6 +590,7 @@ tbody tr.sel{background:var(--green-50)}
     <div class="ck-panel ck-copilot ck-copilot-top">
       <div class="ck-row-head">
         <div><h3>🤖 <span data-k="ck.cpH">Co-pilote pricing</span></h3><span class="muted" data-k="ck.cpSub">Pose une question en langage naturel — D²nAI bot dédié pricing</span></div>
+        <button class="ck-newsim" onclick="ckCpReset()" data-k="ck.newSim" title="Réinitialise la conversation et redémarre une simulation guidée">＋ Commencer nouvelle simulation</button>
       </div>
       <div class="ck-chat" id="ckChat"></div>
       <div class="ck-cpsugs" id="ckCpSugs"></div>
@@ -917,7 +923,7 @@ fr:{
  'ck.playH':'⚡ Crisis Playbook','ck.playSub':'Scénarios prêts à l\'emploi · 1 clic = portefeuille recalculé','ck.reset':'↺ Tout calme',
  'ck.heatH':'🔥 S-Pressure Heatmap','ck.heatSub':'Exposition au prix du souffre · trié par sensibilité ∂CGM/∂P_S','ck.exposed':'Exposés','ck.protected':'Protégés',
  'ck.subsH':'🔁 Substitution Advisor','ck.subsSub':'Alternatives OCP iso-grade, classées par CGM','ck.subsPick':'Produit demandé par le client',
- 'ck.cpH':'Co-pilote pricing','ck.cpSub':'Pose une question en langage naturel — D²nAI bot dédié pricing','ck.cpAsk':'Demander','ck.cpPh':'Que se passe-t-il si le souffre monte à $300 ?',
+ 'ck.cpH':'Co-pilote pricing','ck.cpSub':'Pose une question en langage naturel — D²nAI bot dédié pricing','ck.cpAsk':'Demander','ck.cpPh':'Que se passe-t-il si le souffre monte à $300 ?','ck.newSim':'＋ Commencer nouvelle simulation','ck.newSimWelcome':'Nouvelle simulation. Décris ton besoin (« simule le 00-18-10 à 720 $/t » ou « propose-moi un produit pour blé Maroc »), ou clique une suggestion ci-dessous — je te guide pas à pas.',
  'ck.heroBaseline':'Portefeuille en conditions de marché courantes','ck.heroDelta':'Impact vs baseline','ck.heroAvgCgm':'CGM moyenne portefeuille','ck.heroUnder':'produits sous-pricés','ck.heroExposed':'top exposition S','ck.heroSeeMore':'Voir le détail',
  'ck.simulate':'Simuler ce produit','ck.subBetter':'meilleur','ck.subWorse':'moins bon','ck.subSame':'iso','ck.subPick':'choisir','ck.noAlt':'Aucune alternative iso-grade trouvée.',
  'ck.cpThinking':'D²nAI bot is thinking…','ck.cpError':'D²nAI bot indisponible :','ck.cpHint':'Suggestions :',
@@ -966,7 +972,7 @@ en:{
  'ck.playH':'⚡ Crisis Playbook','ck.playSub':'Ready-to-use scenarios · 1 click = portfolio repriced','ck.reset':'↺ Calm state',
  'ck.heatH':'🔥 S-Pressure Heatmap','ck.heatSub':'Exposure to sulfur price · sorted by ∂CGM/∂P_S sensitivity','ck.exposed':'Exposed','ck.protected':'Protected',
  'ck.subsH':'🔁 Substitution Advisor','ck.subsSub':'OCP alternatives at the same grade, ranked by CGM','ck.subsPick':'Product requested by the customer',
- 'ck.cpH':'Pricing co-pilot','ck.cpSub':'Ask in plain English — D²nAI bot for pricing','ck.cpAsk':'Ask','ck.cpPh':'What if sulfur jumps to $300?',
+ 'ck.cpH':'Pricing co-pilot','ck.cpSub':'Ask in plain English — D²nAI bot for pricing','ck.cpAsk':'Ask','ck.cpPh':'What if sulfur jumps to $300?','ck.newSim':'＋ Start a new simulation','ck.newSimWelcome':'New simulation. Tell me what you need ("simulate 00-18-10 at $720/t" or "suggest a product for wheat in Morocco"), or click a suggestion below — I will walk you through it step by step.',
  'ck.heroBaseline':'Portfolio at current market','ck.heroDelta':'Impact vs baseline','ck.heroAvgCgm':'Avg portfolio CGM','ck.heroUnder':'under-priced products','ck.heroExposed':'top S-exposed','ck.heroSeeMore':'See details',
  'ck.simulate':'Simulate this product','ck.subBetter':'better','ck.subWorse':'worse','ck.subSame':'iso','ck.subPick':'pick','ck.noAlt':'No iso-grade alternative found.',
  'ck.cpThinking':'D²nAI bot is thinking…','ck.cpError':'D²nAI bot unavailable:','ck.cpHint':'Try:',
@@ -1015,7 +1021,7 @@ pt:{
  'ck.playH':'⚡ Crisis Playbook','ck.playSub':'Cenários prontos · 1 clique = portfólio recalculado','ck.reset':'↺ Calmaria',
  'ck.heatH':'🔥 S-Pressure Heatmap','ck.heatSub':'Exposição ao preço do enxofre · ordenado por sensibilidade ∂CGM/∂P_S','ck.exposed':'Expostos','ck.protected':'Protegidos',
  'ck.subsH':'🔁 Substitution Advisor','ck.subsSub':'Alternativas OCP iso-grade, classificadas por CGM','ck.subsPick':'Produto pedido pelo cliente',
- 'ck.cpH':'Co-piloto pricing','ck.cpSub':'Pergunte em linguagem natural — D²nAI bot dedicado ao pricing','ck.cpAsk':'Perguntar','ck.cpPh':'E se o enxofre subir para $300?',
+ 'ck.cpH':'Co-piloto pricing','ck.cpSub':'Pergunte em linguagem natural — D²nAI bot dedicado ao pricing','ck.cpAsk':'Perguntar','ck.cpPh':'E se o enxofre subir para $300?','ck.newSim':'＋ Iniciar nova simulação','ck.newSimWelcome':'Nova simulação. Diga o que precisa ("simule o 00-18-10 a $720/t" ou "sugira um produto para trigo no Marrocos"), ou clique numa sugestão abaixo — eu te guio passo a passo.',
  'ck.heroBaseline':'Portfólio nas condições atuais','ck.heroDelta':'Impacto vs baseline','ck.heroAvgCgm':'CGM média do portfólio','ck.heroUnder':'produtos subprecificados','ck.heroExposed':'top exposição ao S','ck.heroSeeMore':'Ver detalhe',
  'ck.simulate':'Simular este produto','ck.subBetter':'melhor','ck.subWorse':'pior','ck.subSame':'iso','ck.subPick':'escolher','ck.noAlt':'Nenhuma alternativa iso-grade encontrada.',
  'ck.cpThinking':'D²nAI bot is thinking…','ck.cpError':'D²nAI bot indisponível:','ck.cpHint':'Sugestões:',
@@ -2235,6 +2241,9 @@ state.cpConv = []; // [{role:'user'|'assistant', content:string}]
 function ckCpReset(){
   state.cpConv = [];
   const c = document.getElementById('ckChat'); if(c) c.innerHTML='';
+  const inp = document.getElementById('ckCpInput'); if(inp){ inp.value=''; }
+  ckChatPush('ai', '<div class="cp-bubble cp-welcome">'+escapeHtml(tr('ck.newSimWelcome'))+'</div>');
+  if(inp) try{ inp.focus(); }catch(e){}
 }
 
 async function ckCpAsk(){
