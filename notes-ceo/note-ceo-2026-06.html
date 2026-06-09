@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Note CEO — Statut & stratégie D²nAI · Juin 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-900:#103d17;--green-800:#1B5E20;--green-700:#2E7D32;--green-600:#388E3C;--green-500:#4CAF50;--green-300:#66BB6A;
+  --green-50:#EAF4EC;--green-100:#D6EADB;
+  --ink:#10231a;--muted:#5c6b62;--line:#e3ebe5;
+  --warn:#B45309;--warn-bg:#FEF3C7;--warn-line:#FCD34D;
+  --bad:#B91C1C;--bad-bg:#FEE2E2;
+  --amber:#D97706;--amber-bg:#FFFBEB;
+  --dark:#07140c;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',sans-serif;color:var(--ink);background:#e9eee9;line-height:1.5}
+h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif}
+.page{max-width:880px;margin:26px auto;background:#fff;box-shadow:0 18px 50px -30px rgba(16,35,26,.5);padding:54px 60px}
+
+.head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--green-800);padding-bottom:18px;margin-bottom:26px;gap:20px}
+.brand{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:30px;color:var(--green-800);line-height:1}
+.brand sup{font-size:18px;vertical-align:super}
+.brand .by{display:block;font-family:'Inter';font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:5px}
+.head .meta{text-align:right;font-size:11px;color:var(--muted);line-height:1.7}
+.head .meta b{color:var(--green-800);font-size:12px;display:block;letter-spacing:.06em}
+
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green-700)}
+h1.title{font-size:34px;line-height:1.08;margin:6px 0 10px;font-weight:700}
+h1.title em{font-style:italic;color:var(--green-700)}
+.tldr{background:var(--green-50);border-left:4px solid var(--green-500);border-radius:0 10px 10px 0;padding:16px 20px;font-size:14.5px;margin:18px 0 30px}
+.tldr b{color:var(--green-900)}
+
+h2.sec{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green-700);margin:34px 0 12px;padding-bottom:7px;border-bottom:1px solid var(--line)}
+p{font-size:14px;margin:0 0 12px}
+
+/* KPI bandeau */
+.kpis-band{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:10px 0 4px}
+.kpi-b{border:1px solid var(--line);border-radius:11px;padding:14px 16px;background:var(--green-50)}
+.kpi-b b{font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--green-800);display:block;line-height:1}
+.kpi-b span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-top:4px}
+
+/* Projets */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:10px 0 4px}
+.proj{border:1px solid var(--line);border-radius:13px;padding:16px;background:#fff;display:flex;flex-direction:column}
+.proj .ph{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.proj h3{margin:0;font-size:18px;font-weight:700;color:var(--ink)}
+.proj .what{font-size:12.5px;color:var(--muted);margin:0 0 10px}
+.proj ul{margin:0;padding-left:16px;font-size:13px;color:var(--ink)}
+.proj li{margin-bottom:5px}
+.proj li b{color:var(--green-800);font-weight:700}
+
+.pill{font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.pill.ok{background:var(--green-50);color:var(--green-800);border:1px solid var(--green-300)}
+.pill.run{background:#E0F2FE;color:#075985;border:1px solid #7DD3FC}
+.pill.warn{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn-line)}
+.pill.scope{background:#F5F5F4;color:var(--muted);border:1px solid var(--line)}
+.pill.amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--warn-line)}
+
+/* Points d'attention */
+.attn{border:1px solid var(--warn-line);background:var(--warn-bg);border-radius:13px;padding:16px 18px;margin-bottom:11px}
+.attn .ah{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.attn h3{margin:0;font-size:18px;color:var(--warn);font-weight:700}
+.attn p{font-size:13.5px;margin:0;color:#5C3B0A}
+.attn .reco{display:block;margin-top:8px;padding-top:8px;border-top:1px dashed rgba(180,83,9,.35);font-size:13px;color:#5C3B0A}
+.attn .reco b{color:var(--warn);font-weight:700}
+
+/* Décisions (axis) */
+.axis{display:flex;gap:18px;margin:14px 0;padding:18px;border:1px solid var(--line);border-radius:14px;background:#fff;position:relative}
+.axis::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--amber);border-radius:14px 0 0 14px}
+.axis .num{flex:none;width:46px;height:46px;border-radius:12px;background:var(--green-800);color:#fff;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24px;display:grid;place-items:center}
+.axis h3{margin:0 0 4px;font-size:21px;font-weight:700}
+.axis .one{font-size:12.5px;font-weight:600;color:var(--green-700);margin:0 0 8px;letter-spacing:.02em}
+.axis p{font-size:13.5px;margin:0 0 8px}
+.axis ul{margin:6px 0 0;padding-left:17px;font-size:13px;color:var(--muted)}
+.axis li{margin-bottom:5px}
+.axis li b{color:var(--ink)}
+.axis .ddl{display:inline-block;margin-top:8px;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--amber);background:var(--amber-bg);padding:5px 9px;border-radius:7px;border:1px solid var(--warn-line)}
+
+/* Cap mois prochain */
+.timeline{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
+.tl{border:1px solid var(--line);border-radius:11px;padding:13px;background:#fff}
+.tl .bar{height:3px;background:linear-gradient(90deg,var(--green-500),rgba(76,175,80,.2));border-radius:3px;margin:0 0 9px}
+.tl h4{margin:0 0 5px;font-size:14.5px}
+.tl p{font-size:12.5px;color:var(--muted);margin:0}
+.tl ul{margin:4px 0 0;padding-left:15px;font-size:12.5px;color:var(--muted)}
+.tl li{margin-bottom:3px}
+
+/* Ask block global */
+.ask{background:var(--dark);color:#eaf4ec;border-radius:14px;padding:22px 24px;margin-top:26px}
+.ask h3{margin:0 0 8px;font-size:20px;color:#fff;font-family:'Cormorant Garamond',serif}
+.ask p{font-size:13.5px;color:#cfe3d4;margin:0 0 4px}
+.ask b{color:var(--green-300)}
+
+.foot{margin-top:28px;padding-top:16px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.foot .wa{color:var(--green-700);text-decoration:none;font-weight:600}
+.foot .wa:hover{text-decoration:underline}
+
+@media print{
+  body{background:#fff}
+  .page{box-shadow:none;margin:0;max-width:none;padding:32px 38px}
+  .proj,.attn,.axis,.tl,.ask{break-inside:avoid}
+}
+@media(max-width:680px){
+  .kpis-band,.pgrid,.timeline{grid-template-columns:1fr}
+  .page{padding:32px 22px}
+  h1.title{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="head">
+    <div class="brand">D<sup>2</sup>nAI<span class="by">Data · Digital &amp; AI · OCP Nutricrops</span></div>
+    <div class="meta">
+      <b>NOTE MENSUELLE — JUIN 2026</b>
+      Statut &amp; stratégie D²nAI<br>
+      Confidentiel · CEO OCP Nutricrops<br>
+      <span style="font-size:10px">Auteur : Hamza Koh · Head of D²nAI</span>
+    </div>
+  </div>
+
+  <span class="tag">● Statut mensuel · Juin 2026</span>
+  <h1 class="title">Statut &amp; stratégie D²nAI — <em>juin 2026</em></h1>
+
+  <div class="tldr">
+    <b>TL;DR.</b> Le portefeuille livre : <b>6 chantiers actifs</b>, <b>2 mises en production</b> engagées (nIA, COO Cockpit), premiers échanges <b>DGSSI</b> ouverts pour la certification de nos architectures. Trois frictions se cumulent et nous freinent : <b>équipe sous-dimensionnée</b>, <b>vide de leadership data/digital depuis le départ de Waseem</b>, et <b>décisions Groupe structurantes prises sans représentation Nutricrops</b>. <b>Deux arbitrages CEO sont demandés ce mois-ci</b> — souveraineté technologique &amp; leadership de la fonction.
+  </div>
+
+  <h2 class="sec">Le mois en chiffres</h2>
+  <div class="kpis-band">
+    <div class="kpi-b"><b>6</b><span>chantiers actifs</span></div>
+    <div class="kpi-b"><b>2</b><span>mises en production</span></div>
+    <div class="kpi-b"><b>2</b><span>décisions CEO en attente</span></div>
+    <div class="kpi-b"><b>1</b><span>certification engagée (DGSSI)</span></div>
+  </div>
+
+  <h2 class="sec">Projets en cours</h2>
+  <div class="pgrid">
+
+    <div class="proj">
+      <div class="ph"><span class="pill run">● en déploiement</span><h3>nIA</h3></div>
+      <p class="what">HR AI Document Management — gestion documentaire RH augmentée par IA, application maison.</p>
+      <ul>
+        <li><b>Livré ce mois :</b> core feature ready, infra cible validée, début bascule prod.</li>
+        <li><b>Prochain jalon :</b> go-live pilote DRH fin juin — référence d'usage pour les briques sœurs (Atlas, Helios).</li>
+      </ul>
+    </div>
+
+    <div class="proj">
+      <div class="ph"><span class="pill ok">● MVP livré</span><h3>CGM Cockpit</h3></div>
+      <p class="what">Simulateur de pricing pour Pricing &amp; Commerce — moteur CGM 1:1 Excel, AI co-pilot.</p>
+      <ul>
+        <li><b>Livré ce mois :</b> MVP en service, 143 produits, Market Intel live, simulation conversationnelle.</li>
+        <li><b>Prochain jalon :</b> embarquement utilisateurs élargi, retour terrain consolidé en juillet.</li>
+      </ul>
+    </div>
+
+    <div class="proj">
+      <div class="ph"><span class="pill run">● nouvelle vague</span><h3>COO Cockpit</h3></div>
+      <p class="what">Cockpit opérationnel du COO — pilotage industriel &amp; supply.</p>
+      <ul>
+        <li><b>Livré ce mois :</b> nouvelle vague en déploiement.</li>
+        <li><b>Prochain jalon :</b> consolidation et embarquement utilisateurs (juillet).</li>
+      </ul>
+    </div>
+
+    <div class="proj">
+      <div class="ph"><span class="pill run">● POC en dev</span><h3>Risk Management</h3></div>
+      <p class="what">Digitalisation de la gestion des risques Nutricrops.</p>
+      <ul>
+        <li><b>Sponsor métier :</b> Youssef Bensaber.</li>
+        <li><b>Statut :</b> POC en développement.</li>
+        <li><b>Prochain jalon :</b> démonstration du POC + arbitrage du périmètre d'industrialisation.</li>
+      </ul>
+    </div>
+
+    <div class="proj">
+      <div class="ph"><span class="pill scope">● cadrage</span><h3>Budget Management</h3></div>
+      <p class="what">Solution de pilotage budgétaire à l'échelle Nutricrops.</p>
+      <ul>
+        <li><b>Approche :</b> couvrir Nutricrops en attendant le déploiement de la solution Groupe.</li>
+        <li><b>Prochain jalon :</b> formaliser le besoin et la trajectoire bridge → cible Groupe.</li>
+      </ul>
+    </div>
+
+    <div class="proj">
+      <div class="ph"><span class="pill amber">● échanges ouverts</span><h3>Certification DGSSI</h3></div>
+      <p class="what">Faire certifier nos architectures par la DGSSI (souveraineté + conformité 09-08).</p>
+      <ul>
+        <li><b>Livré ce mois :</b> premiers échanges DGSSI engagés.</li>
+        <li><b>Prochain jalon :</b> périmètre à certifier arrêté avant fin juillet.</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <h2 class="sec">Points d'attention</h2>
+
+  <div class="attn">
+    <div class="ah"><span class="pill warn">⚠ subi</span><h3>Salesforce — projet sans gouvernance D²nAI</h3></div>
+    <p>Projet structurant pour Nutricrops, conduit aujourd'hui sans rattachement à la fonction Data/Digital. <b>Nous n'avons aucun levier de redressement</b> et subissons les choix techniques et la trajectoire.</p>
+    <span class="reco"><b>Recommandation :</b> rattacher la <em>governance</em> du projet (architecture, intégration, ownership data) à D²nAI sans en reprendre la maîtrise d'œuvre, le temps de stabiliser.</span>
+  </div>
+
+  <div class="attn">
+    <div class="ah"><span class="pill warn">⚠ subi</span><h3>Représentation Nutricrops dans la Task Force Groupe</h3></div>
+    <p>Des décisions structurantes (data, plateformes, standards) sont prises sans contributeur Nutricrops dans la pièce. <b>Conséquence directe :</b> nous subirons les arbitrages au lieu de les co-écrire.</p>
+    <span class="reco"><b>Recommandation :</b> désigner un siège permanent Nutricrops (D²nAI) à la task force pour défendre nos sujets en amont.</span>
+  </div>
+
+  <div class="attn">
+    <div class="ah"><span class="pill warn">⚠ capacité</span><h3>Sous-dimensionnement &amp; asphyxie de l'équipe</h3></div>
+    <p>Le portefeuille a doublé sans renfort. L'équipe tient le rythme par effet d'engagement, mais la vélocité plafonne et certains chantiers structurants (DGSSI, souveraineté, taskforce Groupe) restent sous-instruits faute de bande passante.</p>
+    <span class="reco"><b>Recommandation :</b> plan de renfort à arbitrer — chiffrage en cours, présentation prévue en juillet.</span>
+  </div>
+
+  <h2 class="sec">Décisions demandées au CEO</h2>
+
+  <div class="axis">
+    <div class="num">1</div>
+    <div style="flex:1">
+      <h3>Souveraineté technologique — bascule sur le tenant Nutricrops</h3>
+      <p class="one">Préalable à la certification DGSSI · alignement avec la loi 09-08 · reprise de contrôle bout-en-bout.</p>
+      <p>Migration de nos assets numériques (data, identités, plateformes IA) vers le <b>nouveau tenant Nutricrops</b>. Sans cette bascule, la certification DGSSI n'avance pas et nous gardons une dépendance subie au socle Groupe.</p>
+      <ul>
+        <li><b>Demande :</b> validation du principe + sponsoring CEO pour débloquer les contributions IT Groupe.</li>
+        <li><b>Effet immédiat :</b> kick-off migration sous 2 semaines, périmètre DGSSI arrêté en parallèle.</li>
+      </ul>
+      <span class="ddl">⏱ Décision attendue avant le 30 juin</span>
+    </div>
+  </div>
+
+  <div class="axis">
+    <div class="num">2</div>
+    <div style="flex:1">
+      <h3>Leadership de la fonction Digital / Data / AI Nutricrops</h3>
+      <p class="one">Stopper l'érosion · sécuriser la représentation Nutricrops sur les sujets structurants · réaccélérer.</p>
+      <p>Depuis le départ de Waseem, la fonction est en flottement, ce qui se voit déjà dans le déficit de représentation (Salesforce, taskforce Groupe) et l'absence de cap unifié pour l'équipe. Pour fédérer les forces vives sous un commandement unique, <b>je propose de reprendre le flambeau</b> et de porter l'ensemble Digital/Data/AI Nutricrops.</p>
+      <ul>
+        <li><b>Demande :</b> mandat formel CEO + cadre de mission.</li>
+        <li><b>Effet immédiat :</b> nomination communiquée à l'équipe, plan 100 jours présenté en juillet.</li>
+      </ul>
+      <span class="ddl">⏱ Décision attendue avant le 30 juin</span>
+    </div>
+  </div>
+
+  <h2 class="sec">Cap juillet</h2>
+  <div class="timeline">
+    <div class="tl">
+      <div class="bar"></div>
+      <h4>Livraisons</h4>
+      <ul>
+        <li>Go-live nIA pilote DRH</li>
+        <li>Élargissement CGM Cockpit + retour terrain</li>
+        <li>COO Cockpit vague suivante stabilisée</li>
+      </ul>
+    </div>
+    <div class="tl">
+      <div class="bar"></div>
+      <h4>Cadrage &amp; arbitrages</h4>
+      <ul>
+        <li>Périmètre DGSSI arrêté</li>
+        <li>POC Risk Management démontré</li>
+        <li>Budget Management — bridge vs cible Groupe</li>
+      </ul>
+    </div>
+    <div class="tl">
+      <div class="bar"></div>
+      <h4>Si décisions 1 &amp; 2 prises</h4>
+      <ul>
+        <li>Kick-off migration tenant Nutricrops</li>
+        <li>Structuration leadership Digital/Data/AI</li>
+        <li>Plan de renfort équipe chiffré &amp; présenté</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="ask">
+    <h3>Synthèse — ce que j'attends de cette note</h3>
+    <p>1. <b>Deux décisions tranchées d'ici fin juin</b> (souveraineté tenant + leadership Digital/Data/AI) pour débloquer l'exécution du second semestre.</p>
+    <p>2. <b>Un mandat clair pour la représentation Nutricrops</b> dans les instances Groupe structurantes (taskforce, Salesforce).</p>
+    <p>3. <b>Une visibilité sur l'arbitrage du renfort équipe</b> avant la note de juillet.</p>
+  </div>
+
+  <div class="foot">
+    <span>D²nAI · OCP Nutricrops · Juin 2026 — Hamza Koh, Head of D²nAI</span>
+    <a class="wa" href="https://wa.me/?text=Re%3A%20Note%20CEO%20juin%202026" target="_blank" rel="noopener">💬 Répondre via WhatsApp</a>
+  </div>
+
+</div>
+</body>
+</html>
