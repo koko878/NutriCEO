@@ -1,6 +1,6 @@
 === D²nAI Note CEO ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 1.0.1
+Stable tag: 1.1.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -32,6 +32,13 @@ Shortcode pour intégration dans une page WP :
 4. Bumper la version du plugin
 
 == Changelog ==
+
+= 1.1.0 =
+* Ajout d'une 3e décision : continuité des travaux d'architecture
+  d'entreprise (urbanisation SI + optimisation des coûts, aujourd'hui
+  bloqués faute de signature du contrat de la ressource).
+* Mises à jour des compteurs partout (bandeau KPI, TL;DR, cap juillet,
+  synthèse, balises Open Graph) — 2 → 3 décisions.
 
 = 1.0.1 =
 * Retrait des badges « Décision attendue avant le 30 juin » et radoucissement
