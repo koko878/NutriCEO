@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI Note CEO
  * Description:       Héberge la note mensuelle Statut & stratégie D²nAI à destination du CEO. URL plein écran (sans theme) pour partage WhatsApp/iMessage avec carte d'aperçu Open Graph, et shortcode pour intégration dans une page WP. Aucune dépendance externe (HTML statique).
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-note-ceo
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NCEO_VER', '1.0.0' );
+define( 'DNAI_NCEO_VER', '1.0.1' );
 define( 'DNAI_NCEO_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NCEO_DIR', plugin_dir_path( __FILE__ ) );
 

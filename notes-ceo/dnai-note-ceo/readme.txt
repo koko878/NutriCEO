@@ -1,6 +1,6 @@
 === D²nAI Note CEO ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -32,6 +32,11 @@ Shortcode pour intégration dans une page WP :
 4. Bumper la version du plugin
 
 == Changelog ==
+
+= 1.0.1 =
+* Retrait des badges « Décision attendue avant le 30 juin » et radoucissement
+  de la synthèse (« Deux décisions à arbitrer » au lieu de « tranchées d'ici
+  fin juin ») — ton moins ultimatum, plus proposition.
 
 = 1.0.0 =
 * Première édition — note CEO juin 2026.
