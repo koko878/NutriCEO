@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.5.2
+Stable tag: 0.6.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -26,3 +26,28 @@ Full-screen URLs (no theme around them):
 Shortcodes (in a WP page):
   [nutriplan]         → embeds the live MVP app
   [nutriplan_pitch]   → embeds the pitch deck
+
+== Feedback edition ==
+Clic-droit sur n'importe quel bloc de l'app NutriPlan pour déposer un
+commentaire lié à son contexte (vue + bloc). Une pastille flottante
+« 💬 N commentaires » en bas à droite ouvre le panneau de revue, avec
+export JSON / CSV / markdown (copier-coller dans Teams / Slack / Notion).
+Tout est stocké en localStorage (par navigateur) — idéal pour récolter
+le feedback des parties prenantes pendant une démo, sans backend.
+
+== Changelog ==
+
+= 0.6.0 =
+* Feedback edition : clic-droit sur n'importe quel bloc pour commenter,
+  pastille flottante + panneau de revue, export JSON / CSV / markdown.
+  Porté du CGM Cockpit, adapté aux vues NutriPlan (cockpit, portefeuille,
+  gouvernance, intake, fast track, KB…).
+
+= 0.5.2 =
+* Pitch demo CTAs point to live AFD URL.
+
+= 0.5.1 =
+* Slim pitch + zero provider branding.
+
+= 0.5.0 =
+* Alignement Framework v1.0 (CEO-signed).
