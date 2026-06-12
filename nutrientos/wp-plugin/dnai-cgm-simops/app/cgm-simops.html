@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1B5E20">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>CGM Sim-Ops — D²nAI · OCP Nutricrops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-900:#103d17;--green-800:#1B5E20;--green-700:#2E7D32;--green-600:#388E3C;--green-500:#4CAF50;
+  --green-300:#66BB6A;--green-100:#D6EADb;--green-50:#EAF4EC;
+  --ink:#10231a;--ink-2:#1f3a2a;--muted:#5c6b62;--muted-2:#8aa195;
+  --line:#e3ebe5;--line-2:#cfdcd4;
+  --bad:#B91C1C;--bad-bg:#fdeced;--ok:#15803D;--ok-bg:#dcfce7;
+  --warn:#B45309;--warn-bg:#fef3c7;--warn-line:#FCD34D;
+  --amber:#D97706;--amber-bg:#fffbeb;
+  --rad-sm:8px;--rad-md:12px;--rad-lg:16px;
+  --dark:#07140c;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--ink);background:#f3f5f1;line-height:1.5;font-size:14px}
+h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif}
+.wrap{max-width:1360px;margin:0 auto;padding:18px 20px 40px}
+
+/* ====== Header brand ====== */
+.appheader{display:flex;align-items:center;gap:18px;background:#fff;border:1px solid var(--line);
+  border-radius:var(--rad-md);padding:16px 22px;margin-bottom:18px;box-shadow:0 1px 2px rgba(16,35,26,.04)}
+.brand{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:26px;color:var(--green-800);line-height:1}
+.brand sup{font-size:15px;vertical-align:super}
+.brand .by{display:block;font-family:'Inter';font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.appheader .ttl{font-size:19px;font-weight:700;color:var(--ink);line-height:1.15;font-family:'Cormorant Garamond',serif}
+.appheader .sub{font-size:12px;color:var(--muted);margin-top:2px}
+.appheader .right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.appheader .bar{width:44px;height:5px;background:var(--green-700);border-radius:3px}
+
+/* ====== Tabs ====== */
+.tabs{background:var(--green-700);border-radius:var(--rad-md);padding:5px;display:flex;gap:5px;margin-bottom:18px;
+  box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.tab{flex:1;color:#fff;border:0;border-radius:9px;padding:10px 18px;font:700 13.5px 'Inter';
+  background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+.tab:hover{background:rgba(255,255,255,.14)}
+.tab.on{background:#fff;color:var(--green-800);box-shadow:0 1px 4px rgba(0,0,0,.18)}
+
+/* ====== Card pattern ====== */
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--rad-md);margin-bottom:16px;
+  overflow:hidden;box-shadow:0 1px 2px rgba(16,35,26,.04)}
+.card .ch{padding:13px 17px;border-bottom:1px solid #eef0ec;display:flex;align-items:center;gap:10px;
+  font:700 14px 'Inter';color:var(--ink)}
+.card .ch .hic{color:var(--green-700);font-size:15px}
+.card .ch .meta{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:400;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.card .cb{padding:14px 17px}
+
+/* ====== KPIs ====== */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--rad-md);padding:15px 18px;
+  display:flex;gap:14px;align-items:center;box-shadow:0 1px 2px rgba(16,35,26,.04)}
+.kpi .ic{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex:none}
+.kpi .l{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted-2);font-weight:700}
+.kpi .v{font:700 26px 'Cormorant Garamond',serif;margin-top:2px;line-height:1.05;letter-spacing:-.01em}
+.kpi .s{font-size:11.5px;color:var(--muted);margin-top:3px}
+
+/* ====== Inputs ====== */
+.row2{display:grid;grid-template-columns:5fr 7fr;gap:14px}
+.searchwrap{position:relative;margin:0 0 10px}
+.searchwrap .ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted-2);font-size:13px}
+.searchbox{width:100%;font-size:13px;padding:9px 12px 9px 32px;border:1px solid var(--line-2);
+  border-radius:9px;background:#fafbf9;transition:.15s;font-family:'Inter',sans-serif}
+.searchbox:focus{outline:none;border-color:var(--green-700);box-shadow:0 0 0 3px rgba(46,125,50,.12);background:#fff}
+.selbar{display:flex;gap:14px;padding:0 2px 9px;font-size:12px}
+.selbar a{color:var(--green-700);text-decoration:none;font-weight:600;cursor:pointer}
+.selbar a:hover{text-decoration:underline}
+
+details.grp{border:1px solid #eef0ec;border-radius:10px;margin-bottom:6px;background:#fff;overflow:hidden}
+details.grp[open]{border-color:#d9e8cf}
+summary.grphd{cursor:pointer;list-style:none;display:flex;align-items:center;gap:9px;font:700 11.5px 'Inter';
+  letter-spacing:.04em;color:var(--green-800);background:#eef6e8;padding:9px 12px;user-select:none}
+summary.grphd::-webkit-details-marker{display:none}
+summary.grphd::before{content:'▸';color:#6b9a4f;font-size:11px;transition:transform .15s}
+details.grp[open] > summary.grphd::before{transform:rotate(90deg)}
+summary.grphd .mac{text-transform:uppercase}
+summary.grphd .cnt{margin-left:auto;color:#6b9a4f;font-weight:700;background:#fff;border-radius:20px;padding:1px 9px;font-size:11px}
+.grpbody{padding:5px 11px 8px}
+
+.prow{display:flex;align-items:center;gap:11px;padding:4px 2px;border-radius:8px;transition:background .12s}
+.prow:hover{background:#f6f8f3}
+.prow .nm{flex:1;font-size:13px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prow input[type="number"]{width:88px;height:30px;padding:3px 8px;text-align:right;font-size:13px;
+  font-family:'Inter',sans-serif;border:1px solid var(--line-2);border-radius:7px;background:#fff;transition:.15s}
+.prow input[type="number"]:focus{outline:none;border-color:var(--green-700);box-shadow:0 0 0 3px rgba(46,125,50,.12)}
+.prow input[type="checkbox"]{width:16px;height:16px;accent-color:var(--green-700);flex:none;cursor:pointer}
+.section-lab{font:700 10px 'Inter';letter-spacing:.1em;text-transform:uppercase;color:var(--warn);
+  padding:13px 2px 4px;display:flex;align-items:center;gap:7px;border-top:1px dashed var(--line);margin-top:10px}
+
+/* ====== Buttons ====== */
+.btn{border:0;padding:9px 18px;border-radius:9px;font:700 13px 'Inter';cursor:pointer;transition:.15s;
+  display:inline-flex;align-items:center;gap:7px}
+.btn.primary{background:var(--green-700);color:#fff}
+.btn.primary:hover{background:var(--green-800)}
+.btn.ghost{background:#fff;color:var(--ink-2);border:1px solid var(--line-2)}
+.btn.ghost:hover{border-color:var(--green-700);color:var(--green-800)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 26px}
+
+/* ====== Tables ====== */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table.tbl{width:100%;border-collapse:collapse;font-size:12.5px;background:#fff}
+table.tbl th{background:#f6f8f3;color:var(--ink-2);font:700 11px 'Inter';text-transform:uppercase;
+  letter-spacing:.04em;padding:9px 11px;text-align:right;border-bottom:1px solid var(--line)}
+table.tbl th:first-child{text-align:left}
+table.tbl td{padding:8px 11px;border-bottom:1px solid #f1f4ef;text-align:right;color:var(--ink)}
+table.tbl td:first-child{text-align:left;font-weight:600}
+table.tbl tbody tr:hover{background:#f9faf7}
+table.tbl tbody tr.moy{background:#f9fbf6;font-weight:700;border-top:2px solid var(--green-100)}
+table.tbl tbody tr.moy td:first-child{color:var(--green-800)}
+.cell-pos{color:var(--ok);font-weight:700}
+.cell-neg{color:var(--bad);font-weight:700}
+.cell-warn{color:var(--warn);font-weight:600}
+.delta{font-size:11px;color:var(--muted-2);margin-left:5px}
+.delta.pos{color:var(--ok)}
+.delta.neg{color:var(--bad)}
+
+/* ====== Charts (SVG hand-rolled) ====== */
+.chart-wrap{position:relative}
+svg.chart{display:block;width:100%;font-family:'Inter',sans-serif}
+.chart text{font-size:10px;fill:var(--ink-2)}
+.chart .axis{stroke:var(--line-2);stroke-width:1}
+.chart .grid{stroke:#f1f4ef;stroke-width:1}
+.chart .xlabel{font-size:10px;fill:var(--muted);text-anchor:end;dominant-baseline:middle}
+.chart .ylabel{font-size:9px;fill:var(--muted);text-anchor:middle}
+.chart .barval{font-size:9px;font-weight:700;fill:var(--ink);text-anchor:middle;dominant-baseline:auto}
+.chart .leg{font-size:10.5px;fill:var(--ink-2)}
+.chart-empty{padding:48px 16px;text-align:center;color:var(--muted-2);font-size:13px;font-style:italic}
+
+/* Sensitivity */
+.sens-row{display:grid;grid-template-columns:18px 1fr 90px auto;gap:11px;align-items:center;padding:5px 2px;border-radius:8px}
+.sens-row:hover{background:#f6f8f3}
+.sens-row .nm{font-size:13px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sens-row .nm .hint{font-size:10.5px;color:var(--green-700);font-style:italic;margin-left:8px;font-weight:500;cursor:help}
+.sens-row input[type="number"]{width:80px;height:30px;padding:3px 8px;text-align:right;font-size:13px;
+  font-family:'Inter',sans-serif;border:1px solid var(--line-2);border-radius:7px;background:#fff}
+.sens-row input[type="number"]:focus{outline:none;border-color:var(--green-700);box-shadow:0 0 0 3px rgba(46,125,50,.12)}
+.sens-row .mode{display:inline-flex;background:#f3f5f1;border-radius:7px;padding:2px}
+.sens-row .mode button{border:0;background:transparent;padding:3px 9px;border-radius:5px;font:700 11px 'Inter';color:var(--muted);cursor:pointer}
+.sens-row .mode button.on{background:#fff;color:var(--green-800);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+
+/* Tornado specific */
+.torn-bar{shape-rendering:crispEdges}
+.torn-pos{fill:var(--green-700)}
+.torn-neg{fill:var(--bad)}
+
+/* ====== Feedback (clic-droit pour commenter) — porté du CGM Cockpit ====== */
+.fb-highlight{outline:3px dashed #FFC107!important;outline-offset:3px;border-radius:8px;animation:fbPulseHi 1s ease-in-out infinite alternate}
+@keyframes fbPulseHi{from{outline-color:#FFC107}to{outline-color:#ffe082}}
+.fb-badge{position:fixed;right:18px;bottom:18px;z-index:9500;background:linear-gradient(135deg,#FFC107,#FF8F00);color:#1a0f00;border:0;border-radius:999px;padding:11px 18px;font:800 13px 'Inter';cursor:pointer;box-shadow:0 12px 30px -8px rgba(255,143,0,.6);transition:transform .15s,box-shadow .15s}
+.fb-badge:hover{transform:translateY(-2px);box-shadow:0 16px 36px -10px rgba(255,143,0,.7)}
+.fb-badge.hot{background:linear-gradient(135deg,#FF6F00,#E53935);color:#fff}
+.fb-badge.flash{animation:fbFlash .7s ease-out}
+@keyframes fbFlash{0%{transform:scale(1.15);box-shadow:0 0 0 12px rgba(255,235,59,.4)}100%{transform:scale(1);box-shadow:0 12px 30px -8px rgba(255,143,0,.6)}}
+.fb-menu{position:fixed;z-index:9700;background:#0c1f14;border:1px solid rgba(255,193,7,.35);border-radius:11px;padding:5px;box-shadow:0 24px 60px -10px rgba(0,0,0,.7);min-width:230px}
+.fb-mi{display:block;width:100%;text-align:left;background:none;border:0;color:#dff0e3;font:600 13px 'Inter';padding:9px 12px;border-radius:7px;cursor:pointer}
+.fb-mi:hover{background:rgba(255,193,7,.15);color:#fff}
+.fb-modal-wrap{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:9800;display:flex;align-items:center;justify-content:center;padding:20px}
+.fb-modal{background:#0c1f14;color:#dff0e3;border:1px solid rgba(255,193,7,.4);border-radius:16px;padding:22px 24px;max-width:520px;width:100%;box-shadow:0 30px 80px -20px rgba(0,0,0,.7)}
+.fb-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.fb-head h3{margin:0;font:700 17px 'Inter';color:#fff}
+.fb-x{background:none;border:0;color:#9fb3a6;font-size:18px;cursor:pointer;padding:4px 8px;border-radius:6px}
+.fb-x:hover{background:rgba(255,255,255,.07);color:#fff}
+.fb-ctx{display:flex;flex-direction:column;gap:2px;background:rgba(255,193,7,.08);border:1px solid rgba(255,193,7,.22);border-radius:9px;padding:9px 12px;margin-bottom:14px}
+.fb-ctx .fb-lbl{font:700 10px 'Inter';letter-spacing:.08em;color:#ffc107;text-transform:uppercase}
+.fb-ctx b{color:#fff;font-size:14px}
+.fb-ctx .fb-bread{font-size:12px;color:#9fb3a6}
+.fb-flbl{display:block;font:700 11px 'Inter';text-transform:uppercase;letter-spacing:.06em;color:#7fb98e;margin:8px 0 4px}
+.fb-author,.fb-text{width:100%;padding:9px 11px;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:8px;font:500 13.5px 'Inter';box-sizing:border-box}
+.fb-text{resize:vertical;font-family:'Inter',sans-serif}
+.fb-act{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.fb-act button{border:0;padding:9px 16px;border-radius:9px;font:700 13px 'Inter';cursor:pointer}
+.fb-cancel{background:rgba(255,255,255,.08);color:#dff0e3}
+.fb-save{background:#FFC107;color:#1a0f00}
+.fb-save:hover{background:#ffd54f}
+.fb-panel{position:fixed;right:0;top:0;bottom:0;width:min(420px,92vw);z-index:9600;background:#0a1812;color:#dff0e3;border-left:1px solid rgba(255,193,7,.25);box-shadow:-20px 0 60px -20px rgba(0,0,0,.6);overflow:auto}
+.fb-pinner{padding:18px 18px 50px}
+.fb-phead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.fb-phead h3{margin:0;font:700 17px 'Inter';color:#fff}
+.fb-pacts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.fb-btn{background:rgba(255,193,7,.12);color:#ffd54f;border:1px solid rgba(255,193,7,.3);border-radius:8px;padding:6px 11px;font:700 11.5px 'Inter';cursor:pointer}
+.fb-btn:hover{background:rgba(255,193,7,.2)}
+.fb-btn.danger{background:rgba(229,57,53,.12);color:#ff9999;border-color:rgba(229,57,53,.4)}
+.fb-list{display:flex;flex-direction:column;gap:9px}
+.fb-empty{color:#9fb3a6;font-size:13px;padding:30px 0;text-align:center}
+.fb-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-left:3px solid #FFC107;border-radius:10px;padding:11px 13px}
+.fb-iblock{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.fb-iblock b{color:#fff;font-size:13px}
+.fb-iblock span{font-size:11px;color:#9fb3a6}
+.fb-itext{font-size:13.5px;color:#dff0e3;line-height:1.5;margin-bottom:7px;white-space:pre-wrap}
+.fb-imeta{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;color:#7c9c87}
+.fb-del{background:none;border:0;color:#9fb3a6;cursor:pointer;font-size:13px;padding:2px 6px;border-radius:5px}
+.fb-del:hover{background:rgba(229,57,53,.2);color:#ff9999}
+
+/* ====== Responsive ====== */
+@media(max-width:780px){
+  .row2{grid-template-columns:1fr}
+  .kpis{grid-template-columns:1fr}
+  .wrap{padding:14px 14px 30px}
+  .appheader{padding:12px 14px;flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="appheader">
+    <div class="brand">D<sup>2</sup>nAI<span class="by">Data · Digital &amp; AI · OCP Nutricrops</span></div>
+    <div>
+      <div class="ttl">Simulateur de marge — CGM Sim-Ops</div>
+      <div class="sub">Coût de revient, CGM &amp; CGM EQ DAP, composition du coût et analyse de sensibilité</div>
+    </div>
+    <div class="right"><div class="bar"></div></div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab on" data-t="sim">⚙ Simulation</button>
+    <button class="tab" data-t="sens">📊 Analyse de sensibilité</button>
+  </nav>
+
+  <!-- ============ TAB SIMULATION ============ -->
+  <section id="tab-sim">
+
+    <div class="kpis">
+      <div class="kpi" data-fb-name="KPI Meilleure CGM EQ DAP">
+        <div class="ic" style="background:#eef6e8;color:var(--green-800)">🏆</div>
+        <div><div class="l">Meilleure CGM EQ DAP</div><div class="v" id="kpiBestV" style="color:var(--green-700)">—</div><div class="s" id="kpiBestN"></div></div>
+      </div>
+      <div class="kpi" data-fb-name="KPI Plus basse CGM EQ DAP">
+        <div class="ic" style="background:#f7eede;color:var(--amber)">↘</div>
+        <div><div class="l">Plus basse CGM EQ DAP</div><div class="v" id="kpiLowV" style="color:var(--amber)">—</div><div class="s" id="kpiLowN"></div></div>
+      </div>
+      <div class="kpi" data-fb-name="KPI CGM du DAP">
+        <div class="ic" style="background:#eef0ec;color:var(--ink)">🏷</div>
+        <div><div class="l">CGM du DAP</div><div class="v" id="kpiDapV">—</div><div class="s">CGM brute (Prix − coût)</div></div>
+      </div>
+    </div>
+
+    <div class="row2">
+      <div class="card" data-fb-name="Prix matières premières">
+        <div class="ch"><span class="hic">🧪</span>Prix matières premières<span class="meta">$/t</span></div>
+        <div class="cb" id="rmList"></div>
+      </div>
+      <div class="card" data-fb-name="Produits à simuler">
+        <div class="ch"><span class="hic">📦</span>Produits à simuler<span class="meta">cocher + prix de vente $/t</span></div>
+        <div class="cb">
+          <div class="searchwrap">
+            <span class="ico">🔍</span>
+            <input type="text" id="searchProd" class="searchbox" placeholder="Rechercher un produit…">
+          </div>
+          <div class="selbar">
+            <a id="selAll">✓ Tout sélectionner</a>
+            <a id="selNone">✕ Aucun</a>
+            <span style="color:var(--muted);font-size:11.5px;margin-left:auto" id="selCount">0 sélectionnés</span>
+          </div>
+          <div id="prodPanel"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-fb-name="Graphe CGM vs CGM EQ DAP">
+      <div class="ch"><span class="hic">📊</span>CGM &amp; CGM EQ DAP par produit
+        <div class="meta">
+          Tri :
+          <select id="sort1" class="searchbox" style="width:170px;padding:5px 10px;font-size:12px">
+            <option value="eqdap">CGM EQ DAP ↓</option>
+            <option value="cgm">CGM ↓</option>
+            <option value="nom">Nom A–Z</option>
+          </select>
+        </div>
+      </div>
+      <div class="cb"><div id="chart1" class="chart-wrap"></div></div>
+    </div>
+
+    <div class="card" data-fb-name="Graphe Composition du coût">
+      <div class="ch"><span class="hic">📉</span>Composition du coût
+        <div class="meta">
+          Tri :
+          <select id="sort2" class="searchbox" style="width:170px;padding:5px 10px;font-size:12px">
+            <option value="cout">Coût total ↓</option>
+            <option value="eqdap">CGM EQ DAP ↓</option>
+            <option value="nom">Nom A–Z</option>
+          </select>
+          <div class="mode" style="display:inline-flex;background:#f3f5f1;border-radius:7px;padding:2px">
+            <button id="cmAbs" class="cm on" data-m="abs">$</button>
+            <button id="cmPct" class="cm" data-m="pct">%</button>
+          </div>
+        </div>
+      </div>
+      <div class="cb"><div id="chart2" class="chart-wrap"></div></div>
+    </div>
+
+    <div class="card" data-fb-name="Synthèse par produit">
+      <div class="ch"><span class="hic">📋</span>Synthèse par produit<span class="meta">valeurs en $/t</span></div>
+      <div class="cb"><div id="synthTbl"></div></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn ghost" id="btnReset">↺ Réinitialiser</button>
+      <button class="btn primary" id="btnExportCsv">⤓ Exporter synthèse (CSV)</button>
+    </div>
+  </section>
+
+  <!-- ============ TAB SENSIBILITÉ ============ -->
+  <section id="tab-sens" style="display:none">
+
+    <div class="card" data-fb-name="Variables de sensibilité">
+      <div class="ch"><span class="hic">〰</span>Variables de sensibilité<span class="meta">cocher + choc (% ou $, valeurs négatives permises)</span></div>
+      <div class="cb" id="sensVars"></div>
+    </div>
+
+    <div class="card" data-fb-name="Impact combiné par produit">
+      <div class="ch"><span class="hic">🎯</span>Impact combiné par produit<span class="meta">tous les chocs appliqués ensemble</span></div>
+      <div class="cb"><div id="sensCombined"></div></div>
+    </div>
+
+    <div class="card" data-fb-name="Tornado contribution par variable">
+      <div class="ch"><span class="hic">📊</span>Tornado — contribution par variable
+        <div class="meta">
+          <select id="tornProd" class="searchbox" style="width:220px;padding:5px 10px;font-size:12px">
+            <option value="__moy__">Moyenne (sélection)</option>
+          </select>
+          <select id="tornMetric" class="searchbox" style="width:170px;padding:5px 10px;font-size:12px">
+            <option value="dEqdap">CGM EQ DAP</option>
+            <option value="dCgm">CGM</option>
+            <option value="dRmc">Coût RM</option>
+          </select>
+        </div>
+      </div>
+      <div class="cb"><div id="tornado" class="chart-wrap"></div></div>
+    </div>
+
+    <div class="card" data-fb-name="Impact séparé par produit x variable">
+      <div class="ch"><span class="hic">📋</span>Impact séparé (par produit × variable)<span class="meta">contribution isolée de chaque choc</span></div>
+      <div class="cb"><div id="sensSeparate"></div></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" id="btnExportSensCsv">⤓ Exporter analyse de sensibilité (CSV)</button>
+    </div>
+  </section>
+
+</div>
+
+<!-- ============ DATA (généré depuis CSP.xlsx + Referentiel.xlsx de Fouad) ============ -->
+<script>
+window.SIMOPS_DATA = {"csp":[{"ID_Produit":"P001","Produit":"ASP 19 38 5S","Macro-Produit":"NPS","Unité":"t","Soufre":0,"Ammoniac":0.230998,"KCl":0,"ACS":0.15112,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.391925,"EQ_DAP_Ratio":0.821417},{"ID_Produit":"P002","Produit":"ASP 19 38 6S Euro","Macro-Produit":"NPS","Unité":"t","Soufre":0,"Ammoniac":0.233017,"KCl":0,"ACS":0.162288,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.388288,"EQ_DAP_Ratio":0.813795},{"ID_Produit":"P003","Produit":"DAP","Macro-Produit":"DAP","Unité":"t","Soufre":0,"Ammoniac":0.225,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.477133,"EQ_DAP_Ratio":1},{"ID_Produit":"P004","Produit":"DAP BLACK","Macro-Produit":"DAP","Unité":"t","Soufre":0,"Ammoniac":0.224,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.48,"EQ_DAP_Ratio":1.00601},{"ID_Produit":"P005","Produit":"DAP BLACK VIETNAM","Macro-Produit":"DAP","Unité":"t","Soufre":0,"Ammoniac":0.229027,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.491,"EQ_DAP_Ratio":1.029064},{"ID_Produit":"P006","Produit":"DAP BROWN","Macro-Produit":"DAP","Unité":"t","Soufre":0,"Ammoniac":0.222587,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.481548,"EQ_DAP_Ratio":1.009254},{"ID_Produit":"P007","Produit":"DAP BROWN EURO","Macro-Produit":"DAP","Unité":"t","Soufre":0,"Ammoniac":0.227,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.485127,"EQ_DAP_Ratio":1.016756},{"ID_Produit":"P008","Produit":"DAP Euro","Macro-Produit":"DAP","Unité":"t","Soufre":0,"Ammoniac":0.22432,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.475851,"EQ_DAP_Ratio":0.997313},{"ID_Produit":"P009","Produit":"DAP Euro HORS EUROPE","Macro-Produit":"DAP","Unité":"t","Soufre":0,"Ammoniac":0.22432,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.475851,"EQ_DAP_Ratio":0.997313},{"ID_Produit":"P010","Produit":"DAP JAPAN","Macro-Produit":"DAP","Unité":"t","Soufre":0,"Ammoniac":0.22432,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.475439,"EQ_DAP_Ratio":0.99645},{"ID_Produit":"P011","Produit":"DAP Low Moisture","Macro-Produit":"DAP","Unité":"t","Soufre":0,"Ammoniac":0.225,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.477133,"EQ_DAP_Ratio":1},{"ID_Produit":"P012","Produit":"DAP SPECIAL","Macro-Produit":"DAP","Unité":"t","Soufre":0,"Ammoniac":0.22432,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.475851,"EQ_DAP_Ratio":0.997313},{"ID_Produit":"P013","Produit":"DAP SPECIAL DARK","Macro-Produit":"DAP","Unité":"t","Soufre":0,"Ammoniac":0.22432,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.475439,"EQ_DAP_Ratio":0.99645},{"ID_Produit":"P014","Produit":"DAP SPECIAL DARK JAPAN","Macro-Produit":"DAP","Unité":"t","Soufre":0,"Ammoniac":0.22432,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.475439,"EQ_DAP_Ratio":0.99645},{"ID_Produit":"P015","Produit":"DAP SPECIAL DARK KENYA","Macro-Produit":"DAP","Unité":"t","Soufre":0,"Ammoniac":0.226283,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.480422,"EQ_DAP_Ratio":1.006894},{"ID_Produit":"P016","Produit":"DAP Tanzanie","Macro-Produit":"DAP","Unité":"t","Soufre":0,"Ammoniac":0.225,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.477133,"EQ_DAP_Ratio":1},{"ID_Produit":"P017","Produit":"DAP VIETNAM","Macro-Produit":"DAP","Unité":"t","Soufre":0,"Ammoniac":0.225,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.477133,"EQ_DAP_Ratio":1},{"ID_Produit":"P018","Produit":"MAP 10 50 1Zn","Macro-Produit":"MAP","Unité":"t","Soufre":0,"Ammoniac":0.135613,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0.009804,"B":0,"Cu":0,"AmSul":0,"P2O5":0.523959,"EQ_DAP_Ratio":1.098142},{"ID_Produit":"P019","Produit":"MAP 10 50 Special","Macro-Produit":"MAP","Unité":"t","Soufre":0,"Ammoniac":0.134675,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.524425,"EQ_DAP_Ratio":1.099118},{"ID_Produit":"P020","Produit":"MAP 11 52 0.5Zn","Macro-Produit":"MAP","Unité":"t","Soufre":0,"Ammoniac":0.139498,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.535849,"EQ_DAP_Ratio":1.123062},{"ID_Produit":"P021","Produit":"MAP 11 52 EU","Macro-Produit":"MAP","Unité":"t","Soufre":0,"Ammoniac":0.14,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.538,"EQ_DAP_Ratio":1.127569},{"ID_Produit":"P022","Produit":"MAP 11 52 JAPAN","Macro-Produit":"MAP","Unité":"t","Soufre":0,"Ammoniac":0.139498,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.535849,"EQ_DAP_Ratio":1.123062},{"ID_Produit":"P023","Produit":"MAP 11 52 South Africa","Macro-Produit":"MAP","Unité":"t","Soufre":0,"Ammoniac":0.139498,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.535849,"EQ_DAP_Ratio":1.123062},{"ID_Produit":"P024","Produit":"MAP 11 52 SPECIAL","Macro-Produit":"MAP","Unité":"t","Soufre":0,"Ammoniac":0.139498,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.535849,"EQ_DAP_Ratio":1.123062},{"ID_Produit":"P025","Produit":"MAP 11 52 Special Dark","Macro-Produit":"MAP","Unité":"t","Soufre":0,"Ammoniac":0.139498,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.535849,"EQ_DAP_Ratio":1.123062},{"ID_Produit":"P026","Produit":"MAP 11 54 NE Belgium","Macro-Produit":"MAP","Unité":"t","Soufre":0,"Ammoniac":0.141582,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.553546,"EQ_DAP_Ratio":1.160151},{"ID_Produit":"P027","Produit":"MAP 11 54 NE EU","Macro-Produit":"MAP","Unité":"t","Soufre":0,"Ammoniac":0.140289,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.557,"EQ_DAP_Ratio":1.16739},{"ID_Produit":"P028","Produit":"MAP 11 57","Macro-Produit":"MAP","Unité":"t","Soufre":0,"Ammoniac":0.139,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.586249,"EQ_DAP_Ratio":1.228692},{"ID_Produit":"P029","Produit":"NP 03-39 6S","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0.01,"KCl":0,"ACS":0.18,"Roche_Granulation":0.32,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.34,"EQ_DAP_Ratio":0.71259},{"ID_Produit":"P030","Produit":"NP 0-40-0 28CaO","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0,"KCl":0,"ACS":0.07,"Roche_Granulation":0.44,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.47,"EQ_DAP_Ratio":0.985051},{"ID_Produit":"P031","Produit":"NP 04-38 5S","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0.01,"KCl":0,"ACS":0.09,"Roche_Granulation":0.36,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.31,"EQ_DAP_Ratio":0.649715},{"ID_Produit":"P032","Produit":"NP 05-38 9S","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0.064,"KCl":0,"ACS":0.108,"Roche_Granulation":0.349,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.308,"EQ_DAP_Ratio":0.645523},{"ID_Produit":"P033","Produit":"NP 10 30 EU ","Macro-Produit":"NPS ","Unité":"t","Soufre":0,"Ammoniac":0.124,"KCl":0.258,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0.009251,"Cu":0,"AmSul":0,"P2O5":0.40665,"EQ_DAP_Ratio":0.852279},{"ID_Produit":"P034","Produit":"NP 10 46","Macro-Produit":"NPS","Unité":"t","Soufre":0,"Ammoniac":0.134921,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.473,"EQ_DAP_Ratio":0.991339},{"ID_Produit":"P035","Produit":"NP 10 46 Special","Macro-Produit":"NPS","Unité":"t","Soufre":0,"Ammoniac":0.134921,"KCl":0,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.473,"EQ_DAP_Ratio":0.991339},{"ID_Produit":"P036","Produit":"NP 3-36-0 4S","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0.02,"KCl":0,"ACS":0.12,"Roche_Granulation":0.39,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.35,"EQ_DAP_Ratio":0.733549},{"ID_Produit":"P037","Produit":"NP 3-39-0 6S","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0.01,"KCl":0,"ACS":0.18,"Roche_Granulation":0.32,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.34,"EQ_DAP_Ratio":0.71259},{"ID_Produit":"P038","Produit":"NP 4-40-0 4S","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0.01,"KCl":0,"ACS":0.08,"Roche_Granulation":0.31,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.31,"EQ_DAP_Ratio":0.649715},{"ID_Produit":"P039","Produit":"NP 5 42 EU","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0.067,"KCl":0,"ACS":0,"Roche_Granulation":0.38,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.379,"EQ_DAP_Ratio":0.794329},{"ID_Produit":"P040","Produit":"NP 5-40-0 5S 16CaO","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0.015,"KCl":0,"ACS":0.09,"Roche_Granulation":0.333,"Zn":0,"B":0,"Cu":0,"AmSul":0.163,"P2O5":0.30618,"EQ_DAP_Ratio":0.641708},{"ID_Produit":"P041","Produit":"NPK 10 20 10","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.151,"KCl":0.196,"ACS":0.149417,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.221,"EQ_DAP_Ratio":0.463184},{"ID_Produit":"P042","Produit":"NPK 10 20 10 6S Zambie","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.143,"KCl":0.196,"ACS":0.149417,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.221,"EQ_DAP_Ratio":0.463184},{"ID_Produit":"P043","Produit":"NPK 10 26 26 EU","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.12575,"KCl":0.421773,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.270049,"EQ_DAP_Ratio":0.565984},{"ID_Produit":"P044","Produit":"NPK 11 22 16","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.172748,"KCl":0.322332,"ACS":0.16654,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.242392,"EQ_DAP_Ratio":0.508018},{"ID_Produit":"P045","Produit":"NPK 11 22 21 5S 0.5B2O3 0.7Zn Special","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.143082,"KCl":0.34849,"ACS":0.110996,"Roche_Granulation":0,"Zn":0.012023,"B":0.006399,"Cu":0,"AmSul":0,"P2O5":0.215638,"EQ_DAP_Ratio":0.451945},{"ID_Produit":"P046","Produit":"NPK 12 20 18 5S 1B2O3 TOGO","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.160354,"KCl":0.301198,"ACS":0.170165,"Roche_Granulation":0,"Zn":0,"B":0.017056,"Cu":0,"AmSul":0,"P2O5":0.199258,"EQ_DAP_Ratio":0.417616},{"ID_Produit":"P047","Produit":"NPK 12 24 12 EU","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.175,"KCl":0.176,"ACS":0.276,"Roche_Granulation":0,"Zn":0,"B":0.009,"Cu":0,"AmSul":0,"P2O5":0.172,"EQ_DAP_Ratio":0.360487},{"ID_Produit":"P048","Produit":"NPK 12 24 12 Special","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.172,"KCl":0.23,"ACS":0.148,"Roche_Granulation":0,"Zn":0,"B":0.007,"Cu":0,"AmSul":0,"P2O5":0.256,"EQ_DAP_Ratio":0.536539},{"ID_Produit":"P049","Produit":"NPK 12 32 16 Special","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.158371,"KCl":0.289,"ACS":0,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.339935,"EQ_DAP_Ratio":0.712454},{"ID_Produit":"P050","Produit":"NPK 13 17 17 6S 0.5B2O3 0.7Zn Special","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.159052,"KCl":0.288793,"ACS":0.206578,"Roche_Granulation":0,"Zn":0.010026,"B":0.008564,"Cu":0,"AmSul":0,"P2O5":0.179798,"EQ_DAP_Ratio":0.376829},{"ID_Produit":"P051","Produit":"NPK 14 18 18 6S 1B2O3 Afrique","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.163286,"KCl":0.291788,"ACS":0.209237,"Roche_Granulation":0,"Zn":0,"B":0.015462,"Cu":0,"AmSul":0,"P2O5":0.18206,"EQ_DAP_Ratio":0.381571},{"ID_Produit":"P052","Produit":"NPK 14 18 18 6S 1B2O3 Benin","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.164937,"KCl":0.293714,"ACS":0.239016,"Roche_Granulation":0,"Zn":0,"B":0.01791,"Cu":0,"AmSul":0,"P2O5":0.1828,"EQ_DAP_Ratio":0.383122},{"ID_Produit":"P053","Produit":"NPK 14 18 18 6S 1B2O3 Special","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.164,"KCl":0.289,"ACS":0.224207,"Roche_Granulation":0,"Zn":0,"B":0.017,"Cu":0,"AmSul":0,"P2O5":0.181,"EQ_DAP_Ratio":0.37935},{"ID_Produit":"P054","Produit":"NPK 14 23 14 5.5S","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.169845,"KCl":0.257206,"ACS":0.189357,"Roche_Granulation":0,"Zn":0,"B":0.007,"Cu":0,"AmSul":0,"P2O5":0.237916,"EQ_DAP_Ratio":0.498637},{"ID_Produit":"P055","Produit":"NPK 14 23 14 6S 1B2O3","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.169845,"KCl":0.257206,"ACS":0.189357,"Roche_Granulation":0,"Zn":0,"B":0.01929,"Cu":0,"AmSul":0,"P2O5":0.237916,"EQ_DAP_Ratio":0.498637},{"ID_Produit":"P056","Produit":"NPK 14 28 14 EU","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.173837,"KCl":0.238952,"ACS":0.114481,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.276212,"EQ_DAP_Ratio":0.5789},{"ID_Produit":"P057","Produit":"NPK 15 15 15","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.177167,"KCl":0.25784,"ACS":0.268836,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.160954,"EQ_DAP_Ratio":0.337335},{"ID_Produit":"P058","Produit":"NPK 15 15 15 6S 1B2O3","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.174263,"KCl":0.255343,"ACS":0.273916,"Roche_Granulation":0,"Zn":0,"B":0.014918,"Cu":0,"AmSul":0,"P2O5":0.155065,"EQ_DAP_Ratio":0.324993},{"ID_Produit":"P059","Produit":"NPK 15 15 15 EU","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.174682,"KCl":0.262248,"ACS":0.263688,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.172709,"EQ_DAP_Ratio":0.361973},{"ID_Produit":"P060","Produit":"NPK 15 15 15 Special","Macro-Produit":"NPK","Unité":"t","Soufre":0,"Ammoniac":0.174903,"KCl":0.251617,"ACS":0.259911,"Roche_Granulation":0,"Zn":0,"B":0.003369,"Cu":0,"AmSul":0,"P2O5":0.167575,"EQ_DAP_Ratio":0.351212},{"ID_Produit":"P061","Produit":"NPS 1 30 09S","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0,"KCl":0,"ACS":0.133,"Roche_Granulation":0.418,"Zn":0,"B":0,"Cu":0,"AmSul":0.05,"P2O5":0.192,"EQ_DAP_Ratio":0.402404},{"ID_Produit":"P062","Produit":"NPS 12 42 10S 0.7Zn ","Macro-Produit":"NPS","Unité":"t","Soufre":0.07,"Ammoniac":0.15,"KCl":0,"ACS":0.153125,"Roche_Granulation":0,"Zn":0.013,"B":0,"Cu":0,"AmSul":0,"P2O5":0.433,"EQ_DAP_Ratio":0.907505},{"ID_Produit":"P063","Produit":"NPS 12 43 10S","Macro-Produit":"NPS","Unité":"t","Soufre":0.063,"Ammoniac":0.153319,"KCl":0,"ACS":0.153125,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.442211,"EQ_DAP_Ratio":0.92681},{"ID_Produit":"P064","Produit":"NPS 12 45 4.8S 0.6Zn 0.14Cu 0.5B2O3 Special","Macro-Produit":"NPS","Unité":"t","Soufre":0,"Ammoniac":0.158,"KCl":0,"ACS":0.113581,"Roche_Granulation":0,"Zn":0.008652,"B":0.008744,"Cu":0.005994,"AmSul":0,"P2O5":0.469748,"EQ_DAP_Ratio":0.984523},{"ID_Produit":"P065","Produit":"NPS 12 45 5.5S","Macro-Produit":"NPS","Unité":"t","Soufre":0.063,"Ammoniac":0.153319,"KCl":0,"ACS":0.1,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.558,"EQ_DAP_Ratio":1.169486},{"ID_Produit":"P066","Produit":"NPS 12 45 5S 0.2Zn","Macro-Produit":"NPS","Unité":"t","Soufre":0,"Ammoniac":0.155505,"KCl":0,"ACS":0.146747,"Roche_Granulation":0,"Zn":0.001481,"B":0,"Cu":0,"AmSul":0,"P2O5":0.470449,"EQ_DAP_Ratio":0.985992},{"ID_Produit":"P067","Produit":"NPS 12 45 5S 0.5B2O3","Macro-Produit":"NPS","Unité":"t","Soufre":0,"Ammoniac":0.155461,"KCl":0,"ACS":0.143749,"Roche_Granulation":0,"Zn":0,"B":0.007376,"Cu":0,"AmSul":0,"P2O5":0.473683,"EQ_DAP_Ratio":0.992769},{"ID_Produit":"P068","Produit":"NPS 12 45 5S 1Zn","Macro-Produit":"NPS","Unité":"t","Soufre":0,"Ammoniac":0.159,"KCl":0,"ACS":0.18375,"Roche_Granulation":0,"Zn":0.016,"B":0,"Cu":0,"AmSul":0,"P2O5":0.41519,"EQ_DAP_Ratio":0.870177},{"ID_Produit":"P069","Produit":"NPS 17.8N 35.7P2O5 7S 0.1B 2.2Zn","Macro-Produit":"NPS","Unité":"t","Soufre":0,"Ammoniac":0.22,"KCl":0,"ACS":0.15727,"Roche_Granulation":0,"Zn":0.031902,"B":0.004905,"Cu":0,"AmSul":0,"P2O5":0.365,"EQ_DAP_Ratio":0.764987},{"ID_Produit":"P070","Produit":"NPS 18.4N 36.8P2O5 7S 2.2Zn","Macro-Produit":"NPS","Unité":"t","Soufre":0,"Ammoniac":0.228329,"KCl":0,"ACS":0.189911,"Roche_Granulation":0,"Zn":0.018684,"B":0,"Cu":0,"AmSul":0,"P2O5":0.382807,"EQ_DAP_Ratio":0.802307},{"ID_Produit":"P071","Produit":"NPS 19 38 7S","Macro-Produit":"NPS","Unité":"t","Soufre":0,"Ammoniac":0.232523,"KCl":0,"ACS":0.189801,"Roche_Granulation":0,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.389533,"EQ_DAP_Ratio":0.816404},{"ID_Produit":"P072","Produit":"NPS 2 28 5S","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0.02,"KCl":0,"ACS":0.268,"Roche_Granulation":0.61,"Zn":0,"B":0,"Cu":0,"AmSul":0.0082,"P2O5":0.1284,"EQ_DAP_Ratio":0.269108},{"ID_Produit":"P073","Produit":"NPS 2 28 7S","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0,"KCl":0,"ACS":0.122,"Roche_Granulation":0.436,"Zn":0,"B":0,"Cu":0,"AmSul":0.1,"P2O5":0.178,"EQ_DAP_Ratio":0.373062},{"ID_Produit":"P074","Produit":"NPS 3 30 0 7S ","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0.02,"KCl":0,"ACS":0.2,"Roche_Granulation":0.43,"Zn":0,"B":0,"Cu":0,"AmSul":0.219,"P2O5":0.16585,"EQ_DAP_Ratio":0.347597},{"ID_Produit":"P075","Produit":"NPS 3 30 0 9S ","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0.012,"KCl":0,"ACS":0.07,"Roche_Granulation":0.41,"Zn":0,"B":0,"Cu":0,"AmSul":0.207,"P2O5":0.206,"EQ_DAP_Ratio":0.431746},{"ID_Produit":"P076","Produit":"NPS 3 30 0 9S 0.5B2O3","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0.012,"KCl":0,"ACS":0.07,"Roche_Granulation":0.41,"Zn":0,"B":0.035,"Cu":0,"AmSul":0.207,"P2O5":0.206,"EQ_DAP_Ratio":0.431746},{"ID_Produit":"P077","Produit":"NPS 3 30 0 9S 0.6Zn 0.14Cu 0.5B2O3","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0.012,"KCl":0,"ACS":0.07,"Roche_Granulation":0.41,"Zn":0.008,"B":0.035,"Cu":0.005,"AmSul":0.207,"P2O5":0.206,"EQ_DAP_Ratio":0.431746},{"ID_Produit":"P078","Produit":"NPSB 18.9N 37.7P2O5 6.95S 0.1B","Macro-Produit":"NPS","Unité":"t","Soufre":0,"Ammoniac":0.234183,"KCl":0,"ACS":0.1781,"Roche_Granulation":0,"Zn":0,"B":0.007729,"Cu":0,"AmSul":0,"P2O5":0.380873,"EQ_DAP_Ratio":0.798254},{"ID_Produit":"P079","Produit":"TSP","Macro-Produit":"TSP","Unité":"t","Soufre":0,"Ammoniac":0,"KCl":0,"ACS":0,"Roche_Granulation":0.457,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.36,"EQ_DAP_Ratio":0.754507},{"ID_Produit":"P080","Produit":"TSP 0 37 6S","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0,"KCl":0,"ACS":0.155,"Roche_Granulation":0.522,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.225,"EQ_DAP_Ratio":0.471567},{"ID_Produit":"P081","Produit":"TSP 0 40 10S 1K","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0,"KCl":0.017,"ACS":0.095,"Roche_Granulation":0.389,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.31,"EQ_DAP_Ratio":0.649715},{"ID_Produit":"P082","Produit":"TSP 1 Zn","Macro-Produit":"TSP","Unité":"t","Soufre":0,"Ammoniac":0,"KCl":0,"ACS":0,"Roche_Granulation":0.470793,"Zn":0.005276,"B":0,"Cu":0,"AmSul":0,"P2O5":0.36,"EQ_DAP_Ratio":0.754507},{"ID_Produit":"P083","Produit":"TSP 5 40","Macro-Produit":"TSP+","Unité":"t","Soufre":0,"Ammoniac":0.07,"KCl":0,"ACS":0,"Roche_Granulation":0.415,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.345,"EQ_DAP_Ratio":0.723069},{"ID_Produit":"P084","Produit":"TSP CIV","Macro-Produit":"TSP","Unité":"t","Soufre":0,"Ammoniac":0,"KCl":0,"ACS":0,"Roche_Granulation":0.400962,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.36,"EQ_DAP_Ratio":0.754507},{"ID_Produit":"P085","Produit":"TSP Euro","Macro-Produit":"TSP","Unité":"t","Soufre":0,"Ammoniac":0,"KCl":0,"ACS":0,"Roche_Granulation":0.474029,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.36,"EQ_DAP_Ratio":0.754507},{"ID_Produit":"P086","Produit":"TSP Euro hors EU","Macro-Produit":"TSP","Unité":"t","Soufre":0,"Ammoniac":0,"KCl":0,"ACS":0,"Roche_Granulation":0.474029,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.36,"EQ_DAP_Ratio":0.754507},{"ID_Produit":"P087","Produit":"TSP Poudre Low Cd","Macro-Produit":"TSP","Unité":"t","Soufre":0,"Ammoniac":0,"KCl":0,"ACS":0,"Roche_Granulation":0.4803,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.3175,"EQ_DAP_Ratio":0.665434},{"ID_Produit":"P088","Produit":"TSP Special Jorf","Macro-Produit":"TSP","Unité":"t","Soufre":0,"Ammoniac":0,"KCl":0,"ACS":0,"Roche_Granulation":0.474029,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.36,"EQ_DAP_Ratio":0.754507},{"ID_Produit":"P089","Produit":"TSP-S","Macro-Produit":"TSP","Unité":"t","Soufre":0,"Ammoniac":0,"KCl":0,"ACS":0.095,"Roche_Granulation":0.389,"Zn":0,"B":0,"Cu":0,"AmSul":0,"P2O5":0.31,"EQ_DAP_Ratio":0.649715}],"prod":[{"ID_Produit":"P001","Produit":"ASP 19 38 5S","Macro_Produit":"NPS","Prix_Initial":660},{"ID_Produit":"P002","Produit":"ASP 19 38 6S Euro","Macro_Produit":"NPS","Prix_Initial":660},{"ID_Produit":"P003","Produit":"DAP","Macro_Produit":"DAP","Prix_Initial":720},{"ID_Produit":"P004","Produit":"DAP BLACK","Macro_Produit":"DAP","Prix_Initial":720},{"ID_Produit":"P005","Produit":"DAP BLACK VIETNAM","Macro_Produit":"DAP","Prix_Initial":720},{"ID_Produit":"P006","Produit":"DAP BROWN","Macro_Produit":"DAP","Prix_Initial":720},{"ID_Produit":"P007","Produit":"DAP BROWN EURO","Macro_Produit":"DAP","Prix_Initial":720},{"ID_Produit":"P008","Produit":"DAP Euro","Macro_Produit":"DAP","Prix_Initial":720},{"ID_Produit":"P009","Produit":"DAP Euro HORS EUROPE","Macro_Produit":"DAP","Prix_Initial":720},{"ID_Produit":"P010","Produit":"DAP JAPAN","Macro_Produit":"DAP","Prix_Initial":720},{"ID_Produit":"P011","Produit":"DAP Low Moisture","Macro_Produit":"DAP","Prix_Initial":720},{"ID_Produit":"P012","Produit":"DAP SPECIAL","Macro_Produit":"DAP","Prix_Initial":720},{"ID_Produit":"P013","Produit":"DAP SPECIAL DARK","Macro_Produit":"DAP","Prix_Initial":720},{"ID_Produit":"P014","Produit":"DAP SPECIAL DARK JAPAN","Macro_Produit":"DAP","Prix_Initial":720},{"ID_Produit":"P015","Produit":"DAP SPECIAL DARK KENYA","Macro_Produit":"DAP","Prix_Initial":720},{"ID_Produit":"P016","Produit":"DAP Tanzanie","Macro_Produit":"DAP","Prix_Initial":720},{"ID_Produit":"P017","Produit":"DAP VIETNAM","Macro_Produit":"DAP","Prix_Initial":720},{"ID_Produit":"P018","Produit":"MAP 10 50 1Zn","Macro_Produit":"MAP","Prix_Initial":730},{"ID_Produit":"P019","Produit":"MAP 10 50 Special","Macro_Produit":"MAP","Prix_Initial":730},{"ID_Produit":"P020","Produit":"MAP 11 52 0.5Zn","Macro_Produit":"MAP","Prix_Initial":730},{"ID_Produit":"P021","Produit":"MAP 11 52 EU","Macro_Produit":"MAP","Prix_Initial":730},{"ID_Produit":"P022","Produit":"MAP 11 52 JAPAN","Macro_Produit":"MAP","Prix_Initial":730},{"ID_Produit":"P023","Produit":"MAP 11 52 South Africa","Macro_Produit":"MAP","Prix_Initial":730},{"ID_Produit":"P024","Produit":"MAP 11 52 SPECIAL","Macro_Produit":"MAP","Prix_Initial":730},{"ID_Produit":"P025","Produit":"MAP 11 52 Special Dark","Macro_Produit":"MAP","Prix_Initial":730},{"ID_Produit":"P026","Produit":"MAP 11 54 NE Belgium","Macro_Produit":"MAP","Prix_Initial":730},{"ID_Produit":"P027","Produit":"MAP 11 54 NE EU","Macro_Produit":"MAP","Prix_Initial":730},{"ID_Produit":"P028","Produit":"MAP 11 57","Macro_Produit":"MAP","Prix_Initial":730},{"ID_Produit":"P029","Produit":"NP 03-39 6S","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P030","Produit":"NP 0-40-0 28CaO","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P031","Produit":"NP 04-38 5S","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P032","Produit":"NP 05-38 9S","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P033","Produit":"NP 10 30 EU","Macro_Produit":"NPS","Prix_Initial":660},{"ID_Produit":"P034","Produit":"NP 10 46","Macro_Produit":"NPS","Prix_Initial":660},{"ID_Produit":"P035","Produit":"NP 10 46 Special","Macro_Produit":"NPS","Prix_Initial":660},{"ID_Produit":"P036","Produit":"NP 3-36-0 4S","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P037","Produit":"NP 3-39-0 6S","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P038","Produit":"NP 4-40-0 4S","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P039","Produit":"NP 5 42 EU","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P040","Produit":"NP 5-40-0 5S 16CaO","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P041","Produit":"NPK 10 20 10","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P042","Produit":"NPK 10 20 10 6S Zambie","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P043","Produit":"NPK 10 26 26 EU","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P044","Produit":"NPK 11 22 16","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P045","Produit":"NPK 11 22 21 5S 0.5B2O3 0.7Zn Special","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P046","Produit":"NPK 12 20 18 5S 1B2O3 TOGO","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P047","Produit":"NPK 12 24 12 EU","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P048","Produit":"NPK 12 24 12 Special","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P049","Produit":"NPK 12 32 16 Special","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P050","Produit":"NPK 13 17 17 6S 0.5B2O3 0.7Zn Special","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P051","Produit":"NPK 14 18 18 6S 1B2O3 Afrique","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P052","Produit":"NPK 14 18 18 6S 1B2O3 Benin","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P053","Produit":"NPK 14 18 18 6S 1B2O3 Special","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P054","Produit":"NPK 14 23 14 5.5S","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P055","Produit":"NPK 14 23 14 6S 1B2O3","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P056","Produit":"NPK 14 28 14 EU","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P057","Produit":"NPK 15 15 15","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P058","Produit":"NPK 15 15 15 6S 1B2O3","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P059","Produit":"NPK 15 15 15 EU","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P060","Produit":"NPK 15 15 15 Special","Macro_Produit":"NPK","Prix_Initial":690},{"ID_Produit":"P061","Produit":"NPS 1 30 09S","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P062","Produit":"NPS 12 42 10S 0.7Zn","Macro_Produit":"NPS","Prix_Initial":660},{"ID_Produit":"P063","Produit":"NPS 12 43 10S","Macro_Produit":"NPS","Prix_Initial":660},{"ID_Produit":"P064","Produit":"NPS 12 45 4.8S 0.6Zn 0.14Cu 0.5B2O3 Special","Macro_Produit":"NPS","Prix_Initial":660},{"ID_Produit":"P065","Produit":"NPS 12 45 5.5S","Macro_Produit":"NPS","Prix_Initial":660},{"ID_Produit":"P066","Produit":"NPS 12 45 5S 0.2Zn","Macro_Produit":"NPS","Prix_Initial":660},{"ID_Produit":"P067","Produit":"NPS 12 45 5S 0.5B2O3","Macro_Produit":"NPS","Prix_Initial":660},{"ID_Produit":"P068","Produit":"NPS 12 45 5S 1Zn","Macro_Produit":"NPS","Prix_Initial":660},{"ID_Produit":"P069","Produit":"NPS 17.8N 35.7P2O5 7S 0.1B 2.2Zn","Macro_Produit":"NPS","Prix_Initial":660},{"ID_Produit":"P070","Produit":"NPS 18.4N 36.8P2O5 7S 2.2Zn","Macro_Produit":"NPS","Prix_Initial":660},{"ID_Produit":"P071","Produit":"NPS 19 38 7S","Macro_Produit":"NPS","Prix_Initial":660},{"ID_Produit":"P072","Produit":"NPS 2 28 5S","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P073","Produit":"NPS 2 28 7S","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P074","Produit":"NPS 3 30 0 7S","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P075","Produit":"NPS 3 30 0 9S","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P076","Produit":"NPS 3 30 0 9S 0.5B2O3","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P077","Produit":"NPS 3 30 0 9S 0.6Zn 0.14Cu 0.5B2O3","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P078","Produit":"NPSB 18.9N 37.7P2O5 6.95S 0.1B","Macro_Produit":"NPS","Prix_Initial":660},{"ID_Produit":"P079","Produit":"TSP","Macro_Produit":"TSP","Prix_Initial":540},{"ID_Produit":"P080","Produit":"TSP 0 37 6S","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P081","Produit":"TSP 0 40 10S 1K","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P082","Produit":"TSP 1 Zn","Macro_Produit":"TSP","Prix_Initial":540},{"ID_Produit":"P083","Produit":"TSP 5 40","Macro_Produit":"TSP+","Prix_Initial":555},{"ID_Produit":"P084","Produit":"TSP CIV","Macro_Produit":"TSP","Prix_Initial":540},{"ID_Produit":"P085","Produit":"TSP Euro","Macro_Produit":"TSP","Prix_Initial":540},{"ID_Produit":"P086","Produit":"TSP Euro hors EU","Macro_Produit":"TSP","Prix_Initial":540},{"ID_Produit":"P087","Produit":"TSP Poudre Low Cd","Macro_Produit":"TSP","Prix_Initial":540},{"ID_Produit":"P088","Produit":"TSP Special Jorf","Macro_Produit":"TSP","Prix_Initial":540},{"ID_Produit":"P089","Produit":"TSP-S","Macro_Produit":"TSP","Prix_Initial":540}],"rm":[{"ID_RM":"RM01","RM":"Soufre","Prix_Initial":130},{"ID_RM":"RM02","RM":"Ammoniac","Prix_Initial":540},{"ID_RM":"RM03","RM":"KCL","Prix_Initial":380},{"ID_RM":"RM04","RM":"Amsul","Prix_Initial":200},{"ID_RM":"RM05","RM":"Roche_P2O5","Prix_Initial":195},{"ID_RM":"RM06","RM":"Roche_Granulation","Prix_Initial":30},{"ID_RM":"RM07","RM":"Zn","Prix_Initial":2800},{"ID_RM":"RM08","RM":"B","Prix_Initial":1500},{"ID_RM":"RM09","RM":"Cu","Prix_Initial":8500}],"params":{"CSP_ACS_S":0.328,"CSP_Roche_P2O5":3.7,"CSP_ACS_P2O5":3.06}};
+</script>
+
+<script>
+/* =====================================================================
+ * CGM Sim-Ops — refonte D²nAI du simulateur R Shiny de la BU Ops
+ * Logique métier 1:1 du fichier R/calculs.R original. Aucune dépendance
+ * externe (SVG hand-rolled, CSS pur, vanilla JS).
+ * ===================================================================== */
+
+const DATA = window.SIMOPS_DATA;
+const CSP = DATA.csp;          // 89 produits × ratios + EQ_DAP_Ratio
+const PROD = DATA.prod;        // 89 produits × prix initial
+const RM = DATA.rm;            // 9 matières premières × prix initial
+const PARAMS_DEF = DATA.params; // {CSP_ACS_S, CSP_Roche_P2O5, CSP_ACS_P2O5}
+
+// Index produits par ID pour les lookups rapides
+const CSP_BY_ID = {}; CSP.forEach(c => { CSP_BY_ID[c.ID_Produit] = c; });
+const PROD_BY_ID = {}; PROD.forEach(p => { PROD_BY_ID[p.ID_Produit] = p; });
+
+// Composantes de coût (ordre + couleurs : 1:1 du R)
+const COMPOSANTES = ['Soufre','Roche P2O5','Ammoniac','KCl','AmSul','Roche Granulation','Zn','B','Cu'];
+const COMPO_COULEURS = {
+  'Soufre':'#f2c80f','Roche P2O5':'#b9802a','Ammoniac':'#2E7D32','KCl':'#1B5E20','AmSul':'#7ac143',
+  'Roche Granulation':'#d9a441','Zn':'#6b6b64','B':'#a8a8a0','Cu':'#cfcfca'
+};
+
+// Variables de sensibilité = P2O5 (agit sur le prix de vente) + toutes les RM
+const SHOCK_VARS = ['P2O5', ...RM.map(r => r.RM)];
+
+/* ----- État (réactif minimal — re-render manuel sur change) ----- */
+const STATE = {
+  rmPrices: {},        // {Soufre: 130, ...}
+  params: {...PARAMS_DEF},
+  prodPrices: {},      // {P001: 600, ...}
+  selected: {P003:true}, // par défaut DAP
+  sort1: 'eqdap',
+  sort2: 'cout',
+  compoMode: 'abs',    // 'abs' | 'pct'
+  shocks: {},          // {P2O5: {on:true, val:0, mode:'pct'}, Soufre: {...}, ...}
+  tornProd: '__moy__',
+  tornMetric: 'dEqdap',
+  search: '',
+};
+
+// Seed RM + product prices + shock defaults
+RM.forEach(r => STATE.rmPrices[r.RM] = r.Prix_Initial);
+PROD.forEach(p => STATE.prodPrices[p.ID_Produit] = p.Prix_Initial);
+SHOCK_VARS.forEach(v => STATE.shocks[v] = {on: v==='P2O5', val:0, mode:'pct'});
+
+/* =====================================================================
+ * 1. LOGIQUE MÉTIER (portée 1:1 de R/calculs.R)
+ * ===================================================================== */
+
+// g(x) : null/NaN → 0
+function g(x){ return (x === null || x === undefined || isNaN(x)) ? 0 : Number(x); }
+
+// calcProduit(csp, prix, params) — formule strictement identique au R
+function calcProduit(csp, prix, params){
+  const cout = {
+    'Soufre':
+      (params.CSP_ACS_S * (g(csp.P2O5) * params.CSP_ACS_P2O5 + g(csp.ACS)) + g(csp.Soufre))
+      * g(prix.Soufre),
+    'Roche P2O5':
+      g(csp.P2O5) * params.CSP_Roche_P2O5 * g(prix.Roche_P2O5),
+    'Ammoniac':           g(csp.Ammoniac)          * g(prix.Ammoniac),
+    'KCl':                g(csp.KCl)               * g(prix.KCL),
+    'AmSul':              g(csp.AmSul)             * g(prix.Amsul),
+    'Roche Granulation':  g(csp.Roche_Granulation) * g(prix.Roche_Granulation),
+    'Zn':                 g(csp.Zn)                * g(prix.Zn),
+    'B':                  g(csp.B)                 * g(prix.B),
+    'Cu':                 g(csp.Cu)                * g(prix.Cu),
+  };
+  let cout_rm = 0;
+  for (const k in cout) cout_rm += cout[k];
+  const cgm = g(csp.Prix) - cout_rm;
+  const ratio = g(csp.EQ_DAP_Ratio);
+  const cgm_eqdap = ratio === 0 ? NaN : cgm / ratio;
+  return { cout, cout_rm, cgm, cgm_eqdap };
+}
+
+// Calcule TOUS les produits avec les prix/params courants. Retourne array.
+function resAll(){
+  return PROD.map(p => {
+    const csp = CSP_BY_ID[p.ID_Produit];
+    if (!csp) return null;
+    const px = STATE.prodPrices[p.ID_Produit];
+    const cspRow = {
+      P2O5: csp.P2O5, ACS: csp.ACS, Ammoniac: csp.Ammoniac, KCl: csp.KCl,
+      AmSul: csp.AmSul, Roche_Granulation: csp.Roche_Granulation,
+      Zn: csp.Zn, B: csp.B, Cu: csp.Cu, EQ_DAP_Ratio: csp.EQ_DAP_Ratio, Prix: px,
+    };
+    const r = calcProduit(cspRow, STATE.rmPrices, STATE.params);
+    return {
+      id: p.ID_Produit, nom: p.Produit, macro: p.Macro_Produit, prix: px,
+      cout: r.cout, cout_rm: r.cout_rm, cgm: r.cgm, cgm_eqdap: r.cgm_eqdap,
+      sel: !!STATE.selected[p.ID_Produit],
+    };
+  }).filter(Boolean);
+}
+function resSel(){ return resAll().filter(x => x.sel); }
+
+/* =====================================================================
+ * 2. RENDER — Tab Simulation
+ * ===================================================================== */
+
+function fmt(x){
+  if (x === null || x === undefined || isNaN(x)) return '—';
+  return Math.round(x).toLocaleString('fr-FR').replace(/,/g, ' ');
+}
+function fmtDelta(x){
+  if (x === null || x === undefined || isNaN(x)) return '—';
+  const n = Math.round(x);
+  return (n >= 0 ? '+' : '') + n.toLocaleString('fr-FR').replace(/,/g, ' ');
+}
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+
+// --- RM prices block (gauche) ---
+function renderRm(){
+  const host = document.getElementById('rmList');
+  let html = '';
+  RM.forEach(r => {
+    html += `<div class="prow">
+      <div class="nm">${esc(r.RM)}</div>
+      <input type="number" min="0" step="1" value="${STATE.rmPrices[r.RM]}" data-rm="${esc(r.RM)}">
+    </div>`;
+  });
+  html += `<div class="section-lab">⚙ Paramètres du modèle</div>`;
+  html += `<div class="prow"><div class="nm">CSP_ACS_S</div><input type="number" step="0.001" value="${STATE.params.CSP_ACS_S}" data-p="CSP_ACS_S"></div>`;
+  html += `<div class="prow"><div class="nm">CSP_Roche_P2O5</div><input type="number" step="0.1" value="${STATE.params.CSP_Roche_P2O5}" data-p="CSP_Roche_P2O5"></div>`;
+  html += `<div class="prow"><div class="nm">CSP_ACS_P2O5</div><input type="number" step="0.01" value="${STATE.params.CSP_ACS_P2O5}" data-p="CSP_ACS_P2O5"></div>`;
+  host.innerHTML = html;
+  host.querySelectorAll('input[data-rm]').forEach(i => {
+    i.addEventListener('input', e => {
+      STATE.rmPrices[e.target.dataset.rm] = Number(e.target.value) || 0;
+      renderAll();
+    });
+  });
+  host.querySelectorAll('input[data-p]').forEach(i => {
+    i.addEventListener('input', e => {
+      STATE.params[e.target.dataset.p] = Number(e.target.value) || 0;
+      renderAll();
+    });
+  });
+}
+
+// --- Product multi-select (droite) ---
+function renderProdPanel(){
+  const host = document.getElementById('prodPanel');
+  const q = (STATE.search || '').toLowerCase();
+  // Grouper par macro
+  const groups = {};
+  PROD.forEach(p => {
+    if (q && !p.Produit.toLowerCase().includes(q)) return;
+    const m = p.Macro_Produit || 'Autres';
+    (groups[m] = groups[m] || []).push(p);
+  });
+  const macros = Object.keys(groups).sort();
+  let html = '';
+  macros.forEach((m, gi) => {
+    const open = gi === 0 || q ? 'open' : '';
+    html += `<details class="grp" ${open}>
+      <summary class="grphd"><span class="mac">${esc(m)}</span><span class="cnt">${groups[m].length}</span></summary>
+      <div class="grpbody">`;
+    groups[m].forEach(p => {
+      const checked = STATE.selected[p.ID_Produit] ? 'checked' : '';
+      html += `<div class="prow">
+        <input type="checkbox" data-sel="${p.ID_Produit}" ${checked}>
+        <div class="nm" title="${esc(p.Produit)}">${esc(p.Produit)}</div>
+        <input type="number" min="0" step="1" value="${STATE.prodPrices[p.ID_Produit]}" data-px="${p.ID_Produit}">
+      </div>`;
+    });
+    html += `</div></details>`;
+  });
+  host.innerHTML = html;
+  host.querySelectorAll('input[data-sel]').forEach(i => {
+    i.addEventListener('change', e => {
+      STATE.selected[e.target.dataset.sel] = e.target.checked;
+      renderAll();
+    });
+  });
+  host.querySelectorAll('input[data-px]').forEach(i => {
+    i.addEventListener('input', e => {
+      STATE.prodPrices[e.target.dataset.px] = Number(e.target.value) || 0;
+      renderAll();
+    });
+  });
+  document.getElementById('selCount').textContent =
+    Object.values(STATE.selected).filter(Boolean).length + ' sélectionnés';
+}
+
+// --- KPIs ---
+function renderKpis(){
+  const sel = resSel();
+  const all = resAll();
+  if (sel.length){
+    const valid = sel.filter(x => !isNaN(x.cgm_eqdap));
+    if (valid.length){
+      const best = valid.reduce((a,b) => b.cgm_eqdap > a.cgm_eqdap ? b : a);
+      const low  = valid.reduce((a,b) => b.cgm_eqdap < a.cgm_eqdap ? b : a);
+      document.getElementById('kpiBestV').textContent = fmt(best.cgm_eqdap);
+      document.getElementById('kpiBestN').textContent = best.nom;
+      document.getElementById('kpiLowV').textContent  = fmt(low.cgm_eqdap);
+      document.getElementById('kpiLowN').textContent  = low.nom;
+    }
+  } else {
+    document.getElementById('kpiBestV').textContent = '—';
+    document.getElementById('kpiBestN').textContent = '';
+    document.getElementById('kpiLowV').textContent  = '—';
+    document.getElementById('kpiLowN').textContent  = '';
+  }
+  const dap = all.find(x => x.nom === 'DAP');
+  document.getElementById('kpiDapV').textContent = dap ? fmt(dap.cgm) : '—';
+}
+
+// --- Chart 1 : grouped bars CGM + CGM EQ DAP ---
+function renderChart1(){
+  const host = document.getElementById('chart1');
+  let sel = resSel();
+  if (!sel.length){ host.innerHTML = '<div class="chart-empty">Sélectionnez au moins un produit pour afficher le graphe.</div>'; return; }
+  const sortKey = STATE.sort1;
+  if (sortKey === 'nom') sel = sel.slice().sort((a,b) => a.nom.localeCompare(b.nom));
+  else if (sortKey === 'cgm') sel = sel.slice().sort((a,b) => b.cgm - a.cgm);
+  else sel = sel.slice().sort((a,b) => b.cgm_eqdap - a.cgm_eqdap);
+
+  // SVG layout
+  const W = 1100, padL = 50, padR = 20, padT = 40, padB = 90;
+  const innerW = W - padL - padR;
+  const n = sel.length;
+  const groupW = innerW / n;
+  const barW = Math.min(28, (groupW - 8) / 2);
+  // Y scale (négatifs possibles)
+  const maxV = Math.max(0, ...sel.flatMap(x => [x.cgm, x.cgm_eqdap]));
+  const minV = Math.min(0, ...sel.flatMap(x => [x.cgm, x.cgm_eqdap]));
+  const range = maxV - minV || 1;
+  const H = 400, innerH = H - padT - padB;
+  const y0 = padT + innerH * (maxV / range);   // zero line
+  const yScale = v => padT + innerH * ((maxV - v) / range);
+
+  // Grid + Y-axis ticks
+  const ticks = 5;
+  let gridSvg = '';
+  for (let i = 0; i <= ticks; i++){
+    const v = maxV - (range * i / ticks);
+    const y = yScale(v);
+    gridSvg += `<line class="grid" x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}"/>`;
+    gridSvg += `<text x="${padL-6}" y="${y+3}" text-anchor="end" font-size="10" fill="var(--muted)">${fmt(v)}</text>`;
+  }
+
+  // Bars
+  let barsSvg = '';
+  sel.forEach((x, i) => {
+    const xc = padL + groupW * i + groupW/2;
+    // CGM (vert foncé)
+    const cgmY = yScale(x.cgm), cgmH = Math.abs(yScale(0) - cgmY);
+    const cgmTop = Math.min(cgmY, yScale(0));
+    barsSvg += `<rect x="${xc - barW - 1}" y="${cgmTop}" width="${barW}" height="${cgmH}" fill="#1B5E20"/>`;
+    barsSvg += `<text class="barval" x="${xc - barW/2 - 1}" y="${cgmY - 3}">${fmt(x.cgm)}</text>`;
+    // CGM EQ DAP (vert moyen)
+    const eqY = yScale(x.cgm_eqdap), eqH = Math.abs(yScale(0) - eqY);
+    const eqTop = Math.min(eqY, yScale(0));
+    barsSvg += `<rect x="${xc + 1}" y="${eqTop}" width="${barW}" height="${eqH}" fill="#4CAF50"/>`;
+    barsSvg += `<text class="barval" x="${xc + barW/2 + 1}" y="${eqY - 3}">${fmt(x.cgm_eqdap)}</text>`;
+    // Label x (rotated)
+    barsSvg += `<text class="xlabel" transform="translate(${xc},${H-padB+10}) rotate(-35)" text-anchor="end">${esc(x.nom.length > 22 ? x.nom.slice(0,21)+'…' : x.nom)}</text>`;
+  });
+
+  // Zero line
+  barsSvg += `<line x1="${padL}" y1="${yScale(0)}" x2="${W-padR}" y2="${yScale(0)}" stroke="var(--ink-2)" stroke-width="1.2"/>`;
+  // Y-axis label
+  barsSvg += `<text x="14" y="${padT+innerH/2}" transform="rotate(-90 14 ${padT+innerH/2})" text-anchor="middle" font-size="11" fill="var(--muted-2)">$/t</text>`;
+
+  // Legend
+  const leg = `<g transform="translate(${padL},10)">
+    <rect x="0" y="-3" width="12" height="12" fill="#1B5E20"/><text x="18" y="7" class="leg">CGM</text>
+    <rect x="80" y="-3" width="12" height="12" fill="#4CAF50"/><text x="98" y="7" class="leg">CGM EQ DAP</text>
+  </g>`;
+
+  host.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="max-height:460px">${gridSvg}${leg}${barsSvg}</svg>`;
+}
+
+// --- Chart 2 : stacked horizontal bars (composition) ---
+function renderChart2(){
+  const host = document.getElementById('chart2');
+  let sel = resSel();
+  if (!sel.length){ host.innerHTML = '<div class="chart-empty">Sélectionnez au moins un produit pour afficher le graphe.</div>'; return; }
+
+  const sortKey = STATE.sort2;
+  if (sortKey === 'nom') sel = sel.slice().sort((a,b) => a.nom.localeCompare(b.nom));
+  else if (sortKey === 'eqdap') sel = sel.slice().sort((a,b) => b.cgm_eqdap - a.cgm_eqdap);
+  else sel = sel.slice().sort((a,b) => b.cout_rm - a.cout_rm);
+
+  const pct = STATE.compoMode === 'pct';
+  const W = 1100, padL = 220, padR = 20, padT = 30, padB = 50;
+  const innerW = W - padL - padR;
+  const rowH = 28, gap = 8;
+  const H = padT + sel.length * (rowH + gap) + padB;
+  // Max for X scale
+  let maxX = 0;
+  sel.forEach(x => { const v = pct ? 100 : x.cout_rm; if (v > maxX) maxX = v; });
+  if (maxX === 0) maxX = 1;
+  const xScale = v => padL + innerW * (v / maxX);
+
+  // Grid + X-axis ticks
+  let gridSvg = '';
+  const ticks = 5;
+  for (let i = 0; i <= ticks; i++){
+    const v = maxX * i / ticks;
+    const x = xScale(v);
+    gridSvg += `<line class="grid" x1="${x}" y1="${padT}" x2="${x}" y2="${H-padB+4}"/>`;
+    gridSvg += `<text x="${x}" y="${H-padB+18}" text-anchor="middle" font-size="10" fill="var(--muted)">${fmt(v)}</text>`;
+  }
+  gridSvg += `<text x="${padL+innerW/2}" y="${H-padB+36}" text-anchor="middle" font-size="11" fill="var(--muted-2)">${pct ? 'Part du coût (%)' : 'Coût ($/t)'}</text>`;
+
+  // Bars
+  let barsSvg = '';
+  sel.forEach((x, i) => {
+    const y = padT + i * (rowH + gap);
+    // Y-label : product name
+    barsSvg += `<text x="${padL - 8}" y="${y + rowH/2 + 4}" text-anchor="end" font-size="11.5" fill="var(--ink)" font-weight="600">${esc(x.nom.length > 32 ? x.nom.slice(0,31)+'…' : x.nom)}</text>`;
+    // Stack composants
+    let xCur = padL;
+    COMPOSANTES.forEach(c => {
+      const cout = x.cout[c] || 0;
+      if (cout <= 0) return;
+      const val = pct ? (x.cout_rm > 0 ? cout / x.cout_rm * 100 : 0) : cout;
+      const w = (val / maxX) * innerW;
+      if (w < 0.5) return;
+      const col = COMPO_COULEURS[c];
+      barsSvg += `<rect x="${xCur}" y="${y}" width="${w}" height="${rowH}" fill="${col}"><title>${esc(c)} : ${fmt(cout)} $ (${Math.round(x.cout_rm>0?cout/x.cout_rm*100:0)} %)</title></rect>`;
+      if (w > 30) barsSvg += `<text x="${xCur + w/2}" y="${y + rowH/2 + 4}" text-anchor="middle" font-size="10" fill="#1a1a1a" font-weight="700">${fmt(val)}</text>`;
+      xCur += w;
+    });
+  });
+
+  // Legend
+  let legSvg = `<g transform="translate(${padL},${H-12})">`;
+  let lx = 0;
+  COMPOSANTES.forEach(c => {
+    legSvg += `<rect x="${lx}" y="-9" width="11" height="11" fill="${COMPO_COULEURS[c]}"/><text x="${lx+15}" y="0" font-size="10" fill="var(--ink-2)">${esc(c)}</text>`;
+    lx += c.length * 6 + 35;
+  });
+  legSvg += `</g>`;
+
+  host.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H + 12}" preserveAspectRatio="xMidYMid meet">${gridSvg}${barsSvg}${legSvg}</svg>`;
+}
+
+// --- Synthesis table ---
+function renderSynth(){
+  const host = document.getElementById('synthTbl');
+  const sel = resSel();
+  if (!sel.length){ host.innerHTML = '<div class="chart-empty">Sélectionnez au moins un produit.</div>'; return; }
+  let head = '<tr><th>Produit</th><th>Prix</th><th>CGM</th><th>CGM EQ DAP</th><th>Coût RM</th>';
+  COMPOSANTES.forEach(c => head += `<th>${esc(c)}</th>`);
+  head += '</tr>';
+  let body = '';
+  // Lignes produits
+  const acc = {Prix:0, CGM:0, EQ:0, RM:0, cout:{}};
+  COMPOSANTES.forEach(c => acc.cout[c] = 0);
+  sel.forEach(x => {
+    const cgmCls = x.cgm >= 0 ? 'cell-pos' : 'cell-neg';
+    const eqCls  = x.cgm_eqdap >= 0 ? 'cell-pos' : 'cell-neg';
+    body += `<tr><td>${esc(x.nom)}</td><td>${fmt(x.prix)}</td><td class="${cgmCls}">${fmt(x.cgm)}</td><td class="${eqCls}">${fmt(x.cgm_eqdap)}</td><td class="cell-warn">${fmt(x.cout_rm)}</td>`;
+    COMPOSANTES.forEach(c => body += `<td>${fmt(x.cout[c])}</td>`);
+    body += '</tr>';
+    acc.Prix += x.prix; acc.CGM += x.cgm; acc.EQ += (isNaN(x.cgm_eqdap)?0:x.cgm_eqdap); acc.RM += x.cout_rm;
+    COMPOSANTES.forEach(c => acc.cout[c] += (x.cout[c]||0));
+  });
+  // Ligne moyenne
+  const n = sel.length;
+  body += `<tr class="moy"><td>Moyenne</td><td>${fmt(acc.Prix/n)}</td><td>${fmt(acc.CGM/n)}</td><td>${fmt(acc.EQ/n)}</td><td>${fmt(acc.RM/n)}</td>`;
+  COMPOSANTES.forEach(c => body += `<td>${fmt(acc.cout[c]/n)}</td>`);
+  body += '</tr>';
+  host.innerHTML = `<div class="tbl-wrap"><table class="tbl"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+}
+
+/* =====================================================================
+ * 3. RENDER — Tab Sensibilité
+ * ===================================================================== */
+
+function renderSensVars(){
+  const host = document.getElementById('sensVars');
+  let html = '';
+  SHOCK_VARS.forEach(v => {
+    const s = STATE.shocks[v];
+    const hint = v === 'P2O5'
+      ? '<span class="hint" title="Le P2O5 fait varier le PRIX DE VENTE proportionnellement à la teneur du produit. Les MP agissent sur le coût.">ⓘ agit sur le prix de vente</span>'
+      : '';
+    html += `<div class="sens-row">
+      <input type="checkbox" data-svon="${esc(v)}" ${s.on?'checked':''}>
+      <div class="nm">${esc(v)} ${hint}</div>
+      <input type="number" step="0.1" value="${s.val}" data-svval="${esc(v)}">
+      <div class="mode">
+        <button data-svmode="${esc(v)}" data-m="pct" class="${s.mode==='pct'?'on':''}">%</button>
+        <button data-svmode="${esc(v)}" data-m="abs" class="${s.mode==='abs'?'on':''}">$</button>
+      </div>
+    </div>`;
+  });
+  host.innerHTML = html;
+  host.querySelectorAll('input[data-svon]').forEach(i => i.addEventListener('change', e => {
+    STATE.shocks[e.target.dataset.svon].on = e.target.checked; renderSensAll();
+  }));
+  host.querySelectorAll('input[data-svval]').forEach(i => i.addEventListener('input', e => {
+    STATE.shocks[e.target.dataset.svval].val = Number(e.target.value) || 0; renderSensAll();
+  }));
+  host.querySelectorAll('button[data-svmode]').forEach(b => b.addEventListener('click', e => {
+    const v = e.target.dataset.svmode;
+    STATE.shocks[v].mode = e.target.dataset.m;
+    host.querySelectorAll(`button[data-svmode="${v}"]`).forEach(x => x.classList.toggle('on', x.dataset.m === e.target.dataset.m));
+    renderSensAll();
+  }));
+}
+
+function activeShocks(){
+  const out = {};
+  Object.entries(STATE.shocks).forEach(([k, s]) => { if (s.on) out[k] = {val: s.val, mode: s.mode}; });
+  return out;
+}
+
+// Applique une liste de chocs sur un set d'ids — retourne {id, nom, prix, cout_rm, cgm, cgm_eqdap}
+function applyShocks(ids, shocks){
+  const basePr = {...STATE.rmPrices};
+  const pr = {...basePr};
+  for (const nm in shocks){
+    if (nm === 'P2O5') continue;
+    const sh = shocks[nm];
+    pr[nm] = sh.mode === 'pct' ? basePr[nm] * (1 + sh.val/100) : basePr[nm] + sh.val;
+  }
+  const p2 = shocks['P2O5'];
+  return ids.map(id => {
+    const p = PROD_BY_ID[id]; const csp = CSP_BY_ID[id];
+    let prix = STATE.prodPrices[id];
+    if (p2){
+      // R original : `prix + p2$val / 100 * p$P2O5 * prix` (pct) OU `prix + p2$val * p$P2O5` (abs)
+      prix = p2.mode === 'pct' ? prix + p2.val/100 * g(csp.P2O5) * prix : prix + p2.val * g(csp.P2O5);
+    }
+    const cspRow = {
+      P2O5: csp.P2O5, ACS: csp.ACS, Ammoniac: csp.Ammoniac, KCl: csp.KCl,
+      AmSul: csp.AmSul, Roche_Granulation: csp.Roche_Granulation,
+      Zn: csp.Zn, B: csp.B, Cu: csp.Cu, EQ_DAP_Ratio: csp.EQ_DAP_Ratio, Prix: prix,
+    };
+    const r = calcProduit(cspRow, pr, STATE.params);
+    return { id, nom: p.Produit, prix, cout_rm: r.cout_rm, cgm: r.cgm, cgm_eqdap: r.cgm_eqdap };
+  });
+}
+
+// Cellule HTML "valeur (Δ ; Δ%)"
+function cellHtml(valsim, base, betterUp){
+  const d = valsim - base;
+  const pct = base !== 0 ? d / Math.abs(base) * 100 : NaN;
+  const fav = betterUp ? d >= 0 : d <= 0;
+  const col = Math.round(d) === 0 ? 'var(--muted)' : (fav ? 'var(--ok)' : 'var(--bad)');
+  const dpct = isNaN(pct) ? '—' : ((pct >= 0 ? '+' : '') + Math.round(pct) + '%');
+  return `<b>${fmt(valsim)}</b> <span class="delta" style="color:${col}">(${fmtDelta(d)} ; ${dpct})</span>`;
+}
+
+function renderSensCombined(){
+  const host = document.getElementById('sensCombined');
+  const base = resSel();
+  if (!base.length){ host.innerHTML = '<div class="chart-empty">Sélectionnez au moins un produit (onglet Simulation).</div>'; return; }
+  const shocks = activeShocks();
+  const sim = applyShocks(base.map(x => x.id), shocks);
+  const byId = {}; base.forEach(x => byId[x.id] = x);
+  let body = '';
+  sim.forEach(x => {
+    const b = byId[x.id];
+    body += `<tr>
+      <td>${esc(x.nom)}</td>
+      <td>${cellHtml(x.prix, b.prix, true)}</td>
+      <td>${cellHtml(x.cout_rm, b.cout_rm, false)}</td>
+      <td>${cellHtml(x.cgm, b.cgm, true)}</td>
+      <td>${cellHtml(x.cgm_eqdap, b.cgm_eqdap, true)}</td>
+    </tr>`;
+  });
+  host.innerHTML = `<div class="tbl-wrap"><table class="tbl"><thead><tr>
+    <th>Produit</th><th>Prix</th><th>Coût RM</th><th>CGM</th><th>CGM EQ DAP</th></tr></thead>
+    <tbody>${body}</tbody></table></div>`;
+}
+
+function separateData(){
+  const base = resSel(); const sh = activeShocks();
+  if (!base.length || !Object.keys(sh).length) return [];
+  const byId = {}; base.forEach(x => byId[x.id] = x);
+  const ids = base.map(x => x.id);
+  const out = [];
+  Object.entries(sh).forEach(([varN, s]) => {
+    const r = applyShocks(ids, {[varN]: s});
+    r.forEach((x, i) => {
+      const b = byId[x.id];
+      out.push({
+        Produit: b.nom, Variable: varN,
+        Choc: (s.val >= 0 ? '+' : '') + s.val + (s.mode === 'pct' ? '%' : '$'),
+        dPrix: Math.round(x.prix - b.prix),
+        dRmc: Math.round(x.cout_rm - b.cout_rm),
+        dCgm: Math.round(x.cgm - b.cgm),
+        dEqdap: Math.round(x.cgm_eqdap - b.cgm_eqdap),
+      });
+    });
+  });
+  return out;
+}
+
+function renderSensSeparate(){
+  const host = document.getElementById('sensSeparate');
+  const d = separateData();
+  if (!d.length){ host.innerHTML = '<div class="chart-empty">Cochez au moins une variable de sensibilité et sélectionnez un produit.</div>'; return; }
+  let body = d.map(r => {
+    const cPx = r.dPrix >= 0 ? 'cell-pos' : 'cell-neg';
+    const cRm = r.dRmc <= 0 ? 'cell-pos' : 'cell-neg';
+    const cCgm = r.dCgm >= 0 ? 'cell-pos' : 'cell-neg';
+    const cEq  = r.dEqdap >= 0 ? 'cell-pos' : 'cell-neg';
+    return `<tr><td>${esc(r.Produit)}</td><td>${esc(r.Variable)}</td><td>${esc(r.Choc)}</td>
+      <td class="${cPx}">${fmtDelta(r.dPrix)}</td>
+      <td class="${cRm}">${fmtDelta(r.dRmc)}</td>
+      <td class="${cCgm}">${fmtDelta(r.dCgm)}</td>
+      <td class="${cEq}">${fmtDelta(r.dEqdap)}</td>
+    </tr>`;
+  }).join('');
+  host.innerHTML = `<div class="tbl-wrap"><table class="tbl"><thead><tr>
+    <th>Produit</th><th>Variable</th><th>Choc</th>
+    <th>Δ Prix</th><th>Δ Coût RM</th><th>Δ CGM</th><th>Δ CGM EQ DAP</th></tr></thead>
+    <tbody>${body}</tbody></table></div>`;
+}
+
+function renderTornadoProdList(){
+  const sel = resSel();
+  const cur = STATE.tornProd;
+  const opts = ['<option value="__moy__">Moyenne (sélection)</option>']
+    .concat(sel.map(x => `<option value="${esc(x.id)}" ${x.id===cur?'selected':''}>${esc(x.nom)}</option>`));
+  document.getElementById('tornProd').innerHTML = opts.join('');
+}
+
+function renderTornado(){
+  const host = document.getElementById('tornado');
+  const d = separateData();
+  if (!d.length){ host.innerHTML = '<div class="chart-empty">Cochez au moins une variable de sensibilité.</div>'; return; }
+  const metric = STATE.tornMetric;
+  let agg;
+  if (STATE.tornProd === '__moy__'){
+    // Moyenne par variable
+    const m = {};
+    d.forEach(r => { (m[r.Variable] = m[r.Variable] || []).push(r[metric]); });
+    agg = Object.entries(m).map(([Variable, arr]) => ({Variable, val: arr.reduce((a,b)=>a+b,0)/arr.length}));
+  } else {
+    const sub = d.filter(r => {
+      const p = PROD.find(p => p.Produit === r.Produit);
+      return p && p.ID_Produit === STATE.tornProd;
+    });
+    agg = sub.map(r => ({Variable: r.Variable, val: r[metric]}));
+  }
+  agg.sort((a,b) => Math.abs(a.val) - Math.abs(b.val));
+  if (!agg.length){ host.innerHTML = '<div class="chart-empty">Pas de données pour ce produit.</div>'; return; }
+
+  const W = 1100, padL = 170, padR = 60, padT = 20, padB = 40;
+  const innerW = W - padL - padR;
+  const rowH = 28, gap = 6;
+  const H = padT + agg.length * (rowH + gap) + padB;
+  const maxAbs = Math.max(...agg.map(a => Math.abs(a.val))) || 1;
+  const xScale = v => padL + innerW/2 + (v / maxAbs) * (innerW/2);
+  const x0 = padL + innerW/2;
+
+  let svg = '';
+  // Vertical zero line
+  svg += `<line x1="${x0}" y1="${padT}" x2="${x0}" y2="${H-padB+4}" stroke="var(--muted-2)" stroke-width="1"/>`;
+  // X-axis ticks
+  const xTicks = 5;
+  for (let i = -xTicks; i <= xTicks; i++){
+    const v = (maxAbs / xTicks) * i;
+    const x = xScale(v);
+    if (Math.abs(i) % 1 === 0){
+      svg += `<line class="grid" x1="${x}" y1="${padT}" x2="${x}" y2="${H-padB+4}"/>`;
+      svg += `<text x="${x}" y="${H-padB+18}" text-anchor="middle" font-size="10" fill="var(--muted)">${fmtDelta(v)}</text>`;
+    }
+  }
+  // Bars
+  agg.forEach((a, i) => {
+    const y = padT + i * (rowH + gap);
+    svg += `<text x="${padL - 10}" y="${y + rowH/2 + 4}" text-anchor="end" font-size="12" fill="var(--ink)" font-weight="600">${esc(a.Variable)}</text>`;
+    const xA = xScale(a.val), xB = x0;
+    const x1 = Math.min(xA, xB), w = Math.abs(xA - xB);
+    const col = a.val >= 0 ? 'var(--green-700)' : 'var(--bad)';
+    svg += `<rect class="torn-bar" x="${x1}" y="${y}" width="${w}" height="${rowH}" fill="${col}"/>`;
+    const lblX = a.val >= 0 ? xA + 6 : xA - 6;
+    const anchor = a.val >= 0 ? 'start' : 'end';
+    svg += `<text x="${lblX}" y="${y + rowH/2 + 4}" text-anchor="${anchor}" font-size="11" font-weight="700" fill="var(--ink)">${fmtDelta(a.val)}</text>`;
+  });
+  // Metric label
+  const labels = {dEqdap:'Δ CGM EQ DAP', dCgm:'Δ CGM', dRmc:'Δ Coût RM'};
+  svg += `<text x="${padL + innerW/2}" y="${H-padB+34}" text-anchor="middle" font-size="11" fill="var(--muted-2)">${labels[metric]}</text>`;
+
+  host.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H+8}" preserveAspectRatio="xMidYMid meet">${svg}</svg>`;
+}
+
+/* =====================================================================
+ * 4. CSV exports
+ * ===================================================================== */
+function csvCell(v){ const s = String(v == null ? '' : v); return /[",;\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; }
+function downloadCsv(name, rows){
+  // BOM UTF-8 pour Excel + séparateur ';' (Excel FR-FR)
+  const csv = '﻿' + rows.map(r => r.map(csvCell).join(';')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+function stamp(){ return new Date().toISOString().slice(0,10); }
+
+function exportSynthCsv(){
+  const sel = resSel();
+  if (!sel.length){ alert('Sélectionne au moins un produit.'); return; }
+  const rows = [];
+  rows.push(['# Simulation CGM Sim-Ops — export du ' + new Date().toLocaleString('fr-FR')]);
+  rows.push([]);
+  rows.push(['Synthèse par produit ($/t)']);
+  const head = ['Produit','Prix','CGM','CGM EQ DAP','Coût RM', ...COMPOSANTES];
+  rows.push(head);
+  sel.forEach(x => {
+    const row = [x.nom, Math.round(x.prix), Math.round(x.cgm), Math.round(x.cgm_eqdap), Math.round(x.cout_rm)];
+    COMPOSANTES.forEach(c => row.push(Math.round(x.cout[c]||0)));
+    rows.push(row);
+  });
+  // Moyenne
+  const n = sel.length;
+  let acc = {Prix:0,CGM:0,EQ:0,RM:0, cout:{}}; COMPOSANTES.forEach(c => acc.cout[c]=0);
+  sel.forEach(x => { acc.Prix+=x.prix; acc.CGM+=x.cgm; acc.EQ+=(isNaN(x.cgm_eqdap)?0:x.cgm_eqdap); acc.RM+=x.cout_rm; COMPOSANTES.forEach(c => acc.cout[c]+=(x.cout[c]||0)); });
+  const moy = ['Moyenne', Math.round(acc.Prix/n), Math.round(acc.CGM/n), Math.round(acc.EQ/n), Math.round(acc.RM/n)];
+  COMPOSANTES.forEach(c => moy.push(Math.round(acc.cout[c]/n)));
+  rows.push(moy);
+  rows.push([]);
+  rows.push(['Hypothèses — Matières premières ($/t)']);
+  rows.push(['Matière première','Prix']);
+  RM.forEach(r => rows.push([r.RM, STATE.rmPrices[r.RM]]));
+  rows.push([]);
+  rows.push(['Paramètres du modèle']);
+  Object.entries(STATE.params).forEach(([k,v]) => rows.push([k, v]));
+  downloadCsv('simulation_CGM_'+stamp()+'.csv', rows);
+}
+
+function exportSensCsv(){
+  const base = resSel();
+  if (!base.length){ alert('Sélectionne au moins un produit.'); return; }
+  const shocks = activeShocks();
+  if (!Object.keys(shocks).length){ alert('Active au moins une variable de sensibilité.'); return; }
+  const sim = applyShocks(base.map(x=>x.id), shocks);
+  const byId = {}; base.forEach(x => byId[x.id] = x);
+
+  const rows = [];
+  rows.push(['# Analyse de sensibilité CGM Sim-Ops — export du ' + new Date().toLocaleString('fr-FR')]);
+  rows.push([]);
+  rows.push(['Chocs appliqués']);
+  rows.push(['Variable','Choc']);
+  Object.entries(shocks).forEach(([k,s]) => rows.push([k, (s.val>=0?'+':'')+s.val+(s.mode==='pct'?'%':'$')]));
+  rows.push([]);
+  rows.push(['Impact combiné par produit']);
+  rows.push(['Produit','Prix','Δ Prix','Coût RM','Δ Coût RM','CGM','Δ CGM','CGM EQ DAP','Δ CGM EQ DAP']);
+  sim.forEach(x => {
+    const b = byId[x.id];
+    rows.push([x.nom, Math.round(x.prix), Math.round(x.prix-b.prix), Math.round(x.cout_rm), Math.round(x.cout_rm-b.cout_rm),
+               Math.round(x.cgm), Math.round(x.cgm-b.cgm), Math.round(x.cgm_eqdap), Math.round(x.cgm_eqdap-b.cgm_eqdap)]);
+  });
+  rows.push([]);
+  rows.push(['Impact séparé (produit × variable)']);
+  rows.push(['Produit','Variable','Choc','Δ Prix','Δ Coût RM','Δ CGM','Δ CGM EQ DAP']);
+  separateData().forEach(r => rows.push([r.Produit, r.Variable, r.Choc, r.dPrix, r.dRmc, r.dCgm, r.dEqdap]));
+  rows.push([]);
+  rows.push(['Hypothèses base — Matières premières ($/t)']);
+  rows.push(['Matière première','Prix']);
+  RM.forEach(r => rows.push([r.RM, STATE.rmPrices[r.RM]]));
+  rows.push([]);
+  rows.push(['Paramètres du modèle']);
+  Object.entries(STATE.params).forEach(([k,v]) => rows.push([k, v]));
+  downloadCsv('sensibilite_CGM_'+stamp()+'.csv', rows);
+}
+
+/* =====================================================================
+ * 5. RESET + EVENTS + INIT
+ * ===================================================================== */
+function resetAll(){
+  RM.forEach(r => STATE.rmPrices[r.RM] = r.Prix_Initial);
+  PROD.forEach(p => STATE.prodPrices[p.ID_Produit] = p.Prix_Initial);
+  STATE.selected = {P003:true};
+  Object.assign(STATE.params, PARAMS_DEF);
+  STATE.sort1='eqdap'; STATE.sort2='cout'; STATE.compoMode='abs';
+  SHOCK_VARS.forEach(v => STATE.shocks[v] = {on: v==='P2O5', val:0, mode:'pct'});
+  STATE.tornProd='__moy__'; STATE.tornMetric='dEqdap'; STATE.search='';
+  document.getElementById('searchProd').value = '';
+  document.getElementById('sort1').value = 'eqdap';
+  document.getElementById('sort2').value = 'cout';
+  document.querySelectorAll('.cm').forEach(b => b.classList.toggle('on', b.dataset.m === 'abs'));
+  renderRm(); renderProdPanel(); renderSensVars();
+  renderAll(); renderSensAll();
+}
+
+function renderAll(){
+  renderKpis(); renderChart1(); renderChart2(); renderSynth();
+  if (document.getElementById('tab-sens').style.display !== 'none'){
+    renderSensAll();
+  }
+  postHeight();
+}
+
+function renderSensAll(){
+  renderTornadoProdList();
+  renderSensCombined(); renderSensSeparate(); renderTornado();
+  postHeight();
+}
+
+/* Tabs */
+document.querySelectorAll('#tabs .tab').forEach(b => b.addEventListener('click', e => {
+  const t = e.currentTarget.dataset.t;
+  document.querySelectorAll('#tabs .tab').forEach(x => x.classList.toggle('on', x.dataset.t === t));
+  document.getElementById('tab-sim').style.display  = (t === 'sim') ? '' : 'none';
+  document.getElementById('tab-sens').style.display = (t === 'sens') ? '' : 'none';
+  if (t === 'sens') renderSensAll();
+  postHeight();
+}));
+
+/* Sort + compoMode + select all/none + search */
+document.getElementById('sort1').addEventListener('change', e => { STATE.sort1 = e.target.value; renderChart1(); });
+document.getElementById('sort2').addEventListener('change', e => { STATE.sort2 = e.target.value; renderChart2(); });
+document.querySelectorAll('.cm').forEach(b => b.addEventListener('click', e => {
+  const m = e.target.dataset.m;
+  STATE.compoMode = m;
+  document.querySelectorAll('.cm').forEach(x => x.classList.toggle('on', x.dataset.m === m));
+  renderChart2();
+}));
+document.getElementById('selAll').addEventListener('click', () => {
+  PROD.forEach(p => STATE.selected[p.ID_Produit] = true);
+  renderProdPanel(); renderAll();
+});
+document.getElementById('selNone').addEventListener('click', () => {
+  PROD.forEach(p => STATE.selected[p.ID_Produit] = false);
+  renderProdPanel(); renderAll();
+});
+document.getElementById('searchProd').addEventListener('input', e => {
+  STATE.search = e.target.value; renderProdPanel();
+});
+document.getElementById('tornProd').addEventListener('change', e => { STATE.tornProd = e.target.value; renderTornado(); });
+document.getElementById('tornMetric').addEventListener('change', e => { STATE.tornMetric = e.target.value; renderTornado(); });
+document.getElementById('btnReset').addEventListener('click', resetAll);
+document.getElementById('btnExportCsv').addEventListener('click', exportSynthCsv);
+document.getElementById('btnExportSensCsv').addEventListener('click', exportSensCsv);
+
+/* postHeight pour iframe shortcode */
+function postHeight(){
+  try{
+    if (window.parent && window.parent !== window){
+      const h = document.body.scrollHeight;
+      window.parent.postMessage({dnaiSimopsHeight: h}, '*');
+    }
+  } catch(e){}
+}
+window.addEventListener('resize', postHeight);
+
+/* =====================================================================
+ * 6. FEEDBACK — clic-droit pour commenter (porté du CGM Cockpit)
+ * ===================================================================== */
+const FB = (function(){
+  const LS='cgm_simops_feedback_v1', LS_AUTHOR='cgm_simops_feedback_author_v1';
+  let list = []; try{ list = JSON.parse(localStorage.getItem(LS))||[]; }catch(e){ list=[]; }
+  let author = ''; try{ author = localStorage.getItem(LS_AUTHOR)||''; }catch(e){}
+  function save(){ try{ localStorage.setItem(LS, JSON.stringify(list)); }catch(e){} renderBadge(); }
+  function setAuthor(a){ author=(a||'').trim(); try{ localStorage.setItem(LS_AUTHOR, author); }catch(e){} }
+  function uid(){ return 'fb-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+  function viewLabel(){
+    return document.getElementById('tab-sens').style.display !== 'none' ? 'Sensibilité' : 'Simulation';
+  }
+  function blockLabel(el){
+    if(!el) return '(zone)';
+    let n=el.closest('[data-fb-name]'); if(n) return n.getAttribute('data-fb-name');
+    const known=el.closest('.card, .kpi, .chart-wrap');
+    if(known){
+      const h=known.querySelector('.ch, h2, h3, h4'); if(h && h.textContent.trim()) return h.textContent.trim().slice(0,80);
+    }
+    return '(zone non identifiée)';
+  }
+  function selectorOf(el){
+    if(!el) return '';
+    if(el.id) return '#'+el.id;
+    const path=[]; while(el && el.nodeType===1 && path.length<5){
+      let p=el.nodeName.toLowerCase();
+      if(el.className && typeof el.className==='string'){ const c=el.className.trim().split(/\s+/).slice(0,2).join('.'); if(c) p+='.'+c; }
+      path.unshift(p); el=el.parentElement;
+    }
+    return path.join(' > ');
+  }
+  let hoveredEl=null, modal=null;
+  function addAt(el){
+    hoveredEl=el; closeMenu();
+    el && el.classList.add('fb-highlight');
+    const view=viewLabel(); const block=blockLabel(el); const sel=selectorOf(el);
+    modal=document.createElement('div'); modal.className='fb-modal-wrap';
+    modal.innerHTML='<div class="fb-modal" onclick="event.stopPropagation()">'
+      +'<div class="fb-head"><h3>💬 Ajouter un commentaire</h3><button class="fb-x">✕</button></div>'
+      +'<div class="fb-ctx"><span class="fb-lbl">SUR</span><b>'+esc(block)+'</b><span class="fb-bread">'+esc(view)+'</span></div>'
+      +'<label class="fb-flbl">Auteur</label><input class="fb-author" type="text" placeholder="ton prénom" value="'+esc(author)+'">'
+      +'<label class="fb-flbl">Commentaire</label><textarea class="fb-text" rows="4" placeholder="Que faut-il changer / ajouter / corriger ?"></textarea>'
+      +'<div class="fb-act"><button class="fb-cancel">Annuler</button><button class="fb-save">Enregistrer</button></div>'
+      +'</div>';
+    document.body.appendChild(modal);
+    const close=()=>{ if(modal){modal.remove();modal=null;} if(hoveredEl) hoveredEl.classList.remove('fb-highlight'); };
+    modal.addEventListener('click', e=>{ if(e.target===modal) close(); });
+    modal.querySelector('.fb-x').onclick=close;
+    modal.querySelector('.fb-cancel').onclick=close;
+    setTimeout(()=>{ const t=modal.querySelector('.fb-text'); if(t) t.focus(); },50);
+    modal.querySelector('.fb-save').onclick=function(){
+      const a=modal.querySelector('.fb-author').value.trim();
+      const text=modal.querySelector('.fb-text').value.trim();
+      if(!text){ alert('Le commentaire est vide.'); return; }
+      setAuthor(a);
+      list.unshift({id:uid(), ts:new Date().toISOString(), author:a, view:view, block:block, selector:sel, comment:text});
+      save(); close(); flashBadge();
+    };
+  }
+  let menu=null;
+  function closeMenu(){ if(menu){menu.remove();menu=null;} }
+  function openMenu(e){
+    closeMenu(); const target=e.target;
+    if(target.closest && target.closest('input, select, textarea, .fb-modal, .fb-panel')) return;
+    e.preventDefault();
+    menu=document.createElement('div'); menu.className='fb-menu';
+    menu.style.left=Math.min(e.clientX, window.innerWidth-220)+'px';
+    menu.style.top =Math.min(e.clientY, window.innerHeight-110)+'px';
+    menu.innerHTML='<button class="fb-mi" data-act="add">💬 Ajouter un commentaire ici</button>'
+      +'<button class="fb-mi" data-act="open">📋 Voir tous les commentaires ('+list.length+')</button>';
+    document.body.appendChild(menu);
+    menu.querySelector('[data-act=add]').onclick=()=>{ closeMenu(); addAt(target); };
+    menu.querySelector('[data-act=open]').onclick=()=>{ closeMenu(); openPanel(); };
+  }
+  document.addEventListener('contextmenu', openMenu);
+  document.addEventListener('click', e=>{ if(menu && !menu.contains(e.target)) closeMenu(); });
+  let badge=null, panel=null;
+  function renderBadge(){ if(!badge) return; badge.innerHTML='💬 '+list.length+' commentaire'+(list.length>1?'s':''); badge.classList.toggle('hot', list.length>0); }
+  function flashBadge(){ if(!badge) return; badge.classList.add('flash'); setTimeout(()=>badge.classList.remove('flash'), 700); }
+  function openPanel(){
+    if(panel){ panel.remove(); panel=null; return; }
+    panel=document.createElement('div'); panel.className='fb-panel';
+    const head='<div class="fb-phead"><h3>📋 Commentaires ('+list.length+')</h3><button class="fb-x">✕</button></div>'
+      +'<div class="fb-pacts"><button class="fb-btn" data-act="exjson">⤓ JSON</button><button class="fb-btn" data-act="excsv">⤓ CSV</button><button class="fb-btn" data-act="excopy">📋 Copier markdown</button><span style="flex:1"></span><button class="fb-btn danger" data-act="clear">🗑 Tout effacer</button></div>';
+    const body=list.length?
+      '<div class="fb-list">'+list.map(c=>'<div class="fb-item" data-id="'+c.id+'">'
+        +'<div class="fb-iblock"><b>'+esc(c.block)+'</b><span>'+esc(c.view)+'</span></div>'
+        +'<div class="fb-itext">'+esc(c.comment)+'</div>'
+        +'<div class="fb-imeta"><span>'+esc(c.author||'anonyme')+'</span><span>'+new Date(c.ts).toLocaleString('fr-FR')+'</span><button class="fb-del" title="Supprimer">🗑</button></div>'
+      +'</div>').join('')+'</div>':
+      '<p class="fb-empty">Aucun commentaire pour le moment. Clic-droit sur n\'importe quel bloc pour en ajouter un.</p>';
+    panel.innerHTML='<div class="fb-pinner">'+head+body+'</div>';
+    document.body.appendChild(panel);
+    panel.querySelector('.fb-x').onclick=()=>{ panel.remove(); panel=null; };
+    panel.querySelectorAll('.fb-del').forEach(b=>b.onclick=function(e){ e.stopPropagation();
+      const id=this.closest('.fb-item').dataset.id; list=list.filter(x=>x.id!==id); save(); panel.remove(); panel=null; openPanel();
+    });
+    panel.querySelector('[data-act=clear]').onclick=function(){ if(!confirm('Effacer tous les commentaires ?')) return; list=[]; save(); panel.remove(); panel=null; openPanel(); };
+    panel.querySelector('[data-act=exjson]').onclick=()=>{
+      const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),count:list.length,comments:list},null,2)],{type:'application/json'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='cgm-simops-feedback-'+stamp()+'.json'; document.body.appendChild(a); a.click(); a.remove();
+    };
+    panel.querySelector('[data-act=excsv]').onclick=()=>{
+      const head=['ts','author','view','block','comment','selector'];
+      const csvR=[head].concat(list.map(c=>[c.ts,c.author||'',c.view,c.block,c.comment,c.selector||'']));
+      downloadCsv('cgm-simops-feedback-'+stamp()+'.csv', csvR);
+    };
+    panel.querySelector('[data-act=excopy]').onclick=()=>{
+      const md = list.map((c,i)=>'### '+(i+1)+'. '+c.block+' *('+c.view+')*\n- **Par** '+(c.author||'anonyme')+' — '+new Date(c.ts).toLocaleString('fr-FR')+'\n\n'+c.comment+'\n').join('\n---\n\n') || '_(aucun commentaire)_';
+      navigator.clipboard.writeText(md).then(()=>alert('Copié en markdown — colle dans Teams/Slack/Notion.'));
+    };
+  }
+  function mountBadge(){
+    badge=document.createElement('button'); badge.className='fb-badge'; badge.onclick=openPanel;
+    badge.title='Voir les commentaires · clic-droit sur un bloc pour en ajouter un';
+    document.body.appendChild(badge); renderBadge();
+  }
+  return {mount:mountBadge};
+})();
+FB.mount();
+
+/* ====== INIT ====== */
+renderRm();
+renderProdPanel();
+renderSensVars();
+renderAll();
+postHeight();
+setTimeout(postHeight, 200);
+setInterval(postHeight, 1200);
+</script>
+</body>
+</html>
