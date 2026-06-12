@@ -219,7 +219,23 @@ svg.chart{display:block;width:100%;font-family:'Inter',sans-serif}
   .kpis{grid-template-columns:1fr}
   .wrap{padding:14px 14px 30px}
   .appheader{padding:12px 14px;flex-wrap:wrap}
+  .eqbase{padding:11px 14px}
+  .eqbase .help{display:none}
 }
+
+/* ====== Print (PDF via dialogue navigateur) ====== */
+@media print{
+  body{background:#fff!important}
+  .tabs,.fb-badge,.fb-panel,.fb-modal-wrap,.actions,.card .meta button,.card .meta input,.card .meta .mode,.card .meta select{display:none!important}
+  .wrap{max-width:none;padding:8px 0}
+  .appheader{box-shadow:none;border:none;padding:6px 0 14px;margin-bottom:14px}
+  .card{break-inside:avoid;box-shadow:none;border-color:#ccc}
+  .kpi{box-shadow:none;border-color:#ccc}
+  .chart-wrap svg{max-height:380px}
+}
+
+/* Pas de print dans le header du synth pour la barre Copy/Search */
+.card .ch .meta .searchbox:focus{outline:1px solid var(--green-700)}
 </style>
 </head>
 <body>
@@ -330,13 +346,21 @@ svg.chart{display:block;width:100%;font-family:'Inter',sans-serif}
     </div>
 
     <div class="card" data-fb-name="Synthèse par produit">
-      <div class="ch"><span class="hic">📋</span>Synthèse par produit<span class="meta">valeurs en $/t</span></div>
-      <div class="cb"><div id="synthTbl"></div></div>
+      <div class="ch"><span class="hic">📋</span>Synthèse par produit
+        <div class="meta">
+          <button class="btn ghost" id="btnSynthCopy" style="padding:5px 12px;font-size:11.5px">📋 Copy</button>
+          <input type="text" id="synthSearch" class="searchbox" placeholder="Search:" style="width:180px;padding:5px 10px;font-size:12px">
+          <span style="font-size:11px;color:var(--muted);font-style:italic">valeurs en $/t</span>
+        </div>
+      </div>
+      <div class="cb"><div id="synthTbl"></div><div id="synthInfo" style="margin-top:8px;font-size:11.5px;color:var(--muted)"></div></div>
     </div>
 
     <div class="actions">
       <button class="btn ghost" id="btnReset">↺ Réinitialiser</button>
-      <button class="btn primary" id="btnExportCsv">⤓ Exporter synthèse (CSV)</button>
+      <button class="btn primary" id="btnExportPdf">🖨 PDF</button>
+      <button class="btn primary" id="btnExportXls">⤓ Excel</button>
+      <button class="btn primary" id="btnExportCsv">⤓ CSV</button>
     </div>
   </section>
 
@@ -375,7 +399,9 @@ svg.chart{display:block;width:100%;font-family:'Inter',sans-serif}
     </div>
 
     <div class="actions">
-      <button class="btn primary" id="btnExportSensCsv">⤓ Exporter analyse de sensibilité (CSV)</button>
+      <button class="btn primary" id="btnExportSensPdf">🖨 PDF</button>
+      <button class="btn primary" id="btnExportSensXls">⤓ Excel</button>
+      <button class="btn primary" id="btnExportSensCsv">⤓ CSV</button>
     </div>
   </section>
 
@@ -427,6 +453,7 @@ const STATE = {
   tornProd: '__moy__',
   tornMetric: 'dEqdap',
   search: '',
+  synthSearch: '',
 };
 
 // Seed RM + product prices + shock defaults
@@ -727,45 +754,56 @@ function renderChart2(){
     });
   });
 
-  // Legend
-  let legSvg = `<g transform="translate(${padL},${H-12})">`;
+  // Legend en haut, ordre inversé (Cu, B, Zn... → Soufre), matching le Sim-Ops original
+  let legSvg = `<g transform="translate(${padL},14)">`;
   let lx = 0;
-  COMPOSANTES.forEach(c => {
+  COMPOSANTES.slice().reverse().forEach(c => {
     legSvg += `<rect x="${lx}" y="-9" width="11" height="11" fill="${COMPO_COULEURS[c]}"/><text x="${lx+15}" y="0" font-size="10" fill="var(--ink-2)">${esc(c)}</text>`;
     lx += c.length * 6 + 35;
   });
   legSvg += `</g>`;
 
-  host.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H + 12}" preserveAspectRatio="xMidYMid meet">${gridSvg}${barsSvg}${legSvg}</svg>`;
+  host.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H + 12}" preserveAspectRatio="xMidYMid meet">${legSvg}${gridSvg}${barsSvg}</svg>`;
 }
 
-// --- Synthesis table ---
+// --- Synthesis table (avec recherche + ligne Moyenne, calculée sur la sélection complète) ---
 function renderSynth(){
   const host = document.getElementById('synthTbl');
+  const info = document.getElementById('synthInfo');
   const sel = resSel();
-  if (!sel.length){ host.innerHTML = '<div class="chart-empty">Sélectionnez au moins un produit.</div>'; return; }
+  if (!sel.length){
+    host.innerHTML = '<div class="chart-empty">Sélectionnez au moins un produit.</div>';
+    if (info) info.textContent = '';
+    return;
+  }
+  // Filtre recherche (sur le nom uniquement)
+  const q = (STATE.synthSearch || '').toLowerCase();
+  const filtered = q ? sel.filter(x => x.nom.toLowerCase().includes(q)) : sel;
+
   let head = '<tr><th>Produit</th><th>Prix</th><th>CGM</th><th>CGM EQ DAP</th><th>Coût RM</th>';
   COMPOSANTES.forEach(c => head += `<th>${esc(c)}</th>`);
   head += '</tr>';
   let body = '';
-  // Lignes produits
-  const acc = {Prix:0, CGM:0, EQ:0, RM:0, cout:{}};
-  COMPOSANTES.forEach(c => acc.cout[c] = 0);
-  sel.forEach(x => {
+  filtered.forEach(x => {
     const cgmCls = x.cgm >= 0 ? 'cell-pos' : 'cell-neg';
     const eqCls  = x.cgm_eqdap >= 0 ? 'cell-pos' : 'cell-neg';
     body += `<tr><td>${esc(x.nom)}</td><td>${fmt(x.prix)}</td><td class="${cgmCls}">${fmt(x.cgm)}</td><td class="${eqCls}">${fmt(x.cgm_eqdap)}</td><td class="cell-warn">${fmt(x.cout_rm)}</td>`;
     COMPOSANTES.forEach(c => body += `<td>${fmt(x.cout[c])}</td>`);
     body += '</tr>';
+  });
+  // Ligne moyenne — calculée sur TOUTE la sélection (pas seulement le filtre)
+  const acc = {Prix:0, CGM:0, EQ:0, RM:0, cout:{}};
+  COMPOSANTES.forEach(c => acc.cout[c] = 0);
+  sel.forEach(x => {
     acc.Prix += x.prix; acc.CGM += x.cgm; acc.EQ += (isNaN(x.cgm_eqdap)?0:x.cgm_eqdap); acc.RM += x.cout_rm;
     COMPOSANTES.forEach(c => acc.cout[c] += (x.cout[c]||0));
   });
-  // Ligne moyenne
   const n = sel.length;
   body += `<tr class="moy"><td>Moyenne</td><td>${fmt(acc.Prix/n)}</td><td>${fmt(acc.CGM/n)}</td><td>${fmt(acc.EQ/n)}</td><td>${fmt(acc.RM/n)}</td>`;
   COMPOSANTES.forEach(c => body += `<td>${fmt(acc.cout[c]/n)}</td>`);
   body += '</tr>';
   host.innerHTML = `<div class="tbl-wrap"><table class="tbl"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+  if (info) info.textContent = `Affichage ${filtered.length} sur ${sel.length} produit${sel.length>1?'s':''}` + (q ? ` · filtré sur « ${q} »` : '');
 }
 
 /* =====================================================================
@@ -986,18 +1024,151 @@ function renderTornado(){
 }
 
 /* =====================================================================
- * 4. CSV exports
+ * 4. EXPORTS — CSV, Excel (HTML-table-as-xls), PDF (print), Copy
  * ===================================================================== */
 function csvCell(v){ const s = String(v == null ? '' : v); return /[",;\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; }
-function downloadCsv(name, rows){
-  // BOM UTF-8 pour Excel + séparateur ';' (Excel FR-FR)
-  const csv = '﻿' + rows.map(r => r.map(csvCell).join(';')).join('\n');
-  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+function downloadBlob(name, content, mime){
+  const blob = new Blob([content], {type:mime});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = name;
   document.body.appendChild(a); a.click(); a.remove();
 }
+function downloadCsv(name, rows){
+  // BOM UTF-8 pour Excel + séparateur ';' (Excel FR-FR)
+  const csv = '﻿' + rows.map(r => r.map(csvCell).join(';')).join('\n');
+  downloadBlob(name, csv, 'text/csv;charset=utf-8');
+}
+// Excel via HTML table — Excel l'ouvre nativement (extension .xls, MIME application/vnd.ms-excel)
+function downloadXls(name, sections){
+  // sections = [{title, headers[], rows[][]}, ...]
+  let html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
+  html += '<head><meta charset="utf-8"><style>table{border-collapse:collapse;font-family:Calibri,Arial,sans-serif;font-size:11pt}th{background:#1B5E20;color:#fff;padding:6px 10px;text-align:left;border:1px solid #888}td{padding:5px 9px;border:1px solid #ccc}.moy{background:#EAF4EC;font-weight:bold}h3{font-family:Calibri;color:#1B5E20}</style></head><body>';
+  sections.forEach(s => {
+    if (s.title) html += '<h3>' + esc(s.title) + '</h3>';
+    if (!s.rows || !s.rows.length){ html += '<p><i>(vide)</i></p>'; return; }
+    html += '<table>';
+    if (s.headers){
+      html += '<thead><tr>' + s.headers.map(h => '<th>'+esc(h)+'</th>').join('') + '</tr></thead>';
+    }
+    html += '<tbody>';
+    s.rows.forEach(r => {
+      const cls = (r[0] === 'Moyenne') ? ' class="moy"' : '';
+      html += '<tr'+cls+'>' + r.map(c => '<td>'+esc(c)+'</td>').join('') + '</tr>';
+    });
+    html += '</tbody></table><br>';
+  });
+  html += '</body></html>';
+  downloadBlob(name, html, 'application/vnd.ms-excel');
+}
 function stamp(){ return new Date().toISOString().slice(0,10); }
+
+// PDF = ouverture du dialogue d'impression sur une vue propre (synthesis + KPIs)
+// L'utilisateur choisit « Enregistrer en PDF » dans le dialogue navigateur natif.
+function printArea(sectionId){
+  const section = document.getElementById(sectionId);
+  if (!section) { window.print(); return; }
+  // On masque tout sauf la section ciblée, on imprime, on restaure.
+  const all = document.body.children;
+  const prev = [];
+  for (let i = 0; i < all.length; i++){
+    prev.push({el:all[i], display: all[i].style.display});
+  }
+  // Cacher le wrap entier sauf la section
+  const wrap = document.querySelector('.wrap');
+  if (!wrap) { window.print(); return; }
+  const children = wrap.children;
+  const wrapPrev = [];
+  for (let i = 0; i < children.length; i++){
+    wrapPrev.push({el:children[i], display: children[i].style.display});
+    if (children[i] !== section && !children[i].classList.contains('appheader')){
+      children[i].style.display = 'none';
+    }
+  }
+  // Aussi cacher la pastille feedback et le panneau
+  document.querySelectorAll('.fb-badge, .fb-panel, .fb-modal-wrap').forEach(el => el.style.display='none');
+  window.print();
+  // Restore après le dialogue (window.print est bloquant dans certains navigateurs)
+  wrapPrev.forEach(p => p.el.style.display = p.display);
+  document.querySelectorAll('.fb-badge').forEach(el => el.style.display='');
+}
+
+// Copy synthesis to clipboard as TSV (collable dans Excel / Google Sheets / Teams)
+function copySynth(){
+  const sel = resSel();
+  if (!sel.length){ alert('Sélectionne au moins un produit.'); return; }
+  const head = ['Produit','Prix','CGM','CGM EQ DAP','Coût RM', ...COMPOSANTES];
+  const rows = [head];
+  sel.forEach(x => {
+    const r = [x.nom, Math.round(x.prix), Math.round(x.cgm), Math.round(x.cgm_eqdap), Math.round(x.cout_rm)];
+    COMPOSANTES.forEach(c => r.push(Math.round(x.cout[c]||0)));
+    rows.push(r);
+  });
+  const acc = {Prix:0,CGM:0,EQ:0,RM:0, cout:{}}; COMPOSANTES.forEach(c => acc.cout[c]=0);
+  sel.forEach(x => { acc.Prix+=x.prix; acc.CGM+=x.cgm; acc.EQ+=(isNaN(x.cgm_eqdap)?0:x.cgm_eqdap); acc.RM+=x.cout_rm; COMPOSANTES.forEach(c => acc.cout[c]+=(x.cout[c]||0)); });
+  const n = sel.length;
+  const moy = ['Moyenne', Math.round(acc.Prix/n), Math.round(acc.CGM/n), Math.round(acc.EQ/n), Math.round(acc.RM/n)];
+  COMPOSANTES.forEach(c => moy.push(Math.round(acc.cout[c]/n)));
+  rows.push(moy);
+  const tsv = rows.map(r => r.join('\t')).join('\n');
+  if (navigator.clipboard){
+    navigator.clipboard.writeText(tsv).then(()=> {
+      const btn = document.getElementById('btnSynthCopy'); const old = btn.textContent;
+      btn.textContent = '✓ Copié'; setTimeout(()=>{ btn.textContent = old; }, 1400);
+    });
+  } else {
+    alert('Clipboard non disponible — utilise Export CSV.');
+  }
+}
+
+// Excel exports : convertissent les datasets en HTML table
+function exportSynthXls(){
+  const sel = resSel();
+  if (!sel.length){ alert('Sélectionne au moins un produit.'); return; }
+  const head = ['Produit','Prix','CGM','CGM EQ DAP','Coût RM', ...COMPOSANTES];
+  const rows = sel.map(x => {
+    const r = [x.nom, Math.round(x.prix), Math.round(x.cgm), Math.round(x.cgm_eqdap), Math.round(x.cout_rm)];
+    COMPOSANTES.forEach(c => r.push(Math.round(x.cout[c]||0)));
+    return r;
+  });
+  const acc = {Prix:0,CGM:0,EQ:0,RM:0, cout:{}}; COMPOSANTES.forEach(c => acc.cout[c]=0);
+  sel.forEach(x => { acc.Prix+=x.prix; acc.CGM+=x.cgm; acc.EQ+=(isNaN(x.cgm_eqdap)?0:x.cgm_eqdap); acc.RM+=x.cout_rm; COMPOSANTES.forEach(c => acc.cout[c]+=(x.cout[c]||0)); });
+  const n = sel.length;
+  const moy = ['Moyenne', Math.round(acc.Prix/n), Math.round(acc.CGM/n), Math.round(acc.EQ/n), Math.round(acc.RM/n)];
+  COMPOSANTES.forEach(c => moy.push(Math.round(acc.cout[c]/n)));
+  rows.push(moy);
+
+  const hypRm = RM.map(r => [r.RM, STATE.rmPrices[r.RM]]);
+  const par = Object.entries(STATE.params).map(([k,v]) => [k,v]);
+  downloadXls('simulation_CGM_'+stamp()+'.xls', [
+    {title:'Synthèse par produit ($/t)', headers:head, rows:rows},
+    {title:'Hypothèses — Matières premières ($/t)', headers:['Matière première','Prix'], rows:hypRm},
+    {title:'Paramètres du modèle', headers:['Paramètre','Valeur'], rows:par},
+  ]);
+}
+function exportSensXls(){
+  const base = resSel();
+  if (!base.length){ alert('Sélectionne au moins un produit.'); return; }
+  const shocks = activeShocks();
+  if (!Object.keys(shocks).length){ alert('Active au moins une variable de sensibilité.'); return; }
+  const sim = applyShocks(base.map(x=>x.id), shocks);
+  const byId = {}; base.forEach(x => byId[x.id] = x);
+  const combRows = sim.map(x => {
+    const b = byId[x.id];
+    return [x.nom, Math.round(x.prix), Math.round(x.prix-b.prix), Math.round(x.cout_rm), Math.round(x.cout_rm-b.cout_rm),
+            Math.round(x.cgm), Math.round(x.cgm-b.cgm), Math.round(x.cgm_eqdap), Math.round(x.cgm_eqdap-b.cgm_eqdap)];
+  });
+  const sepRows = separateData().map(r => [r.Produit, r.Variable, r.Choc, r.dPrix, r.dRmc, r.dCgm, r.dEqdap]);
+  const shockRows = Object.entries(shocks).map(([k,s]) => [k, (s.val>=0?'+':'')+s.val+(s.mode==='pct'?'%':'$')]);
+  const hypRm = RM.map(r => [r.RM, STATE.rmPrices[r.RM]]);
+  const par = Object.entries(STATE.params).map(([k,v]) => [k,v]);
+  downloadXls('sensibilite_CGM_'+stamp()+'.xls', [
+    {title:'Chocs appliqués', headers:['Variable','Choc'], rows:shockRows},
+    {title:'Impact combiné par produit', headers:['Produit','Prix','Δ Prix','Coût RM','Δ Coût RM','CGM','Δ CGM','CGM EQ DAP','Δ CGM EQ DAP'], rows:combRows},
+    {title:'Impact séparé (produit × variable)', headers:['Produit','Variable','Choc','Δ Prix','Δ Coût RM','Δ CGM','Δ CGM EQ DAP'], rows:sepRows},
+    {title:'Hypothèses base — Matières premières ($/t)', headers:['Matière première','Prix'], rows:hypRm},
+    {title:'Paramètres du modèle', headers:['Paramètre','Valeur'], rows:par},
+  ]);
+}
 
 function exportSynthCsv(){
   const sel = resSel();
@@ -1076,8 +1247,9 @@ function resetAll(){
   Object.assign(STATE.params, PARAMS_DEF);
   STATE.sort1='eqdap'; STATE.sort2='cout'; STATE.compoMode='abs'; STATE.eqBase='acp';
   SHOCK_VARS.forEach(v => STATE.shocks[v] = {on: v==='P2O5', val:0, mode:'pct'});
-  STATE.tornProd='__moy__'; STATE.tornMetric='dEqdap'; STATE.search='';
+  STATE.tornProd='__moy__'; STATE.tornMetric='dEqdap'; STATE.search=''; STATE.synthSearch='';
   document.getElementById('searchProd').value = '';
+  document.getElementById('synthSearch').value = '';
   document.getElementById('sort1').value = 'eqdap';
   document.getElementById('sort2').value = 'cout';
   document.querySelectorAll('.cm').forEach(b => b.classList.toggle('on', b.dataset.m === 'abs'));
@@ -1136,7 +1308,13 @@ document.getElementById('tornProd').addEventListener('change', e => { STATE.torn
 document.getElementById('tornMetric').addEventListener('change', e => { STATE.tornMetric = e.target.value; renderTornado(); });
 document.getElementById('btnReset').addEventListener('click', resetAll);
 document.getElementById('btnExportCsv').addEventListener('click', exportSynthCsv);
+document.getElementById('btnExportXls').addEventListener('click', exportSynthXls);
+document.getElementById('btnExportPdf').addEventListener('click', () => printArea('tab-sim'));
 document.getElementById('btnExportSensCsv').addEventListener('click', exportSensCsv);
+document.getElementById('btnExportSensXls').addEventListener('click', exportSensXls);
+document.getElementById('btnExportSensPdf').addEventListener('click', () => printArea('tab-sens'));
+document.getElementById('btnSynthCopy').addEventListener('click', copySynth);
+document.getElementById('synthSearch').addEventListener('input', e => { STATE.synthSearch = e.target.value; renderSynth(); });
 
 // Base d'équivalence DAP (ACP / Global)
 document.querySelectorAll('input[name="eqBase"]').forEach(r => r.addEventListener('change', e => {

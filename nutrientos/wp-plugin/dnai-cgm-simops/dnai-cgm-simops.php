@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI CGM Sim-Ops
  * Description:       Refonte HTML/JS (stack D²nAI) du simulateur CGM R Shiny initialement développé par la BU Ops (F. Ezzebdi). Reproduit à l'identique la logique métier (cout par MP, CGM, CGM EQ DAP), les KPIs, les graphes (CGM vs EQ DAP + composition du coût), la synthèse, et l'analyse de sensibilité (chocs %/$, impact combiné, tornado, impact séparé). Mono-fichier autonome, zéro dépendance externe, charte D²nAI.
- * Version:           1.1.0
+ * Version:           1.2.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-cgm-simops
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_SIMOPS_VER', '1.1.0' );
+define( 'DNAI_SIMOPS_VER', '1.2.0' );
 define( 'DNAI_SIMOPS_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_SIMOPS_DIR', plugin_dir_path( __FILE__ ) );
 

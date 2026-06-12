@@ -1,6 +1,6 @@
 === D²nAI CGM Sim-Ops ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -51,6 +51,25 @@ IA, multilingue, historique des simulations), voir le plugin
 dnai-cgm-cockpit.
 
 == Changelog ==
+
+= 1.2.0 =
+* Alignement détaillé sur les screenshots du Sim-Ops original (Fouad) :
+  - Légende du graphe « Composition du coût » : ordre inversé (Cu, B,
+    Zn, Roche Granulation, AmSul, KCl, Ammoniac, Roche P2O5, Soufre)
+    et déplacée en haut au lieu du bas
+  - Synthèse par produit : ajout d'une toolbar « 📋 Copy » (TSV vers
+    clipboard, collable Excel/Sheets/Teams) + champ recherche +
+    ligne « Affichage N sur N produits »
+  - Trois boutons d'export (PDF / Excel / CSV) au lieu d'un seul CSV,
+    sur les deux onglets (Simulation et Sensibilité)
+* Export PDF : ouvre le dialogue d'impression natif sur la vue
+  courante (synthesis + KPIs), avec print stylesheet dédié qui
+  masque les chromes (tabs, pastille feedback, boutons d'actions).
+  L'utilisateur choisit « Enregistrer en PDF ».
+* Export Excel : technique HTML-table-as-xls — Excel l'ouvre
+  nativement comme un vrai classeur, avec une feuille par section
+  (synthèse, hypothèses RM, paramètres). Aucune dépendance CDN
+  ajoutée (pas de SheetJS), zéro impact sur la taille du bundle.
 
 = 1.1.0 =
 * UI alignée sur le visuel du Sim-Ops original (logo OCP rond, tab nav
