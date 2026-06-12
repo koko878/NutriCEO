@@ -1,6 +1,6 @@
 === D²nAI CGM Sim-Ops ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -51,6 +51,19 @@ IA, multilingue, historique des simulations), voir le plugin
 dnai-cgm-cockpit.
 
 == Changelog ==
+
+= 1.1.0 =
+* UI alignée sur le visuel du Sim-Ops original (logo OCP rond, tab nav
+  vert vif, mise en page KPI valeur grande / sous-titre dessous, barre
+  de recherche avec icône au-dessus).
+* Nouvelle option « Base d'équivalence DAP » :
+  - ACP P2O5 (défaut) : utilise l'EQ_DAP_Ratio du référentiel (= comportement
+    original 1:1 du R).
+  - Global P2O5 : recalcule la CGM EQ DAP comme CGM / teneur P2O5 du produit,
+    i.e. la marge ramenée à la tonne de P2O5 pur — utile pour comparer
+    des produits de teneurs très différentes (TSP vs DAP vs NPK).
+* Signature D²nAI conservée mais discrète (mention « refonte D²nAI »
+  dans le coin haut droit du header).
 
 = 1.0.0 =
 * Première version. Portage 1:1 de l'app R Shiny de F. Ezzebdi avec

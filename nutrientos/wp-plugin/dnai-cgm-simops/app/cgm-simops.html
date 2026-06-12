@@ -28,24 +28,35 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif}
 .wrap{max-width:1360px;margin:0 auto;padding:18px 20px 40px}
 
-/* ====== Header brand ====== */
-.appheader{display:flex;align-items:center;gap:18px;background:#fff;border:1px solid var(--line);
-  border-radius:var(--rad-md);padding:16px 22px;margin-bottom:18px;box-shadow:0 1px 2px rgba(16,35,26,.04)}
-.brand{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:26px;color:var(--green-800);line-height:1}
-.brand sup{font-size:15px;vertical-align:super}
-.brand .by{display:block;font-family:'Inter';font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
-.appheader .ttl{font-size:19px;font-weight:700;color:var(--ink);line-height:1.15;font-family:'Cormorant Garamond',serif}
-.appheader .sub{font-size:12px;color:var(--muted);margin-top:2px}
-.appheader .right{margin-left:auto;display:flex;align-items:center;gap:14px}
-.appheader .bar{width:44px;height:5px;background:var(--green-700);border-radius:3px}
+/* ====== Header brand (style proche du Sim-Ops original, OCP-centric) ====== */
+.appheader{display:flex;align-items:center;gap:20px;background:#fff;border:1px solid var(--line);
+  border-radius:var(--rad-md);padding:18px 24px;margin-bottom:16px;box-shadow:0 1px 2px rgba(16,35,26,.04)}
+.ocp-logo{width:74px;height:74px;flex:none;display:flex;align-items:center;justify-content:center}
+.ocp-logo svg{width:100%;height:100%}
+.appheader .ttl{font-size:24px;font-weight:800;color:var(--ink);line-height:1.1;letter-spacing:-.01em}
+.appheader .sub{font-size:13px;color:var(--muted);margin-top:4px;font-weight:500}
+.appheader .right{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.appheader .bar{width:46px;height:5px;background:var(--green-500);border-radius:3px}
+.appheader .dnai-tag{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;color:var(--green-800);font-weight:600;letter-spacing:.02em}
 
-/* ====== Tabs ====== */
-.tabs{background:var(--green-700);border-radius:var(--rad-md);padding:5px;display:flex;gap:5px;margin-bottom:18px;
+/* ====== Tabs (vert plus vif pour matcher Sim-Ops original) ====== */
+.tabs{background:var(--green-500);border-radius:var(--rad-md);padding:5px;display:flex;gap:5px;margin-bottom:16px;
   box-shadow:0 1px 2px rgba(0,0,0,.06)}
-.tab{flex:1;color:#fff;border:0;border-radius:9px;padding:10px 18px;font:700 13.5px 'Inter';
+.tab{flex:1;color:#fff;border:0;border-radius:9px;padding:11px 18px;font:700 13.5px 'Inter';
   background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
-.tab:hover{background:rgba(255,255,255,.14)}
+.tab:hover{background:rgba(255,255,255,.16)}
 .tab.on{background:#fff;color:var(--green-800);box-shadow:0 1px 4px rgba(0,0,0,.18)}
+
+/* ====== Base d'équivalence DAP (toggle ACP P2O5 / Global P2O5) ====== */
+.eqbase{display:flex;align-items:center;gap:20px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);
+  border-radius:var(--rad-md);padding:12px 18px;margin-bottom:16px;font-size:13.5px;
+  box-shadow:0 1px 2px rgba(16,35,26,.04)}
+.eqbase .lbl{font-weight:700;color:var(--ink);display:flex;align-items:center;gap:7px}
+.eqbase .lbl .ic{color:var(--green-700);font-size:15px}
+.eqbase label{display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-weight:500;color:var(--ink-2)}
+.eqbase input[type="radio"]{width:16px;height:16px;accent-color:var(--green-700);cursor:pointer}
+.eqbase label.on{color:var(--green-800);font-weight:700}
+.eqbase .help{margin-left:auto;font-size:11.5px;color:var(--muted);font-style:italic}
 
 /* ====== Card pattern ====== */
 .card{background:#fff;border:1px solid var(--line);border-radius:var(--rad-md);margin-bottom:16px;
@@ -56,21 +67,21 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif}
 .card .ch .meta{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:400;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .card .cb{padding:14px 17px}
 
-/* ====== KPIs ====== */
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
-.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--rad-md);padding:15px 18px;
-  display:flex;gap:14px;align-items:center;box-shadow:0 1px 2px rgba(16,35,26,.04)}
-.kpi .ic{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;
-  font-size:20px;flex:none}
-.kpi .l{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted-2);font-weight:700}
-.kpi .v{font:700 26px 'Cormorant Garamond',serif;margin-top:2px;line-height:1.05;letter-spacing:-.01em}
-.kpi .s{font-size:11.5px;color:var(--muted);margin-top:3px}
+/* ====== KPIs (style proche Sim-Ops original) ====== */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:18px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--rad-md);padding:18px 22px;
+  display:flex;gap:18px;align-items:center;box-shadow:0 1px 2px rgba(16,35,26,.04)}
+.kpi .ic{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex:none}
+.kpi .l{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted-2);font-weight:800;line-height:1}
+.kpi .v{font:800 36px 'Inter',sans-serif;margin-top:6px;line-height:1;letter-spacing:-.015em}
+.kpi .s{font-size:12px;color:var(--muted);margin-top:5px;font-weight:500}
 
 /* ====== Inputs ====== */
 .row2{display:grid;grid-template-columns:5fr 7fr;gap:14px}
-.searchwrap{position:relative;margin:0 0 10px}
-.searchwrap .ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted-2);font-size:13px}
-.searchbox{width:100%;font-size:13px;padding:9px 12px 9px 32px;border:1px solid var(--line-2);
+.searchwrap{margin:0 0 12px}
+.searchwrap .ico{display:block;font-size:18px;color:var(--muted-2);margin:0 0 4px 2px}
+.searchbox{width:100%;font-size:13.5px;padding:11px 14px;border:1px solid var(--line-2);
   border-radius:9px;background:#fafbf9;transition:.15s;font-family:'Inter',sans-serif}
 .searchbox:focus{outline:none;border-color:var(--green-700);box-shadow:0 0 0 3px rgba(46,125,50,.12);background:#fff}
 .selbar{display:flex;gap:14px;padding:0 2px 9px;font-size:12px}
@@ -215,18 +226,36 @@ svg.chart{display:block;width:100%;font-family:'Inter',sans-serif}
 <div class="wrap">
 
   <header class="appheader">
-    <div class="brand">D<sup>2</sup>nAI<span class="by">Data · Digital &amp; AI · OCP Nutricrops</span></div>
-    <div>
-      <div class="ttl">Simulateur de marge — CGM Sim-Ops</div>
-      <div class="sub">Coût de revient, CGM &amp; CGM EQ DAP, composition du coût et analyse de sensibilité</div>
+    <div class="ocp-logo" aria-hidden="true">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="48" fill="#1B5E20"/>
+        <circle cx="50" cy="50" r="48" fill="none" stroke="#4CAF50" stroke-width="2"/>
+        <text x="50" y="48" text-anchor="middle" font-family="Inter, sans-serif" font-weight="800" font-size="22" fill="#fff" letter-spacing="1">OCP</text>
+        <text x="50" y="68" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="8" fill="#A5D6A7" letter-spacing="1.5">NUTRICROPS</text>
+      </svg>
     </div>
-    <div class="right"><div class="bar"></div></div>
+    <div>
+      <div class="ttl">Simulateur de marge — CGM</div>
+      <div class="sub">Coût de revient, CGM EQ DAP et composition du coût par produit</div>
+    </div>
+    <div class="right">
+      <div class="bar"></div>
+      <div class="dnai-tag">refonte D²nAI</div>
+    </div>
   </header>
 
   <nav class="tabs" id="tabs">
     <button class="tab on" data-t="sim">⚙ Simulation</button>
     <button class="tab" data-t="sens">📊 Analyse de sensibilité</button>
   </nav>
+
+  <!-- Base d'équivalence DAP (ACP P2O5 / Global P2O5) -->
+  <div class="eqbase" data-fb-name="Base d'équivalence DAP">
+    <div class="lbl"><span class="ic">⚖</span>Base d'équivalence DAP&nbsp;:</div>
+    <label class="on" id="eqLblAcp"><input type="radio" name="eqBase" value="acp" checked>ACP P2O5</label>
+    <label id="eqLblGlobal"><input type="radio" name="eqBase" value="global">Global P2O5</label>
+    <span class="help" id="eqHelp">ACP : ratio EQ DAP du référentiel · Global : CGM rapportée à la tonne de P2O5 du produit</span>
+  </div>
 
   <!-- ============ TAB SIMULATION ============ -->
   <section id="tab-sim">
@@ -255,7 +284,7 @@ svg.chart{display:block;width:100%;font-family:'Inter',sans-serif}
         <div class="ch"><span class="hic">📦</span>Produits à simuler<span class="meta">cocher + prix de vente $/t</span></div>
         <div class="cb">
           <div class="searchwrap">
-            <span class="ico">🔍</span>
+            <span class="ico" aria-hidden="true">🔍</span>
             <input type="text" id="searchProd" class="searchbox" placeholder="Rechercher un produit…">
           </div>
           <div class="selbar">
@@ -393,6 +422,7 @@ const STATE = {
   sort1: 'eqdap',
   sort2: 'cout',
   compoMode: 'abs',    // 'abs' | 'pct'
+  eqBase: 'acp',       // 'acp' (ratio EQ_DAP du référentiel) | 'global' (CGM / tonne P2O5)
   shocks: {},          // {P2O5: {on:true, val:0, mode:'pct'}, Soufre: {...}, ...}
   tornProd: '__moy__',
   tornMetric: 'dEqdap',
@@ -411,8 +441,10 @@ SHOCK_VARS.forEach(v => STATE.shocks[v] = {on: v==='P2O5', val:0, mode:'pct'});
 // g(x) : null/NaN → 0
 function g(x){ return (x === null || x === undefined || isNaN(x)) ? 0 : Number(x); }
 
-// calcProduit(csp, prix, params) — formule strictement identique au R
-function calcProduit(csp, prix, params){
+// calcProduit(csp, prix, params, eqBase) — formule 1:1 du R original
+// eqBase = 'acp' (défaut, ratio EQ_DAP_Ratio du référentiel)
+//        | 'global' (CGM rapportée à la tonne de P2O5 du produit)
+function calcProduit(csp, prix, params, eqBase){
   const cout = {
     'Soufre':
       (params.CSP_ACS_S * (g(csp.P2O5) * params.CSP_ACS_P2O5 + g(csp.ACS)) + g(csp.Soufre))
@@ -430,8 +462,14 @@ function calcProduit(csp, prix, params){
   let cout_rm = 0;
   for (const k in cout) cout_rm += cout[k];
   const cgm = g(csp.Prix) - cout_rm;
-  const ratio = g(csp.EQ_DAP_Ratio);
-  const cgm_eqdap = ratio === 0 ? NaN : cgm / ratio;
+  let cgm_eqdap;
+  if ((eqBase || 'acp') === 'global'){
+    const p2 = g(csp.P2O5);
+    cgm_eqdap = p2 === 0 ? NaN : cgm / p2;
+  } else {
+    const ratio = g(csp.EQ_DAP_Ratio);
+    cgm_eqdap = ratio === 0 ? NaN : cgm / ratio;
+  }
   return { cout, cout_rm, cgm, cgm_eqdap };
 }
 
@@ -446,7 +484,7 @@ function resAll(){
       AmSul: csp.AmSul, Roche_Granulation: csp.Roche_Granulation,
       Zn: csp.Zn, B: csp.B, Cu: csp.Cu, EQ_DAP_Ratio: csp.EQ_DAP_Ratio, Prix: px,
     };
-    const r = calcProduit(cspRow, STATE.rmPrices, STATE.params);
+    const r = calcProduit(cspRow, STATE.rmPrices, STATE.params, STATE.eqBase);
     return {
       id: p.ID_Produit, nom: p.Produit, macro: p.Macro_Produit, prix: px,
       cout: r.cout, cout_rm: r.cout_rm, cgm: r.cgm, cgm_eqdap: r.cgm_eqdap,
@@ -795,7 +833,7 @@ function applyShocks(ids, shocks){
       AmSul: csp.AmSul, Roche_Granulation: csp.Roche_Granulation,
       Zn: csp.Zn, B: csp.B, Cu: csp.Cu, EQ_DAP_Ratio: csp.EQ_DAP_Ratio, Prix: prix,
     };
-    const r = calcProduit(cspRow, pr, STATE.params);
+    const r = calcProduit(cspRow, pr, STATE.params, STATE.eqBase);
     return { id, nom: p.Produit, prix, cout_rm: r.cout_rm, cgm: r.cgm, cgm_eqdap: r.cgm_eqdap };
   });
 }
@@ -1036,13 +1074,16 @@ function resetAll(){
   PROD.forEach(p => STATE.prodPrices[p.ID_Produit] = p.Prix_Initial);
   STATE.selected = {P003:true};
   Object.assign(STATE.params, PARAMS_DEF);
-  STATE.sort1='eqdap'; STATE.sort2='cout'; STATE.compoMode='abs';
+  STATE.sort1='eqdap'; STATE.sort2='cout'; STATE.compoMode='abs'; STATE.eqBase='acp';
   SHOCK_VARS.forEach(v => STATE.shocks[v] = {on: v==='P2O5', val:0, mode:'pct'});
   STATE.tornProd='__moy__'; STATE.tornMetric='dEqdap'; STATE.search='';
   document.getElementById('searchProd').value = '';
   document.getElementById('sort1').value = 'eqdap';
   document.getElementById('sort2').value = 'cout';
   document.querySelectorAll('.cm').forEach(b => b.classList.toggle('on', b.dataset.m === 'abs'));
+  document.querySelectorAll('input[name="eqBase"]').forEach(r => r.checked = (r.value === 'acp'));
+  document.getElementById('eqLblAcp').classList.add('on');
+  document.getElementById('eqLblGlobal').classList.remove('on');
   renderRm(); renderProdPanel(); renderSensVars();
   renderAll(); renderSensAll();
 }
@@ -1096,6 +1137,14 @@ document.getElementById('tornMetric').addEventListener('change', e => { STATE.to
 document.getElementById('btnReset').addEventListener('click', resetAll);
 document.getElementById('btnExportCsv').addEventListener('click', exportSynthCsv);
 document.getElementById('btnExportSensCsv').addEventListener('click', exportSensCsv);
+
+// Base d'équivalence DAP (ACP / Global)
+document.querySelectorAll('input[name="eqBase"]').forEach(r => r.addEventListener('change', e => {
+  STATE.eqBase = e.target.value;
+  document.getElementById('eqLblAcp').classList.toggle('on', STATE.eqBase === 'acp');
+  document.getElementById('eqLblGlobal').classList.toggle('on', STATE.eqBase === 'global');
+  renderAll();
+}));
 
 /* postHeight pour iframe shortcode */
 function postHeight(){
