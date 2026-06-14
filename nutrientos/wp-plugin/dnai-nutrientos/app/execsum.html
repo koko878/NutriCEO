@@ -9,7 +9,8 @@
 <style>
 :root{
   --green-900:#103d17;--green-800:#1B5E20;--green-700:#2E7D32;--green-500:#4CAF50;--green-300:#66BB6A;
-  --green-50:#EAF4EC;--green-100:#D6EADb;--ink:#10231a;--muted:#5c6b62;--line:#e3ebe5;--bad:#B91C1C;--dark:#07140c;
+  --green-50:#EAF4EC;--green-100:#D6EADb;--ink:#10231a;--muted:#5c6b62;--line:#e3ebe5;
+  --bad:#B91C1C;--bad-bg:#fdeced;--warn:#B45309;--warn-bg:#fef3c7;--dark:#07140c;
 }
 *{box-sizing:border-box}
 body{margin:0;font-family:'Inter',sans-serif;color:var(--ink);background:#e9eee9;line-height:1.5}
@@ -26,20 +27,25 @@ h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif}
 .lng:hover{filter:none}
 .lng.on{filter:none;border-color:var(--green-300);background:var(--green-50)}
 .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green-700)}
-h1.title{font-size:34px;line-height:1.08;margin:6px 0 10px;font-weight:700}
+h1.title{font-size:32px;line-height:1.1;margin:6px 0 10px;font-weight:700}
 h1.title em{font-style:italic;color:var(--green-700)}
 .tldr{background:var(--green-50);border-left:4px solid var(--green-500);border-radius:0 10px 10px 0;padding:16px 20px;font-size:14.5px;margin:18px 0 30px}
 .tldr b{color:var(--green-900)}
 h2.sec{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green-700);margin:32px 0 10px;padding-bottom:7px;border-bottom:1px solid var(--line)}
 p{font-size:14px;margin:0 0 12px}
+.callout{background:#fdeced;border-left:4px solid var(--bad);border-radius:0 10px 10px 0;padding:14px 18px;font-size:13.5px;margin:14px 0}
+.callout b{color:var(--bad)}
 .flip{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:8px 0 4px}
-.flip .b{border-radius:11px;padding:16px}
-.flip .nos{background:var(--green-50);border:1px solid var(--green-100)}
-.flip h4{margin:0 0 8px;font-size:16px}
+.flip .b{border-radius:11px;padding:16px;border:1px solid var(--line)}
+.flip .nos{background:var(--green-50);border-color:var(--green-100)}
+.flip .ko{background:#fdeced;border-color:#f7c8c8}
+.flip h4{margin:0 0 8px;font-size:15px}
 .flip .nos h4{color:var(--green-800)}
+.flip .ko h4{color:var(--bad)}
 .flip ul{margin:0;padding-left:16px;font-size:13px;color:var(--muted)}
 .flip li{margin-bottom:5px}
-.axis{display:flex;gap:18px;margin:18px 0;padding:18px;border:1px solid var(--line);border-radius:14px}
+.axis{display:flex;gap:18px;margin:14px 0;padding:18px;border:1px solid var(--line);border-radius:14px;background:#fff;position:relative}
+.axis::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--green-700);border-radius:14px 0 0 14px}
 .axis .num{flex:none;width:46px;height:46px;border-radius:12px;background:var(--green-800);color:#fff;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24px;display:grid;place-items:center}
 .axis h3{margin:0 0 4px;font-size:21px;font-weight:700}
 .axis .one{font-size:12.5px;font-weight:600;color:var(--green-700);margin:0 0 8px}
@@ -47,9 +53,14 @@ p{font-size:14px;margin:0 0 12px}
 .axis ul{margin:6px 0 0;padding-left:17px;font-size:13px;color:var(--muted)}
 .axis li{margin-bottom:4px}
 .axis li b{color:var(--ink)}
+.matrix{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0 8px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.matrix th{background:var(--green-50);color:var(--green-800);font:700 11px 'Inter';text-transform:uppercase;letter-spacing:.04em;padding:9px 11px;text-align:left}
+.matrix td{padding:9px 11px;border-bottom:1px solid #f1f4ef;vertical-align:top;color:var(--ink)}
+.matrix tr:last-child td{border-bottom:0}
+.matrix td b{color:var(--green-800)}
 .timeline{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
 .tl{border:1px solid var(--line);border-radius:11px;padding:13px;background:#fff}
-.tl .w{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--green-600,#2f8a39)}
+.tl .w{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--green-700)}
 .tl .bar{height:3px;background:linear-gradient(90deg,var(--green-500),rgba(76,175,80,.2));border-radius:3px;margin:7px 0 9px}
 .tl h4{margin:0 0 5px;font-size:15px}
 .tl p{font-size:12px;color:var(--muted);margin:0}
@@ -61,14 +72,8 @@ p{font-size:14px;margin:0 0 12px}
 .kpis{display:flex;gap:22px;margin:10px 0 0;flex-wrap:wrap}
 .kpi b{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--green-700);display:block;line-height:1}
 .kpi span{font-size:11px;color:var(--muted)}
-.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:8px 0 4px}
-.pc{border:1px solid var(--line);border-radius:11px;padding:13px;background:#fff}
-.pc.um6p{border-color:var(--green-300);background:var(--green-50)}
-.pc b{display:block;font-size:14px;color:var(--green-800)}
-.pc span{display:block;font-size:12px;color:var(--muted);margin-top:4px}
-.tagp{font-size:9px;font-weight:800;text-transform:uppercase;color:#05230f;background:var(--green-300);border-radius:4px;padding:1px 5px;margin-left:5px;vertical-align:middle}
-@media print{body{background:#fff}.page{box-shadow:none;margin:0;max-width:none;padding:32px 38px}.axis,.tl,.flip .b{break-inside:avoid}.ask{break-inside:avoid}.langsel{display:none}}
-@media(max-width:680px){.flip,.timeline,.pgrid{grid-template-columns:1fr}.page{padding:32px 24px}}
+@media print{body{background:#fff}.page{box-shadow:none;margin:0;max-width:none;padding:32px 38px}.axis,.tl,.flip .b,.matrix{break-inside:avoid}.ask{break-inside:avoid}.langsel{display:none}}
+@media(max-width:680px){.flip,.timeline{grid-template-columns:1fr}.page{padding:32px 24px}}
 </style>
 </head>
 <body>
@@ -82,60 +87,65 @@ p{font-size:14px;margin:0 0 12px}
         <button class="lng" data-l="en" title="English" onclick="setLang('en')">🇬🇧</button>
         <button class="lng" data-l="pt" title="Português (Brasil)" onclick="setLang('pt')">🇧🇷</button>
       </div>
-      <b data-k="m1">NOTE STRATÉGIQUE</b><br><span data-k="m2">Plateforme NutrientOS</span><br><span data-k="m3">Confidentiel · board OCP Nutricrops</span>
+      <b data-k="m1">NOTE STRATÉGIQUE</b><br><span data-k="m2">Plateforme NutrientOS · pivot Waze</span><br><span data-k="m3">Confidentiel · board OCP Nutricrops</span>
     </div>
   </div>
 
-  <span class="tag" data-k="tag">● Vision &amp; plan</span>
-  <h1 class="title" data-k="title">Mener le standard ouvert de la <em>nutrition des plantes</em>.</h1>
+  <span class="tag" data-k="tag">● Pivot stratégique · juin 2026</span>
+  <h1 class="title" data-k="title">Construire la base mondiale de réponse aux nutriments — en <em>émettant</em> la donnée, pas en la collectant.</h1>
 
   <div class="tldr" data-k="tldr">
-    <b>En une phrase :</b> la valeur en agriculture se déplace vers la donnée et la décision. NutrientOS prend cette vague avec une posture gagnante pour OCP Nutricrops : <b>une plateforme ouverte dont OCP Nutricrops publie le standard et garde le cœur de valeur</b> (open-core), livrée en 90 jours. Ouvrir devient un levier de domination, pas un don.
+    <b>En une phrase :</b> le moteur agronomique est une commodité (QUEFTS, DSSAT depuis 30 ans). Le vrai actif d'OCP est <b>la donnée d'essais propriétaire</b> à l'échelle de l'écosystème. Mais une banque de données ne se remplit pas par décret — elle meurt si l'on attend les dépôts. <b>NutrientOS pivote sur le modèle Waze</b> : on ship un service utile dont l'usage produit la donnée comme sous-produit invisible. Un backend unifié, des portes d'entrée géographiques adaptées aux canaux locaux, et un moat de données qui s'auto-construit.
   </div>
 
-  <h2 class="sec" data-k="sModel">Le modèle : open-core</h2>
+  <h2 class="sec" data-k="sConst">Le constat — ce qu'on a appris en construisant le simulateur</h2>
+  <p data-k="constP1">En cherchant honnêtement <em>« est-ce qu'on apporte une vraie valeur ou est-ce du café réchauffé ? »</em>, on est tombés sur une vérité gênante : <b>le modèle agronomique est une commodité</b>. La science de réponse aux nutriments (QUEFTS, DSSAT) existe depuis 30 ans. Recoder un moteur générique, c'est réinventer la roue, en moins bon.</p>
+  <p data-k="constP2">Si le modèle n'est pas l'actif, où est la valeur ? Dans les trois choses que <b>seul OCP possède</b> : la donnée d'essais propriétaire, le lien au pitch commercial, la souveraineté. Et la première domine les deux autres. <b>Le vrai problème n'a jamais été le modèle. C'est la donnée.</b> Sans une banque massive, propre, et qui grandit toute seule, le meilleur modèle reste aveugle.</p>
+
+  <h2 class="sec" data-k="sAnti">L'anti-pattern à fuir — et sa preuve grandeur réelle</h2>
+  <p data-k="antiP1">Une banque de données ne meurt jamais de la plomberie (le stockage est résolu). Elle meurt de deux causes humaines :</p>
   <div class="flip">
-    <div class="b nos" style="background:#fff;border:1px dashed var(--green-300)">
-      <h4 data-k="openH">Couche ouverte — la gravité</h4>
-      <ul>
-        <li data-k="o1">Nutrient Value Standard publié par OCP Nutricrops, librement réutilisable</li>
-        <li data-k="o2">Datasets sol &amp; agro de base + implémentation de référence</li>
-        <li data-k="o3">APIs &amp; SDK : l'écosystème vient construire dessus</li>
-        <li data-k="o4">But : devenir l'infrastructure que tout le monde adopte</li>
-      </ul>
-    </div>
-    <div class="b nos">
-      <h4 data-k="coreH">Cœur OCP Nutricrops — la valeur</h4>
-      <ul>
-        <li data-k="k1">Moteur de recommandation propriétaire (sol × culture → produit)</li>
-        <li data-k="k2">Digital twin des sols + réseau d'agriculteurs → effet de réseau</li>
-        <li data-k="k3">Orchestration commerciale &amp; marketplace de partenaires</li>
-        <li data-k="k4">But : capter la valeur que la couche ouverte fait grandir</li>
-      </ul>
-    </div>
+    <div class="b ko"><h4 data-k="kohA">L'amorçage</h4><ul><li data-k="kohA1">Tant que le rayon est vide, personne n'a de raison de venir.</li></ul></div>
+    <div class="b ko"><h4 data-k="kohB">Le coût de dépôt</h4><ul><li data-k="kohB1">Déposer est un effort aujourd'hui, le bénéfice est diffus et plus tard. Donc personne ne dépose, et le lac pourrit.</li></ul></div>
+  </div>
+  <div class="callout" data-k="alm"><b>Preuve maison :</b> nos solutions digitales Al Moutmir ont reçu un budget de communication conséquent. L'adoption terrain reste pourtant <b>faible</b>, et la donnée capturée est <b>quasi-exclusivement marocaine</b>. La cause n'est pas un défaut d'exécution — c'est le modèle <em>build-the-bank-first</em> qui est en cause. Nous avons sous les yeux la démonstration que collecter sur injonction ne marche pas.</div>
+
+  <h2 class="sec" data-k="sWaze">La proposition — le modèle Waze pour la nutrition</h2>
+  <p data-k="wazeP1">La donnée ne se collecte pas, elle s'émet. On ne demande à personne de remplir la banque. On lui donne un service utile dont l'usage produit la donnée comme sous-produit invisible. Personne n'ouvre Waze pour « contribuer au trafic » — on l'ouvre pour gagner du temps, et l'on émet sa position sans y penser. Le dépôt est <b>gratuit, automatique, et récompensé sur-le-champ</b>.</p>
+  <p data-k="wazeP2">Appliqué à OCP : une porte d'entrée utile à l'agronome ou au distributeur (diagnostic de sol + recommandation de formule + rendement attendu + marge €/ha), et la banque s'accrète invisible, dessous. Chaque interaction est <b>à la fois un service rendu et un dépôt de donnée propriétaire</b>.</p>
+  <div class="flip">
+    <div class="b nos"><h4 data-k="ruleA">1. Donner avant de prendre</h4><ul><li data-k="ruleA1">Le dépôt paie un service immédiat à celui qui dépose.</li></ul></div>
+    <div class="b nos"><h4 data-k="ruleB">2. Zéro saisie en plus</h4><ul><li data-k="ruleB1">La saisie nécessaire au service <em>est</em> le dépôt. Pas de second formulaire.</li></ul></div>
+  </div>
+  <div class="flip" style="grid-template-columns:1fr;margin-top:14px">
+    <div class="b nos"><h4 data-k="ruleC">3. Effet de réseau</h4><ul><li data-k="ruleC1">Plus on dépose, meilleure est la sortie. Donc chacun a intérêt à ce que les autres déposent. La gravité remplace la gouvernance.</li></ul></div>
   </div>
 
-  <h2 class="sec" data-k="sBackbone">L'écosystème du backbone</h2>
-  <p data-k="bbP">La couche ouverte ne se construit pas seule : un réseau de partenaires l'alimente et la déploie. <b>UM6P</b> n'y est pas une simple source de données, mais l'<b>ambassadeur académique</b> qui fédère les universités du monde entier autour du standard.</p>
-  <div class="pgrid">
-    <div class="pc um6p"><b>UM6P <span class="tagp" data-k="pTag">ambassadeur</span></b><span data-k="pUM6P">Fédère les universités du monde entier autour du standard.</span></div>
-    <div class="pc"><b>Al Moutmir</b><span data-k="pAlM">Programme d'accompagnement des agriculteurs &amp; agronomie terrain.</span></div>
-    <div class="pc"><b>AgriEdge</b><span data-k="pAE">Agriculture de précision &amp; agronomie digitale.</span></div>
-    <div class="pc"><b>Ground Truth Analytics</b><span data-k="pGT">Données terrain &amp; analytics.</span></div>
-  </div>
+  <h2 class="sec" data-k="sArch">L'architecture — un backend, N portes d'entrée géographiques</h2>
+  <p data-k="archP">OCP est multinational. Une seule app planétaire ne fonctionnera pas : les canaux, les acteurs, les pratiques digitales sont radicalement différents selon les BU. Donc <b>ce qui est commun</b> (le schéma de dépôt, le moteur, la conformité, le moat) est <b>centralisé</b>. <b>Ce qui est local</b> (le canal, l'UX, la langue, le contrat) est <b>démultiplié</b>.</p>
+  <table class="matrix">
+    <thead><tr><th data-k="mthBu">BU</th><th data-k="mthCh">Canal dominant</th><th data-k="mthDoor">Porte d'entrée envisageable</th></tr></thead>
+    <tbody>
+      <tr><td><b>Maroc</b></td><td data-k="mtx1c">Agronomes Al Moutmir + distributeurs</td><td data-k="mtx1d">Branchement sur l'app existante + boucle de bouclage rendement</td></tr>
+      <tr><td><b>Brésil</b></td><td data-k="mtx2c">Coopératives géantes (agronomes coop)</td><td data-k="mtx2d">Partenariat 2-3 coopératives leaders → leur outil interne</td></tr>
+      <tr><td><b>Inde</b></td><td data-k="mtx3c">Réseau distributeur très fragmenté</td><td data-k="mtx3d">App distributeur + composante WhatsApp (canal réel des champs)</td></tr>
+      <tr><td><b>Afrique sub-saharienne</b></td><td data-k="mtx4c">Programmes outgrower / agrégateurs</td><td data-k="mtx4d">Intégration aux outils des programmes existants</td></tr>
+      <tr><td><b>Europe</b></td><td data-k="mtx5c">Conseil agronomique privé + ag-tech locales</td><td data-k="mtx5d">Partenariat data avec une ag-tech leader par pays</td></tr>
+    </tbody>
+  </table>
 
   <h2 class="sec" data-k="sDecisions">Les trois décisions</h2>
 
   <div class="axis">
     <div class="num">1</div>
     <div>
-      <h3 data-k="a1h">Gouvernance — ouvrir sans perdre le contrôle</h3>
-      <p class="one" data-k="a1one">Principe : on ouvre la périphérie, on garde le centre.</p>
-      <p data-k="a1p">Le piège d'une fondation « neutre dès le jour 1 » est de diluer l'avantage d'OCP Nutricrops avant même qu'il ne se matérialise. On applique le modèle <b>Android / Linux Foundation</b> : l'industriel sème le standard et l'implémentation de référence ; l'institution neutre n'arrive qu'<b>ensuite</b>, pour entériner et rassurer l'écosystème — pas pour diriger.</p>
+      <h3 data-k="a1h">Adopter le modèle Waze — pas l'open-core</h3>
+      <p class="one" data-k="a1one">On ship un service, pas une plateforme. La donnée est l'échappement du moteur, pas le moteur.</p>
+      <p data-k="a1p">Le pitch v2.6 décrivait NutrientOS comme une plateforme open-core. Avec ce qu'on a appris (Al Moutmir, simulateur), c'est encore de l'<em>institution-first</em> déguisée. On retourne : on ne publie pas de standard avant qu'il y ait des dépôts à formater. On ne construit pas de marketplace avant qu'il y ait des utilisateurs à mettre en relation. On <b>ship un service utile</b>, et le reste vient comme conséquence, pas comme préalable.</p>
       <ul>
-        <li data-k="a1l1"><b>Ouvert :</b> spécification du standard, datasets de base, SDK, implémentation de référence.</li>
-        <li data-k="a1l2"><b>Gardé par OCP Nutricrops :</b> moteur de recommandation, données terrain agriculteurs, orchestration commerciale, marque du standard.</li>
-        <li data-k="a1l3"><b>Levier :</b> OCP Nutricrops préside le comité technique en tant que premier contributeur ; le contrôle vient de la légitimité, pas d'un veto juridique.</li>
+        <li data-k="a1l1"><b>Ouvert plus tard :</b> le schéma de dépôt sera publié comme standard <em>après</em> validation par l'usage.</li>
+        <li data-k="a1l2"><b>Gardé toujours :</b> le dataset propriétaire, son modèle, sa boucle d'amélioration.</li>
+        <li data-k="a1l3"><b>Levier :</b> ce que les autres ne peuvent pas répliquer, c'est le volume et la qualité des dépôts. C'est ça, le moat.</li>
       </ul>
     </div>
   </div>
@@ -143,13 +153,13 @@ p{font-size:14px;margin:0 0 12px}
   <div class="axis">
     <div class="num">2</div>
     <div>
-      <h3 data-k="a2h">Standard d'abord — pas l'institution</h3>
-      <p class="one" data-k="a2one">Le premier qui publie le standard que les autres adoptent a gagné.</p>
-      <p data-k="a2p">Construire d'abord une institution large est lent. On inverse : on publie d'abord un <b>standard ouvert + une implémentation de référence</b> sur <b>un seul périmètre étroit et légitime</b> — la <b>nutrition phosphatée</b>, là où OCP Nutricrops domine déjà. La gouvernance se construit <em>après</em>, autour d'un standard déjà adopté.</p>
+      <h3 data-k="a2h">Un backend unifié, N portes d'entrée géographiques</h3>
+      <p class="one" data-k="a2one">Pas une app planétaire. Un schéma de dépôt commun, des canaux locaux.</p>
+      <p data-k="a2p">Vouloir une seule app pour le monde entier mène droit à l'échec multinational. Vouloir N apps indépendantes mène droit à la fragmentation des données. La bonne réponse : <b>un schéma de dépôt commun</b>, <b>un moteur centralisé</b> qui apprend globalement et applique localement, et <b>autant de portes d'entrée que de canaux dominants par BU</b>. La donnée Maroc, la donnée Brésil et la donnée Inde alimentent le même modèle ; les agronomes marocains, les coopératives brésiliennes et les distributeurs indiens n'utilisent pas la même interface.</p>
       <ul>
-        <li data-k="a2l1"><b>Périmètre v1 :</b> un schéma ouvert de « valeur nutritive » (unités, référentiel sol-culture, formats d'échange).</li>
-        <li data-k="a2l2"><b>Pourquoi ça marche :</b> profondeur &gt; largeur. Étroit = rapide, crédible, défendable.</li>
-        <li data-k="a2l3"><b>Effet :</b> startups, chercheurs et dev orgs intègrent le standard d'OCP Nutricrops → gravité, tôt et durablement.</li>
+        <li data-k="a2l1"><b>Centralisé :</b> schéma, moteur, conformité (hébergement Maroc, exports BU selon législation).</li>
+        <li data-k="a2l2"><b>Démultiplié :</b> canal, UX, langue, partenaires locaux.</li>
+        <li data-k="a2l3"><b>Effet :</b> chaque géographie active accélère la calibration globale, et le bénéfice se redistribue à toutes les autres (transfert d'apprentissage régional).</li>
       </ul>
     </div>
   </div>
@@ -157,29 +167,30 @@ p{font-size:14px;margin:0 0 12px}
   <div class="axis">
     <div class="num">3</div>
     <div>
-      <h3 data-k="a3h">Plan 90 jours — prendre l'avance</h3>
-      <p class="one" data-k="a3one">En 90 jours : un standard publié, des partenaires pilotes et de la donnée terrain réelle.</p>
+      <h3 data-k="a3h">Démarrer par le Maroc — preuve avant extension</h3>
+      <p class="one" data-k="a3one">Doukkala × blé tendre × 20 agronomes Al Moutmir × 90 jours. Si la mécanique tient, on déroule. Sinon, on apprend.</p>
+      <p data-k="a3p">Le pilote Morocco joue deux rôles : (1) <b>valider la mécanique Waze</b> sur un périmètre observable — la boucle de retour rendement est le seul vrai risque — et (2) <b>bootstrap le dataset</b> avec les essais OCP existants. On se branche sur le flux Al Moutmir existant pour minimiser le change management, on ajoute ce qui manque (rendement attendu, marge, bouclage récolte). À 90 jours, on a soit la preuve mesurable, soit l'apprentissage qui économise la suite.</p>
       <div class="timeline">
-        <div class="tl"><div class="w" data-k="t1w">Semaines 1-4</div><div class="bar"></div><h4 data-k="t1h">Prototype &amp; spec</h4><p data-k="t1p">Console NutrientOS (déjà fonctionnelle) + v0 du standard ouvert, validés en interne.</p></div>
-        <div class="tl"><div class="w" data-k="t2w">Semaines 5-8</div><div class="bar"></div><h4 data-k="t2h">Publication open</h4><p data-k="t2p">Standard + implémentation de référence publiés ; 3 partenaires pilotes (startup, labo, distributeur) embarqués.</p></div>
-        <div class="tl"><div class="w" data-k="t3w">Semaines 9-12</div><div class="bar"></div><h4 data-k="t3h">Boucle terrain</h4><p data-k="t3p">Premières données agriculteurs réelles ; effet de réseau amorcé ; dossier de gouvernance prêt.</p></div>
+        <div class="tl"><div class="w" data-k="t1w">Semaines 1-4</div><div class="bar"></div><h4 data-k="t1h">Spec + bootstrap</h4><p data-k="t1p">Schéma de dépôt, moteur calibré sur essais Doukkala, intégration au flux Al Moutmir, hébergement tenant Nutricrops.</p></div>
+        <div class="tl"><div class="w" data-k="t2w">Semaines 5-8</div><div class="bar"></div><h4 data-k="t2h">Pilote terrain</h4><p data-k="t2p">20 agronomes Al Moutmir actifs, sortie enrichie (reco + rendement + marge), push J−7 récolte.</p></div>
+        <div class="tl"><div class="w" data-k="t3w">Semaines 9-12</div><div class="bar"></div><h4 data-k="t3h">Boucle &amp; bilan</h4><p data-k="t3p">Premières recos bouclées par un rendement réel, courbe d'amélioration mesurée, décision extension Brésil / Inde.</p></div>
       </div>
       <div class="kpis">
-        <div class="kpi"><b data-k="kp1b">90 j</b><span data-k="kp1s">jusqu'au standard publié</span></div>
-        <div class="kpi"><b>1</b><span data-k="kp2s">périmètre étroit, possédé</span></div>
-        <div class="kpi"><b>3</b><span data-k="kp3s">partenaires pilotes</span></div>
+        <div class="kpi"><b data-k="kp1b">300+</b><span data-k="kp1s">recos émises Morocco</span></div>
+        <div class="kpi"><b data-k="kp2b">≥ 25 %</b><span data-k="kp2s">bouclées par un rendement réel</span></div>
+        <div class="kpi"><b data-k="kp3b">2</b><span data-k="kp3s">BU prêtes pour extension</span></div>
       </div>
     </div>
   </div>
 
   <div class="ask">
     <h3 data-k="askH">La demande au board</h3>
-    <p data-k="askP1">Un <b>mandat de 90 jours</b> et une <b>petite équipe D²nAI</b> pour transformer le prototype en standard ouvert v1 + cœur OCP Nutricrops, et reprendre la main sur la nutrition data-driven.</p>
-    <p data-k="askP2">Décision à prendre sur <b>un produit qui tourne déjà</b> (voir la plateforme &amp; la console NutrientOS) et un plan qui livre en 90 jours.</p>
+    <p data-k="askP1">Un <b>mandat de 90 jours</b> et une <b>équipe restreinte D²nAI</b> pour valider la mécanique Waze sur le Maroc — branchement sur Al Moutmir, bouclage rendement, bootstrap dataset — puis présenter un plan d'extension multi-BU validé par la preuve.</p>
+    <p data-k="askP2">Décision sur un pivot <b>moins coûteux que la v2.6</b>, <b>réversible à 90 jours</b>, et <b>aligné avec la souveraineté</b> (tenant Nutricrops, conformité 09-08) — déjà arbitré par ailleurs (cf. Note CEO juin 2026).</p>
   </div>
 
   <div class="foot">
-    <span data-k="footL">NutrientOS · OCP Nutricrops · D²nAI (Data, Digital &amp; AI)</span>
+    <span data-k="footL">NutrientOS · OCP Nutricrops · D²nAI (Data, Digital &amp; AI) · pivot juin 2026</span>
     <span>« Feed the soil to feed the world »</span>
   </div>
 
@@ -189,85 +200,151 @@ p{font-size:14px;margin:0 0 12px}
 let LANG='fr';
 const T={
  fr:{
-  'm1':`NOTE STRATÉGIQUE`,'m2':`Plateforme NutrientOS`,'m3':`Confidentiel · board OCP Nutricrops`,
-  'tag':`● Vision &amp; plan`,'title':`Mener le standard ouvert de la <em>nutrition des plantes</em>.`,
-  'tldr':`<b>En une phrase :</b> la valeur en agriculture se déplace vers la donnée et la décision. NutrientOS prend cette vague avec une posture gagnante pour OCP Nutricrops : <b>une plateforme ouverte dont OCP Nutricrops publie le standard et garde le cœur de valeur</b> (open-core), livrée en 90 jours. Ouvrir devient un levier de domination, pas un don.`,
-  'sModel':`Le modèle : open-core`,
-  'openH':`Couche ouverte — la gravité`,'o1':`Nutrient Value Standard publié par OCP Nutricrops, librement réutilisable`,'o2':`Datasets sol &amp; agro de base + implémentation de référence`,'o3':`APIs &amp; SDK : l'écosystème vient construire dessus`,'o4':`But : devenir l'infrastructure que tout le monde adopte`,
-  'coreH':`Cœur OCP Nutricrops — la valeur`,'k1':`Moteur de recommandation propriétaire (sol × culture → produit)`,'k2':`Digital twin des sols + réseau d'agriculteurs → effet de réseau`,'k3':`Orchestration commerciale &amp; marketplace de partenaires`,'k4':`But : capter la valeur que la couche ouverte fait grandir`,
-  'sBackbone':`L'écosystème du backbone`,
-  'bbP':`La couche ouverte ne se construit pas seule : un réseau de partenaires l'alimente et la déploie. <b>UM6P</b> n'y est pas une simple source de données, mais l'<b>ambassadeur académique</b> qui fédère les universités du monde entier autour du standard.`,
-  'pTag':`ambassadeur`,'pUM6P':`Fédère les universités du monde entier autour du standard.`,'pAlM':`Programme d'accompagnement des agriculteurs &amp; agronomie terrain.`,'pAE':`Agriculture de précision &amp; agronomie digitale.`,'pGT':`Données terrain &amp; analytics.`,
+  'm1':`NOTE STRATÉGIQUE`,'m2':`Plateforme NutrientOS · pivot Waze`,'m3':`Confidentiel · board OCP Nutricrops`,
+  'tag':`● Pivot stratégique · juin 2026`,
+  'title':`Construire la base mondiale de réponse aux nutriments — en <em>émettant</em> la donnée, pas en la collectant.`,
+  'tldr':`<b>En une phrase :</b> le moteur agronomique est une commodité (QUEFTS, DSSAT depuis 30 ans). Le vrai actif d'OCP est <b>la donnée d'essais propriétaire</b> à l'échelle de l'écosystème. Mais une banque de données ne se remplit pas par décret — elle meurt si l'on attend les dépôts. <b>NutrientOS pivote sur le modèle Waze</b> : on ship un service utile dont l'usage produit la donnée comme sous-produit invisible. Un backend unifié, des portes d'entrée géographiques adaptées aux canaux locaux, et un moat de données qui s'auto-construit.`,
+  'sConst':`Le constat — ce qu'on a appris en construisant le simulateur`,
+  'constP1':`En cherchant honnêtement <em>« est-ce qu'on apporte une vraie valeur ou est-ce du café réchauffé ? »</em>, on est tombés sur une vérité gênante : <b>le modèle agronomique est une commodité</b>. La science de réponse aux nutriments (QUEFTS, DSSAT) existe depuis 30 ans. Recoder un moteur générique, c'est réinventer la roue, en moins bon.`,
+  'constP2':`Si le modèle n'est pas l'actif, où est la valeur ? Dans les trois choses que <b>seul OCP possède</b> : la donnée d'essais propriétaire, le lien au pitch commercial, la souveraineté. Et la première domine les deux autres. <b>Le vrai problème n'a jamais été le modèle. C'est la donnée.</b> Sans une banque massive, propre, et qui grandit toute seule, le meilleur modèle reste aveugle.`,
+  'sAnti':`L'anti-pattern à fuir — et sa preuve grandeur réelle`,
+  'antiP1':`Une banque de données ne meurt jamais de la plomberie (le stockage est résolu). Elle meurt de deux causes humaines :`,
+  'kohA':`L'amorçage`,'kohA1':`Tant que le rayon est vide, personne n'a de raison de venir.`,
+  'kohB':`Le coût de dépôt`,'kohB1':`Déposer est un effort aujourd'hui, le bénéfice est diffus et plus tard. Donc personne ne dépose, et le lac pourrit.`,
+  'alm':`<b>Preuve maison :</b> nos solutions digitales Al Moutmir ont reçu un budget de communication conséquent. L'adoption terrain reste pourtant <b>faible</b>, et la donnée capturée est <b>quasi-exclusivement marocaine</b>. La cause n'est pas un défaut d'exécution — c'est le modèle <em>build-the-bank-first</em> qui est en cause. Nous avons sous les yeux la démonstration que collecter sur injonction ne marche pas.`,
+  'sWaze':`La proposition — le modèle Waze pour la nutrition`,
+  'wazeP1':`La donnée ne se collecte pas, elle s'émet. On ne demande à personne de remplir la banque. On lui donne un service utile dont l'usage produit la donnée comme sous-produit invisible. Personne n'ouvre Waze pour « contribuer au trafic » — on l'ouvre pour gagner du temps, et l'on émet sa position sans y penser. Le dépôt est <b>gratuit, automatique, et récompensé sur-le-champ</b>.`,
+  'wazeP2':`Appliqué à OCP : une porte d'entrée utile à l'agronome ou au distributeur (diagnostic de sol + recommandation de formule + rendement attendu + marge €/ha), et la banque s'accrète invisible, dessous. Chaque interaction est <b>à la fois un service rendu et un dépôt de donnée propriétaire</b>.`,
+  'ruleA':`1. Donner avant de prendre`,'ruleA1':`Le dépôt paie un service immédiat à celui qui dépose.`,
+  'ruleB':`2. Zéro saisie en plus`,'ruleB1':`La saisie nécessaire au service <em>est</em> le dépôt. Pas de second formulaire.`,
+  'ruleC':`3. Effet de réseau`,'ruleC1':`Plus on dépose, meilleure est la sortie. Donc chacun a intérêt à ce que les autres déposent. La gravité remplace la gouvernance.`,
+  'sArch':`L'architecture — un backend, N portes d'entrée géographiques`,
+  'archP':`OCP est multinational. Une seule app planétaire ne fonctionnera pas : les canaux, les acteurs, les pratiques digitales sont radicalement différents selon les BU. Donc <b>ce qui est commun</b> (le schéma de dépôt, le moteur, la conformité, le moat) est <b>centralisé</b>. <b>Ce qui est local</b> (le canal, l'UX, la langue, le contrat) est <b>démultiplié</b>.`,
+  'mthBu':`BU`,'mthCh':`Canal dominant`,'mthDoor':`Porte d'entrée envisageable`,
+  'mtx1c':`Agronomes Al Moutmir + distributeurs`,'mtx1d':`Branchement sur l'app existante + boucle de bouclage rendement`,
+  'mtx2c':`Coopératives géantes (agronomes coop)`,'mtx2d':`Partenariat 2-3 coopératives leaders → leur outil interne`,
+  'mtx3c':`Réseau distributeur très fragmenté`,'mtx3d':`App distributeur + composante WhatsApp (canal réel des champs)`,
+  'mtx4c':`Programmes outgrower / agrégateurs`,'mtx4d':`Intégration aux outils des programmes existants`,
+  'mtx5c':`Conseil agronomique privé + ag-tech locales`,'mtx5d':`Partenariat data avec une ag-tech leader par pays`,
   'sDecisions':`Les trois décisions`,
-  'a1h':`Gouvernance — ouvrir sans perdre le contrôle`,'a1one':`Principe : on ouvre la périphérie, on garde le centre.`,
-  'a1p':`Le piège d'une fondation « neutre dès le jour 1 » est de diluer l'avantage d'OCP Nutricrops avant même qu'il ne se matérialise. On applique le modèle <b>Android / Linux Foundation</b> : l'industriel sème le standard et l'implémentation de référence ; l'institution neutre n'arrive qu'<b>ensuite</b>, pour entériner et rassurer l'écosystème — pas pour diriger.`,
-  'a1l1':`<b>Ouvert :</b> spécification du standard, datasets de base, SDK, implémentation de référence.`,'a1l2':`<b>Gardé par OCP Nutricrops :</b> moteur de recommandation, données terrain agriculteurs, orchestration commerciale, marque du standard.`,'a1l3':`<b>Levier :</b> OCP Nutricrops préside le comité technique en tant que premier contributeur ; le contrôle vient de la légitimité, pas d'un veto juridique.`,
-  'a2h':`Standard d'abord — pas l'institution`,'a2one':`Le premier qui publie le standard que les autres adoptent a gagné.`,
-  'a2p':`Construire d'abord une institution large est lent. On inverse : on publie d'abord un <b>standard ouvert + une implémentation de référence</b> sur <b>un seul périmètre étroit et légitime</b> — la <b>nutrition phosphatée</b>, là où OCP Nutricrops domine déjà. La gouvernance se construit <em>après</em>, autour d'un standard déjà adopté.`,
-  'a2l1':`<b>Périmètre v1 :</b> un schéma ouvert de « valeur nutritive » (unités, référentiel sol-culture, formats d'échange).`,'a2l2':`<b>Pourquoi ça marche :</b> profondeur &gt; largeur. Étroit = rapide, crédible, défendable.`,'a2l3':`<b>Effet :</b> startups, chercheurs et dev orgs intègrent le standard d'OCP Nutricrops → gravité, tôt et durablement.`,
-  'a3h':`Plan 90 jours — prendre l'avance`,'a3one':`En 90 jours : un standard publié, des partenaires pilotes et de la donnée terrain réelle.`,
-  't1w':`Semaines 1-4`,'t1h':`Prototype &amp; spec`,'t1p':`Console NutrientOS (déjà fonctionnelle) + v0 du standard ouvert, validés en interne.`,
-  't2w':`Semaines 5-8`,'t2h':`Publication open`,'t2p':`Standard + implémentation de référence publiés ; 3 partenaires pilotes (startup, labo, distributeur) embarqués.`,
-  't3w':`Semaines 9-12`,'t3h':`Boucle terrain`,'t3p':`Premières données agriculteurs réelles ; effet de réseau amorcé ; dossier de gouvernance prêt.`,
-  'kp1b':`90 j`,'kp1s':`jusqu'au standard publié`,'kp2s':`périmètre étroit, possédé`,'kp3s':`partenaires pilotes`,
+  'a1h':`Adopter le modèle Waze — pas l'open-core`,'a1one':`On ship un service, pas une plateforme. La donnée est l'échappement du moteur, pas le moteur.`,
+  'a1p':`Le pitch v2.6 décrivait NutrientOS comme une plateforme open-core. Avec ce qu'on a appris (Al Moutmir, simulateur), c'est encore de l'<em>institution-first</em> déguisée. On retourne : on ne publie pas de standard avant qu'il y ait des dépôts à formater. On ne construit pas de marketplace avant qu'il y ait des utilisateurs à mettre en relation. On <b>ship un service utile</b>, et le reste vient comme conséquence, pas comme préalable.`,
+  'a1l1':`<b>Ouvert plus tard :</b> le schéma de dépôt sera publié comme standard <em>après</em> validation par l'usage.`,
+  'a1l2':`<b>Gardé toujours :</b> le dataset propriétaire, son modèle, sa boucle d'amélioration.`,
+  'a1l3':`<b>Levier :</b> ce que les autres ne peuvent pas répliquer, c'est le volume et la qualité des dépôts. C'est ça, le moat.`,
+  'a2h':`Un backend unifié, N portes d'entrée géographiques`,'a2one':`Pas une app planétaire. Un schéma de dépôt commun, des canaux locaux.`,
+  'a2p':`Vouloir une seule app pour le monde entier mène droit à l'échec multinational. Vouloir N apps indépendantes mène droit à la fragmentation des données. La bonne réponse : <b>un schéma de dépôt commun</b>, <b>un moteur centralisé</b> qui apprend globalement et applique localement, et <b>autant de portes d'entrée que de canaux dominants par BU</b>. La donnée Maroc, la donnée Brésil et la donnée Inde alimentent le même modèle ; les agronomes marocains, les coopératives brésiliennes et les distributeurs indiens n'utilisent pas la même interface.`,
+  'a2l1':`<b>Centralisé :</b> schéma, moteur, conformité (hébergement Maroc, exports BU selon législation).`,
+  'a2l2':`<b>Démultiplié :</b> canal, UX, langue, partenaires locaux.`,
+  'a2l3':`<b>Effet :</b> chaque géographie active accélère la calibration globale, et le bénéfice se redistribue à toutes les autres (transfert d'apprentissage régional).`,
+  'a3h':`Démarrer par le Maroc — preuve avant extension`,'a3one':`Doukkala × blé tendre × 20 agronomes Al Moutmir × 90 jours. Si la mécanique tient, on déroule. Sinon, on apprend.`,
+  'a3p':`Le pilote Morocco joue deux rôles : (1) <b>valider la mécanique Waze</b> sur un périmètre observable — la boucle de retour rendement est le seul vrai risque — et (2) <b>bootstrap le dataset</b> avec les essais OCP existants. On se branche sur le flux Al Moutmir existant pour minimiser le change management, on ajoute ce qui manque (rendement attendu, marge, bouclage récolte). À 90 jours, on a soit la preuve mesurable, soit l'apprentissage qui économise la suite.`,
+  't1w':`Semaines 1-4`,'t1h':`Spec + bootstrap`,'t1p':`Schéma de dépôt, moteur calibré sur essais Doukkala, intégration au flux Al Moutmir, hébergement tenant Nutricrops.`,
+  't2w':`Semaines 5-8`,'t2h':`Pilote terrain`,'t2p':`20 agronomes Al Moutmir actifs, sortie enrichie (reco + rendement + marge), push J−7 récolte.`,
+  't3w':`Semaines 9-12`,'t3h':`Boucle &amp; bilan`,'t3p':`Premières recos bouclées par un rendement réel, courbe d'amélioration mesurée, décision extension Brésil / Inde.`,
+  'kp1b':`300+`,'kp1s':`recos émises Morocco`,'kp2b':`≥ 25 %`,'kp2s':`bouclées par un rendement réel`,'kp3b':`2`,'kp3s':`BU prêtes pour extension`,
   'askH':`La demande au board`,
-  'askP1':`Un <b>mandat de 90 jours</b> et une <b>petite équipe D²nAI</b> pour transformer le prototype en standard ouvert v1 + cœur OCP Nutricrops, et reprendre la main sur la nutrition data-driven.`,
-  'askP2':`Décision à prendre sur <b>un produit qui tourne déjà</b> (voir la plateforme &amp; la console NutrientOS) et un plan qui livre en 90 jours.`,
-  'footL':`NutrientOS · OCP Nutricrops · D²nAI (Data, Digital &amp; AI)`
+  'askP1':`Un <b>mandat de 90 jours</b> et une <b>équipe restreinte D²nAI</b> pour valider la mécanique Waze sur le Maroc — branchement sur Al Moutmir, bouclage rendement, bootstrap dataset — puis présenter un plan d'extension multi-BU validé par la preuve.`,
+  'askP2':`Décision sur un pivot <b>moins coûteux que la v2.6</b>, <b>réversible à 90 jours</b>, et <b>aligné avec la souveraineté</b> (tenant Nutricrops, conformité 09-08) — déjà arbitré par ailleurs (cf. Note CEO juin 2026).`,
+  'footL':`NutrientOS · OCP Nutricrops · D²nAI (Data, Digital &amp; AI) · pivot juin 2026`,
  },
  en:{
-  'm1':`STRATEGIC NOTE`,'m2':`NutrientOS platform`,'m3':`Confidential · OCP Nutricrops board`,
-  'tag':`● Vision &amp; plan`,'title':`Lead the open standard for <em>plant nutrition</em>.`,
-  'tldr':`<b>In one line:</b> value in agriculture is shifting to data and the decision. NutrientOS rides this wave with a winning posture for OCP Nutricrops: <b>an open platform where OCP Nutricrops publishes the standard and keeps the value core</b> (open-core), delivered in 90 days. Opening becomes a lever for dominance, not a giveaway.`,
-  'sModel':`The model: open-core`,
-  'openH':`Open layer — the gravity`,'o1':`Nutrient Value Standard published by OCP Nutricrops, freely reusable`,'o2':`Base soil &amp; agro datasets + reference implementation`,'o3':`APIs &amp; SDK: the ecosystem builds on top`,'o4':`Goal: become the infrastructure everyone adopts`,
-  'coreH':`OCP Nutricrops core — the value`,'k1':`Proprietary recommendation engine (soil × crop → product)`,'k2':`Soil digital twin + farmer network → network effect`,'k3':`Commercial orchestration &amp; partner marketplace`,'k4':`Goal: capture the value the open layer grows`,
-  'sBackbone':`The backbone ecosystem`,
-  'bbP':`The open layer isn't built alone: a network of partners feeds and deploys it. <b>UM6P</b> is not a mere data source here, but the <b>academic ambassador</b> federating universities worldwide around the standard.`,
-  'pTag':`ambassador`,'pUM6P':`Federates universities worldwide around the standard.`,'pAlM':`Farmer support program &amp; field agronomy.`,'pAE':`Precision agriculture &amp; digital agronomy.`,'pGT':`Ground-truth data &amp; analytics.`,
+  'm1':`STRATEGIC NOTE`,'m2':`NutrientOS platform · Waze pivot`,'m3':`Confidential · OCP Nutricrops board`,
+  'tag':`● Strategic pivot · June 2026`,
+  'title':`Build the world's nutrient-response dataset — by <em>emitting</em> the data, not collecting it.`,
+  'tldr':`<b>In one line:</b> the agronomic engine is a commodity (QUEFTS, DSSAT — 30 years old). OCP's real asset is <b>the proprietary trials data</b> at ecosystem scale. But a data bank doesn't fill itself by decree — it dies if you wait for deposits. <b>NutrientOS pivots to the Waze model</b>: we ship a useful service whose usage produces the data as an invisible byproduct. One unified backend, geographical entry doors fitted to local channels, and a data moat that builds itself.`,
+  'sConst':`What we learned building the simulator`,
+  'constP1':`Honestly asking <em>« are we adding real value or just reheating coffee? »</em>, we hit an uncomfortable truth: <b>the agronomic model is a commodity</b>. Nutrient response science (QUEFTS, DSSAT) has been around for 30 years. Re-coding a generic engine is reinventing the wheel, badly.`,
+  'constP2':`If the model isn't the asset, where's the value? In the three things <b>only OCP owns</b>: the proprietary trial data, the link to commercial pitch, sovereignty. The first dominates the other two. <b>The real problem was never the model. It's the data.</b> Without a massive, clean, self-growing bank, the best model stays blind.`,
+  'sAnti':`The anti-pattern — and its real-world proof`,
+  'antiP1':`A data bank never dies from plumbing (storage is solved). It dies from two human causes:`,
+  'kohA':`Bootstrap`,'kohA1':`As long as the shelf is empty, no one has a reason to come.`,
+  'kohB':`Cost of deposit`,'kohB1':`Depositing is effort today, benefit is diffuse and later. So no one deposits, and the lake rots.`,
+  'alm':`<b>In-house proof:</b> our Al Moutmir digital solutions received substantial communications budget. Field adoption remains <b>weak</b>, and captured data is <b>almost exclusively Moroccan</b>. The cause isn't execution — it's the <em>build-the-bank-first</em> model itself. We have, right in front of us, the demonstration that collecting on injunction doesn't work.`,
+  'sWaze':`The proposal — Waze for plant nutrition`,
+  'wazeP1':`Data isn't collected, it's emitted. We don't ask anyone to fill the bank. We give them a useful service whose usage produces the data as an invisible byproduct. No one opens Waze to "contribute to traffic" — they open it to save time, and they emit their position without thinking. The deposit is <b>free, automatic, and rewarded immediately</b>.`,
+  'wazeP2':`Applied to OCP: an entry door useful to the agronomist or distributor (soil diagnostic + formula recommendation + expected yield + margin €/ha), and the bank accretes invisibly underneath. Each interaction is <b>both a service rendered and a proprietary data deposit</b>.`,
+  'ruleA':`1. Give before taking`,'ruleA1':`The deposit pays for an immediate service to the depositor.`,
+  'ruleB':`2. Zero extra entry`,'ruleB1':`The data entry the service needs <em>is</em> the deposit. No second form.`,
+  'ruleC':`3. Network effect`,'ruleC1':`More deposits → better output. So everyone has an interest in others depositing. Gravity replaces governance.`,
+  'sArch':`The architecture — one backend, N geographical entry doors`,
+  'archP':`OCP is multinational. A single planetary app won't work: channels, players, digital practices differ radically across BUs. So <b>what's common</b> (deposit schema, engine, compliance, moat) is <b>centralized</b>. <b>What's local</b> (channel, UX, language, contract) is <b>multiplied</b>.`,
+  'mthBu':`BU`,'mthCh':`Dominant channel`,'mthDoor':`Possible entry door`,
+  'mtx1c':`Al Moutmir agronomists + distributors`,'mtx1d':`Plug into the existing app + yield closing loop`,
+  'mtx2c':`Giant cooperatives (coop agronomists)`,'mtx2d':`Partnership with 2-3 leading coops → their internal tool`,
+  'mtx3c':`Highly fragmented distributor network`,'mtx3d':`Distributor app + WhatsApp component (real field channel)`,
+  'mtx4c':`Outgrower programs / aggregators`,'mtx4d':`Integration into existing program tools`,
+  'mtx5c':`Private agronomic advice + local ag-tech`,'mtx5d':`Data partnership with one leading ag-tech per country`,
   'sDecisions':`The three decisions`,
-  'a1h':`Governance — open without losing control`,'a1one':`Principle: open the edges, keep the center.`,
-  'a1p':`The trap of a "neutral from day 1" foundation is to dilute OCP Nutricrops' advantage before it even materializes. We apply the <b>Android / Linux Foundation</b> model: the industrial player seeds the standard and the reference implementation; the neutral institution comes only <b>afterwards</b>, to ratify and reassure the ecosystem — not to run it.`,
-  'a1l1':`<b>Open:</b> standard spec, base datasets, SDK, reference implementation.`,'a1l2':`<b>Kept by OCP Nutricrops:</b> recommendation engine, farmer field data, commercial orchestration, the standard's brand.`,'a1l3':`<b>Leverage:</b> OCP Nutricrops chairs the technical committee as the first contributor; control comes from legitimacy, not a legal veto.`,
-  'a2h':`Standard first — not the institution`,'a2one':`Whoever first publishes the standard others adopt wins.`,
-  'a2p':`Building a broad institution first is slow. We flip it: publish first an <b>open standard + a reference implementation</b> on <b>a single narrow, legitimate scope</b> — <b>phosphate nutrition</b>, where OCP Nutricrops already leads. Governance is built <em>afterwards</em>, around an already-adopted standard.`,
-  'a2l1':`<b>v1 scope:</b> an open "nutrient value" schema (units, soil-crop reference, exchange formats).`,'a2l2':`<b>Why it works:</b> depth &gt; breadth. Narrow = fast, credible, defensible.`,'a2l3':`<b>Effect:</b> startups, researchers and dev orgs adopt OCP Nutricrops' standard → gravity, early and lasting.`,
-  'a3h':`90-day plan — get ahead`,'a3one':`In 90 days: a published standard, pilot partners and real field data.`,
-  't1w':`Weeks 1-4`,'t1h':`Prototype &amp; spec`,'t1p':`NutrientOS Console (already working) + v0 of the open standard, validated internally.`,
-  't2w':`Weeks 5-8`,'t2h':`Open release`,'t2p':`Standard + reference implementation published; 3 pilot partners (startup, lab, distributor) onboarded.`,
-  't3w':`Weeks 9-12`,'t3h':`Field loop`,'t3p':`First real farmer data; network effect kicking in; governance dossier ready.`,
-  'kp1b':`90 d`,'kp1s':`to the published standard`,'kp2s':`narrow scope, owned`,'kp3s':`pilot partners`,
+  'a1h':`Adopt the Waze model — not open-core`,'a1one':`We ship a service, not a platform. The data is the engine's exhaust, not the engine.`,
+  'a1p':`The v2.6 pitch described NutrientOS as an open-core platform. With what we've learned (Al Moutmir, simulator), that's still <em>institution-first</em> in disguise. We flip it: no standard before there are deposits to format. No marketplace before there are users to connect. We <b>ship a useful service</b>, the rest comes as consequence, not prerequisite.`,
+  'a1l1':`<b>Open later:</b> the deposit schema will be published as standard <em>after</em> validation by usage.`,
+  'a1l2':`<b>Always kept:</b> the proprietary dataset, its model, its improvement loop.`,
+  'a1l3':`<b>Leverage:</b> what others can't replicate is the volume and quality of deposits. That's the moat.`,
+  'a2h':`One unified backend, N geographical entry doors`,'a2one':`No planetary app. One common deposit schema, local channels.`,
+  'a2p':`Wanting a single app for the whole world leads straight to multinational failure. Wanting N independent apps leads to data fragmentation. The right answer: <b>a common deposit schema</b>, <b>a centralized engine</b> that learns globally and applies locally, and <b>as many entry doors as there are dominant channels per BU</b>. Morocco data, Brazil data and India data feed the same model; Moroccan agronomists, Brazilian coops and Indian distributors don't use the same interface.`,
+  'a2l1':`<b>Centralized:</b> schema, engine, compliance (Morocco hosting, BU exports per legislation).`,
+  'a2l2':`<b>Multiplied:</b> channel, UX, language, local partners.`,
+  'a2l3':`<b>Effect:</b> every active geography accelerates global calibration, and the benefit redistributes to all others (regional transfer learning).`,
+  'a3h':`Start with Morocco — proof before extension`,'a3one':`Doukkala × soft wheat × 20 Al Moutmir agronomists × 90 days. If the mechanic holds, we scale. Otherwise, we learn.`,
+  'a3p':`The Morocco pilot plays two roles: (1) <b>validate the Waze mechanic</b> on an observable scope — the yield closing loop is the only real risk — and (2) <b>bootstrap the dataset</b> with existing OCP trials. We plug into the existing Al Moutmir flow to minimise change management, we add what's missing (expected yield, margin, harvest closing). At 90 days, we have either measurable proof, or the learning that saves the rest.`,
+  't1w':`Weeks 1-4`,'t1h':`Spec + bootstrap`,'t1p':`Deposit schema, engine calibrated on Doukkala trials, integration with Al Moutmir flow, Nutricrops tenant hosting.`,
+  't2w':`Weeks 5-8`,'t2h':`Field pilot`,'t2p':`20 active Al Moutmir agronomists, enriched output (reco + yield + margin), D−7 harvest push.`,
+  't3w':`Weeks 9-12`,'t3h':`Loop &amp; review`,'t3p':`First recommendations closed by real yields, measured improvement curve, Brazil / India extension decision.`,
+  'kp1b':`300+`,'kp1s':`recommendations issued Morocco`,'kp2b':`≥ 25 %`,'kp2s':`closed by a real yield`,'kp3b':`2`,'kp3s':`BUs ready for extension`,
   'askH':`The ask to the board`,
-  'askP1':`A <b>90-day mandate</b> and a <b>small D²nAI team</b> to turn the prototype into open standard v1 + OCP Nutricrops core, and take the lead on data-driven nutrition.`,
-  'askP2':`Decide on <b>a product that already runs</b> (see the NutrientOS platform &amp; console) and a plan that delivers in 90 days.`,
-  'footL':`NutrientOS · OCP Nutricrops · D²nAI (Data, Digital &amp; AI)`
+  'askP1':`A <b>90-day mandate</b> and a <b>small D²nAI team</b> to validate the Waze mechanic on Morocco — plug into Al Moutmir, close yields, bootstrap dataset — then present a multi-BU extension plan validated by proof.`,
+  'askP2':`Decision on a pivot <b>cheaper than v2.6</b>, <b>reversible at 90 days</b>, and <b>aligned with sovereignty</b> (Nutricrops tenant, 09-08 compliance) — already arbitrated elsewhere (see June 2026 CEO note).`,
+  'footL':`NutrientOS · OCP Nutricrops · D²nAI (Data, Digital &amp; AI) · June 2026 pivot`,
  },
  pt:{
-  'm1':`NOTA ESTRATÉGICA`,'m2':`Plataforma NutrientOS`,'m3':`Confidencial · board OCP Nutricrops`,
-  'tag':`● Visão &amp; plano`,'title':`Liderar o padrão aberto da <em>nutrição das plantas</em>.`,
-  'tldr':`<b>Em uma frase:</b> o valor na agricultura desloca-se para o dado e a decisão. A NutrientOS pega essa onda com uma postura vencedora para a OCP Nutricrops: <b>uma plataforma aberta em que a OCP Nutricrops publica o padrão e mantém o core de valor</b> (open-core), entregue em 90 dias. Abrir vira uma alavanca de domínio, não uma doação.`,
-  'sModel':`O modelo: open-core`,
-  'openH':`Camada aberta — a gravidade`,'o1':`Nutrient Value Standard publicado pela OCP Nutricrops, livremente reutilizável`,'o2':`Datasets de solo &amp; agro de base + implementação de referência`,'o3':`APIs &amp; SDK: o ecossistema constrói por cima`,'o4':`Objetivo: tornar-se a infraestrutura que todos adotam`,
-  'coreH':`Core OCP Nutricrops — o valor`,'k1':`Motor de recomendação proprietário (solo × cultura → produto)`,'k2':`Gêmeo digital dos solos + rede de agricultores → efeito de rede`,'k3':`Orquestração comercial &amp; marketplace de parceiros`,'k4':`Objetivo: capturar o valor que a camada aberta faz crescer`,
-  'sBackbone':`O ecossistema do backbone`,
-  'bbP':`A camada aberta não se constrói sozinha: uma rede de parceiros a alimenta e a implanta. A <b>UM6P</b> não é aqui uma simples fonte de dados, mas o <b>embaixador acadêmico</b> que federa universidades do mundo todo em torno do padrão.`,
-  'pTag':`embaixador`,'pUM6P':`Federa universidades do mundo todo em torno do padrão.`,'pAlM':`Programa de apoio a agricultores &amp; agronomia de campo.`,'pAE':`Agricultura de precisão &amp; agronomia digital.`,'pGT':`Dados de campo &amp; analytics.`,
+  'm1':`NOTA ESTRATÉGICA`,'m2':`Plataforma NutrientOS · pivô Waze`,'m3':`Confidencial · board OCP Nutricrops`,
+  'tag':`● Pivô estratégico · junho de 2026`,
+  'title':`Construir a base mundial de resposta aos nutrientes — <em>emitindo</em> o dado, não o coletando.`,
+  'tldr':`<b>Em uma frase:</b> o motor agronômico é uma commodity (QUEFTS, DSSAT há 30 anos). O verdadeiro ativo da OCP é <b>o dado proprietário de ensaios</b> à escala do ecossistema. Mas um banco de dados não se enche por decreto — morre se esperarmos os depósitos. <b>O NutrientOS pivota para o modelo Waze</b>: lançamos um serviço útil cujo uso produz o dado como subproduto invisível. Um backend unificado, portas de entrada geográficas adaptadas aos canais locais, e um moat de dados que se constrói sozinho.`,
+  'sConst':`O constato — o que aprendemos construindo o simulador`,
+  'constP1':`Perguntando honestamente <em>« estamos agregando valor real ou é café requentado? »</em>, caímos numa verdade incômoda: <b>o modelo agronômico é uma commodity</b>. A ciência de resposta aos nutrientes (QUEFTS, DSSAT) existe há 30 anos. Recodificar um motor genérico é reinventar a roda, pior.`,
+  'constP2':`Se o modelo não é o ativo, onde está o valor? Nas três coisas que <b>só a OCP possui</b>: o dado de ensaios proprietário, o vínculo ao pitch comercial, a soberania. E a primeira domina as outras duas. <b>O verdadeiro problema nunca foi o modelo. É o dado.</b> Sem um banco massivo, limpo e que cresce sozinho, o melhor modelo fica cego.`,
+  'sAnti':`O anti-padrão — e sua prova em escala real`,
+  'antiP1':`Um banco de dados nunca morre da encanação (o armazenamento está resolvido). Morre de duas causas humanas:`,
+  'kohA':`O arranque`,'kohA1':`Enquanto a prateleira está vazia, ninguém tem motivo para vir.`,
+  'kohB':`O custo do depósito`,'kohB1':`Depositar é esforço hoje, o benefício é difuso e mais tarde. Então ninguém deposita, e o lago apodrece.`,
+  'alm':`<b>Prova em casa:</b> nossas soluções digitais Al Moutmir receberam um orçamento de comunicação substancial. A adoção em campo continua <b>baixa</b>, e o dado capturado é <b>quase exclusivamente marroquino</b>. A causa não é falha de execução — é o modelo <em>build-the-bank-first</em>. Temos diante de nós a demonstração de que coletar por injunção não funciona.`,
+  'sWaze':`A proposta — o modelo Waze para a nutrição das plantas`,
+  'wazeP1':`O dado não se coleta, ele se emite. Não pedimos a ninguém para encher o banco. Damos um serviço útil cujo uso produz o dado como subproduto invisível. Ninguém abre o Waze para « contribuir com o tráfego » — abre-se para ganhar tempo, e emite-se a posição sem pensar. O depósito é <b>gratuito, automático e recompensado na hora</b>.`,
+  'wazeP2':`Aplicado à OCP: uma porta de entrada útil ao agrônomo ou ao distribuidor (diagnóstico de solo + recomendação de fórmula + rendimento esperado + margem €/ha), e o banco se acresce invisível, embaixo. Cada interação é <b>ao mesmo tempo um serviço prestado e um depósito de dado proprietário</b>.`,
+  'ruleA':`1. Dar antes de tomar`,'ruleA1':`O depósito paga um serviço imediato a quem deposita.`,
+  'ruleB':`2. Zero entrada extra`,'ruleB1':`A entrada de dado necessária ao serviço <em>é</em> o depósito. Sem segundo formulário.`,
+  'ruleC':`3. Efeito de rede`,'ruleC1':`Mais depósitos → melhor a saída. Então cada um tem interesse em que os outros depositem. A gravidade substitui a governança.`,
+  'sArch':`A arquitetura — um backend, N portas de entrada geográficas`,
+  'archP':`A OCP é multinacional. Um único app planetário não vai funcionar: canais, atores, práticas digitais diferem radicalmente entre BUs. Então <b>o que é comum</b> (esquema de depósito, motor, conformidade, moat) é <b>centralizado</b>. <b>O que é local</b> (canal, UX, idioma, contrato) é <b>multiplicado</b>.`,
+  'mthBu':`BU`,'mthCh':`Canal dominante`,'mthDoor':`Porta de entrada possível`,
+  'mtx1c':`Agrônomos Al Moutmir + distribuidores`,'mtx1d':`Conectar-se ao app existente + laço de fechamento de rendimento`,
+  'mtx2c':`Cooperativas gigantes (agrônomos da coop)`,'mtx2d':`Parceria com 2-3 cooperativas líderes → ferramenta interna delas`,
+  'mtx3c':`Rede distribuidora muito fragmentada`,'mtx3d':`App distribuidor + componente WhatsApp (canal real do campo)`,
+  'mtx4c':`Programas outgrower / agregadores`,'mtx4d':`Integração às ferramentas dos programas existentes`,
+  'mtx5c':`Consultoria agronômica privada + ag-techs locais`,'mtx5d':`Parceria de dados com uma ag-tech líder por país`,
   'sDecisions':`As três decisões`,
-  'a1h':`Governança — abrir sem perder o controle`,'a1one':`Princípio: abrir a periferia, manter o centro.`,
-  'a1p':`A armadilha de uma fundação "neutra desde o dia 1" é diluir a vantagem da OCP Nutricrops antes mesmo de ela se materializar. Aplicamos o modelo <b>Android / Linux Foundation</b>: o player industrial semeia o padrão e a implementação de referência; a instituição neutra só chega <b>depois</b>, para ratificar e tranquilizar o ecossistema — não para dirigir.`,
-  'a1l1':`<b>Aberto:</b> especificação do padrão, datasets de base, SDK, implementação de referência.`,'a1l2':`<b>Mantido pela OCP Nutricrops:</b> motor de recomendação, dados de campo dos agricultores, orquestração comercial, a marca do padrão.`,'a1l3':`<b>Alavanca:</b> a OCP Nutricrops preside o comitê técnico como primeiro contribuidor; o controle vem da legitimidade, não de um veto jurídico.`,
-  'a2h':`Padrão primeiro — não a instituição`,'a2one':`Quem primeiro publica o padrão que os outros adotam, vence.`,
-  'a2p':`Construir primeiro uma instituição ampla é lento. Invertemos: publicamos primeiro um <b>padrão aberto + uma implementação de referência</b> num <b>único escopo estreito e legítimo</b> — a <b>nutrição fosfatada</b>, onde a OCP Nutricrops já lidera. A governança constrói-se <em>depois</em>, em torno de um padrão já adotado.`,
-  'a2l1':`<b>Escopo v1:</b> um esquema aberto de "valor nutritivo" (unidades, referencial solo-cultura, formatos de troca).`,'a2l2':`<b>Por que funciona:</b> profundidade &gt; amplitude. Estreito = rápido, crível, defensável.`,'a2l3':`<b>Efeito:</b> startups, pesquisadores e dev orgs adotam o padrão da OCP Nutricrops → gravidade, cedo e de forma duradoura.`,
-  'a3h':`Plano de 90 dias — sair na frente`,'a3one':`Em 90 dias: um padrão publicado, parceiros piloto e dados reais de campo.`,
-  't1w':`Semanas 1-4`,'t1h':`Protótipo &amp; spec`,'t1p':`Console NutrientOS (já funcional) + v0 do padrão aberto, validados internamente.`,
-  't2w':`Semanas 5-8`,'t2h':`Publicação open`,'t2p':`Padrão + implementação de referência publicados; 3 parceiros piloto (startup, laboratório, distribuidor) embarcados.`,
-  't3w':`Semanas 9-12`,'t3h':`Loop de campo`,'t3p':`Primeiros dados reais de agricultores; efeito de rede iniciado; dossiê de governança pronto.`,
-  'kp1b':`90 d`,'kp1s':`até o padrão publicado`,'kp2s':`escopo estreito, possuído`,'kp3s':`parceiros piloto`,
+  'a1h':`Adotar o modelo Waze — não o open-core`,'a1one':`Lançamos um serviço, não uma plataforma. O dado é o escapamento do motor, não o motor.`,
+  'a1p':`O pitch v2.6 descrevia o NutrientOS como uma plataforma open-core. Com o que aprendemos (Al Moutmir, simulador), ainda é <em>institution-first</em> disfarçada. Invertemos: não publicamos um padrão antes de haver depósitos a formatar. Não construímos um marketplace antes de haver usuários a conectar. <b>Lançamos um serviço útil</b>, o resto vem como consequência, não como pré-requisito.`,
+  'a1l1':`<b>Aberto depois:</b> o esquema de depósito será publicado como padrão <em>após</em> validação pelo uso.`,
+  'a1l2':`<b>Mantido sempre:</b> o dataset proprietário, seu modelo, seu laço de melhoria.`,
+  'a1l3':`<b>Alavanca:</b> o que os outros não podem replicar é o volume e a qualidade dos depósitos. Esse é o moat.`,
+  'a2h':`Um backend unificado, N portas de entrada geográficas`,'a2one':`Não um app planetário. Um esquema de depósito comum, canais locais.`,
+  'a2p':`Querer um único app para o mundo inteiro leva direto ao fracasso multinacional. Querer N apps independentes leva à fragmentação dos dados. A resposta certa: <b>um esquema de depósito comum</b>, <b>um motor centralizado</b> que aprende globalmente e aplica localmente, e <b>tantas portas de entrada quantos canais dominantes por BU</b>. O dado do Marrocos, do Brasil e da Índia alimenta o mesmo modelo; agrônomos marroquinos, cooperativas brasileiras e distribuidores indianos não usam a mesma interface.`,
+  'a2l1':`<b>Centralizado:</b> esquema, motor, conformidade (hospedagem no Marrocos, exportações BU conforme legislação).`,
+  'a2l2':`<b>Multiplicado:</b> canal, UX, idioma, parceiros locais.`,
+  'a2l3':`<b>Efeito:</b> cada geografia ativa acelera a calibração global, e o benefício se redistribui a todas as outras (transferência de aprendizado regional).`,
+  'a3h':`Começar pelo Marrocos — prova antes da extensão`,'a3one':`Doukkala × trigo mole × 20 agrônomos Al Moutmir × 90 dias. Se a mecânica funciona, escalamos. Senão, aprendemos.`,
+  'a3p':`O piloto Marrocos cumpre dois papéis: (1) <b>validar a mecânica Waze</b> em um escopo observável — o laço de fechamento de rendimento é o único risco real — e (2) <b>fazer bootstrap do dataset</b> com os ensaios OCP existentes. Conectamo-nos ao fluxo Al Moutmir existente para minimizar a gestão de mudança, adicionamos o que falta (rendimento esperado, margem, fechamento de colheita). Em 90 dias, temos prova mensurável, ou o aprendizado que economiza o resto.`,
+  't1w':`Semanas 1-4`,'t1h':`Spec + bootstrap`,'t1p':`Esquema de depósito, motor calibrado nos ensaios de Doukkala, integração ao fluxo Al Moutmir, hospedagem tenant Nutricrops.`,
+  't2w':`Semanas 5-8`,'t2h':`Piloto em campo`,'t2p':`20 agrônomos Al Moutmir ativos, saída enriquecida (reco + rendimento + margem), push D−7 colheita.`,
+  't3w':`Semanas 9-12`,'t3h':`Laço &amp; balanço`,'t3p':`Primeiras recomendações fechadas por rendimento real, curva de melhoria medida, decisão de extensão Brasil / Índia.`,
+  'kp1b':`300+`,'kp1s':`recomendações emitidas Marrocos`,'kp2b':`≥ 25 %`,'kp2s':`fechadas por um rendimento real`,'kp3b':`2`,'kp3s':`BUs prontas para extensão`,
   'askH':`O pedido ao board`,
-  'askP1':`Um <b>mandato de 90 dias</b> e uma <b>equipe pequena D²nAI</b> para transformar o protótipo em padrão aberto v1 + core OCP Nutricrops, e assumir a liderança na nutrição orientada por dados.`,
-  'askP2':`Decisão sobre <b>um produto que já funciona</b> (veja a plataforma &amp; a console NutrientOS) e um plano que entrega em 90 dias.`,
-  'footL':`NutrientOS · OCP Nutricrops · equipe D²nAI (Data, Digital &amp; AI)`
+  'askP1':`Um <b>mandato de 90 dias</b> e uma <b>equipe reduzida D²nAI</b> para validar a mecânica Waze no Marrocos — conexão ao Al Moutmir, fechamento de rendimento, bootstrap do dataset — e em seguida apresentar um plano de extensão multi-BU validado pela prova.`,
+  'askP2':`Decisão sobre um pivô <b>mais barato que o v2.6</b>, <b>reversível em 90 dias</b>, e <b>alinhado com a soberania</b> (tenant Nutricrops, conformidade 09-08) — já arbitrado em outro lugar (cf. Nota CEO junho 2026).`,
+  'footL':`NutrientOS · OCP Nutricrops · D²nAI (Data, Digital &amp; AI) · pivô junho 2026`,
  }
 };
 function applyLang(){
