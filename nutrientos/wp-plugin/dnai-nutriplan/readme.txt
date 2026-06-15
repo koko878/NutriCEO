@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.12.0
+Stable tag: 0.13.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,21 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.13.0 — Typeset (P3) + Animate (P3) =
+* Typeset : remplacement des 10 emojis de navigation sidebar (⚡📊🗂️📚📅
+  ⚖️🛡️➕🚀💡⚙️) par un set SVG cohérent inline en <symbol> + <use>
+  (stroke 1.8, line icons 18×18, currentColor pour héritage palette).
+  Rendu identique cross-OS, accessible, indexable (aria-hidden sur la
+  sprite, focusable=false). Échelle typographique inchangée (déjà ≤ 5
+  tailles cohérentes : xs/sm/base/lg/xl).
+* Animate : suppression de l'animation `pulseDot` sur .tb-btn.ai .dot
+  (le bouton AI parle de lui-même, pas besoin de pulse infini), pulse
+  conservé sur .sb-foot .dot (signal heartbeat sync NutriTrials).
+  Suppression de l'animation `fbPulseHi` 1s alternating outline sur
+  .fb-highlight (remplacée par outline dashed statique). Le bloc
+  prefers-reduced-motion (v0.11) couvre déjà toutes les transitions
+  pour les utilisateurs qui désactivent le mouvement.
 
 = 0.12.0 — Distill (P2) + Adapt (P2) =
 * Distill : suppression des préfixes A./B./C./D. sur les 4 cards Dashboards
