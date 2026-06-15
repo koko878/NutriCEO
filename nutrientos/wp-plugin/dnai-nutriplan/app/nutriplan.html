@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NutriPlan — Trial Management · OCP Nutricrops · D²nAI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --green-900:#103d17;--green-800:#1B5E20;--green-700:#2E7D32;--green-600:#2f8a39;--green-500:#4CAF50;
   --green-300:#66BB6A;--green-200:#A5D6A7;--green-100:#D6EADb;--green-50:#EAF4EC;
-  --ink:#10231a;--ink-2:#1f3a2a;--muted:#5c6b62;--muted-2:#8aa195;
+  --ink:#10231a;--ink-2:#1f3a2a;--muted:#5c6b62;--muted-2:#5f7269;
   --line:#e3ebe5;--line-2:#cfdcd4;
   --bad:#B91C1C;--bad-bg:#fdeced;--ok:#15803D;--ok-bg:#dcfce7;--warn:#B45309;--warn-bg:#fef3c7;
   --info:#0e4f6e;--info-bg:#dff1fb;
@@ -20,10 +20,22 @@
   --shadow-lg:0 24px 60px -20px rgba(16,35,26,.30);
   --rad-sm:8px;--rad-md:12px;--rad-lg:16px;
   --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  /* semantic tokens (v0.11 — extract pass) */
+  --ring-focus:0 0 0 3px rgba(46,125,50,.35);
+  --st-go-bg:#c5f0d4;--st-go-fg:#0c5b27;
+  --st-hold-bg:#fde7c7;--st-hold-fg:#8c5a06;
+  --st-kill-bg:#fde0e0;--st-kill-fg:#8b1a1a;
+  --st-draft-bg:#eef0ef;--st-draft-fg:#5c6b62;
+  --av-1:#7c5b07;--av-2:#583c8d;--av-3:#0e4f6e;--av-4:#8d4a04;--av-5:#a01f1f;--av-6:#15803D;
+  --raci-r:#15803D;--raci-a:#a01f1f;--raci-c:#7c5b07;--raci-i:#37526a;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;height:100%}
-body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--soft);line-height:1.5;overflow:hidden}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--soft);line-height:1.5;overflow:hidden auto}
+/* v0.11 — a11y: focus-visible ring everywhere */
+:focus{outline:none}
+:focus-visible{outline:none;box-shadow:var(--ring-focus);border-radius:6px}
+button:focus-visible, a:focus-visible, .sb-item:focus-visible, .kpi:focus-visible, .kn-card:focus-visible, .chip:focus-visible, .btn:focus-visible, [role="button"]:focus-visible{box-shadow:var(--ring-focus)}
 h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.01em}
 button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
 input,select,textarea{font-family:inherit;color:inherit}
@@ -75,8 +87,8 @@ a{color:var(--green-700);text-decoration:none}
 .tb-btn:hover{background:var(--soft);border-color:var(--line-2)}
 .tb-btn.primary{background:var(--green-700);color:#fff;border-color:var(--green-700)}
 .tb-btn.primary:hover{background:var(--green-800)}
-.tb-btn.ai{background:linear-gradient(135deg,#0a1812,#0c1f14);color:#7cfc9a;border-color:rgba(124,252,154,.32)}
-.tb-btn.ai:hover{background:linear-gradient(135deg,#0c1f14,#103d17);color:#fff}
+.tb-btn.ai{background:var(--green-800);color:#7cfc9a;border-color:rgba(124,252,154,.32)}
+.tb-btn.ai:hover{background:var(--green-900);color:#fff}
 .tb-btn.ai .dot{width:6px;height:6px;border-radius:50%;background:#7cfc9a;box-shadow:0 0 0 0 rgba(124,252,154,.7);animation:pulseDot 1.6s ease-out infinite}
 .tb-prof{display:flex;align-items:center;gap:8px;background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:4px 6px 4px 10px}
 .tb-prof .av{width:26px;height:26px;border-radius:50%;background:var(--green-700);color:#fff;display:grid;place-items:center;font:800 11px 'Inter'}
@@ -155,16 +167,16 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 /* status pills */
 .pill{display:inline-flex;align-items:center;gap:5px;font:700 10.5px 'Inter';padding:3px 9px;border-radius:999px;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap}
 .pill .dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.85}
-.pill-st-draft{background:#eef0ef;color:#5c6b62}
+.pill-st-draft{background:var(--st-draft-bg);color:var(--st-draft-fg)}
 .pill-st-submitted{background:#e0eef9;color:#1f6c9c}
-.pill-st-steering{background:#fff1cd;color:#7c5b07}
-.pill-st-ceo{background:#fde2c8;color:#8d4a04}
-.pill-st-approved{background:#dcfce7;color:#15803D}
+.pill-st-steering{background:#fff1cd;color:var(--av-1)}
+.pill-st-ceo{background:#fde2c8;color:var(--av-4)}
+.pill-st-approved{background:var(--ok-bg);color:var(--ok)}
 .pill-st-execution{background:#e7f0eb;color:var(--green-700)}
-.pill-st-monitoring{background:#e0ecf6;color:#0e4f6e}
-.pill-st-go{background:#c5f0d4;color:#0c5b27}
-.pill-st-hold{background:#fde7c7;color:#8c5a06}
-.pill-st-kill{background:#fde0e0;color:#8b1a1a}
+.pill-st-monitoring{background:#e0ecf6;color:var(--av-3)}
+.pill-st-go{background:var(--st-go-bg);color:var(--st-go-fg)}
+.pill-st-hold{background:var(--st-hold-bg);color:var(--st-hold-fg)}
+.pill-st-kill{background:var(--st-kill-bg);color:var(--st-kill-fg)}
 .pill-typ-scientific{background:#ede5f8;color:#583c8d}
 .pill-typ-applied{background:#e5f0fa;color:#1d5e94}
 .pill-typ-demo{background:#dff5e7;color:#106a32}
@@ -174,7 +186,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 
 /* avatar */
 .av{width:24px;height:24px;border-radius:50%;background:var(--green-700);color:#fff;display:inline-grid;place-items:center;font:800 10px 'Inter';margin-right:-6px;border:2px solid #fff;flex-shrink:0}
-.av.alt-1{background:#7c5b07}.av.alt-2{background:#583c8d}.av.alt-3{background:#0e4f6e}.av.alt-4{background:#8d4a04}.av.alt-5{background:#a01f1f}.av.alt-6{background:#15803D}
+.av.alt-1{background:var(--av-1)}.av.alt-2{background:var(--av-2)}.av.alt-3{background:var(--av-3)}.av.alt-4{background:var(--av-4)}.av.alt-5{background:var(--av-5)}.av.alt-6{background:var(--av-6)}
 .av-stack{display:inline-flex;align-items:center;padding-right:6px}
 
 /* tabs (within a screen) */
@@ -204,28 +216,27 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 /* ==========================================================================
  * COCKPIT — Stripe meets Linear: hero KPIs, alerts, recent activity, heatmap
  * ========================================================================== */
-.ck-hero{background:linear-gradient(135deg,#07140c 0%,#0c1f14 60%,#103d17 100%);color:#dff0e3;border-radius:var(--rad-lg);padding:24px 28px;margin-bottom:22px;position:relative;overflow:hidden}
-.ck-hero::after{content:"";position:absolute;right:-80px;top:-80px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(124,252,154,.18),transparent 70%);pointer-events:none}
+.ck-hero{background:linear-gradient(135deg,#0a1812,#103d17);color:#dff0e3;border-radius:var(--rad-lg);padding:24px 28px;margin-bottom:22px;position:relative;overflow:hidden}
 .ck-hero-meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
 .ck-hero-meta .pill{background:rgba(124,252,154,.15);color:#7cfc9a;border:1px solid rgba(124,252,154,.3)}
 .ck-hero-meta .pill.ghost{background:transparent;border-color:rgba(255,255,255,.18);color:#9fb3a6}
-.ck-hero h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:34px;margin:0 0 6px;color:#fff;letter-spacing:-.02em}
+.ck-hero h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:28px;margin:0 0 6px;color:#fff;letter-spacing:-.02em}
 .ck-hero p{margin:0;font-size:14px;color:#9fb3a6;max-width:60ch}
 .ck-hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:18px;position:relative;z-index:1}
 @media(max-width:780px){.ck-hero-stats{grid-template-columns:1fr;gap:14px}}
 .ck-hs{padding:0}
 .ck-hs .l{font:600 11px 'Inter';color:#7fb98e;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
-.ck-hs .v{font:800 36px 'Inter';color:#fff;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em;display:flex;align-items:baseline;gap:4px}
+.ck-hs .v{font:700 28px 'Inter';color:#fff;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em;display:flex;align-items:baseline;gap:4px}
 .ck-hs .v small{font-size:13px;color:#9fb3a6;font-weight:600}
 .ck-hs .d{margin-top:5px;font:700 12px 'Inter';color:#9fb3a6}
 
-/* alerts */
-.alert{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:var(--rad-sm);padding:11px 14px;margin-bottom:8px;transition:background .15s}
+/* alerts (v0.11 — bg tint instead of side-stripe) */
+.alert{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1px solid var(--line);border-radius:var(--rad-sm);padding:11px 14px;margin-bottom:8px;transition:background .15s}
 .alert:hover{background:#fafdfa}
 .alert .ico{font-size:16px;line-height:1;margin-top:2px}
-.alert.warn{border-left-color:var(--warn)}
-.alert.bad{border-left-color:var(--bad)}
-.alert.ok{border-left-color:var(--ok)}
+.alert.warn{border-color:#f0d9a4;background:#fffaf0}
+.alert.bad{border-color:#f0c9c9;background:#fdf6f6}
+.alert.ok{border-color:var(--green-200);background:#f4faf5}
 .alert .b{flex:1;min-width:0}
 .alert .b b{font:700 13px 'Inter';color:var(--ink);display:block;margin-bottom:1px}
 .alert .b span{font:500 12px 'Inter';color:var(--muted)}
@@ -422,34 +433,34 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .cal-row .cal-lbl{font:600 12.5px 'Inter';color:var(--ink);padding:9px 8px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;justify-content:center}
 .cal-row .cal-lbl small{font:500 10.5px 'Inter';color:var(--muted);margin-top:1px}
 .cal-row .cal-cell{position:relative;border-bottom:1px solid var(--line);min-height:42px;border-right:1px dashed var(--line)}
-.cal-bar{position:absolute;top:7px;height:24px;border-radius:6px;display:flex;align-items:center;padding:0 8px;font:700 11px 'Inter';color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;transition:transform .12s,box-shadow .15s;background:linear-gradient(90deg,var(--green-600),var(--green-700))}
+.cal-bar{position:absolute;top:7px;height:24px;border-radius:6px;display:flex;align-items:center;padding:0 8px;font:700 11px 'Inter';color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;transition:transform .12s,box-shadow .15s;background:var(--green-700)}
 .cal-bar:hover{transform:translateY(-1px);box-shadow:var(--shadow-md);z-index:2}
-.cal-bar.b-gate{background:linear-gradient(90deg,#7c5b07,#a06b04)}
-.cal-bar.b-cycle{background:linear-gradient(90deg,#0c5b27,#103d17)}
-.cal-bar.b-fast{background:linear-gradient(90deg,#a01f1f,#7a1313)}
-.cal-bar.b-qbr{background:linear-gradient(90deg,#1d5e94,#0e4f6e)}
-.cal-bar.b-launch{background:linear-gradient(90deg,#2E7D32,#103d17)}
-.cal-bar.b-readiness{background:linear-gradient(90deg,#7c5b07,#5b3f05)}
-.cal-bar.b-exec{background:linear-gradient(90deg,#1d5e94,#0e4f6e)}
-.cal-bar.b-decision{background:linear-gradient(90deg,#583c8d,#3d2a64)}
+.cal-bar.b-gate{background:#8c6a0a}
+.cal-bar.b-cycle{background:var(--green-900)}
+.cal-bar.b-fast{background:#a01f1f}
+.cal-bar.b-qbr{background:#155679}
+.cal-bar.b-launch{background:var(--green-700)}
+.cal-bar.b-readiness{background:#7c5b07}
+.cal-bar.b-exec{background:#155679}
+.cal-bar.b-decision{background:#583c8d}
 .legend-sw{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:5px;vertical-align:-2px}
-.legend-sw.b-launch{background:linear-gradient(135deg,#2E7D32,#103d17)}
-.legend-sw.b-readiness{background:linear-gradient(135deg,#7c5b07,#5b3f05)}
-.legend-sw.b-exec{background:linear-gradient(135deg,#1d5e94,#0e4f6e)}
-.legend-sw.b-decision{background:linear-gradient(135deg,#583c8d,#3d2a64)}
-.legend-sw.b-gate{background:linear-gradient(135deg,#7c5b07,#a06b04)}
-.legend-sw.b-qbr{background:linear-gradient(135deg,#1d5e94,#0e4f6e);border:1px dashed #1d5e94}
-.legend-sw.b-fast{background:linear-gradient(135deg,#a01f1f,#7a1313)}
+.legend-sw.b-launch{background:var(--green-700)}
+.legend-sw.b-readiness{background:#7c5b07}
+.legend-sw.b-exec{background:#155679}
+.legend-sw.b-decision{background:#583c8d}
+.legend-sw.b-gate{background:#8c6a0a}
+.legend-sw.b-qbr{background:#155679;border:1px dashed #1d5e94}
+.legend-sw.b-fast{background:#a01f1f}
 
 /* ==========================================================================
  * RACI matrix
  * ========================================================================== */
 .raci{font-size:12.5px}
 .raci-cell{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:5px;font:800 10.5px 'Inter';color:#fff}
-.raci-cell.r{background:#15803D}
-.raci-cell.a{background:#a01f1f}
-.raci-cell.c{background:#7c5b07}
-.raci-cell.i{background:#37526a}
+.raci-cell.r{background:var(--raci-r)}
+.raci-cell.a{background:var(--raci-a)}
+.raci-cell.c{background:var(--raci-c)}
+.raci-cell.i{background:var(--raci-i)}
 
 /* Closure KB cards */
 .kb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
@@ -521,7 +532,8 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .fb-btn.danger{background:rgba(229,57,53,.12);color:#ff9999;border-color:rgba(229,57,53,.4)}
 .fb-list{display:flex;flex-direction:column;gap:9px}
 .fb-empty{color:#9fb3a6;font-size:13px;padding:30px 0;text-align:center}
-.fb-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-left:3px solid #FFC107;border-radius:10px;padding:11px 13px}
+.fb-item{position:relative;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:11px 13px 11px 24px}
+.fb-item::before{content:"";position:absolute;left:11px;top:16px;width:8px;height:8px;border-radius:50%;background:#FFC107}
 .fb-iblock{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
 .fb-iblock b{color:#fff;font-size:13px}
 .fb-iblock span{font-size:11px;color:#9fb3a6}
@@ -735,6 +747,12 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
   .ui-modal{padding:22px 20px 18px}
   .ui-title{font-size:20px}
 }
+
+/* v0.11 — prefers-reduced-motion : couper toutes les animations/transitions */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+  .sb-foot .dot, .tb-btn.ai .dot{animation:none;box-shadow:none}
+}
 </style>
 </head>
 <body>
@@ -761,10 +779,10 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
       <input type="text" id="globalSearch">
       <span class="kbd">⌘K</span>
     </div>
-    <div class="tb-lang" id="tbLang">
-      <button data-l="fr" title="Français">🇫🇷</button>
-      <button data-l="en" title="English">🇬🇧</button>
-      <button data-l="pt" title="Português (Brasil)">🇧🇷</button>
+    <div class="tb-lang" id="tbLang" role="group" aria-label="Langue / Language">
+      <button data-l="fr" title="Français" aria-label="Français">🇫🇷</button>
+      <button data-l="en" title="English" aria-label="English">🇬🇧</button>
+      <button data-l="pt" title="Português (Brasil)" aria-label="Português (Brasil)">🇧🇷</button>
     </div>
     <button class="tb-btn primary" onclick="goView('intake')" id="btnTopIntake">+ New Use Case</button>
     <button class="tb-btn ai" onclick="toggleChat()"><span class="dot"></span> D²nAI bot</button>
@@ -816,7 +834,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
         <div class="nm">D²nAI bot</div>
         <div class="sub">Chat with your Trial data</div>
       </div>
-      <button class="x" onclick="toggleChat()" title="Fermer">✕</button>
+      <button class="x" onclick="toggleChat()" title="Fermer" aria-label="Fermer le panneau D²nAI bot">✕</button>
     </div>
     <div class="chat-body" id="chatBody"></div>
     <div class="chat-sugs" id="chatSugs"></div>
@@ -2519,7 +2537,6 @@ function renderControls(){
   const ucsWithIssues = DATA.filter(u=>(u.ic_issues||[]).length>0).length;
   const compliance = Math.round((DATA.length - ucsWithIssues) / Math.max(1,DATA.length) * 100);
   document.getElementById('sc-controls').innerHTML = `
-    <div class="eyebrow">${tr('ic.eye')}</div>
     <h2 class="h-pg">${tr('ic.h')}</h2>
     <p class="lead">${tr('ic.lead')}</p>
 
@@ -2718,7 +2735,6 @@ function renderDashboards(){
     <div class="s">${sub}</div>${pct!=null?`<div class="dash-bar"><i style="width:${pct}%"></i></div>`:''}</div>`;
 
   document.getElementById('sc-dashboards').innerHTML = `
-    <div class="eyebrow">${tr('dash.eye')}</div>
     <h2 class="h-pg">${tr('dash.h')}</h2>
     <p class="lead">${tr('dash.lead')} <span class="dash-drill-hint">${tr('dash.drill.hint')}</span></p>
 
@@ -2791,7 +2807,6 @@ function renderProjects(){
     </div>`;
   }).join('') || `<div class="muted">${tr('prj.empty')}</div>`;
   document.getElementById('sc-projects').innerHTML = `
-    <div class="eyebrow">${tr('prj.eye')}</div>
     <h2 class="h-pg">${trf('prj.h',{n:PROJECTS.length})}</h2>
     <p class="lead">${tr('prj.lead')}</p>
     <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
@@ -2902,7 +2917,6 @@ function renderPortfolio(){
   // Empty state premium quand on filtre par un projet sans aucun trial
   if(proj && list.length===0){
     document.getElementById('sc-portfolio').innerHTML = `
-      <div class="eyebrow">${tr('pf.eye')}</div>
       <h2 class="h-pg">${escapeHtml(proj.title)}</h2>
       <p class="lead">${trf('pf.proj.lead',{id:proj.id})}</p>
       <div class="pf-empty-hero">
@@ -2940,7 +2954,6 @@ function renderPortfolio(){
   const banner = proj ? `<div class="proj-banner">🗂️ ${tr('pf.byProject')} <b>${escapeHtml(proj.title)}</b> <span class="muted">(${proj.id})</span>
       <button class="btn ghost sm" style="margin-left:auto" onclick="clearFilter('project')">✕ ${tr('pf.filt.reset')}</button></div>` : '';
   document.getElementById('sc-portfolio').innerHTML = `
-    <div class="eyebrow">${tr('pf.eye')}</div>
     <h2 class="h-pg">${title}</h2>
     <p class="lead">${tr('pf.lead')}</p>
     ${banner}
@@ -3131,7 +3144,7 @@ function openUc(id){
           <span>🧪 ${escapeHtml(u.product)}</span>
         </div>
       </div>
-      <button class="x" onclick="closeUc()" title="${tr('uc.close')}">✕</button>
+      <button class="x" onclick="closeUc()" title="${tr('uc.close')}" aria-label="${tr('uc.close')}">✕</button>
     </div>
     <div class="modal-body">
       <div>
@@ -3194,9 +3207,35 @@ function openUc(id){
       <button class="btn primary sm" onclick="toast(tr('uc.edit.toast'))">${tr('uc.edit')}</button>
     </div>
   `;
-  document.getElementById('ucModal').classList.add('on');
+  const m = document.getElementById('ucModal');
+  m.classList.add('on');
+  m.setAttribute('role','dialog');
+  m.setAttribute('aria-modal','true');
+  // v0.11 a11y: focus trap + restore previously-focused element on close
+  _ucReturnFocus = document.activeElement;
+  if(_ucKh){ document.removeEventListener('keydown', _ucKh, true); }
+  _ucKh = function(e){
+    if(e.key==='Escape'){ e.preventDefault(); closeUc(); return; }
+    if(e.key!=='Tab') return;
+    const focusables = m.querySelectorAll('button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])');
+    if(!focusables.length) return;
+    const first = focusables[0], last = focusables[focusables.length-1];
+    if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+  };
+  document.addEventListener('keydown', _ucKh, true);
+  setTimeout(()=>{ const x = m.querySelector('.x'); if(x) x.focus(); }, 60);
 }
-function closeUc(){ document.getElementById('ucModal').classList.remove('on'); }
+let _ucReturnFocus=null, _ucKh=null;
+function closeUc(){
+  const m = document.getElementById('ucModal');
+  m.classList.remove('on');
+  if(_ucKh){ document.removeEventListener('keydown', _ucKh, true); _ucKh=null; }
+  if(_ucReturnFocus && typeof _ucReturnFocus.focus==='function'){
+    try{ _ucReturnFocus.focus(); }catch(e){}
+    _ucReturnFocus=null;
+  }
+}
 
 /* -----------------------------------------------------------------
  * 8. AI CHAT — Claude Sonnet 4.6 via Databricks proxy
@@ -3386,7 +3425,6 @@ function _localFallback(q){
 function renderIntake(){
   const _prefillCleanup = PREFS._prefillProject;  // consume + clear so it doesn't stick
   document.getElementById('sc-intake').innerHTML = `
-    <div class="eyebrow">${tr('in.eye')}</div>
     <h2 class="h-pg">${tr('in.h')}</h2>
     <p class="lead">${tr('in.lead')}</p>
     <div class="steps-bar">
@@ -3405,17 +3443,17 @@ function renderIntake(){
       <h3>${tr('in.s1.h')}</h3>
       <p class="sub">${tr('in.s1.sub')}</p>
       <div class="form-grid">
-        <div class="fld full"><label>${tr('in.f.project')} <span class="req">*</span></label>
+        <div class="fld full"><label for="if_project">${tr('in.f.project')} <span class="req">*</span></label>
           <select id="if_project">${PROJECTS.map(p=>`<option value="${p.id}"${PREFS._prefillProject===p.id?' selected':''}>${escapeHtml(p.id+' · '+p.title)}</option>`).join('')}</select>
           <span class="muted" style="display:block;font-size:11.5px;margin-top:4px">${tr('in.f.project.help')}</span></div>
-        <div class="fld full"><label>${tr('in.f.name')} <span class="req">*</span></label><input id="if_name" type="text" placeholder="${tr('in.f.name.ph')}"></div>
-        <div class="fld"><label>${tr('in.f.bu')} <span class="req">*</span></label>
+        <div class="fld full"><label for="if_name">${tr('in.f.name')} <span class="req">*</span></label><input id="if_name" type="text" placeholder="${tr('in.f.name.ph')}"></div>
+        <div class="fld"><label for="if_bu">${tr('in.f.bu')} <span class="req">*</span></label>
           <select id="if_bu">${BUS.map(b=>`<option value="${b.id}">${b.nm}</option>`).join('')}</select></div>
-        <div class="fld"><label>${tr('in.f.type')} <span class="req">*</span></label>
+        <div class="fld"><label for="if_type">${tr('in.f.type')} <span class="req">*</span></label>
           <select id="if_type">${TYPES.map(t=>`<option value="${t.id}">${tyLbl(t)} — TRL ${t.id==='scientific'?'2-4':(t.id==='applied'?'5-8':'7-9')}</option>`).join('')}</select></div>
-        <div class="fld full"><label>${tr('in.f.objPrim')} <span class="req">*</span></label><textarea id="if_objp" placeholder="${tr('in.f.objPrim.ph')}"></textarea></div>
-        <div class="fld full"><label>${tr('in.f.objSec')} <span class="opt">${tr('in.f.objSec.opt')}</span></label><textarea id="if_objs" placeholder="1. …\n2. …\n3. …"></textarea></div>
-        <div class="fld full"><label>${tr('in.f.rat')} <span class="req">*</span></label><textarea id="if_rat" placeholder="${tr('in.f.rat.ph')}"></textarea></div>
+        <div class="fld full"><label for="if_objp">${tr('in.f.objPrim')} <span class="req">*</span></label><textarea id="if_objp" placeholder="${tr('in.f.objPrim.ph')}"></textarea></div>
+        <div class="fld full"><label for="if_objs">${tr('in.f.objSec')} <span class="opt">${tr('in.f.objSec.opt')}</span></label><textarea id="if_objs" placeholder="1. …\n2. …\n3. …"></textarea></div>
+        <div class="fld full"><label for="if_rat">${tr('in.f.rat')} <span class="req">*</span></label><textarea id="if_rat" placeholder="${tr('in.f.rat.ph')}"></textarea></div>
       </div>
     </div>
 
@@ -3423,18 +3461,18 @@ function renderIntake(){
       <h3>${tr('in.s2.h')}</h3>
       <p class="sub">${tr('in.s2.sub')}</p>
       <div class="form-grid">
-        <div class="fld"><label>${tr('in.f.region')} <span class="req">*</span></label>
+        <div class="fld"><label for="if_region">${tr('in.f.region')} <span class="req">*</span></label>
           <select id="if_region">${Object.values(REGIONS).flat().map(r=>`<option>${r}</option>`).join('')}</select></div>
-        <div class="fld"><label>${tr('in.f.crop')} <span class="req">*</span></label>
+        <div class="fld"><label for="if_crop">${tr('in.f.crop')} <span class="req">*</span></label>
           <select id="if_crop">${CROPS.map(c=>`<option>${c}</option>`).join('')}</select></div>
-        <div class="fld"><label>${tr('in.f.prod')} <span class="req">*</span></label>
+        <div class="fld"><label for="if_prod">${tr('in.f.prod')} <span class="req">*</span></label>
           <select id="if_prod">${PRODUCTS.map(p=>`<option>${p}</option>`).join('')}</select></div>
-        <div class="fld"><label>${tr('in.f.ref')}</label>
+        <div class="fld"><label for="if_ref">${tr('in.f.ref')}</label>
           <select id="if_ref">${PRODUCTS.map(p=>`<option>${p}</option>`).join('')}</select></div>
-        <div class="fld"><label>${tr('in.f.treat')} <span class="req">*</span></label><input id="if_treat" type="number" placeholder="4" min="1"></div>
-        <div class="fld"><label>${tr('in.f.rep')} <span class="req">*</span></label><input id="if_rep" type="number" placeholder="3" min="3"></div>
-        <div class="fld"><label>${tr('in.f.start')}</label><input id="if_start" type="date" oninput="ifDateCheck()"></div>
-        <div class="fld"><label>${tr('in.f.end')}</label><input id="if_end" type="date" oninput="ifDateCheck()">
+        <div class="fld"><label for="if_treat">${tr('in.f.treat')} <span class="req">*</span></label><input id="if_treat" type="number" placeholder="4" min="1"></div>
+        <div class="fld"><label for="if_rep">${tr('in.f.rep')} <span class="req">*</span></label><input id="if_rep" type="number" placeholder="3" min="3"></div>
+        <div class="fld"><label for="if_start">${tr('in.f.start')}</label><input id="if_start" type="date" oninput="ifDateCheck()"></div>
+        <div class="fld"><label for="if_end">${tr('in.f.end')}</label><input id="if_end" type="date" oninput="ifDateCheck()">
           <span id="if_dateErr" class="fld-err" style="display:none;color:var(--bad);font-size:11.5px;margin-top:4px">${tr('in.f.dateErr')}</span></div>
       </div>
     </div>
@@ -3449,19 +3487,19 @@ function renderIntake(){
     <div class="form-section">
       <h3>${tr('in.s4.h')}</h3>
       <div class="form-grid">
-        <div class="fld"><label>${tr('in.f.budget')} <span class="req">*</span></label><input id="if_budget" type="number" placeholder="${tr('in.f.budget.ph')}"></div>
-        <div class="fld"><label>${tr('in.f.prio')}</label>
+        <div class="fld"><label for="if_budget">${tr('in.f.budget')} <span class="req">*</span></label><input id="if_budget" type="number" placeholder="${tr('in.f.budget.ph')}"></div>
+        <div class="fld"><label for="if_prio">${tr('in.f.prio')}</label>
           <select id="if_prio">${PRIORITIES.map(p=>`<option value="${p.id}">${prLbl(p)}</option>`).join('')}</select></div>
-        <div class="fld full"><label>${tr('in.f.partner')} <span class="req">*</span></label>
+        <div class="fld full"><label for="if_partner">${tr('in.f.partner')} <span class="req">*</span></label>
           <select id="if_partner" onchange="ifPartnerOther()">${PARTNERS.map(p=>`<option value="${escapeHtml(p.nm)}">${p.nm} — ${p.typ}</option>`).join('')}<option value="__other__">${tr('in.f.partnerOther')}</option></select></div>
-        <div class="fld full" id="if_partnerOtherWrap" style="display:none"><label>${tr('in.f.partnerOtherName')} <span class="req">*</span></label><input id="if_partnerOther" type="text" placeholder="${tr('in.f.partnerOtherName.ph')}"></div>
-        <div class="fld"><label>${tr('in.f.ft')}</label>
+        <div class="fld full" id="if_partnerOtherWrap" style="display:none"><label for="if_partnerOther">${tr('in.f.partnerOtherName')} <span class="req">*</span></label><input id="if_partnerOther" type="text" placeholder="${tr('in.f.partnerOtherName.ph')}"></div>
+        <div class="fld"><label for="if_ft">${tr('in.f.ft')}</label>
           <select id="if_ft"><option value="0">${tr('in.f.std')}</option><option value="1">${tr('in.f.urgent')}</option></select></div>
-        <div class="fld"><label>${tr('in.f.sai')}</label><input id="if_sai" type="text" placeholder="${tr('in.f.sai.ph')}"></div>
-        <div class="fld full"><label>${tr('in.f.attach')} <span class="opt">${tr('in.f.objSec.opt')}</span></label>
+        <div class="fld"><label for="if_sai">${tr('in.f.sai')}</label><input id="if_sai" type="text" placeholder="${tr('in.f.sai.ph')}"></div>
+        <div class="fld full"><label for="if_attach">${tr('in.f.attach')} <span class="opt">${tr('in.f.objSec.opt')}</span></label>
           <input id="if_attach" type="file" multiple onchange="ifAttachList()" style="font-size:12.5px">
           <span id="if_attachList" class="muted" style="display:block;font-size:11.5px;margin-top:4px"></span></div>
-        <div class="fld full"><label>${tr('in.f.protocol')} <span class="req">*</span></label>
+        <div class="fld full"><label for="if_protocol">${tr('in.f.protocol')} <span class="req">*</span></label>
           <input id="if_protocol" type="file" accept=".doc,.docx" onchange="ifProtoName()" style="font-size:12.5px">
           <span id="if_protocolName" class="muted" style="display:block;font-size:11.5px;margin-top:4px">${tr('in.f.protocol.help')}</span></div>
       </div>
@@ -3588,7 +3626,6 @@ function renderCalendar(){
   const qbrCols = [6, 9, 12]; // Mar, Jun, Sep of N (1-indexed: Jan=4 → Mar=6, Jun=9, Sep=12)
   const Y = 2026;
   document.getElementById('sc-calendar').innerHTML = `
-    <div class="eyebrow">${tr('cal.eye')}</div>
     <h2 class="h-pg">${trf('cal.h',{y:Y})}</h2>
     <p class="lead">${tr('cal.lead.v2')}</p>
 
@@ -3657,7 +3694,6 @@ function renderGovernance(){
     ['gov.step.11','r','c','','','']
   ];
   document.getElementById('sc-governance').innerHTML = `
-    <div class="eyebrow">${tr('gov.eye')}</div>
     <h2 class="h-pg">${tr('gov.h')}</h2>
     <p class="lead">${tr('gov.lead')}</p>
 
@@ -3706,7 +3742,6 @@ function renderFastTrack(){
   const fts = DATA.filter(u=>u.fast_track);
   const Y = 2026;
   document.getElementById('sc-fasttrack').innerHTML = `
-    <div class="eyebrow">${tr('ft.eye')}</div>
     <h2 class="h-pg">${tr('ft.h')}</h2>
     <p class="lead">${tr('ft.lead')}</p>
 
@@ -3743,7 +3778,6 @@ function renderKB(){
     return Object.assign({}, u, { _lesson:lesson });
   });
   document.getElementById('sc-kb').innerHTML = `
-    <div class="eyebrow">${tr('kb.eye')}</div>
     <h2 class="h-pg">${tr('kb.h')}</h2>
     <p class="lead">${tr('kb.lead')}</p>
 
@@ -3785,7 +3819,6 @@ function renderAdmin(){
     : tab==='access' ? renderAdminAccess()
     :                  renderAdminIntegr();
   document.getElementById('sc-admin').innerHTML = `
-    <div class="eyebrow">${tr('adm.eye')}</div>
     <h2 class="h-pg">${tr('adm.h')}</h2>
     <p class="lead">${tr('adm.lead')}</p>
     <div class="subnav adm-subnav">
@@ -3963,6 +3996,39 @@ goView(PREFS.view || 'cockpit');
 if(PREFS.chatOpen) toggleChat();
 syncFromServer();  // full-screen : window.DNAI_NPLAN injecté → sync BDD immédiate
 
+/* -----------------------------------------------------------------
+ * v0.11 a11y : keyboard-actionable hook — any <div onclick> /
+ * KPI / kanban card / table row / chip / sidebar item / heatmap
+ * cell / KB card / alert action becomes Enter / Space activable,
+ * receives role="button" and tabindex="0". MutationObserver re-runs
+ * after each render (the app re-writes innerHTML often).
+ * --------------------------------------------------------------- */
+(function a11yClickable(){
+  const sel = '[onclick], .kpi:not(.kpi--static), .kn-card, .tbl tr.t-link, .chip, .pf-empty-hero button, .sb-item, .kb-card, .heat-row .h-cell, .alert .act';
+  document.body.addEventListener('keydown', function(e){
+    if(e.key!=='Enter' && e.key!==' ') return;
+    const t = e.target;
+    if(!t.matches || !t.matches(sel)) return;
+    if(t.tagName==='BUTTON' || t.tagName==='A' || t.tagName==='INPUT' || t.tagName==='SELECT' || t.tagName==='TEXTAREA') return;
+    e.preventDefault();
+    t.click();
+  });
+  function promote(){
+    document.querySelectorAll(sel).forEach(function(el){
+      if(el.tagName==='BUTTON' || el.tagName==='A' || el.tagName==='INPUT' || el.tagName==='SELECT' || el.tagName==='TEXTAREA') return;
+      if(!el.hasAttribute('tabindex')) el.setAttribute('tabindex','0');
+      if(!el.hasAttribute('role')) el.setAttribute('role','button');
+    });
+  }
+  promote();
+  let _t=null;
+  const mo = new MutationObserver(function(){
+    if(_t) return;
+    _t = setTimeout(function(){ _t=null; promote(); }, 80);
+  });
+  mo.observe(document.body, {childList:true, subtree:true});
+})();
+
 // Global shortcut: ⌘K / Ctrl+K focus search
 document.addEventListener('keydown', e=>{
   if((e.metaKey||e.ctrlKey) && e.key==='k'){ e.preventDefault(); document.getElementById('globalSearch').focus(); }
@@ -4034,7 +4100,7 @@ const FB = (function(){
     const view=viewLabel(); const block=blockLabel(el); const sel=selectorOf(el);
     modal=document.createElement('div'); modal.className='fb-modal-wrap';
     modal.innerHTML='<div class="fb-modal" onclick="event.stopPropagation()">'
-      +'<div class="fb-head"><h3>💬 Ajouter un commentaire</h3><button class="fb-x">✕</button></div>'
+      +'<div class="fb-head"><h3>💬 Ajouter un commentaire</h3><button class="fb-x" aria-label="Fermer">✕</button></div>'
       +'<div class="fb-ctx"><span class="fb-lbl">SUR</span><b>'+escapeHtml(block)+'</b><span class="fb-bread">'+escapeHtml(view)+'</span></div>'
       +'<label class="fb-flbl">Auteur</label><input class="fb-author" type="text" placeholder="ton prénom" value="'+escapeHtml(author)+'">'
       +'<label class="fb-flbl">Commentaire</label><textarea class="fb-text" rows="4" placeholder="Que faut-il changer / ajouter / corriger ?"></textarea>'
@@ -4078,7 +4144,7 @@ const FB = (function(){
   function openPanel(){
     if(panel){ panel.remove(); panel=null; return; }
     panel=document.createElement('div'); panel.className='fb-panel';
-    const head='<div class="fb-phead"><h3>📋 Commentaires ('+list.length+')</h3><button class="fb-x">✕</button></div>'
+    const head='<div class="fb-phead"><h3>📋 Commentaires ('+list.length+')</h3><button class="fb-x" aria-label="Fermer le panneau">✕</button></div>'
       +'<div class="fb-pacts"><button class="fb-btn" data-act="exjson">⤓ JSON</button><button class="fb-btn" data-act="excsv">⤓ CSV</button><button class="fb-btn" data-act="excopy">📋 Copier markdown</button><span style="flex:1"></span><button class="fb-btn danger" data-act="clear">🗑 Tout effacer</button></div>';
     const body=list.length?
       '<div class="fb-list">'+list.map(c=>`<div class="fb-item" data-id="${c.id}">

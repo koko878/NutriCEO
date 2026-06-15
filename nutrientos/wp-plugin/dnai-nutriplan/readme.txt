@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.10.2
+Stable tag: 0.11.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,30 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.11.0 — Audit impeccable P0/P1 (a11y + tokens + AI-grammar cleanup) =
+* A11Y P0 : label/for binding sur 18 champs du formulaire intake,
+  :focus-visible ring vert global, conversion des div onclick en zones
+  activables clavier (Enter/Espace + role=button + tabindex via
+  MutationObserver), aria-label sur tous les boutons icône (close-X
+  modales, langue), focus-trap UC modal sur ouverture+ESC+Tab cycling,
+  restauration du focus précédent à la fermeture.
+* Anti-patterns P1 : suppression de 11 eyebrows redondants
+  (clé i18n .eye conservée mais div retirée — voix non scaffold), retrait
+  des side-stripes border-left sur .alert et .fb-item (remplacés par
+  bordure complète + bg tint sémantique, dot orange leading pour fb-item),
+  tone down Cockpit hero (suppression du blob radial, h1 28px, KPIs 28px,
+  gradient simplifié 2-stops), gradient .tb-btn.ai remplacé par solide,
+  gradients calendrier (.cal-bar, .legend-sw) simplifiés en couleurs solides.
+* Colorize P1 : --muted-2 #8aa195 → #5f7269 (contraste AA 4.6:1 sur
+  blanc, vs 2.85:1 avant), bg tints sémantiques pour alertes
+  (warn/bad/ok) au lieu de bordure latérale.
+* Extract P1 : tokens sémantiques --st-{go,hold,kill,draft}-{bg,fg},
+  --av-1..6, --raci-{r,a,c,i}, --ring-focus. Règles pill/avatar/raci
+  consomment les tokens (préparation dark mode futur).
+* Polish : prefers-reduced-motion block (toutes animations coupées),
+  body overflow corrigé en `hidden auto` pour zoom 200%, font weights
+  trimmés (Inter 400-700 sans 800, gain ~30 KB sur le payload Google Fonts).
 
 = 0.10.2 — Audit complet des drill-downs (fix bug cosmétique-pas-fonctionnel) =
 * Bug Fast Track « SLA moyen » et autres KPIs : ils étaient cliquables
