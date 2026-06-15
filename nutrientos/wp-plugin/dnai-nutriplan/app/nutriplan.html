@@ -594,8 +594,39 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .donut-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
 .donut{width:100%;max-width:210px;height:auto}
 .donut-legend{display:flex;flex-wrap:wrap;gap:6px 12px;justify-content:center;width:100%}
-.donut-legend .dl{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-2)}
+.donut-legend .dl{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-2);padding:3px 7px;border-radius:8px;transition:background 200ms var(--ease-soft,ease)}
 .donut-legend .dl i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.donut-legend .dl small{color:var(--muted-2);font-variant-numeric:tabular-nums}
+.donut-legend .dl-click{cursor:pointer}
+.donut-legend .dl-click:hover{background:var(--green-50)}
+.donut-seg{transition:opacity 200ms ease, stroke-width 200ms ease}
+.donut:hover .donut-seg{opacity:.55}
+.donut .donut-seg:hover{opacity:1;stroke-width:34}
+.dash-kpi--click{cursor:pointer;transition:transform 260ms cubic-bezier(.32,.72,0,1), box-shadow 260ms cubic-bezier(.32,.72,0,1), border-color 260ms cubic-bezier(.32,.72,0,1)}
+.dash-kpi--click:hover{transform:translateY(-2px);border-color:var(--green-300);box-shadow:0 12px 28px -10px rgba(16,94,32,.25)}
+.dash-kpi--click:active{transform:translateY(0) scale(.99)}
+.dash-bubble--click{cursor:pointer;transition:transform 280ms cubic-bezier(.32,.72,0,1)}
+.dash-bubble--click:hover{transform:translate(-50%,-52%) scale(1.06)}
+.dash-bubble--click:hover .db-pill{box-shadow:0 8px 18px -4px rgba(16,94,32,.35)}
+.dash-drill-hint{display:inline-block;font:600 11px 'Inter';color:var(--green-700);background:var(--green-50);border:1px solid var(--green-100);border-radius:999px;padding:2px 9px;margin-left:6px;vertical-align:middle}
+/* KPIs statiques (info pure, sans drill-down) — pas de hover-lift trompeur */
+.kpi--static{cursor:default !important}
+.kpi--static:hover{transform:none !important;box-shadow:0 1px 2px rgba(16,94,32,.08) !important;border-color:var(--line) !important}
+
+/* ===== Active filters bar (chips de drill-down visibles) ===== */
+.af-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:linear-gradient(180deg,#fff,#f8fbf8);border:1px solid var(--green-100);border-radius:14px;padding:10px 14px;margin:6px 0 14px;box-shadow:0 1px 2px rgba(16,94,32,.06)}
+.af-lead{font-size:12.5px;color:var(--muted)}
+.af-lead b{color:var(--green-800);font-variant-numeric:tabular-nums;margin:0 2px}
+.af-chip{display:inline-flex;align-items:center;gap:7px;background:var(--green-50);border:1px solid var(--green-100);color:var(--green-900);border-radius:999px;padding:5px 9px 5px 11px;font:500 12px 'Inter';cursor:pointer;transition:background 200ms cubic-bezier(.32,.72,0,1), transform 200ms cubic-bezier(.32,.72,0,1), box-shadow 200ms cubic-bezier(.32,.72,0,1)}
+.af-chip:hover{background:#fff;border-color:var(--green-300);box-shadow:0 4px 10px -4px rgba(16,94,32,.2)}
+.af-chip:active{transform:scale(.97)}
+.af-chip .af-ico{font-size:13px}
+.af-chip .af-lbl{color:var(--muted);font-size:11px;letter-spacing:.02em}
+.af-chip .af-val{color:var(--green-900);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.af-chip .af-x{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:rgba(16,94,32,.12);font-size:9px;line-height:1;color:var(--green-800);margin-left:2px}
+.af-chip:hover .af-x{background:var(--bad-bg);color:var(--bad)}
+.af-reset{margin-left:auto;background:transparent;border:0;color:var(--muted);font:600 11.5px 'Inter';cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.af-reset:hover{color:var(--bad)}
 
 /* ===== Fiche projet (vue dédiée post-création) ===== */
 .proj-detail{animation:pd-in 480ms var(--ease-soft) both}
@@ -995,6 +1026,8 @@ fr:{
  'pf.col.all':'Tous','pf.col.filter':'Filtrer…',
  'pf.byProject':'Filtré par projet :',
  'pf.proj.title':'{n} trials du projet \"{title}\"','pf.proj.lead':'Tous les trials rattachés à ce projet ({id}). Crée le premier ou reviens à la liste complète.','pf.proj.empty.eye':'Projet prêt','pf.proj.empty.title':'Aucun trial pour l\'instant','pf.proj.empty.body':'Le projet « {title} » vient d\'être créé. Ajoute son premier trial pour démarrer l\'instruction.','pf.proj.empty.cta':'Créer le premier trial','pf.proj.empty.allTrials':'Voir tous les trials','pf.proj.addTrial':'Ajouter un trial',
+ 'pf.af.lead':'Filtres actifs ·','pf.af.results':'résultats','pf.af.project':'Projet','pf.af.search':'Recherche','pf.af.crop':'Culture','pf.af.partner':'Partenaire','pf.af.ft':'Fast Track','pf.af.ptype':'Type partenaire','pf.af.kind':'Genre','pf.af.installed':'Installés','pf.af.clear':'Retirer ce filtre','pf.af.resetAll':'Tout réinitialiser','dash.drill.hint':'clique pour filtrer →','dash.drill.tip':'Voir le portefeuille filtré','dash.drill.toast':'Filtré ·',
+ 'pf.af.open':'Non clôturés','pf.af.icissues':'Issues IC',
  // modal
  'uc.start':'Lancement prévu','uc.end':'Clôture prévue','uc.budget':'Budget alloué','uc.partner':'Partenaire','uc.sai':'SA&I Lead',
  'uc.plan':'Plan expérimental','uc.plan.fmt':'{t} traitements × {r} répétitions',
@@ -1260,6 +1293,8 @@ en:{
  'pf.col.all':'All','pf.col.filter':'Filter…',
  'pf.byProject':'Filtered by project:',
  'pf.proj.title':'{n} trials in project \"{title}\"','pf.proj.lead':'All trials attached to this project ({id}). Create the first one or go back to the full list.','pf.proj.empty.eye':'Project ready','pf.proj.empty.title':'No trials yet','pf.proj.empty.body':'Project \"{title}\" has just been created. Add its first trial to start the process.','pf.proj.empty.cta':'Create the first trial','pf.proj.empty.allTrials':'See all trials','pf.proj.addTrial':'Add a trial',
+ 'pf.af.lead':'Active filters ·','pf.af.results':'results','pf.af.project':'Project','pf.af.search':'Search','pf.af.crop':'Crop','pf.af.partner':'Partner','pf.af.ft':'Fast Track','pf.af.ptype':'Partner type','pf.af.kind':'Kind','pf.af.installed':'Installed','pf.af.clear':'Remove this filter','pf.af.resetAll':'Reset all','dash.drill.hint':'click to filter →','dash.drill.tip':'View filtered portfolio','dash.drill.toast':'Filtered ·',
+ 'pf.af.open':'Open','pf.af.icissues':'IC issues',
  'uc.start':'Planned start','uc.end':'Planned end','uc.budget':'Allocated budget','uc.partner':'Partner','uc.sai':'SA&I Lead',
  'uc.plan':'Experimental plan','uc.plan.fmt':'{t} treatments × {r} replications',
  'uc.class':'Trial Class · Type','uc.partnerSetup':'Partner setup','uc.strategicObj':'Strategic objectives','uc.icIssues':'Open IC gaps',
@@ -1517,6 +1552,8 @@ pt:{
  'pf.col.all':'Todos','pf.col.filter':'Filtrar…',
  'pf.byProject':'Filtrado por projeto:',
  'pf.proj.title':'{n} trials no projeto \"{title}\"','pf.proj.lead':'Todos os trials vinculados a este projeto ({id}). Crie o primeiro ou volte à lista completa.','pf.proj.empty.eye':'Projeto pronto','pf.proj.empty.title':'Sem trials ainda','pf.proj.empty.body':'O projeto \"{title}\" acabou de ser criado. Adicione seu primeiro trial.','pf.proj.empty.cta':'Criar o primeiro trial','pf.proj.empty.allTrials':'Ver todos os trials','pf.proj.addTrial':'Adicionar trial',
+ 'pf.af.lead':'Filtros ativos ·','pf.af.results':'resultados','pf.af.project':'Projeto','pf.af.search':'Busca','pf.af.crop':'Cultura','pf.af.partner':'Parceiro','pf.af.ft':'Fast Track','pf.af.ptype':'Tipo de parceiro','pf.af.kind':'Tipo','pf.af.installed':'Instalados','pf.af.clear':'Remover este filtro','pf.af.resetAll':'Resetar tudo','dash.drill.hint':'clique para filtrar →','dash.drill.tip':'Ver portfólio filtrado','dash.drill.toast':'Filtrado ·',
+ 'pf.af.open':'Em aberto','pf.af.icissues':'Issues IC',
  'uc.start':'Início previsto','uc.end':'Fechamento previsto','uc.budget':'Orçamento alocado','uc.partner':'Parceiro','uc.sai':'SA&I Lead',
  'uc.plan':'Plano experimental','uc.plan.fmt':'{t} tratamentos × {r} repetições',
  'uc.class':'Trial Class · Type','uc.partnerSetup':'Setup do parceiro','uc.strategicObj':'Objetivos estratégicos','uc.icIssues':'Desvios IC abertos',
@@ -2374,7 +2411,7 @@ function renderCockpit(){
       ${kpiOfficial('🚀', tr('ck.kpi1'), pctFastTrack().toFixed(0)+'%', tr('ck.kpi1.d'), pctFastTrack(), 10, true, {fast_track:1})}
       ${kpiOfficial('📈', tr('ck.kpi2'), pctTransform().toFixed(0)+'%', tr('ck.kpi2.d'), pctTransform(), 50, false, {status:'monitoring'})}
       ${kpiOfficial('⏱', tr('ck.kpi3'),  pctOnTime().toFixed(0)+'%',   tr('ck.kpi3.d'),  pctOnTime(),    80, false, {status:'execution'})}
-      ${kpiOfficial('💰', tr('ck.kpi4'), (budgetVariance()>=0?'+':'')+budgetVariance().toFixed(1)+'%', tr('ck.kpi4.d'), Math.abs(budgetVariance()), 5, true, {})}
+      ${kpiOfficial('💰', tr('ck.kpi4'), (budgetVariance()>=0?'+':'')+budgetVariance().toFixed(1)+'%', tr('ck.kpi4.d'), Math.abs(budgetVariance()), 5, true, null)}
     </div>
 
     <div class="row-2c">
@@ -2415,7 +2452,7 @@ function renderCockpit(){
           const top = Object.entries(stCnt).sort((a,b)=>b[1]-a[1])[0];
           const topSt = top?statusOf(top[0]):null;
           const leads = [...new Set(list.map(u=>u.sai_lead))];
-          return `<tr class="t-link" onclick="PREFS.filters={bu:'${b.id}'};goView('portfolio')"><td><span class="av ${b.color}">${b.id}</span> <b>${escapeHtml(b.nm)}</b></td>
+          return `<tr class="t-link" onclick='kpiGo({bu:"${b.id}"})'><td><span class="av ${b.color}">${b.id}</span> <b>${escapeHtml(b.nm)}</b></td>
             <td class="t-num">${b.n}</td><td class="t-num">${fmtMoney(bdg)}</td>
             <td>${topSt?`<span class="pill ${topSt.pill}">${stLbl(topSt)}</span>`:'—'}</td>
             <td class="muted">${leads.slice(0,2).join(', ')}${leads.length>2?` +${leads.length-2}`:''}</td></tr>`;
@@ -2431,7 +2468,10 @@ function kpiGo(filt){
   goView('portfolio');
 }
 function kpiTile(ico,k,v,d,pct,filt){
-  return `<div class="kpi" onclick='kpiGo(${JSON.stringify(filt||{})})'>
+  // Filter présent → cliquable + drill-down ; sinon, info pure non-cliquable.
+  const clickable = filt && Object.keys(filt).length>0;
+  const handler = clickable ? ` onclick='kpiGo(${JSON.stringify(filt)})' title="${tr('dash.drill.tip')||'Voir le portefeuille filtré'}"` : ' style="cursor:default"';
+  return `<div class="kpi${clickable?'':' kpi--static'}"${handler}>
     <div class="k"><span class="ico">${ico}</span>${escapeHtml(k)}</div>
     <div class="v">${v}<small>${tr('ck.k.unit')}</small></div>
     <div class="d flat">${escapeHtml(d)}</div>
@@ -2442,7 +2482,9 @@ function kpiOfficial(ico,k,v,d,pct,target,lowerIsBetter,filt){
   // KPI tile aligned with the validated framework's 4 official process KPIs (§8).
   const ok = lowerIsBetter ? (pct<=target) : (pct>=target);
   const cls = ok ? '' : 'kpi-bad';
-  return `<div class="kpi ${cls}" onclick='kpiGo(${JSON.stringify(filt||{})})' title="${escapeHtml(d)}">
+  const clickable = filt && Object.keys(filt).length>0;
+  const handler = clickable ? ` onclick='kpiGo(${JSON.stringify(filt)})' title="${escapeHtml(d)} — ${tr('dash.drill.tip')||'cliquer pour filtrer'}"` : ` style="cursor:default" title="${escapeHtml(d)}"`;
+  return `<div class="kpi ${cls}${clickable?'':' kpi--static'}"${handler}>
     <div class="k"><span class="ico">${ico}</span>${escapeHtml(k)}</div>
     <div class="v">${v}</div>
     <div class="d ${ok?'up':'down'}">${ok?'✓':'⚠'} ${escapeHtml(d)}</div>
@@ -2482,10 +2524,10 @@ function renderControls(){
     <p class="lead">${tr('ic.lead')}</p>
 
     <div class="kpi-grid">
-      ${kpiOfficial('🛡️', tr('ic.k1'), compliance+'%',    tr('ic.k1.d'),    compliance, 95, false)}
-      ${kpiOfficial('⚠️',  tr('ic.k2'), ucsWithIssues+'',   tr('ic.k2.d'),    ucsWithIssues, 2, true)}
-      ${kpiOfficial('📋', tr('ic.k3'), IC_POINTS.length+'',tr('ic.k3.d'),    100, 100, false)}
-      ${kpiOfficial('🚨', tr('ic.k4'), totalIssues+'',     tr('ic.k4.d'),    totalIssues, 3, true)}
+      ${kpiOfficial('🛡️', tr('ic.k1'), compliance+'%',    tr('ic.k1.d'),    compliance, 95, false, null)}
+      ${kpiOfficial('⚠️',  tr('ic.k2'), ucsWithIssues+'',   tr('ic.k2.d'),    ucsWithIssues, 2, true, {ic_with_issues:1})}
+      ${kpiOfficial('📋', tr('ic.k3'), IC_POINTS.length+'',tr('ic.k3.d'),    100, 100, false, null)}
+      ${kpiOfficial('🚨', tr('ic.k4'), totalIssues+'',     tr('ic.k4.d'),    totalIssues, 3, true, {ic_with_issues:1})}
     </div>
 
     <div class="card">
@@ -2620,24 +2662,37 @@ function dashAgg(keyFn, valFn){
   return Object.entries(m).map(([label,value])=>({label,value,pct:Math.round(value/total*100)})).sort((a,b)=>b.value-a.value);
 }
 // Donut SVG (anneau) — segments depuis [{label,value,pct}].
-function donutSVG(data, opts){
+// Drill-down helper for dashboard donuts/map → portfolio filtered
+function dashDrill(filt, hint){
+  if(!filt) return;
+  PREFS.filters = filt;
+  savePrefs();
+  toast(tr('dash.drill.toast')+' '+(hint||''), 'ok');
+  goView('portfolio');
+}
+function donutSVG(data, opts, onFilter){
   opts=opts||{}; const size=opts.size||200, sw=opts.stroke||30, r=(size-sw)/2, cx=size/2, cy=size/2;
   const C=2*Math.PI*r; let off=0; const total=data.reduce((s,d)=>s+d.value,0)||1;
   const segs = data.map((d,i)=>{
     const frac=d.value/total, len=frac*C;
     const col=DASH_PALETTE[i%DASH_PALETTE.length];
-    const el=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}" transform="rotate(-90 ${cx} ${cy})"><title>${escapeHtml(d.label)} : ${d.pct}%</title></circle>`;
-    // étiquette % au milieu du segment (si assez large)
+    const filt = onFilter ? onFilter(d, i) : null;
+    const click = filt ? ` style="cursor:pointer" onclick='dashDrill(${JSON.stringify(filt)}, ${JSON.stringify(d.label)})' class="donut-seg"` : '';
+    const el=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}" transform="rotate(-90 ${cx} ${cy})"${click}><title>${escapeHtml(d.label)} : ${d.pct}% — ${tr('dash.drill.tip')}</title></circle>`;
     let lbl='';
     if(frac>0.04){
       const mid=(off+len/2)/C*2*Math.PI - Math.PI/2;
       const lr=r; const lx=cx+lr*Math.cos(mid), ly=cy+lr*Math.sin(mid);
-      lbl=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="central" font-size="11" font-weight="700" fill="${i<4?'#fff':'#1a1a1a'}">${d.pct}%</text>`;
+      lbl=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="central" font-size="11" font-weight="700" fill="${i<4?'#fff':'#1a1a1a'}" pointer-events="none">${d.pct}%</text>`;
     }
     off+=len;
     return el+lbl;
   }).join('');
-  const legend = data.map((d,i)=>`<span class="dl"><i style="background:${DASH_PALETTE[i%DASH_PALETTE.length]}"></i>${escapeHtml(d.label)}</span>`).join('');
+  const legend = data.map((d,i)=>{
+    const filt = onFilter ? onFilter(d, i) : null;
+    const click = filt ? ` onclick='dashDrill(${JSON.stringify(filt)}, ${JSON.stringify(d.label)})' style="cursor:pointer"` : '';
+    return `<span class="dl${filt?' dl-click':''}"${click}><i style="background:${DASH_PALETTE[i%DASH_PALETTE.length]}"></i>${escapeHtml(d.label)} <small>${d.pct}%</small></span>`;
+  }).join('');
   return `<div class="donut-wrap"><svg viewBox="0 0 ${size} ${size}" class="donut">${segs}</svg><div class="donut-legend">${legend}</div></div>`;
 }
 function renderDashboards(){
@@ -2650,32 +2705,36 @@ function renderDashboards(){
   const regions = dashRegionStats();
   const nRegions = regions.length, nEntities = new Set(DATA.map(u=>u.bu)).size;
 
-  const crops  = dashAgg(u=>u.crop);
-  const budget = dashAgg(u=>buOf(u.bu).nm.replace(' BU','').replace(' Corporate',''), u=>u.budget||0);
-  const partner= dashAgg(u=>{ const s=u.partner_setup; return s==='institution'?'Institutions / Universités':s==='client'?'Distributeurs / Clients':'Prestataires de service'; });
+  // Drill-down maps : segment label → filter object
+  const cropsData  = dashAgg(u=>u.crop);
+  const budgetData = dashAgg(u=>u.bu, u=>u.budget||0).map(d=>({...d, label:buOf(d.label).nm.replace(' BU','').replace(' Corporate','')||d.label, _bu:d.label}));
+  const partnerData= dashAgg(u=>u.partner_setup||'provider').map(d=>{
+    const map = {institution:'Institutions / Universités', client:'Distributeurs / Clients', provider:'Prestataires de service'};
+    return {...d, label: map[d.label]||d.label, _ps:d.label};
+  });
 
-  const kpi = (lab,big,sub,pct,unit)=>`<div class="dash-kpi">
+  const kpi = (lab,big,sub,pct,unit,filt)=>`<div class="dash-kpi${filt?' dash-kpi--click':''}"${filt?` onclick='dashDrill(${JSON.stringify(filt)}, ${JSON.stringify(lab)})' style="cursor:pointer"`:''}>
     <div class="k">${lab}</div><div class="v">${big}${unit?`<small>${unit}</small>`:''}</div>
     <div class="s">${sub}</div>${pct!=null?`<div class="dash-bar"><i style="width:${pct}%"></i></div>`:''}</div>`;
 
   document.getElementById('sc-dashboards').innerHTML = `
     <div class="eyebrow">${tr('dash.eye')}</div>
     <h2 class="h-pg">${tr('dash.h')}</h2>
-    <p class="lead">${tr('dash.lead')}</p>
+    <p class="lead">${tr('dash.lead')} <span class="dash-drill-hint">${tr('dash.drill.hint')}</span></p>
 
     <div class="dash-kpis">
-      ${kpi(tr('dash.k.tplan'), tPlanned, trf('dash.k.across',{r:nRegions,e:nEntities}), null)}
-      ${kpi(tr('dash.k.tinst'), tInstalled+'<small> / '+tPlanned+'</small>', '', tPlanned?Math.round(tInstalled/tPlanned*100):0)}
-      ${kpi(tr('dash.k.tprog'), tProg, '', tProg, '%')}
-      ${kpi(tr('dash.k.dplan'), dPlanned, trf('dash.k.across',{r:nRegions,e:nEntities}), null)}
-      ${kpi(tr('dash.k.dinst'), dInstalled+'<small> / '+dPlanned+'</small>', '', dPlanned?Math.round(dInstalled/dPlanned*100):0)}
-      ${kpi(tr('dash.k.dprog'), dProg, '', dProg, '%')}
+      ${kpi(tr('dash.k.tplan'), tPlanned, trf('dash.k.across',{r:nRegions,e:nEntities}), null, null, {trial_kind:'trial'})}
+      ${kpi(tr('dash.k.tinst'), tInstalled+'<small> / '+tPlanned+'</small>', '', tPlanned?Math.round(tInstalled/tPlanned*100):0, null, {trial_kind:'trial', installed:1})}
+      ${kpi(tr('dash.k.tprog'), tProg, '', tProg, '%', {trial_kind:'trial'})}
+      ${kpi(tr('dash.k.dplan'), dPlanned, trf('dash.k.across',{r:nRegions,e:nEntities}), null, null, {type:'demo'})}
+      ${kpi(tr('dash.k.dinst'), dInstalled+'<small> / '+dPlanned+'</small>', '', dPlanned?Math.round(dInstalled/dPlanned*100):0, null, {type:'demo', installed:1})}
+      ${kpi(tr('dash.k.dprog'), dProg, '', dProg, '%', {type:'demo'})}
     </div>
 
     <div class="card dash-map-card">
-      <div class="dash-card-h"><h3><b>A.</b> ${tr('dash.map.h')}</h3><span class="dash-legend-note">${tr('dash.map.legend')}</span></div>
+      <div class="dash-card-h"><h3><b>A.</b> ${tr('dash.map.h')}</h3><span class="dash-legend-note">${tr('dash.map.legend')} · ${tr('dash.drill.hint')}</span></div>
       <div class="dash-map">
-        ${regions.map(r=>`<div class="dash-bubble" style="left:${r.x}%;top:${r.y}%">
+        ${regions.map(r=>`<div class="dash-bubble dash-bubble--click" style="left:${r.x}%;top:${r.y}%" onclick='dashDrill(${JSON.stringify({bu:r.key})}, ${JSON.stringify(r.label)})' title="${tr('dash.drill.tip')} — ${escapeHtml(r.label)}">
           <div class="db-label">${escapeHtml(r.label)}</div>
           <div class="db-pills">${r.trials?`<span class="db-pill t">${r.trials}</span>`:''}${r.demos?`<span class="db-pill d">${r.demos}</span>`:''}</div>
           <div class="db-prog">${r.progress}% ${tr('dash.map.progress')}</div>
@@ -2684,9 +2743,9 @@ function renderDashboards(){
     </div>
 
     <div class="dash-donuts">
-      <div class="card"><div class="dash-card-h"><h3><b>B.</b> ${tr('dash.b.h')}</h3><span class="dash-legend-note">${tr('dash.b.sub')}</span></div>${donutSVG(partner)}</div>
-      <div class="card"><div class="dash-card-h"><h3><b>C.</b> ${tr('dash.c.h')}</h3><span class="dash-legend-note">${tr('dash.c.sub')}</span></div>${donutSVG(crops)}</div>
-      <div class="card"><div class="dash-card-h"><h3><b>D.</b> ${tr('dash.d.h')}</h3><span class="dash-legend-note">${tr('dash.d.sub')}</span></div>${donutSVG(budget)}</div>
+      <div class="card"><div class="dash-card-h"><h3><b>B.</b> ${tr('dash.b.h')}</h3><span class="dash-legend-note">${tr('dash.b.sub')} · ${tr('dash.drill.hint')}</span></div>${donutSVG(partnerData, {}, d=>({partner_setup:d._ps}))}</div>
+      <div class="card"><div class="dash-card-h"><h3><b>C.</b> ${tr('dash.c.h')}</h3><span class="dash-legend-note">${tr('dash.c.sub')} · ${tr('dash.drill.hint')}</span></div>${donutSVG(cropsData, {}, d=>({crop:d.label}))}</div>
+      <div class="card"><div class="dash-card-h"><h3><b>D.</b> ${tr('dash.d.h')}</h3><span class="dash-legend-note">${tr('dash.d.sub')} · ${tr('dash.drill.hint')}</span></div>${donutSVG(budgetData, {}, d=>({bu:d._bu}))}</div>
     </div>
     <p class="muted" style="font-size:12px;margin-top:6px">${tr('dash.note')}</p>
   `;
@@ -2895,12 +2954,45 @@ function renderPortfolio(){
       ${chipFilter(tr('pf.filt.type'),  'type',   TYPES.map(t=>[t.id, tyLbl(t)]))}
       ${chipFilter(tr('pf.filt.bu'),    'bu',     BUS.map(b=>[b.id, b.nm]))}
       ${chipFilter(tr('pf.filt.status'),'status', STATUSES.map(s=>[s.id, stLbl(s)]))}
-      <button class="btn ghost sm" onclick="PREFS.filters={};savePrefs();renderPortfolio()">${tr('pf.filt.reset')}</button>
+      <button class="btn ghost sm" onclick="resetAllFilters()">${tr('pf.filt.reset')}</button>
       ${proj ? `<button class="btn primary sm" onclick="newTrialForProject('${proj.id}')">+ ${tr('pf.proj.addTrial')}</button>` : ''}
     </div>
+    ${activeFiltersBar()}
 
     ${view==='kanban' ? renderKanban(list) : renderTable(list)}
   `;
+}
+// Reset complet — efface TOUS les filtres (type, bu, status, project, q, crop, partnerq, fast_track)
+function resetAllFilters(){ PREFS.filters = {}; savePrefs(); renderPortfolio(); }
+// Bar des filtres ACTIFS visibles (drill-down, project, search, fast_track…) — fix bug "rien n'apparait coté filtre"
+function activeFiltersBar(){
+  const f = PREFS.filters||{};
+  const chips = [];
+  if(f.project){ const p=projById(f.project); if(p) chips.push({key:'project', label:tr('pf.af.project'), val:p.title, ico:'🗂️'}); }
+  if(f.q){       chips.push({key:'q', label:tr('pf.af.search'), val:'"'+f.q+'"', ico:'🔎'}); }
+  if(f.crop){    chips.push({key:'crop', label:tr('pf.af.crop'), val:f.crop, ico:'🌾'}); }
+  if(f.partnerq){chips.push({key:'partnerq', label:tr('pf.af.partner'), val:f.partnerq, ico:'🤝'}); }
+  if(f.fast_track){ chips.push({key:'fast_track', label:tr('pf.af.ft'), val:'oui', ico:'🚀'}); }
+  if(f.partner_setup){
+    const m = {institution:'Institutions / Universités', client:'Distributeurs / Clients', provider:'Prestataires de service'};
+    chips.push({key:'partner_setup', label:tr('pf.af.ptype'), val:m[f.partner_setup]||f.partner_setup, ico:'🏛️'});
+  }
+  if(f.trial_kind){ chips.push({key:'trial_kind', label:tr('pf.af.kind'), val:f.trial_kind==='demo'?'démos':'trials', ico:'🔬'}); }
+  if(f.installed){ chips.push({key:'installed', label:tr('pf.af.installed'), val:'oui', ico:'✅'}); }
+  if(f.status_open){ chips.push({key:'status_open', label:tr('pf.af.open'), val:'oui', ico:'⏳'}); }
+  if(f.ic_with_issues){ chips.push({key:'ic_with_issues', label:tr('pf.af.icissues'), val:'oui', ico:'🚨'}); }
+  if(f.type){ const ty=TYPES.find(x=>x.id===f.type); if(ty) chips.push({key:'type', label:tr('pf.filt.type'), val:tyLbl(ty), ico:'🏷'}); }
+  if(f.bu){ const b=BUS.find(x=>x.id===f.bu); if(b) chips.push({key:'bu', label:tr('pf.filt.bu'), val:b.nm, ico:'🏢'}); }
+  if(f.status){ const st=STATUSES.find(x=>x.id===f.status); if(st) chips.push({key:'status', label:tr('pf.filt.status'), val:stLbl(st), ico:'🎯'}); }
+  if(!chips.length) return '';
+  const total = filteredUCs().length;
+  return `<div class="af-bar" role="status">
+    <span class="af-lead">${tr('pf.af.lead')} <b>${total}</b> ${tr('pf.af.results')}</span>
+    ${chips.map(c=>`<button class="af-chip" onclick="clearFilter('${c.key}')" title="${tr('pf.af.clear')}">
+      <span class="af-ico">${c.ico}</span><span class="af-lbl">${escapeHtml(c.label)}</span><b class="af-val">${escapeHtml(c.val)}</b><span class="af-x">✕</span>
+    </button>`).join('')}
+    <button class="af-reset" onclick="resetAllFilters()">${tr('pf.af.resetAll')}</button>
+  </div>`;
 }
 function chipFilter(label, key, options){
   const v = (PREFS.filters||{})[key];
@@ -2929,6 +3021,12 @@ function filteredUCs(){
     if(f.project && u.project_id!==f.project) return false;
     if(f.partnerq && !String(u.partner||'').toLowerCase().includes(f.partnerq.toLowerCase())) return false;
     if(f.fast_track && !u.fast_track) return false;
+    if(f.partner_setup && u.partner_setup!==f.partner_setup) return false;
+    if(f.trial_kind==='trial' && u.type==='demo') return false;
+    if(f.trial_kind==='demo'  && u.type!=='demo') return false;
+    if(f.installed && !['execution','monitoring','closed-go','closed-hold','closed-kill'].includes(u.status)) return false;
+    if(f.status_open && /^closed-/.test(u.status)) return false;
+    if(f.ic_with_issues && !(u.ic_issues && u.ic_issues.length>0)) return false;
     if(q){
       const hay = [u.id,u.name,u.partner,u.crop,u.product,u.region,buOf(u.bu).nm].join(' ').toLowerCase();
       if(!hay.includes(q)) return false;
@@ -3613,10 +3711,10 @@ function renderFastTrack(){
     <p class="lead">${tr('ft.lead')}</p>
 
     <div class="kpi-grid">
-      ${kpiTile('🚀', tr('ft.k1'), fts.filter(u=>!/^closed-/.test(u.status)).length, tr('ft.k1.sub'), 60)}
-      ${kpiTile('⏱', tr('ft.k2'), '12 j', tr('ft.k2.sub'), 80)}
-      ${kpiTile('💰', tr('ft.k3'), fmtMoney(fts.reduce((s,u)=>s+u.budget,0)), trf('ft.k3.sub',{y:Y}), 45)}
-      ${kpiTile('✓',  tr('ft.k4'), Math.round(fts.filter(u=>u.status==='closed-go').length/Math.max(1,fts.filter(u=>/^closed-/.test(u.status)).length)*100)+'%', tr('ft.k4.sub'), 70)}
+      ${kpiTile('🚀', tr('ft.k1'), fts.filter(u=>!/^closed-/.test(u.status)).length, tr('ft.k1.sub'), 60, {fast_track:1, status_open:1})}
+      ${kpiTile('⏱', tr('ft.k2'), '12 j', tr('ft.k2.sub'), 80, null)}
+      ${kpiTile('💰', tr('ft.k3'), fmtMoney(fts.reduce((s,u)=>s+u.budget,0)), trf('ft.k3.sub',{y:Y}), 45, {fast_track:1})}
+      ${kpiTile('✓',  tr('ft.k4'), Math.round(fts.filter(u=>u.status==='closed-go').length/Math.max(1,fts.filter(u=>/^closed-/.test(u.status)).length)*100)+'%', tr('ft.k4.sub'), 70, {fast_track:1, status:'closed-go'})}
     </div>
 
     <div class="card">

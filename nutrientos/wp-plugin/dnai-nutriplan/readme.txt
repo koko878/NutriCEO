@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.10.1
+Stable tag: 0.10.2
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,28 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.10.2 — Audit complet des drill-downs (fix bug cosmétique-pas-fonctionnel) =
+* Bug Fast Track « SLA moyen » et autres KPIs : ils étaient cliquables
+  mais menaient au portefeuille NON filtré (cosmétique seulement). Cause :
+  kpiTile()/kpiOfficial() appelés sans le 6e/7e argument `filt`, donc
+  `kpiGo({})` vidait tous les filtres au lieu d'en appliquer un.
+* Fix : kpiTile et kpiOfficial sont désormais cliquables UNIQUEMENT si
+  un filtre est passé. Sinon, ils prennent une classe .kpi--static
+  (cursor:default, pas de hover-lift trompeur) — l'utilisateur sait
+  immédiatement ce qui est interactif et ce qui ne l'est pas.
+* Fast Track : 3 KPIs sur 4 désormais filtrants (actifs ouverts, budget,
+  GO rate). « SLA moyen » reste statique (info pure, pas de filtre logique).
+* Controls : 2 KPIs sur 4 désormais filtrants (UCs avec issues, total
+  issues → filtre ic_with_issues). Compliance % et total IC points
+  restent statiques.
+* Cockpit BU breakdown table : ligne cliquable harmonisée pour passer
+  par kpiGo() au lieu d'une affectation directe (persistance correcte).
+* Nouveaux filtres back-end : status_open, ic_with_issues — visibles
+  comme chips dans la barre des filtres actifs.
+* Tous les chips actifs (type, BU, statut, projet, recherche, culture,
+  partenaire, fast_track, partner_setup, kind, installed, open, ic)
+  sont désormais visibles et retirables individuellement.
 
 = 0.10.1 — Empty-state premium portefeuille filtré par projet vide =
 * Fix UX : quand un user atterrit sur le portefeuille filtré par un
