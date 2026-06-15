@@ -613,6 +613,15 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .pd-v{font:700 20px 'Cormorant Garamond',serif;color:var(--green-900);margin-top:4px;font-variant-numeric:tabular-nums}
 .proj-detail-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}
 
+/* ===== Empty-state hero (portefeuille filtré par projet vide) ===== */
+.pf-empty-hero{background:linear-gradient(180deg,#fff,#f6fbf6);border:1px solid var(--green-100);border-radius:24px;padding:54px 28px;text-align:center;box-shadow:0 24px 60px -22px rgba(16,94,32,.18), inset 0 1px 0 rgba(255,255,255,.8);animation:pd-in 520ms cubic-bezier(.32,.72,0,1) both;margin-top:14px}
+.pf-empty-illus{display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px;filter:drop-shadow(0 8px 24px rgba(16,94,32,.18))}
+.pf-empty-eye{display:inline-block;font:700 10px 'Inter',sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--green-700);background:var(--green-50);border:1px solid var(--green-100);border-radius:999px;padding:5px 12px;margin-bottom:10px}
+.pf-empty-title{font:700 30px/1.1 'Cormorant Garamond',serif;color:var(--green-900);margin:0 auto 10px;max-width:560px;text-wrap:balance;letter-spacing:-.01em}
+.pf-empty-body{margin:0 auto 26px;color:var(--muted);font-size:14px;max-width:50ch;line-height:1.6}
+.pf-empty-actions{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.pf-empty-actions .btn.primary{display:inline-flex;align-items:center;gap:10px;padding:11px 14px 11px 22px}
+
 /* ===== POLISH GLOBAL — easings, motion, micro-interactions (v0.10) ===== */
 :root{
   --ease-soft:cubic-bezier(.32,.72,0,1);
@@ -985,6 +994,7 @@ fr:{
  'pf.tbl.empty':'Aucun Use Case ne correspond aux filtres.',
  'pf.col.all':'Tous','pf.col.filter':'Filtrer…',
  'pf.byProject':'Filtré par projet :',
+ 'pf.proj.title':'{n} trials du projet \"{title}\"','pf.proj.lead':'Tous les trials rattachés à ce projet ({id}). Crée le premier ou reviens à la liste complète.','pf.proj.empty.eye':'Projet prêt','pf.proj.empty.title':'Aucun trial pour l\'instant','pf.proj.empty.body':'Le projet « {title} » vient d\'être créé. Ajoute son premier trial pour démarrer l\'instruction.','pf.proj.empty.cta':'Créer le premier trial','pf.proj.empty.allTrials':'Voir tous les trials','pf.proj.addTrial':'Ajouter un trial',
  // modal
  'uc.start':'Lancement prévu','uc.end':'Clôture prévue','uc.budget':'Budget alloué','uc.partner':'Partenaire','uc.sai':'SA&I Lead',
  'uc.plan':'Plan expérimental','uc.plan.fmt':'{t} traitements × {r} répétitions',
@@ -1249,6 +1259,7 @@ en:{
  'pf.tbl.empty':'No Use Case matches the current filters.',
  'pf.col.all':'All','pf.col.filter':'Filter…',
  'pf.byProject':'Filtered by project:',
+ 'pf.proj.title':'{n} trials in project \"{title}\"','pf.proj.lead':'All trials attached to this project ({id}). Create the first one or go back to the full list.','pf.proj.empty.eye':'Project ready','pf.proj.empty.title':'No trials yet','pf.proj.empty.body':'Project \"{title}\" has just been created. Add its first trial to start the process.','pf.proj.empty.cta':'Create the first trial','pf.proj.empty.allTrials':'See all trials','pf.proj.addTrial':'Add a trial',
  'uc.start':'Planned start','uc.end':'Planned end','uc.budget':'Allocated budget','uc.partner':'Partner','uc.sai':'SA&I Lead',
  'uc.plan':'Experimental plan','uc.plan.fmt':'{t} treatments × {r} replications',
  'uc.class':'Trial Class · Type','uc.partnerSetup':'Partner setup','uc.strategicObj':'Strategic objectives','uc.icIssues':'Open IC gaps',
@@ -1505,6 +1516,7 @@ pt:{
  'pf.tbl.empty':'Nenhum Use Case corresponde aos filtros.',
  'pf.col.all':'Todos','pf.col.filter':'Filtrar…',
  'pf.byProject':'Filtrado por projeto:',
+ 'pf.proj.title':'{n} trials no projeto \"{title}\"','pf.proj.lead':'Todos os trials vinculados a este projeto ({id}). Crie o primeiro ou volte à lista completa.','pf.proj.empty.eye':'Projeto pronto','pf.proj.empty.title':'Sem trials ainda','pf.proj.empty.body':'O projeto \"{title}\" acabou de ser criado. Adicione seu primeiro trial.','pf.proj.empty.cta':'Criar o primeiro trial','pf.proj.empty.allTrials':'Ver todos os trials','pf.proj.addTrial':'Adicionar trial',
  'uc.start':'Início previsto','uc.end':'Fechamento previsto','uc.budget':'Orçamento alocado','uc.partner':'Parceiro','uc.sai':'SA&I Lead',
  'uc.plan':'Plano experimental','uc.plan.fmt':'{t} tratamentos × {r} repetições',
  'uc.class':'Trial Class · Type','uc.partnerSetup':'Setup do parceiro','uc.strategicObj':'Objetivos estratégicos','uc.icIssues':'Desvios IC abertos',
@@ -2827,11 +2839,50 @@ function renderPortfolio(){
   const list = filteredUCs();
   const pf = (PREFS.filters||{}).project;
   const proj = pf ? projById(pf) : null;
+
+  // Empty state premium quand on filtre par un projet sans aucun trial
+  if(proj && list.length===0){
+    document.getElementById('sc-portfolio').innerHTML = `
+      <div class="eyebrow">${tr('pf.eye')}</div>
+      <h2 class="h-pg">${escapeHtml(proj.title)}</h2>
+      <p class="lead">${trf('pf.proj.lead',{id:proj.id})}</p>
+      <div class="pf-empty-hero">
+        <div class="pf-empty-illus" aria-hidden="true">
+          <svg viewBox="0 0 200 200" width="120" height="120">
+            <defs>
+              <linearGradient id="pfeg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#4CAF50"/><stop offset="100%" stop-color="#1B5E20"/>
+              </linearGradient>
+            </defs>
+            <circle cx="100" cy="100" r="84" fill="none" stroke="url(#pfeg)" stroke-width="2" stroke-dasharray="6 8" opacity=".4"/>
+            <circle cx="100" cy="100" r="56" fill="#EAF4EC" stroke="#D6EADb" stroke-width="1"/>
+            <text x="100" y="120" text-anchor="middle" font-size="56">🌱</text>
+          </svg>
+        </div>
+        <div class="pf-empty-eye">${tr('pf.proj.empty.eye')}</div>
+        <h3 class="pf-empty-title">${tr('pf.proj.empty.title')}</h3>
+        <p class="pf-empty-body">${trf('pf.proj.empty.body',{title:escapeHtml(proj.title)})}</p>
+        <div class="pf-empty-actions">
+          <button class="btn ghost" onclick="clearFilter('project')">← ${tr('pf.proj.empty.allTrials')}</button>
+          <button class="btn primary" onclick="newTrialForProject('${proj.id}')">
+            <span>+ ${tr('pf.proj.empty.cta')}</span>
+            <span class="ui-btn-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Titre contextuel : "Trials du projet X" si filtré, sinon défaut
+  const title = proj
+    ? trf('pf.proj.title', {n:list.length, title:escapeHtml(proj.title)})
+    : trf('pf.h', {n:list.length, y:2026});
   const banner = proj ? `<div class="proj-banner">🗂️ ${tr('pf.byProject')} <b>${escapeHtml(proj.title)}</b> <span class="muted">(${proj.id})</span>
       <button class="btn ghost sm" style="margin-left:auto" onclick="clearFilter('project')">✕ ${tr('pf.filt.reset')}</button></div>` : '';
   document.getElementById('sc-portfolio').innerHTML = `
     <div class="eyebrow">${tr('pf.eye')}</div>
-    <h2 class="h-pg">${trf('pf.h',{n:list.length, y:2026})}</h2>
+    <h2 class="h-pg">${title}</h2>
     <p class="lead">${tr('pf.lead')}</p>
     ${banner}
 
@@ -2845,6 +2896,7 @@ function renderPortfolio(){
       ${chipFilter(tr('pf.filt.bu'),    'bu',     BUS.map(b=>[b.id, b.nm]))}
       ${chipFilter(tr('pf.filt.status'),'status', STATUSES.map(s=>[s.id, stLbl(s)]))}
       <button class="btn ghost sm" onclick="PREFS.filters={};savePrefs();renderPortfolio()">${tr('pf.filt.reset')}</button>
+      ${proj ? `<button class="btn primary sm" onclick="newTrialForProject('${proj.id}')">+ ${tr('pf.proj.addTrial')}</button>` : ''}
     </div>
 
     ${view==='kanban' ? renderKanban(list) : renderTable(list)}

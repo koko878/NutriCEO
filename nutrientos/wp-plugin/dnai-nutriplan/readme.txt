@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.10.0
+Stable tag: 0.10.1
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,21 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.10.1 — Empty-state premium portefeuille filtré par projet vide =
+* Fix UX : quand un user atterrit sur le portefeuille filtré par un
+  projet qui n'a pas encore de trials (parce qu'il vient d'être créé),
+  on affichait « 0 Use Cases du cycle 2026 » + 4 colonnes Kanban
+  « vide » (visuel triste, pas de CTA clair).
+* Désormais : hero d'empty-state dédié — illustration 🌱 sur cercle
+  pointillé dégradé vert, eyebrow « Projet prêt », titre 30px
+  Cormorant, body explicatif, et 2 CTAs : « ← Voir tous les trials »
+  + « + Créer le premier trial » (qui pré-sélectionne le projet
+  dans le formulaire d'intake).
+* Bonus : titre contextuel quand un projet est filtré non-vide
+  (« N trials du projet "X" » au lieu de « N Use Cases du cycle 2026 »).
+* Bonus : bouton « + Ajouter un trial » dans la toolbar du portefeuille
+  filtré par projet (raccourci permanent).
 
 = 0.10.0 — Polish premium UI/UX (modales natives bannies + spring physics) =
 * SYSTÈME DE MODALE PREMIUM (UI.prompt / UI.confirm / UI.alert) —
