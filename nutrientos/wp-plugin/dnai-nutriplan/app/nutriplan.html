@@ -529,6 +529,29 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .fb-imeta{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;color:#7c9c87}
 .fb-del{background:none;border:0;color:#9fb3a6;cursor:pointer;font-size:13px;padding:2px 6px;border-radius:5px}
 .fb-del:hover{background:rgba(229,57,53,.2);color:#ff9999}
+
+/* ===== Admin · Référentiels CRUD (v0.8) ===== */
+.adm-subnav{margin:6px 0 16px}
+.ref-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media(max-width:900px){.ref-grid{grid-template-columns:1fr}}
+.ref-card{display:flex;flex-direction:column;gap:10px}
+.ref-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ref-head h3{margin:0;display:flex;align-items:center;gap:8px}
+.ref-count{font:700 11px 'Inter';color:var(--green-800);background:var(--green-50);border:1px solid var(--green-100);border-radius:999px;padding:1px 9px}
+.ref-prov{font:700 9.5px 'Inter';letter-spacing:.05em;text-transform:uppercase;color:var(--muted-2);background:#f4f6f3;border:1px solid var(--line);border-radius:6px;padding:2px 7px}
+.ref-chips{display:flex;flex-wrap:wrap;gap:6px;min-height:8px}
+.ref-chip{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line-2);border-radius:999px;padding:4px 6px 4px 12px;font-size:12.5px}
+.ref-chip button{border:0;background:#eef0ec;color:var(--muted);width:18px;height:18px;border-radius:50%;cursor:pointer;font-size:13px;line-height:1;transition:.15s}
+.ref-chip button:hover{background:var(--bad-bg);color:var(--bad)}
+.ref-add{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:2px}
+.ref-add input{flex:1;min-width:90px;border:1px solid var(--line-2);border-radius:8px;padding:7px 10px;font:500 12.5px 'Inter';background:#fafbf9;transition:.15s}
+.ref-add input:focus{outline:none;border-color:var(--green-700);box-shadow:0 0 0 3px rgba(46,125,50,.12);background:#fff}
+.ref-inp{width:100%;border:1px solid transparent;border-radius:6px;padding:5px 8px;font:500 12.5px 'Inter';background:transparent;transition:.15s}
+.ref-inp:hover{border-color:var(--line-2);background:#fafbf9}
+.ref-inp:focus{outline:none;border-color:var(--green-700);box-shadow:0 0 0 2px rgba(46,125,50,.12);background:#fff}
+.ref-x{border:0;background:none;cursor:pointer;font-size:13px;padding:3px 6px;border-radius:6px;opacity:.6;transition:.15s}
+.ref-x:hover{opacity:1;background:var(--bad-bg)}
+.mds-check input{vertical-align:middle}
 </style>
 </head>
 <body>
@@ -653,7 +676,7 @@ const NAV = [
 /* -----------------------------------------------------------------
  * 2. MOCK DATA — realistic OCP Nutricrops portfolio for the demo.
  * --------------------------------------------------------------- */
-const BUS = [
+let BUS = [
   { id:'AFR', nm:'Africa BU',        color:'alt-1' },
   { id:'BRA', nm:'Brazil BU',        color:'alt-2' },
   { id:'IND', nm:'India BU',         color:'alt-3' },
@@ -671,9 +694,9 @@ const REGIONS = {
   APAC:['Indonesia','Vietnam','Thailand','Australia','Philippines'],
   SAI: ['Morocco — Jorf Lab','Morocco — Khouribga R&D Center']
 };
-const CROPS = ['Wheat','Maize','Rice','Soybean','Cotton','Coffee','Sugar Cane','Potato','Tomato','Citrus','Cocoa','Cashew'];
-const PRODUCTS = ['TSP','TSP+','DAP','MAP','NPS','NPK 11-22-22','PHOSGOLD','PHOSGOLD Duo','PHOSRISE','Phosfusion','PK Custom','SOP blend'];
-const PARTNERS = [
+let CROPS = ['Wheat','Maize','Rice','Soybean','Cotton','Coffee','Sugar Cane','Potato','Tomato','Citrus','Cocoa','Cashew'];
+let PRODUCTS = ['TSP','TSP+','DAP','MAP','NPS','NPK 11-22-22','PHOSGOLD','PHOSGOLD Duo','PHOSRISE','Phosfusion','PK Custom','SOP blend'];
+let PARTNERS = [
   { nm:'ICRISAT',         typ:'Research institute' },
   { nm:'EMBRAPA',         typ:'Research institute' },
   { nm:'AfricaRice',      typ:'CGIAR center' },
@@ -836,7 +859,8 @@ fr:{
  'in.f.ft':'Mode Fast Track','in.f.std':'Cycle standard','in.f.urgent':'Fast Track — urgent',
  'in.f.sai':'SA&I lead','in.f.sai.ph':'Anaïs M., Karim T., …',
  'in.btn.cancel':'← Annuler','in.btn.draft':'💾 Enregistrer en brouillon','in.btn.submit':'📨 Soumettre au Steering Committee',
- 'in.toast.draft':'💾 Brouillon enregistré (mock)','in.toast.submit':'📨 Soumis au Steering Committee (mock)',
+ 'in.toast.draft':'💾 Brouillon enregistré','in.toast.submit':'📨 Soumis au Steering Committee',
+ 'in.f.dateErr':'La date de fin doit être postérieure à la date de début.','in.f.partnerOther':'Autre (saisir le nom)…','in.f.partnerOtherName':'Nom officiel du partenaire','in.f.partnerOtherName.ph':'Dénomination légale officielle','in.f.attach':'Pièces jointes','in.f.protocol':'Protocole (Word)','in.f.protocol.help':'Document Word obligatoire — référence du Steering Committee.','in.err.name':'Le titre du Use Case est obligatoire.','in.err.proto':'Le protocole Word est obligatoire pour soumettre.',
  'in.note':'_MVP — la sauvegarde réelle + validation MDS dynamique arrivent en V1.1._',
  // calendar
  'cal.eye':'Cycle annuel','cal.h':'Calendrier du cycle {y}',
@@ -901,6 +925,15 @@ fr:{
  'adm.ps.h':'🤝 Partner Setup Types','adm.ps.sub':'— 3 modes contractuels',
  'adm.mp.h':'🧭 Macro-phases du cycle','adm.mp.sub':'— 4 phases officielles',
  'adm.fw.h':'📜 Trial Management Framework v1.0','adm.fw.body':'Document validé et signé par le CEO. 10 sections · 22 contrôles internes · 4 KPIs · 6 objectifs stratégiques · 4 classes × types · 3 setups partenaire · 4 macro-phases. NutriPlan opérationnalise ce document ligne par ligne.',
+ 'adm.t.ref':'Référentiels','adm.t.frame':'Cadre v1.0','adm.t.access':'Accès & rôles','adm.t.integr':'Intégrations',
+ 'adm.ref.lead':'Toutes les listes de valeurs de l\'app, éditables et persistées en base partagée. Une suppression est bloquée si la valeur est utilisée par un trial.',
+ 'adm.add':'Ajouter','adm.addPh':'Nouvelle valeur…','adm.del':'Supprimer','adm.empty':'(vide)','adm.dup':'Cette valeur existe déjà.',
+ 'adm.export':'Exporter (JSON)','adm.reset':'Réinitialiser par défaut','adm.prov.core':'Cœur','adm.prov.excel':'Excel SAI',
+ 'adm.usedBy':'Suppression bloquée : {n} trial(s) utilisent cette valeur.','adm.confirmDel':'Supprimer « {v} » ?','adm.confirmReset':'Réinitialiser tous les référentiels aux valeurs par défaut ? Les ajouts seront perdus.',
+ 'adm.r.bus':'🏢 Business Units','adm.r.crops':'🌾 Cultures','adm.r.products':'🧴 Produits OCP','adm.r.partners':'🤝 Partenaires / Vendors','adm.r.mds':'📋 Minimum Data Set','adm.r.pstatus':'📁 Statut projet','adm.r.cstatus':'📝 Statut contrat','adm.r.tstatus':'🔬 Statut trial','adm.r.turgency':'⚡ Urgence trial','adm.r.slines':'🎯 Lignes stratégiques','adm.r.presp':'🗂️ Types de projet (Project Response)',
+ 'adm.access.body':'Modèle de rôles cible (RBAC). L\'application réelle des droits nécessite l\'authentification M365 — backend.','adm.access.role':'Rôle','adm.access.scope':'Périmètre','adm.access.rights':'Droits','adm.access.all':'Tout','adm.access.sai':'Valide les références proposées · gouvernance','adm.access.bu':'Voit & valide sa BU','adm.access.own':'Ses trials','adm.access.create':'Créer & éditer ses trials','adm.access.read':'Lecture seule',
+ 'adm.integr.body':'Connexions de la plateforme. Statut en temps réel.','adm.integr.live':'Connecté','adm.integr.local':'Local (cache navigateur)','adm.integr.off':'Non configuré','adm.integr.soon':'Prévu (backend)',
+ 'adm.backendNote':'Nécessite le backend / tenant Nutricrops — voir Note CEO (souveraineté).',
  // chat
  'chat.h':'D²nAI bot','chat.sub':'Chat with your Trial data',
  'chat.close':'Fermer',
@@ -1082,7 +1115,8 @@ en:{
  'in.f.ft':'Fast Track mode','in.f.std':'Standard cycle','in.f.urgent':'Fast Track — urgent',
  'in.f.sai':'SA&I lead','in.f.sai.ph':'Anaïs M., Karim T., …',
  'in.btn.cancel':'← Cancel','in.btn.draft':'💾 Save as draft','in.btn.submit':'📨 Submit to Steering Committee',
- 'in.toast.draft':'💾 Draft saved (mock)','in.toast.submit':'📨 Submitted to Steering Committee (mock)',
+ 'in.toast.draft':'💾 Draft saved','in.toast.submit':'📨 Submitted to Steering Committee',
+ 'in.f.dateErr':'End date must be after the start date.','in.f.partnerOther':'Other (type the name)…','in.f.partnerOtherName':'Official partner name','in.f.partnerOtherName.ph':'Official legal denomination','in.f.attach':'Attachments','in.f.protocol':'Protocol (Word)','in.f.protocol.help':'Mandatory Word document — Steering Committee reference.','in.err.name':'Use Case title is required.','in.err.proto':'The Word protocol is required to submit.',
  'in.note':'_MVP — real save + dynamic MDS validation arrive in V1.1._',
  'cal.eye':'Annual cycle','cal.h':'{y} cycle calendar',
  'cal.lead':'Operational timeline: mandatory phases, governance gates, QBR, Fast Track lane. 12-month Gantt view.',
@@ -1142,6 +1176,15 @@ en:{
  'adm.ps.h':'🤝 Partner Setup Types','adm.ps.sub':'— 3 contractual modes',
  'adm.mp.h':'🧭 Cycle macro-phases','adm.mp.sub':'— 4 official phases',
  'adm.fw.h':'📜 Trial Management Framework v1.0','adm.fw.body':'Validated document signed by the CEO. 10 sections · 22 internal controls · 4 KPIs · 6 strategic objectives · 4 classes × types · 3 partner setups · 4 macro-phases. NutriPlan operationalises this document line by line.',
+ 'adm.t.ref':'Reference data','adm.t.frame':'Framework v1.0','adm.t.access':'Access & roles','adm.t.integr':'Integrations',
+ 'adm.ref.lead':'Every value list in the app, editable and persisted to the shared database. Deletion is blocked if a trial uses the value.',
+ 'adm.add':'Add','adm.addPh':'New value…','adm.del':'Delete','adm.empty':'(empty)','adm.dup':'This value already exists.',
+ 'adm.export':'Export (JSON)','adm.reset':'Reset to defaults','adm.prov.core':'Core','adm.prov.excel':'SAI Excel',
+ 'adm.usedBy':'Deletion blocked: {n} trial(s) use this value.','adm.confirmDel':'Delete "{v}"?','adm.confirmReset':'Reset all reference data to defaults? Your additions will be lost.',
+ 'adm.r.bus':'🏢 Business Units','adm.r.crops':'🌾 Crops','adm.r.products':'🧴 OCP products','adm.r.partners':'🤝 Partners / Vendors','adm.r.mds':'📋 Minimum Data Set','adm.r.pstatus':'📁 Project status','adm.r.cstatus':'📝 Contract status','adm.r.tstatus':'🔬 Trial status','adm.r.turgency':'⚡ Trial urgency','adm.r.slines':'🎯 Strategic lines','adm.r.presp':'🗂️ Project types (Project Response)',
+ 'adm.access.body':'Target role model (RBAC). Real enforcement needs M365 authentication — backend.','adm.access.role':'Role','adm.access.scope':'Scope','adm.access.rights':'Rights','adm.access.all':'Everything','adm.access.sai':'Validates proposed references · governance','adm.access.bu':'Sees & validates own BU','adm.access.own':'Own trials','adm.access.create':'Create & edit own trials','adm.access.read':'Read only',
+ 'adm.integr.body':'Platform connections. Live status.','adm.integr.live':'Connected','adm.integr.local':'Local (browser cache)','adm.integr.off':'Not configured','adm.integr.soon':'Planned (backend)',
+ 'adm.backendNote':'Requires the backend / Nutricrops tenant — see CEO note (sovereignty).',
  'chat.h':'D²nAI bot','chat.sub':'Chat with your Trial data',
  'chat.close':'Close',
  'chat.input.ph':'Ask in natural language — e.g. "Which NPK demos in Africa are at risk?"',
@@ -1322,7 +1365,8 @@ pt:{
  'in.f.ft':'Modo Fast Track','in.f.std':'Ciclo padrão','in.f.urgent':'Fast Track — urgente',
  'in.f.sai':'SA&I lead','in.f.sai.ph':'Anaïs M., Karim T., …',
  'in.btn.cancel':'← Cancelar','in.btn.draft':'💾 Salvar rascunho','in.btn.submit':'📨 Enviar ao Steering Committee',
- 'in.toast.draft':'💾 Rascunho salvo (mock)','in.toast.submit':'📨 Enviado ao Steering Committee (mock)',
+ 'in.toast.draft':'💾 Rascunho salvo','in.toast.submit':'📨 Enviado ao Steering Committee',
+ 'in.f.dateErr':'A data de fim deve ser posterior à data de início.','in.f.partnerOther':'Outro (digite o nome)…','in.f.partnerOtherName':'Nome oficial do parceiro','in.f.partnerOtherName.ph':'Denominação legal oficial','in.f.attach':'Anexos','in.f.protocol':'Protocolo (Word)','in.f.protocol.help':'Documento Word obrigatório — referência do Steering Committee.','in.err.name':'O título do Use Case é obrigatório.','in.err.proto':'O protocolo Word é obrigatório para enviar.',
  'in.note':'_MVP — o save real + validação dinâmica do MDS chegam na V1.1._',
  'cal.eye':'Ciclo anual','cal.h':'Calendário do ciclo {y}',
  'cal.lead':'Timeline operacional: fases obrigatórias, gates de governança, QBR, Fast Track lane. Visão Gantt 12 meses.',
@@ -1382,6 +1426,15 @@ pt:{
  'adm.ps.h':'🤝 Partner Setup Types','adm.ps.sub':'— 3 modos contratuais',
  'adm.mp.h':'🧭 Macro-fases do ciclo','adm.mp.sub':'— 4 fases oficiais',
  'adm.fw.h':'📜 Trial Management Framework v1.0','adm.fw.body':'Documento validado e assinado pelo CEO. 10 seções · 22 controles internos · 4 KPIs · 6 objetivos estratégicos · 4 classes × types · 3 setups de parceiro · 4 macro-fases. NutriPlan operacionaliza esse documento linha a linha.',
+ 'adm.t.ref':'Catálogos','adm.t.frame':'Framework v1.0','adm.t.access':'Acessos & papéis','adm.t.integr':'Integrações',
+ 'adm.ref.lead':'Todas as listas de valores do app, editáveis e persistidas no banco compartilhado. A exclusão é bloqueada se um trial usar o valor.',
+ 'adm.add':'Adicionar','adm.addPh':'Novo valor…','adm.del':'Excluir','adm.empty':'(vazio)','adm.dup':'Esse valor já existe.',
+ 'adm.export':'Exportar (JSON)','adm.reset':'Restaurar padrões','adm.prov.core':'Núcleo','adm.prov.excel':'Excel SAI',
+ 'adm.usedBy':'Exclusão bloqueada: {n} trial(s) usam esse valor.','adm.confirmDel':'Excluir "{v}"?','adm.confirmReset':'Restaurar todos os catálogos aos padrões? Suas adições serão perdidas.',
+ 'adm.r.bus':'🏢 Business Units','adm.r.crops':'🌾 Culturas','adm.r.products':'🧴 Produtos OCP','adm.r.partners':'🤝 Parceiros / Vendors','adm.r.mds':'📋 Minimum Data Set','adm.r.pstatus':'📁 Status projeto','adm.r.cstatus':'📝 Status contrato','adm.r.tstatus':'🔬 Status trial','adm.r.turgency':'⚡ Urgência trial','adm.r.slines':'🎯 Linhas estratégicas','adm.r.presp':'🗂️ Tipos de projeto (Project Response)',
+ 'adm.access.body':'Modelo de papéis alvo (RBAC). A aplicação real exige autenticação M365 — backend.','adm.access.role':'Papel','adm.access.scope':'Escopo','adm.access.rights':'Direitos','adm.access.all':'Tudo','adm.access.sai':'Valida referências propostas · governança','adm.access.bu':'Vê & valida sua BU','adm.access.own':'Seus trials','adm.access.create':'Criar & editar seus trials','adm.access.read':'Somente leitura',
+ 'adm.integr.body':'Conexões da plataforma. Status em tempo real.','adm.integr.live':'Conectado','adm.integr.local':'Local (cache navegador)','adm.integr.off':'Não configurado','adm.integr.soon':'Previsto (backend)',
+ 'adm.backendNote':'Requer o backend / tenant Nutricrops — ver nota CEO (soberania).',
  'chat.h':'D²nAI bot','chat.sub':'Chat with your Trial data',
  'chat.close':'Fechar',
  'chat.input.ph':'Pergunte em linguagem natural — ex: "Quais demos NPK na África estão em risco?"',
@@ -1500,7 +1553,7 @@ function applyLang(){
   goView(PREFS.view||'cockpit');
 }
 
-const MDS_ITEMS = [
+let MDS_ITEMS = [
   'Scientific rationale',
   'Treatment hypothesis',
   'Primary KPI defined',
@@ -1550,6 +1603,58 @@ const PARTNER_SETUPS = [
   { id:'client',      lblK:'ps.client'      },
   { id:'provider',    lblK:'ps.provider'    }
 ];
+
+/* -----------------------------------------------------------------
+ * 2quater. Référentiels Projet (issus de l'Excel SAI v2) — éditables.
+ *  Valeurs alignées 1:1 sur la feuille « Reference » de l'Excel.
+ * --------------------------------------------------------------- */
+let PROJECT_STATUS   = ['New Project','Continuation'];
+let CONTRACT_STATUS  = ['Signed','Under discussion','Not started'];
+let TRIAL_STATUS     = ['Planned','Ongoing','Concluded'];
+let TRIAL_URGENCY    = ['Standard','Fast track'];
+let STRATEGIC_LINES  = [
+  '1. Product Development & validation (New technologies)',
+  '2. Cropping management practices (Soil, Environment, plant)',
+  '3. Sustainability Ag (resilient Ag), Green Ag, climate action',
+  '4. Digital Ag (New technologies), precision Ag',
+  '5. Human and livestock nutrition',
+  '6. Demonstrations for Market Adoption'
+];
+let PROJECT_RESPONSE = [
+  'Validation trial','Demonstration trials / Field days','Soil analysis program / SIG',
+  'Training program','Distributor activation','Blending program','Digital advisory / media','Commercial pilot'
+];
+
+/* -----------------------------------------------------------------
+ * REF LAYER — registre des référentiels administrables depuis l'Admin.
+ *  CRUD + persistance serveur (collection 'reference') + cache local.
+ * --------------------------------------------------------------- */
+const REF_REGISTRY = [
+  { key:'bus',            lblK:'adm.r.bus',      kind:'objects', cols:[['id','Code'],['nm','Nom']], get:()=>BUS,            set:v=>{BUS=v;} },
+  { key:'crops',          lblK:'adm.r.crops',    kind:'strings', get:()=>CROPS,            set:v=>{CROPS=v;} },
+  { key:'products',       lblK:'adm.r.products', kind:'strings', get:()=>PRODUCTS,         set:v=>{PRODUCTS=v;} },
+  { key:'partners',       lblK:'adm.r.partners', kind:'objects', cols:[['nm','Nom'],['typ','Type']], get:()=>PARTNERS,    set:v=>{PARTNERS=v;} },
+  { key:'mds',            lblK:'adm.r.mds',      kind:'strings', get:()=>MDS_ITEMS,        set:v=>{MDS_ITEMS=v;} },
+  { key:'project_status', lblK:'adm.r.pstatus',  kind:'strings', get:()=>PROJECT_STATUS,   set:v=>{PROJECT_STATUS=v;} },
+  { key:'contract_status',lblK:'adm.r.cstatus',  kind:'strings', get:()=>CONTRACT_STATUS,  set:v=>{CONTRACT_STATUS=v;} },
+  { key:'trial_status',   lblK:'adm.r.tstatus',  kind:'strings', get:()=>TRIAL_STATUS,     set:v=>{TRIAL_STATUS=v;} },
+  { key:'trial_urgency',  lblK:'adm.r.turgency', kind:'strings', get:()=>TRIAL_URGENCY,    set:v=>{TRIAL_URGENCY=v;} },
+  { key:'strategic_lines',lblK:'adm.r.slines',   kind:'strings', get:()=>STRATEGIC_LINES,  set:v=>{STRATEGIC_LINES=v;} },
+  { key:'project_response',lblK:'adm.r.presp',   kind:'strings', get:()=>PROJECT_RESPONSE, set:v=>{PROJECT_RESPONSE=v;} }
+];
+function refByKey(k){ return REF_REGISTRY.find(r=>r.key===k); }
+function snapshotRef(){ const o={}; REF_REGISTRY.forEach(r=>{ o[r.key]=r.get(); }); return o; }
+function applyRefFromServer(data){
+  if(!data || typeof data!=='object') return;
+  let changed=false;
+  REF_REGISTRY.forEach(r=>{ if(Array.isArray(data[r.key])){ r.set(data[r.key]); changed=true; } });
+  if(changed && PREFS.view==='admin' && typeof renderAdmin==='function') renderAdmin();
+}
+function persistRef(){
+  try{ localStorage.setItem('nplan_reference_v1', JSON.stringify(snapshotRef())); }catch(e){}
+  apiPush('reference', snapshotRef());
+}
+
 // 22 Internal Control Points across 5 domains — the audit/compliance backbone.
 const IC_POINTS = [
   { id:'IC-P1.1', dom:'planning', lblK:'ic.p1_1', sevK:'sev.high' },
@@ -1753,7 +1858,79 @@ function loadData(){
   try{ const v=JSON.parse(localStorage.getItem(LS_DATA)); if(Array.isArray(v)&&v.length) return v; }catch(e){}
   return SEED_USECASES.slice();
 }
-function saveData(){ try{ localStorage.setItem(LS_DATA, JSON.stringify(DATA)); }catch(e){} }
+function saveData(){
+  try{ localStorage.setItem(LS_DATA, JSON.stringify(DATA)); }catch(e){}  // cache offline
+  apiPush('usecases', DATA);  // persistance serveur (BDD réelle, partagée)
+}
+
+/* -----------------------------------------------------------------
+ * 3bis. DATA LAYER — persistance serveur (BDD WordPress réelle)
+ *  localStorage sert de cache offline / premier paint ; la source de
+ *  vérité partagée entre utilisateurs est la table {prefix}dnai_nplan_store
+ *  exposée via /wp-json/dnai-nutriplan/v1/collection|item.
+ * --------------------------------------------------------------- */
+function apiCfg(){ return CHAT_BACKEND || window.DNAI_NPLAN || null; }
+function apiReady(){ const c=apiCfg(); return !!(c && c.api); }
+let _pushTimers = {};
+function apiPush(collection, data){
+  // PUT bulk débounce — évite de marteler le serveur à chaque frappe.
+  if(!apiReady()) return;
+  clearTimeout(_pushTimers[collection]);
+  _pushTimers[collection] = setTimeout(()=>{
+    const c=apiCfg();
+    fetch(c.api+'/collection/'+collection, {
+      method:'PUT',
+      headers:{'Content-Type':'application/json','X-WP-Nonce':c.nonce||''},
+      credentials:'same-origin',
+      body: JSON.stringify({ data })
+    }).catch(()=>{});  // silencieux : le cache local garde la main si offline
+  }, 600);
+}
+function apiUpsert(collection, item){
+  if(!apiReady()) return Promise.resolve();
+  const c=apiCfg();
+  return fetch(c.api+'/item/'+collection, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','X-WP-Nonce':c.nonce||''},
+    credentials:'same-origin',
+    body: JSON.stringify(item)
+  }).catch(()=>{});
+}
+function apiDelete(collection, id){
+  if(!apiReady()) return Promise.resolve();
+  const c=apiCfg();
+  return fetch(c.api+'/item/'+collection+'/'+encodeURIComponent(id), {
+    method:'DELETE', headers:{'X-WP-Nonce':c.nonce||''}, credentials:'same-origin'
+  }).catch(()=>{});
+}
+// Sync au boot (et quand la config arrive par postMessage) :
+//  - serveur a des données → on les adopte (source de vérité partagée)
+//  - serveur vide → on l'amorce avec ce qu'on a en local/seed
+let _syncedOnce = false;
+function syncFromServer(){
+  if(!apiReady() || _syncedOnce) return;
+  _syncedOnce = true;
+  const c=apiCfg();
+  fetch(c.api+'/collection/usecases', { headers:{'X-WP-Nonce':c.nonce||''}, credentials:'same-origin' })
+    .then(r=>r.ok?r.json():null)
+    .then(res=>{
+      if(res && Array.isArray(res.data) && res.data.length){
+        DATA = res.data;
+        try{ localStorage.setItem(LS_DATA, JSON.stringify(DATA)); }catch(e){}
+        renderSidebar();
+        if(typeof goView==='function') goView(PREFS.view||'cockpit');
+      } else {
+        // serveur vide → amorçage initial avec l'état courant (seed inclus)
+        apiPush('usecases', DATA);
+      }
+      // Référentiels : adopter ceux du serveur s'ils existent
+      fetch(c.api+'/collection/reference', { headers:{'X-WP-Nonce':c.nonce||''}, credentials:'same-origin' })
+        .then(r=>r.ok?r.json():null)
+        .then(rr=>{ if(rr && rr.data && typeof applyRefFromServer==='function') applyRefFromServer(rr.data); })
+        .catch(()=>{});
+    })
+    .catch(()=>{});
+}
 function loadPrefs(){
   try{ const v=JSON.parse(localStorage.getItem(LS_PREFS)); if(v) return v; }catch(e){}
   return { view:'cockpit', portfolioView:'kanban', filters:{}, chatOpen:false };
@@ -2102,10 +2279,16 @@ function cycleFilter(key, options){
 function clearFilter(key){ if(PREFS.filters) delete PREFS.filters[key]; savePrefs(); renderPortfolio(); }
 function filteredUCs(){
   const f = PREFS.filters||{};
+  const q = (f.q||'').toLowerCase().trim();
   return DATA.filter(u=>{
     if(f.type && u.type!==f.type) return false;
     if(f.bu && u.bu!==f.bu) return false;
     if(f.status && u.status!==f.status) return false;
+    if(f.fast_track && !u.fast_track) return false;
+    if(q){
+      const hay = [u.id,u.name,u.partner,u.crop,u.product,u.region,buOf(u.bu).nm].join(' ').toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
     return true;
   });
 }
@@ -2457,14 +2640,14 @@ function renderIntake(){
       <h3>${tr('in.s1.h')}</h3>
       <p class="sub">${tr('in.s1.sub')}</p>
       <div class="form-grid">
-        <div class="fld full"><label>${tr('in.f.name')} <span class="req">*</span></label><input type="text" placeholder="${tr('in.f.name.ph')}"></div>
+        <div class="fld full"><label>${tr('in.f.name')} <span class="req">*</span></label><input id="if_name" type="text" placeholder="${tr('in.f.name.ph')}"></div>
         <div class="fld"><label>${tr('in.f.bu')} <span class="req">*</span></label>
-          <select>${BUS.map(b=>`<option>${b.nm}</option>`).join('')}</select></div>
+          <select id="if_bu">${BUS.map(b=>`<option value="${b.id}">${b.nm}</option>`).join('')}</select></div>
         <div class="fld"><label>${tr('in.f.type')} <span class="req">*</span></label>
-          <select>${TYPES.map(t=>`<option>${tyLbl(t)} — TRL ${t.id==='scientific'?'2-4':(t.id==='applied'?'5-8':'7-9')}</option>`).join('')}</select></div>
-        <div class="fld full"><label>${tr('in.f.objPrim')} <span class="req">*</span></label><textarea placeholder="${tr('in.f.objPrim.ph')}"></textarea></div>
-        <div class="fld full"><label>${tr('in.f.objSec')} <span class="opt">${tr('in.f.objSec.opt')}</span></label><textarea placeholder="1. …\n2. …\n3. …"></textarea></div>
-        <div class="fld full"><label>${tr('in.f.rat')} <span class="req">*</span></label><textarea placeholder="${tr('in.f.rat.ph')}"></textarea></div>
+          <select id="if_type">${TYPES.map(t=>`<option value="${t.id}">${tyLbl(t)} — TRL ${t.id==='scientific'?'2-4':(t.id==='applied'?'5-8':'7-9')}</option>`).join('')}</select></div>
+        <div class="fld full"><label>${tr('in.f.objPrim')} <span class="req">*</span></label><textarea id="if_objp" placeholder="${tr('in.f.objPrim.ph')}"></textarea></div>
+        <div class="fld full"><label>${tr('in.f.objSec')} <span class="opt">${tr('in.f.objSec.opt')}</span></label><textarea id="if_objs" placeholder="1. …\n2. …\n3. …"></textarea></div>
+        <div class="fld full"><label>${tr('in.f.rat')} <span class="req">*</span></label><textarea id="if_rat" placeholder="${tr('in.f.rat.ph')}"></textarea></div>
       </div>
     </div>
 
@@ -2473,49 +2656,138 @@ function renderIntake(){
       <p class="sub">${tr('in.s2.sub')}</p>
       <div class="form-grid">
         <div class="fld"><label>${tr('in.f.region')} <span class="req">*</span></label>
-          <select>${Object.values(REGIONS).flat().map(r=>`<option>${r}</option>`).join('')}</select></div>
+          <select id="if_region">${Object.values(REGIONS).flat().map(r=>`<option>${r}</option>`).join('')}</select></div>
         <div class="fld"><label>${tr('in.f.crop')} <span class="req">*</span></label>
-          <select>${CROPS.map(c=>`<option>${c}</option>`).join('')}</select></div>
+          <select id="if_crop">${CROPS.map(c=>`<option>${c}</option>`).join('')}</select></div>
         <div class="fld"><label>${tr('in.f.prod')} <span class="req">*</span></label>
-          <select>${PRODUCTS.map(p=>`<option>${p}</option>`).join('')}</select></div>
+          <select id="if_prod">${PRODUCTS.map(p=>`<option>${p}</option>`).join('')}</select></div>
         <div class="fld"><label>${tr('in.f.ref')}</label>
-          <select>${PRODUCTS.map(p=>`<option>${p}</option>`).join('')}</select></div>
-        <div class="fld"><label>${tr('in.f.treat')} <span class="req">*</span></label><input type="number" placeholder="4" min="1"></div>
-        <div class="fld"><label>${tr('in.f.rep')} <span class="req">*</span></label><input type="number" placeholder="3" min="3"></div>
-        <div class="fld"><label>${tr('in.f.start')}</label><input type="date"></div>
-        <div class="fld"><label>${tr('in.f.end')}</label><input type="date"></div>
+          <select id="if_ref">${PRODUCTS.map(p=>`<option>${p}</option>`).join('')}</select></div>
+        <div class="fld"><label>${tr('in.f.treat')} <span class="req">*</span></label><input id="if_treat" type="number" placeholder="4" min="1"></div>
+        <div class="fld"><label>${tr('in.f.rep')} <span class="req">*</span></label><input id="if_rep" type="number" placeholder="3" min="3"></div>
+        <div class="fld"><label>${tr('in.f.start')}</label><input id="if_start" type="date" oninput="ifDateCheck()"></div>
+        <div class="fld"><label>${tr('in.f.end')}</label><input id="if_end" type="date" oninput="ifDateCheck()">
+          <span id="if_dateErr" class="fld-err" style="display:none;color:var(--bad);font-size:11.5px;margin-top:4px">${tr('in.f.dateErr')}</span></div>
       </div>
     </div>
 
     <div class="form-section">
       <h3>${tr('in.s3.h')}</h3>
       <p class="sub">${tr('in.s3.sub')}</p>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px">${MDS_ITEMS.map(m=>`<div class="mds-row miss"><span class="ico">!</span><span class="nm">${m}</span></div>`).join('')}</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px">${MDS_ITEMS.map((m,i)=>`<label class="mds-row mds-check" style="cursor:pointer"><input type="checkbox" class="if_mds" data-mds="${escapeHtml(m)}" style="accent-color:var(--green-700);margin-right:8px"><span class="nm">${escapeHtml(m)}</span></label>`).join('')}</div>
       <p class="help" style="margin-top:10px;color:var(--muted)">${tr('in.s3.help')}</p>
     </div>
 
     <div class="form-section">
       <h3>${tr('in.s4.h')}</h3>
       <div class="form-grid">
-        <div class="fld"><label>${tr('in.f.budget')} <span class="req">*</span></label><input type="number" placeholder="${tr('in.f.budget.ph')}"></div>
+        <div class="fld"><label>${tr('in.f.budget')} <span class="req">*</span></label><input id="if_budget" type="number" placeholder="${tr('in.f.budget.ph')}"></div>
         <div class="fld"><label>${tr('in.f.prio')}</label>
-          <select>${PRIORITIES.map(p=>`<option>${prLbl(p)}</option>`).join('')}</select></div>
+          <select id="if_prio">${PRIORITIES.map(p=>`<option value="${p.id}">${prLbl(p)}</option>`).join('')}</select></div>
         <div class="fld full"><label>${tr('in.f.partner')} <span class="req">*</span></label>
-          <select>${PARTNERS.map(p=>`<option>${p.nm} — ${p.typ}</option>`).join('')}</select></div>
+          <select id="if_partner" onchange="ifPartnerOther()">${PARTNERS.map(p=>`<option value="${escapeHtml(p.nm)}">${p.nm} — ${p.typ}</option>`).join('')}<option value="__other__">${tr('in.f.partnerOther')}</option></select></div>
+        <div class="fld full" id="if_partnerOtherWrap" style="display:none"><label>${tr('in.f.partnerOtherName')} <span class="req">*</span></label><input id="if_partnerOther" type="text" placeholder="${tr('in.f.partnerOtherName.ph')}"></div>
         <div class="fld"><label>${tr('in.f.ft')}</label>
-          <select><option>${tr('in.f.std')}</option><option>${tr('in.f.urgent')}</option></select></div>
-        <div class="fld"><label>${tr('in.f.sai')}</label><input type="text" placeholder="${tr('in.f.sai.ph')}"></div>
+          <select id="if_ft"><option value="0">${tr('in.f.std')}</option><option value="1">${tr('in.f.urgent')}</option></select></div>
+        <div class="fld"><label>${tr('in.f.sai')}</label><input id="if_sai" type="text" placeholder="${tr('in.f.sai.ph')}"></div>
+        <div class="fld full"><label>${tr('in.f.attach')} <span class="opt">${tr('in.f.objSec.opt')}</span></label>
+          <input id="if_attach" type="file" multiple onchange="ifAttachList()" style="font-size:12.5px">
+          <span id="if_attachList" class="muted" style="display:block;font-size:11.5px;margin-top:4px"></span></div>
+        <div class="fld full"><label>${tr('in.f.protocol')} <span class="req">*</span></label>
+          <input id="if_protocol" type="file" accept=".doc,.docx" onchange="ifProtoName()" style="font-size:12.5px">
+          <span id="if_protocolName" class="muted" style="display:block;font-size:11.5px;margin-top:4px">${tr('in.f.protocol.help')}</span></div>
       </div>
     </div>
 
     <div class="tool-bar">
       <button class="btn ghost" onclick="goView('portfolio')">${tr('in.btn.cancel')}</button>
       <span class="sp"></span>
-      <button class="btn ghost" onclick="toast(tr('in.toast.draft'))">${tr('in.btn.draft')}</button>
-      <button class="btn primary" onclick="toast(tr('in.toast.submit'))">${tr('in.btn.submit')}</button>
+      <button class="btn ghost" onclick="submitUc(true)">${tr('in.btn.draft')}</button>
+      <button class="btn primary" onclick="submitUc(false)">${tr('in.btn.submit')}</button>
     </div>
     <p class="muted" style="text-align:center;margin:10px 0 0">${tr('in.note')}</p>
   `;
+}
+
+/* Intake helpers + real submission (fixes B1/B3/B4/B5, Q4/Q6/Q7) */
+function ifDateCheck(){
+  const s=document.getElementById('if_start'), e=document.getElementById('if_end'), err=document.getElementById('if_dateErr');
+  if(!s||!e||!err) return true;
+  const bad = s.value && e.value && e.value < s.value;
+  err.style.display = bad ? 'block' : 'none';
+  e.style.borderColor = bad ? 'var(--bad)' : '';
+  return !bad;
+}
+function ifPartnerOther(){
+  const sel=document.getElementById('if_partner'), wrap=document.getElementById('if_partnerOtherWrap');
+  if(wrap) wrap.style.display = (sel && sel.value==='__other__') ? '' : 'none';
+}
+function ifAttachList(){
+  const inp=document.getElementById('if_attach'), out=document.getElementById('if_attachList');
+  if(inp&&out) out.textContent = inp.files.length ? Array.from(inp.files).map(f=>f.name).join(', ') : '';
+}
+function ifProtoName(){
+  const inp=document.getElementById('if_protocol'), out=document.getElementById('if_protocolName');
+  if(inp&&out){ out.textContent = inp.files.length ? '📎 '+inp.files[0].name : tr('in.f.protocol.help'); out.style.color = inp.files.length ? 'var(--green-700)' : ''; }
+}
+function ifVal(id){ const el=document.getElementById(id); return el?el.value.trim():''; }
+function submitUc(isDraft){
+  if(!ifDateCheck()){ toast(tr('in.f.dateErr')); return; }
+  const name = ifVal('if_name');
+  if(!name){ toast(tr('in.err.name')); document.getElementById('if_name').focus(); return; }
+  let partner = ifVal('if_partner');
+  if(partner==='__other__'){ partner = ifVal('if_partnerOther') || 'Autre partenaire'; }
+  const type = ifVal('if_type') || 'applied';
+  const cls = type==='scientific' ? 'fundamental' : type==='applied' ? 'validation' : 'demo';
+  const clsObj = (window.REF?REF.classes:CLASSES).find(c=>c.id===cls) || CLASSES[0];
+  const mds = Array.from(document.querySelectorAll('.if_mds:checked')).map(c=>c.dataset.mds);
+  const attachments = Array.from((document.getElementById('if_attach')||{files:[]}).files).map(f=>f.name);
+  const proto = (document.getElementById('if_protocol')||{files:[]}).files[0];
+  // Protocol mandatory on submit (not on draft) — Q5
+  if(!isDraft && !proto){ toast(tr('in.err.proto')); return; }
+  const num = (DATA.length+1).toString().padStart(3,'0');
+  const uc = {
+    id:'UC-2026-'+num, name,
+    bu: ifVal('if_bu')||'SAI',
+    region: ifVal('if_region')||'—',
+    crop: ifVal('if_crop')||'—',
+    product: ifVal('if_prod')||'—',
+    reference: ifVal('if_ref')||'',
+    type, priority: ifVal('if_prio')||'med',
+    status: isDraft ? 'draft' : 'submitted',
+    budget: Number(ifVal('if_budget'))||0,
+    partner,
+    start_date: ifVal('if_start')||null,
+    end_date: ifVal('if_end')||null,
+    fast_track: ifVal('if_ft')==='1',
+    trial_class: cls,
+    trial_type: clsObj.types[0].id,
+    strategic_objectives: [ (window.REF?REF.strategicObjectives:STRATEGIC_OBJECTIVES)[0].id ],
+    partner_setup: 'provider',
+    ic_issues: [],
+    objective_primary: ifVal('if_objp'),
+    objectives_secondary: ifVal('if_objs') ? ifVal('if_objs').split('\n').filter(Boolean) : [],
+    kpis_primary: [], kpis_secondary: [],
+    treatments: Number(ifVal('if_treat'))||4,
+    replications: Number(ifVal('if_rep'))||3,
+    mds_covered: mds,
+    rationale: ifVal('if_rat'),
+    attachments,
+    protocol: proto ? proto.name : null,
+    sai_ref: ifVal('if_sai'),
+    risks: [],
+    gates: _gatesFor(isDraft?'draft':'submitted'),
+    created_at: new Date().toISOString(),
+    submitted_at: isDraft ? null : new Date().toISOString(),
+    owner_bu: ifVal('if_bu')||'SAI'
+  };
+  DATA.unshift(uc);
+  try{ localStorage.setItem(LS_DATA, JSON.stringify(DATA)); }catch(e){}
+  apiUpsert('usecases', uc);  // upsert granulaire serveur (anti-clobber multi-user)
+  renderSidebar();
+  toast(isDraft ? tr('in.toast.draft') : tr('in.toast.submit'));
+  PREFS.filters = {}; savePrefs();
+  goView('portfolio');
 }
 
 /* -----------------------------------------------------------------
@@ -2730,32 +3002,106 @@ function renderKB(){
  * 14. ADMIN — references
  * --------------------------------------------------------------- */
 function renderAdmin(){
+  const tab = PREFS.adminTab || 'ref';
+  const subnav = [
+    ['ref','📚 '+tr('adm.t.ref')],
+    ['frame','🧭 '+tr('adm.t.frame')],
+    ['access','👥 '+tr('adm.t.access')],
+    ['integr','🔗 '+tr('adm.t.integr')]
+  ];
+  const body =
+      tab==='ref'    ? renderAdminRef()
+    : tab==='frame'  ? renderAdminFrame()
+    : tab==='access' ? renderAdminAccess()
+    :                  renderAdminIntegr();
   document.getElementById('sc-admin').innerHTML = `
     <div class="eyebrow">${tr('adm.eye')}</div>
     <h2 class="h-pg">${tr('adm.h')}</h2>
     <p class="lead">${tr('adm.lead')}</p>
+    <div class="subnav adm-subnav">
+      ${subnav.map(s=>`<button class="${tab===s[0]?'on':''}" onclick="PREFS.adminTab='${s[0]}';savePrefs();renderAdmin()">${s[1]}</button>`).join('')}
+    </div>
+    ${body}
+  `;
+}
 
-    <div class="row-2c">
-      <div class="card"><h3>${trf('adm.bu.h',{n:BUS.length})}</h3>
-        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>${tr('adm.bu.code')}</th><th>${tr('adm.bu.name')}</th><th>${tr('adm.bu.regions')}</th></tr></thead><tbody>${BUS.map(b=>`<tr><td><b>${b.id}</b></td><td>${b.nm}</td><td class="muted">${(REGIONS[b.id]||[]).join(', ')||'—'}</td></tr>`).join('')}</tbody></table></div>
-      </div>
-      <div class="card"><h3>${trf('adm.crops.h',{n:CROPS.length})}</h3>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">${CROPS.map(c=>`<span class="chip">${escapeHtml(c)}</span>`).join('')}</div>
-      </div>
-    </div>
-    <div class="row-2c">
-      <div class="card"><h3>${trf('adm.prods.h',{n:PRODUCTS.length})}</h3>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">${PRODUCTS.map(p=>`<span class="chip">${escapeHtml(p)}</span>`).join('')}</div>
-      </div>
-      <div class="card"><h3>${trf('adm.partners.h',{n:PARTNERS.length})}</h3>
-        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>${tr('adm.partners.nm')}</th><th>${tr('adm.partners.typ')}</th></tr></thead><tbody>${PARTNERS.map(p=>`<tr><td><b>${escapeHtml(p.nm)}</b></td><td class="muted">${escapeHtml(p.typ)}</td></tr>`).join('')}</tbody></table></div>
-      </div>
-    </div>
-    <div class="card"><h3>${tr('adm.mds.h')}</h3>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">${MDS_ITEMS.map(m=>`<div class="mds-row ok"><span class="ico">✓</span><span class="nm">${escapeHtml(m)}</span></div>`).join('')}</div>
-    </div>
+/* ---- Admin · Référentiels (CRUD persisté en BDD) ---- */
+function refUsageField(key){ return {bus:'bu',crops:'crop',products:'product',partners:'partner'}[key]; }
+function refUsageCount(key, value){
+  const f = refUsageField(key); if(!f) return 0;
+  return DATA.filter(u=>String(u[f])===String(value)).length;
+}
+function renderAdminRef(){
+  const cards = REF_REGISTRY.map(r=>{
+    const list = r.get();
+    const head = `<div class="ref-head"><h3>${tr(r.lblK)} <span class="ref-count">${list.length}</span></h3>
+      <span class="ref-prov">${(['bus','crops','products','partners','mds'].includes(r.key))?tr('adm.prov.core'):tr('adm.prov.excel')}</span></div>`;
+    let bodyHtml;
+    if(r.kind==='strings'){
+      bodyHtml = `<div class="ref-chips">${list.map((v,i)=>{
+        const used = refUsageCount(r.key, (r.key==='bus')?v:v);
+        return `<span class="ref-chip"><span>${escapeHtml(v)}</span><button title="${tr('adm.del')}" onclick="refDel('${r.key}',${i})">×</button></span>`;
+      }).join('')||`<span class="muted">${tr('adm.empty')}</span>`}</div>
+      <div class="ref-add"><input type="text" id="refadd_${r.key}" placeholder="${tr('adm.addPh')}" onkeydown="if(event.key==='Enter')refAddStr('${r.key}')"><button class="btn ghost sm" onclick="refAddStr('${r.key}')">+ ${tr('adm.add')}</button></div>`;
+    } else {
+      const cols = r.cols;
+      bodyHtml = `<div class="tbl-wrap"><table class="tbl"><thead><tr>${cols.map(c=>`<th>${c[1]}</th>`).join('')}<th></th></tr></thead><tbody>${
+        list.map((row,i)=>`<tr>${cols.map(c=>`<td><input class="ref-inp" value="${escapeHtml(row[c[0]]||'')}" onchange="refUpdObj('${r.key}',${i},'${c[0]}',this.value)"></td>`).join('')}
+          <td style="text-align:right"><button class="ref-x" title="${tr('adm.del')}" onclick="refDel('${r.key}',${i})">🗑</button></td></tr>`).join('')
+      }</tbody></table></div>
+      <div class="ref-add">${cols.map(c=>`<input type="text" id="refadd_${r.key}_${c[0]}" placeholder="${c[1]}">`).join('')}<button class="btn ghost sm" onclick="refAddObj('${r.key}')">+ ${tr('adm.add')}</button></div>`;
+    }
+    return `<div class="card ref-card">${head}${bodyHtml}</div>`;
+  }).join('');
+  return `<p class="muted" style="margin:-4px 0 14px">${tr('adm.ref.lead')}</p>
+    <div class="ref-grid">${cards}</div>
+    <div class="tool-bar" style="margin-top:8px">
+      <button class="btn ghost sm" onclick="refExport()">⤓ ${tr('adm.export')}</button>
+      <span class="sp"></span>
+      <button class="btn ghost sm" onclick="refResetDefaults()">↺ ${tr('adm.reset')}</button>
+    </div>`;
+}
+function refAfterChange(){ persistRef(); renderAdmin(); renderSidebar(); }
+function refAddStr(key){
+  const inp=document.getElementById('refadd_'+key); const v=(inp.value||'').trim(); if(!v) return;
+  const r=refByKey(key); const list=r.get().slice();
+  if(list.some(x=>String(x).toLowerCase()===v.toLowerCase())){ toast(tr('adm.dup')); return; }
+  list.push(v); r.set(list); refAfterChange();
+}
+function refAddObj(key){
+  const r=refByKey(key); const obj={};
+  r.cols.forEach(c=>{ const el=document.getElementById('refadd_'+key+'_'+c[0]); obj[c[0]]=(el&&el.value.trim())||''; });
+  if(!Object.values(obj).some(Boolean)){ return; }
+  if(key==='bus' && !obj.id) obj.id = (obj.nm||'BU').slice(0,4).toUpperCase();
+  if(key==='partners' && !obj.typ) obj.typ='Partenaire';
+  const list=r.get().slice(); list.push(obj); r.set(list); refAfterChange();
+}
+function refUpdObj(key,i,field,val){
+  const r=refByKey(key); const list=r.get().slice(); if(!list[i]) return;
+  list[i]={...list[i],[field]:val}; r.set(list); persistRef();
+}
+function refDel(key,i){
+  const r=refByKey(key); const list=r.get().slice(); const val=list[i];
+  const label = (typeof val==='object')?(val.nm||val.id):val;
+  const used = refUsageCount(key, (typeof val==='object')?(val.id||val.nm):val);
+  if(used>0){ toast(trf('adm.usedBy',{n:used})); return; }
+  if(!confirm(trf('adm.confirmDel',{v:label}))) return;
+  list.splice(i,1); r.set(list); refAfterChange();
+}
+function refExport(){
+  const blob=new Blob([JSON.stringify(snapshotRef(),null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='nutriplan-referentiels-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+function refResetDefaults(){
+  if(!confirm(tr('adm.confirmReset'))) return;
+  try{ localStorage.removeItem('nplan_reference_v1'); }catch(e){}
+  location.reload();
+}
 
-    <div class="row-2c">
+/* ---- Admin · Cadre v1.0 (lecture seule — Framework signé CEO) ---- */
+function renderAdminFrame(){
+  return `<div class="row-2c">
       <div class="card"><h3>${tr('adm.classes.h')} <span class="sub">${tr('adm.classes.sub')}</span></h3>
         <div class="tbl-wrap"><table class="tbl"><thead><tr><th>${tr('adm.classes.cls')}</th><th>${tr('adm.classes.trl')}</th><th>${tr('adm.classes.types')}</th></tr></thead><tbody>${CLASSES.map(c=>`<tr><td><b>${tr(c.lblK)}</b></td><td class="muted">${c.trl}</td><td>${c.types.map(t=>`<span class="chip">${tr(t.lblK)}</span>`).join(' ')}</td></tr>`).join('')}</tbody></table></div>
       </div>
@@ -2763,7 +3109,6 @@ function renderAdmin(){
         <div style="display:flex;flex-direction:column;gap:6px">${STRATEGIC_OBJECTIVES.map(s=>`<div style="display:flex;align-items:center;gap:9px;padding:8px 12px;background:var(--green-50);border:1px solid var(--green-100);border-radius:9px"><span style="font-size:18px">${s.ico}</span><b style="color:var(--green-800);font:700 12.5px 'Inter'">${tr(s.lblK)}</b></div>`).join('')}</div>
       </div>
     </div>
-
     <div class="row-2c">
       <div class="card"><h3>${tr('adm.ps.h')} <span class="sub">${tr('adm.ps.sub')}</span></h3>
         <div style="display:flex;flex-wrap:wrap;gap:8px">${PARTNER_SETUPS.map(p=>`<span class="chip" style="background:#eaf3f8;border-color:#cde2ed;color:var(--info)">${tr(p.lblK)}</span>`).join('')}</div>
@@ -2772,12 +3117,33 @@ function renderAdmin(){
         <div style="display:flex;flex-wrap:wrap;gap:6px">${MACRO_PHASES.map((mp,i)=>`<span class="chip" style="background:#fff;border:1px solid ${mp.color};color:${mp.color}"><b>${i+1}.</b> ${tr(mp.lblK)}</span>`).join('')}</div>
       </div>
     </div>
-
     <div class="card" style="background:linear-gradient(135deg,#0a1812,#103d17);color:#dff0e3;border-color:rgba(124,252,154,.32)">
       <h3 style="color:#fff">${tr('adm.fw.h')}</h3>
       <p style="margin:0;color:#bcd4c2;font-size:13.5px;line-height:1.55">${tr('adm.fw.body')}</p>
-    </div>
-  `;
+    </div>`;
+}
+function renderAdminAccess(){
+  return `<div class="card"><h3>👥 ${tr('adm.t.access')}</h3>
+    <p class="muted">${tr('adm.access.body')}</p>
+    <div class="tbl-wrap" style="margin-top:10px"><table class="tbl"><thead><tr><th>${tr('adm.access.role')}</th><th>${tr('adm.access.scope')}</th><th>${tr('adm.access.rights')}</th></tr></thead><tbody>
+      <tr><td><b>Admin D²nAI</b></td><td>Global</td><td>${tr('adm.access.all')}</td></tr>
+      <tr><td><b>SAI</b></td><td>Global</td><td>${tr('adm.access.sai')}</td></tr>
+      <tr><td><b>Sponsor BU</b></td><td>1 BU</td><td>${tr('adm.access.bu')}</td></tr>
+      <tr><td><b>Trial owner</b></td><td>${tr('adm.access.own')}</td><td>${tr('adm.access.create')}</td></tr>
+      <tr><td><b>Lecteur</b></td><td>Global</td><td>${tr('adm.access.read')}</td></tr>
+    </tbody></table></div>
+    <p class="muted" style="margin-top:10px;font-size:12px">⚙ ${tr('adm.backendNote')}</p></div>`;
+}
+function renderAdminIntegr(){
+  return `<div class="card"><h3>🔗 ${tr('adm.t.integr')}</h3>
+    <p class="muted">${tr('adm.integr.body')}</p>
+    <div class="tbl-wrap" style="margin-top:10px"><table class="tbl"><thead><tr><th>Intégration</th><th>Statut</th></tr></thead><tbody>
+      <tr><td><b>Base de données NutriPlan</b></td><td>${apiReady()?'<span style="color:var(--ok)">● '+tr('adm.integr.live'):'<span style="color:var(--warn)">● '+tr('adm.integr.local')}</span></td></tr>
+      <tr><td><b>SharePoint (protocoles, rapports)</b></td><td class="muted">${tr('adm.integr.soon')}</td></tr>
+      <tr><td><b>Journal d'audit</b></td><td class="muted">${tr('adm.integr.soon')}</td></tr>
+      <tr><td><b>Co-pilote IA (Databricks)</b></td><td>${(apiCfg()&&apiCfg().ai)?'<span style="color:var(--ok)">● '+tr('adm.integr.live'):'<span style="color:var(--warn)">● '+tr('adm.integr.off')}</span></td></tr>
+    </tbody></table></div>
+    <p class="muted" style="margin-top:10px;font-size:12px">⚙ ${tr('adm.backendNote')}</p></div>`;
 }
 
 /* -----------------------------------------------------------------
@@ -2786,6 +3152,7 @@ function renderAdmin(){
 window.addEventListener('message', function(e){
   if(e && e.data && e.data.type==='DNAI_NPLAN_CONFIG' && e.data.config){
     CHAT_BACKEND = e.data.config;
+    syncFromServer();  // la config (api+nonce) vient d'arriver → on synchronise la BDD
   }
 });
 // Auto-resize when embedded
@@ -2803,16 +3170,36 @@ setInterval(postHeight, 800);
 // Wire language switcher (flag buttons in topbar) — does a full re-render on change.
 document.querySelectorAll('.tb-lang button').forEach(b=>b.onclick=()=>{ setLang(b.dataset.l); CHAT_HIST.length = 0; if(PREFS.chatOpen){ chatGreet(); } });
 
+// Référentiels : charge le cache local avant le premier rendu (sync serveur ensuite).
+try{ const _r=JSON.parse(localStorage.getItem('nplan_reference_v1')); if(_r) applyRefFromServer(_r); }catch(e){}
 renderSidebar();
 applyLang();
 goView(PREFS.view || 'cockpit');
 if(PREFS.chatOpen) toggleChat();
+syncFromServer();  // full-screen : window.DNAI_NPLAN injecté → sync BDD immédiate
 
 // Global shortcut: ⌘K / Ctrl+K focus search
 document.addEventListener('keydown', e=>{
   if((e.metaKey||e.ctrlKey) && e.key==='k'){ e.preventDefault(); document.getElementById('globalSearch').focus(); }
   if(e.key==='Escape'){ closeUc(); }
 });
+
+// Global search wiring (fix B2) — filters the portfolio live, navigates there on type.
+(function(){
+  const gs = document.getElementById('globalSearch');
+  if(!gs) return;
+  let t=null;
+  gs.addEventListener('input', ()=>{
+    clearTimeout(t);
+    t = setTimeout(()=>{
+      PREFS.filters = PREFS.filters||{};
+      const v = gs.value.trim();
+      if(v) PREFS.filters.q = v; else delete PREFS.filters.q;
+      savePrefs();
+      if(PREFS.view!=='portfolio') goView('portfolio'); else renderPortfolio();
+    }, 180);
+  });
+})();
 
 /* ============================================================
  * FEEDBACK EDITION — clic-droit sur n'importe quel bloc pour

@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutriPlan — Trial Management Cockpit
  * Description:       Sister-app of NutriTrials covering the full upstream Trial Management cycle (annual planning, Use Case intake, Steering / CEO / Monitoring gates, internal controls, Fast Track lane, closure & knowledge base). Includes a chat-with-data AI co-pilot designed and operated by the D²nAI team.
- * Version:           0.6.0
+ * Version:           0.8.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutriplan
@@ -10,9 +10,64 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NPLAN_VER', '0.6.0' );
+define( 'DNAI_NPLAN_VER', '0.8.0' );
 define( 'DNAI_NPLAN_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NPLAN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'DNAI_NPLAN_DB_VER', '1' );
+
+/* -------------------------------------------------------------------------
+ * REAL DATABASE LAYER (MVP ouvert aux utilisateurs)
+ * Une table custom {prefix}dnai_nplan_store : une ligne par collection
+ * (usecases, projects, reference, feedback). Stockage JSON, persistance
+ * serveur partagée entre tous les utilisateurs (≠ localStorage par poste).
+ * ---------------------------------------------------------------------- */
+function dnai_nplan_table() {
+	global $wpdb;
+	return $wpdb->prefix . 'dnai_nplan_store';
+}
+function dnai_nplan_install_db() {
+	global $wpdb;
+	$table   = dnai_nplan_table();
+	$charset = $wpdb->get_charset_collate();
+	$sql = "CREATE TABLE $table (
+		collection varchar(64) NOT NULL,
+		data longtext NOT NULL,
+		updated_at datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
+		updated_by bigint(20) unsigned NOT NULL DEFAULT 0,
+		PRIMARY KEY  (collection)
+	) $charset;";
+	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+	dbDelta( $sql );
+	update_option( 'dnai_nplan_db_ver', DNAI_NPLAN_DB_VER );
+}
+// Auto-migration si la version DB change (sans réactiver le plugin).
+add_action( 'plugins_loaded', function () {
+	if ( get_option( 'dnai_nplan_db_ver' ) !== DNAI_NPLAN_DB_VER ) {
+		dnai_nplan_install_db();
+	}
+} );
+
+function dnai_nplan_collections() {
+	// Whitelist — évite l'écriture de collections arbitraires.
+	return array( 'usecases', 'projects', 'reference', 'feedback' );
+}
+function dnai_nplan_store_get( $collection ) {
+	global $wpdb;
+	$table = dnai_nplan_table();
+	$row = $wpdb->get_row( $wpdb->prepare( "SELECT data, updated_at FROM $table WHERE collection = %s", $collection ), ARRAY_A );
+	if ( ! $row ) { return null; }
+	return array( 'data' => json_decode( $row['data'], true ), 'updated_at' => $row['updated_at'] );
+}
+function dnai_nplan_store_put( $collection, $data ) {
+	global $wpdb;
+	$wpdb->replace( dnai_nplan_table(), array(
+		'collection' => $collection,
+		'data'       => wp_json_encode( $data ),
+		'updated_at' => current_time( 'mysql' ),
+		'updated_by' => get_current_user_id(),
+	), array( '%s', '%s', '%s', '%d' ) );
+	return true;
+}
 
 /* -------------------------------------------------------------------------
  * Settings helpers — Databricks proxy reused from CGM Cockpit pattern.
@@ -48,6 +103,7 @@ add_filter( 'query_vars', function ( $vars ) { $vars[] = 'dnai_nplan_app'; retur
 register_activation_hook( __FILE__, function () {
 	dnai_nplan_add_rewrite();
 	flush_rewrite_rules();
+	dnai_nplan_install_db();
 } );
 register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
 
@@ -65,8 +121,10 @@ add_action( 'template_redirect', function () {
 			'ai'     => dnai_nplan_ai_ready(),
 			'chat'   => esc_url_raw( rest_url( 'dnai-nutriplan/v1/chat' ) ),
 			'config' => esc_url_raw( rest_url( 'dnai-nutriplan/v1/config' ) ),
+			'api'    => esc_url_raw( rest_url( 'dnai-nutriplan/v1' ) ),
 			'nonce'  => wp_create_nonce( 'wp_rest' ),
 			'home'   => esc_url_raw( home_url( '/' ) ),
+			'user'   => wp_get_current_user()->display_name ?: '',
 			'ver'    => DNAI_NPLAN_VER,
 		) ) . ';</script>';
 		echo str_replace( '</head>', $cfg . "\n</head>", $html );
@@ -109,6 +167,7 @@ add_shortcode( 'nutriplan', function () {
     ai: <?php echo dnai_nplan_ai_ready() ? 'true' : 'false'; ?>,
     chat: <?php echo wp_json_encode( esc_url_raw( rest_url( 'dnai-nutriplan/v1/chat' ) ) ); ?>,
     config: <?php echo wp_json_encode( esc_url_raw( rest_url( 'dnai-nutriplan/v1/config' ) ) ); ?>,
+    api: <?php echo wp_json_encode( esc_url_raw( rest_url( 'dnai-nutriplan/v1' ) ) ); ?>,
     nonce: <?php echo wp_json_encode( wp_create_nonce( 'wp_rest' ) ); ?>,
     home: <?php echo wp_json_encode( esc_url_raw( home_url( '/' ) ) ); ?>,
     ver: <?php echo wp_json_encode( DNAI_NPLAN_VER ); ?>
@@ -167,13 +226,88 @@ add_action( 'rest_api_init', function () {
 		'callback'            => 'dnai_nplan_chat',
 		'permission_callback' => 'dnai_nplan_same_origin_perm',
 	) );
+
+	/* ----- Data persistence (real DB) ----- */
+	// Bulk : GET /collection/{name} · PUT /collection/{name}
+	register_rest_route( 'dnai-nutriplan/v1', '/collection/(?P<name>[a-z_]+)', array(
+		array(
+			'methods'             => 'GET',
+			'callback'            => 'dnai_nplan_rest_collection_get',
+			'permission_callback' => 'dnai_nplan_same_origin_perm',
+		),
+		array(
+			'methods'             => 'PUT',
+			'callback'            => 'dnai_nplan_rest_collection_put',
+			'permission_callback' => 'dnai_nplan_same_origin_perm',
+		),
+	) );
+	// Granulaire : POST /item/{name} (upsert par id) · DELETE /item/{name}/{id}
+	register_rest_route( 'dnai-nutriplan/v1', '/item/(?P<name>[a-z_]+)', array(
+		'methods'             => 'POST',
+		'callback'            => 'dnai_nplan_rest_item_upsert',
+		'permission_callback' => 'dnai_nplan_same_origin_perm',
+	) );
+	register_rest_route( 'dnai-nutriplan/v1', '/item/(?P<name>[a-z_]+)/(?P<id>[A-Za-z0-9_\-]+)', array(
+		'methods'             => 'DELETE',
+		'callback'            => 'dnai_nplan_rest_item_delete',
+		'permission_callback' => 'dnai_nplan_same_origin_perm',
+	) );
 } );
+
+function dnai_nplan_valid_collection( $name ) {
+	return in_array( $name, dnai_nplan_collections(), true );
+}
+function dnai_nplan_rest_collection_get( $req ) {
+	$name = $req['name'];
+	if ( ! dnai_nplan_valid_collection( $name ) ) { return new WP_REST_Response( array( 'error' => 'unknown collection' ), 404 ); }
+	$row = dnai_nplan_store_get( $name );
+	$r = new WP_REST_Response( array(
+		'collection' => $name,
+		'data'       => $row ? $row['data'] : null,
+		'updated_at' => $row ? $row['updated_at'] : null,
+	), 200 );
+	$r->header( 'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0' );
+	return $r;
+}
+function dnai_nplan_rest_collection_put( $req ) {
+	$name = $req['name'];
+	if ( ! dnai_nplan_valid_collection( $name ) ) { return new WP_REST_Response( array( 'error' => 'unknown collection' ), 404 ); }
+	$body = $req->get_json_params();
+	$data = isset( $body['data'] ) ? $body['data'] : $body;
+	dnai_nplan_store_put( $name, $data );
+	return new WP_REST_Response( array( 'ok' => true, 'collection' => $name, 'updated_at' => current_time( 'mysql' ) ), 200 );
+}
+function dnai_nplan_rest_item_upsert( $req ) {
+	$name = $req['name'];
+	if ( ! dnai_nplan_valid_collection( $name ) ) { return new WP_REST_Response( array( 'error' => 'unknown collection' ), 404 ); }
+	$item = $req->get_json_params();
+	if ( ! is_array( $item ) || ! isset( $item['id'] ) ) { return new WP_REST_Response( array( 'error' => 'item needs an id' ), 400 ); }
+	$row = dnai_nplan_store_get( $name );
+	$list = ( $row && is_array( $row['data'] ) ) ? $row['data'] : array();
+	$found = false;
+	foreach ( $list as $i => $existing ) {
+		if ( isset( $existing['id'] ) && $existing['id'] === $item['id'] ) { $list[ $i ] = $item; $found = true; break; }
+	}
+	if ( ! $found ) { array_unshift( $list, $item ); }
+	dnai_nplan_store_put( $name, $list );
+	return new WP_REST_Response( array( 'ok' => true, 'id' => $item['id'], 'created' => ! $found, 'count' => count( $list ) ), 200 );
+}
+function dnai_nplan_rest_item_delete( $req ) {
+	$name = $req['name'];
+	if ( ! dnai_nplan_valid_collection( $name ) ) { return new WP_REST_Response( array( 'error' => 'unknown collection' ), 404 ); }
+	$id = $req['id'];
+	$row = dnai_nplan_store_get( $name );
+	$list = ( $row && is_array( $row['data'] ) ) ? $row['data'] : array();
+	$list = array_values( array_filter( $list, function ( $x ) use ( $id ) { return ! ( isset( $x['id'] ) && $x['id'] === $id ); } ) );
+	dnai_nplan_store_put( $name, $list );
+	return new WP_REST_Response( array( 'ok' => true, 'id' => $id, 'count' => count( $list ) ), 200 );
+}
 
 // Bypass WP's global cookie-nonce check for our endpoint when same-origin
 // (Azure Front Door / sticky nonces make the default check unreliable).
 add_filter( 'rest_authentication_errors', function ( $result ) {
 	$uri = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : '';
-	if ( strpos( $uri, 'dnai-nutriplan/v1/chat' ) === false ) { return $result; }
+	if ( strpos( $uri, 'dnai-nutriplan/v1/' ) === false ) { return $result; }
 	$origin = isset( $_SERVER['HTTP_ORIGIN'] ) ? $_SERVER['HTTP_ORIGIN'] : ( isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : '' );
 	if ( $origin ) {
 		$oh = wp_parse_url( $origin, PHP_URL_HOST );

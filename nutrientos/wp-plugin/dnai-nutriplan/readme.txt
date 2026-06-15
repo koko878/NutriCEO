@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.6.0
+Stable tag: 0.8.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,31 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.8.0 — Backend BDD réel + retours métier (vague 1) =
+* BASE DE DONNÉES RÉELLE (MVP ouvrable aux utilisateurs) : table custom
+  {prefix}dnai_nplan_store + API REST (/collection bulk, /item granulaire).
+  Persistance serveur PARTAGÉE entre tous les utilisateurs (fini le
+  localStorage par poste). localStorage reste en cache offline / 1er paint.
+  Sync auto au boot ; amorçage serveur au premier lancement (seed).
+* Formulaire de création de Use Case RÉELLEMENT fonctionnel (corrige le
+  bug n°1 : un Use Case créé apparaît enfin dans le portefeuille/cockpit,
+  et est persisté en base via upsert granulaire anti-clobber).
+  - Contrôle date fin > date début
+  - MDS cochables · pièces jointes · protocole Word obligatoire à la
+    soumission · partenaire « Autre » avec saisie libre · Fast/Standard
+* Recherche globale fonctionnelle (filtre le portefeuille en direct).
+* Écran ADMIN refondu — sous-nav 4 onglets :
+  - Référentiels : CRUD complet de 11 référentiels (BU, cultures,
+    produits, partenaires, MDS + statut projet/contrat/trial, urgence,
+    lignes stratégiques, types de projet — alignés Excel SAI), édition
+    inline, garde-fou suppression si utilisé par un trial, badge
+    provenance (Cœur / Excel SAI), export JSON, persistance serveur.
+  - Cadre v1.0 (lecture seule, Framework signé CEO)
+  - Accès & rôles (modèle RBAC cible, rôle SAI)
+  - Intégrations (statut BDD / SharePoint / audit / IA en temps réel)
+* Référentiels Projet importés de l'Excel SAI (statuts, lignes
+  stratégiques, types de projet) — socle de la future couche Projet→Trial.
 
 = 0.6.0 =
 * Feedback edition : clic-droit sur n'importe quel bloc pour commenter,
