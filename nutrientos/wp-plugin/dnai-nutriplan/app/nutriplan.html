@@ -563,6 +563,39 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .proj-bar{height:6px;border-radius:4px;background:var(--green-50);overflow:hidden;margin-top:10px}
 .proj-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--green-500),var(--green-700))}
 .proj-banner{display:flex;align-items:center;gap:8px;background:var(--green-50);border:1px solid var(--green-100);border-radius:10px;padding:9px 14px;margin:0 0 14px;font-size:13px}
+
+/* ===== Dashboards (vue dédiée) ===== */
+.dash-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+@media(max-width:760px){.dash-kpis{grid-template-columns:1fr}}
+.dash-kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow-sm)}
+.dash-kpi .k{font:700 10px 'Inter';letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2)}
+.dash-kpi .v{font:800 34px 'Inter';color:var(--green-900);line-height:1.05;margin-top:6px;font-variant-numeric:tabular-nums}
+.dash-kpi .v small{font-size:16px;color:var(--muted);font-weight:600}
+.dash-kpi .s{font-size:12px;color:var(--muted);margin-top:3px;min-height:1px}
+.dash-bar{height:7px;border-radius:5px;background:var(--green-50);overflow:hidden;margin-top:10px}
+.dash-bar i{display:block;height:100%;background:linear-gradient(90deg,#e8a32c,#c79a3a)}
+.dash-card-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.dash-card-h h3{margin:0;font:700 17px 'Cormorant Garamond',serif;color:var(--green-900)}
+.dash-card-h h3 b{color:var(--green-700)}
+.dash-legend-note{font:700 10px 'Inter';letter-spacing:.06em;text-transform:uppercase;color:var(--muted-2)}
+.dash-map-card{margin-bottom:16px}
+.dash-map{position:relative;width:100%;aspect-ratio:2.1/1;border-radius:14px;
+  background:radial-gradient(120% 120% at 50% 0,#eef3ee,#e3ebe4);overflow:hidden;
+  background-image:radial-gradient(circle at 22% 36%,#cfe0d2 0 19%,transparent 20%),radial-gradient(circle at 50% 34%,#cfe0d2 0 9%,transparent 10%),radial-gradient(circle at 52% 58%,#cfe0d2 0 17%,transparent 18%),radial-gradient(circle at 72% 48%,#cfe0d2 0 11%,transparent 12%),radial-gradient(circle at 30% 66%,#cfe0d2 0 13%,transparent 14%)}
+.dash-bubble{position:absolute;transform:translate(-50%,-50%);text-align:center;width:120px}
+.db-label{font:700 12px 'Inter';color:var(--green-900);margin-bottom:4px;text-shadow:0 1px 2px rgba(255,255,255,.8)}
+.db-pills{display:flex;gap:6px;justify-content:center}
+.db-pill{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;font:800 13px 'Inter';color:#fff;box-shadow:var(--shadow-sm)}
+.db-pill.t{background:linear-gradient(135deg,#d9a441,#b9802a)}
+.db-pill.d{background:linear-gradient(135deg,#2E7D32,#103d17)}
+.db-prog{font:600 10.5px 'Inter';color:var(--muted);margin-top:3px;text-shadow:0 1px 2px rgba(255,255,255,.8)}
+.dash-donuts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:900px){.dash-donuts{grid-template-columns:1fr}}
+.donut-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.donut{width:100%;max-width:210px;height:auto}
+.donut-legend{display:flex;flex-wrap:wrap;gap:6px 12px;justify-content:center;width:100%}
+.donut-legend .dl{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-2)}
+.donut-legend .dl i{width:11px;height:11px;border-radius:3px;display:inline-block}
 </style>
 </head>
 <body>
@@ -604,6 +637,9 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 
     <!-- ----- COCKPIT SCREEN ----- -->
     <section class="screen on" id="sc-cockpit"></section>
+
+    <!-- ----- DASHBOARDS SCREEN (vue dédiée — demande SAI/Abdelali) ----- -->
+    <section class="screen" id="sc-dashboards"></section>
 
     <!-- ----- PROJECTS SCREEN (Projet → Trial) ----- -->
     <section class="screen" id="sc-projects"></section>
@@ -675,6 +711,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 const NAV = [
   { sec:'nav.sec.pilot' },
   { id:'cockpit',    ico:'⚡', lblK:'nav.cockpit',    crumbK:'nav.cockpit.cr' },
+  { id:'dashboards', ico:'📊', lblK:'nav.dash',       crumbK:'nav.dash.cr' },
   { id:'projects',   ico:'🗂️', lblK:'nav.projects',   crumbK:'nav.projects.cr' },
   { id:'portfolio',  ico:'📚', lblK:'nav.portfolio',  crumbK:'nav.portfolio.cr' },
   { id:'calendar',   ico:'📅', lblK:'nav.calendar',   crumbK:'nav.calendar.cr' },
@@ -760,6 +797,7 @@ fr:{
  'side.foot':'synchronisé avec NutriTrials',
  'nav.sec.pilot':'Pilotage','nav.sec.work':'Workflows','nav.sec.cap':'Capitalisation',
  'nav.cockpit':'Cockpit','nav.cockpit.cr':'Cockpit',
+ 'nav.dash':'Dashboards','nav.dash.cr':'Dashboards','dash.eye':'Vue dédiée · portefeuille agronomique','dash.h':'Dashboards','dash.lead':'Vue globale du portefeuille trials & démos. Données calculées en direct depuis le portefeuille.','dash.k.tplan':'Trials planifiés','dash.k.tinst':'Trials installés','dash.k.tprog':'Trials — avancement global','dash.k.dplan':'Démos planifiées','dash.k.dinst':'Démos installées','dash.k.dprog':'Démos — avancement global','dash.k.across':'Sur {r} régions / {e} entités','dash.map.h':'Trials & Démos — répartition géographique & avancement régional','dash.map.legend':'Bulles = trials (ambre) / démos (vert)','dash.map.progress':'avancement','dash.b.h':'Type de partenaire','dash.b.sub':'% des expériences','dash.c.h':'Cultures','dash.c.sub':'% des trials & démos par culture','dash.d.h':'Budget','dash.d.sub':'% du budget portefeuille par région','dash.note':'Donuts et carte calculés en direct depuis le portefeuille (DATA). Mise à jour automatique à chaque création de trial.',
  'nav.projects':'Projets','nav.projects.cr':'Projets','prj.eye':'Projets · Call for Proposal','prj.h':'{n} projets','prj.lead':'Niveau parent des trials. Un projet regroupe N trials (héritage entité, pays, culture, partenaire). Clique un projet pour voir ses trials.','prj.trials':'trials','prj.progress':'{done}/{total} trials clôturés · {pct}%','prj.empty':'Aucun projet.','prj.k.projects':'Projets actifs','prj.k.trials':'Trials rattachés','prj.k.budget':'Budget total','prj.new':'Nouveau projet','prj.prompt.title':'Titre du projet ?','prj.prompt.bu':'Business Unit ?','prj.created':'✓ Projet créé','prj.col':'Projet',
  'nav.portfolio':'Portefeuille','nav.portfolio.cr':'Portefeuille trials',
  'nav.calendar':'Cycle annuel','nav.calendar.cr':'Cycle annuel · Calendrier',
@@ -1032,6 +1070,7 @@ en:{
  'side.foot':'synced with NutriTrials',
  'nav.sec.pilot':'Steering','nav.sec.work':'Workflows','nav.sec.cap':'Knowledge',
  'nav.cockpit':'Cockpit','nav.cockpit.cr':'Cockpit',
+ 'nav.dash':'Dashboards','nav.dash.cr':'Dashboards','dash.eye':'Dedicated view · agronomic portfolio','dash.h':'Dashboards','dash.lead':'Global view of the trial & demo portfolio. Computed live from the portfolio.','dash.k.tplan':'Trials planned','dash.k.tinst':'Trials installed','dash.k.tprog':'Trials — overall progress','dash.k.dplan':'Demos planned','dash.k.dinst':'Demos installed','dash.k.dprog':'Demos — overall progress','dash.k.across':'Across {r} regions / {e} entities','dash.map.h':'Trials & Demos — geographic split & regional progress','dash.map.legend':'Bubbles = trials (amber) / demos (green)','dash.map.progress':'progress','dash.b.h':'Partner Type','dash.b.sub':'% of experiments','dash.c.h':'Crops','dash.c.sub':'% of trials & demos by crop','dash.d.h':'Budget','dash.d.sub':'% of total portfolio budget by region','dash.note':'Donuts and map computed live from the portfolio (DATA). Auto-updates on every trial creation.',
  'nav.projects':'Projects','nav.projects.cr':'Projects','prj.eye':'Projects · Call for Proposal','prj.h':'{n} projects','prj.lead':'Parent layer of trials. A project groups N trials (inherits entity, country, crop, partner). Click a project to see its trials.','prj.trials':'trials','prj.progress':'{done}/{total} trials closed · {pct}%','prj.empty':'No project.','prj.k.projects':'Active projects','prj.k.trials':'Linked trials','prj.k.budget':'Total budget','prj.new':'New project','prj.prompt.title':'Project title?','prj.prompt.bu':'Business Unit?','prj.created':'✓ Project created','prj.col':'Project',
  'nav.portfolio':'Portfolio','nav.portfolio.cr':'Trial portfolio',
  'nav.calendar':'Annual cycle','nav.calendar.cr':'Annual cycle · Calendar',
@@ -1286,6 +1325,7 @@ pt:{
  'side.foot':'sincronizado com NutriTrials',
  'nav.sec.pilot':'Pilotagem','nav.sec.work':'Workflows','nav.sec.cap':'Capitalização',
  'nav.cockpit':'Cockpit','nav.cockpit.cr':'Cockpit',
+ 'nav.dash':'Dashboards','nav.dash.cr':'Dashboards','dash.eye':'Vista dedicada · portfólio agronômico','dash.h':'Dashboards','dash.lead':'Visão global do portfólio de trials & demos. Calculado em tempo real.','dash.k.tplan':'Trials planejados','dash.k.tinst':'Trials instalados','dash.k.tprog':'Trials — progresso geral','dash.k.dplan':'Demos planejadas','dash.k.dinst':'Demos instaladas','dash.k.dprog':'Demos — progresso geral','dash.k.across':'Em {r} regiões / {e} entidades','dash.map.h':'Trials & Demos — divisão geográfica & progresso regional','dash.map.legend':'Bolhas = trials (âmbar) / demos (verde)','dash.map.progress':'progresso','dash.b.h':'Tipo de parceiro','dash.b.sub':'% dos experimentos','dash.c.h':'Culturas','dash.c.sub':'% de trials & demos por cultura','dash.d.h':'Orçamento','dash.d.sub':'% do orçamento do portfólio por região','dash.note':'Donuts e mapa calculados em tempo real do portfólio (DATA).',
  'nav.projects':'Projetos','nav.projects.cr':'Projetos','prj.eye':'Projetos · Call for Proposal','prj.h':'{n} projetos','prj.lead':'Camada pai dos trials. Um projeto agrupa N trials (herda entidade, país, cultura, parceiro). Clique num projeto para ver seus trials.','prj.trials':'trials','prj.progress':'{done}/{total} trials encerrados · {pct}%','prj.empty':'Nenhum projeto.','prj.k.projects':'Projetos ativos','prj.k.trials':'Trials vinculados','prj.k.budget':'Orçamento total','prj.new':'Novo projeto','prj.prompt.title':'Título do projeto?','prj.prompt.bu':'Business Unit?','prj.created':'✓ Projeto criado','prj.col':'Projeto',
  'nav.portfolio':'Portfólio','nav.portfolio.cr':'Portfólio de trials',
  'nav.calendar':'Ciclo anual','nav.calendar.cr':'Ciclo anual · Calendário',
@@ -2057,6 +2097,7 @@ function goView(id){
   const nav = NAV.find(n=>n.id===id);
   document.getElementById('crumbs').innerHTML = `<span>NutriPlan</span><span class="sep">/</span><b>${nav?tr(nav.crumbK):id}</b>`;
   if(id==='cockpit')    renderCockpit();
+  if(id==='dashboards') renderDashboards();
   if(id==='projects')   renderProjects();
   if(id==='portfolio')  renderPortfolio();
   if(id==='intake')     renderIntake();
@@ -2321,6 +2362,116 @@ function renderHeatmap(){
     return `<div class="heat-row"><div class="h-lbl"><span class="av ${b.color}" style="margin-right:6px">${b.id}</span>${escapeHtml(b.nm)}</div>${cells}</div>`;
   }).join('');
   return `<div class="heat">${head}${rows}</div>`;
+}
+
+/* =================================================================
+ * 5ter. DASHBOARDS — vue dédiée (demande SAI / Abdelali, F3)
+ *  Données calculées en direct depuis DATA. Donuts SVG hand-rolled,
+ *  carte régionale à bulles. Zéro dépendance externe, charte D²nAI.
+ * ================================================================= */
+const DASH_PALETTE = ['#103d17','#1B5E20','#2E7D32','#4CAF50','#A5D6A7','#7c5b07','#c79a3a','#b9802a','#a32d2d','#1d5e94'];
+function isDemo(u){ return u.type==='demo'; }
+function statusProgress(s){
+  return ({draft:0,submitted:10,steering:20,ceo:30,approved:40,execution:60,monitoring:85,'closed-go':100,'closed-hold':100,'closed-kill':100})[s] || 0;
+}
+function isInstalled(u){ return ['execution','monitoring','closed-go','closed-hold','closed-kill'].includes(u.status); }
+// Mapping BU → région d'affichage du dashboard + coordonnées (% de la carte).
+const DASH_REGIONS = [
+  { key:'NAM',  label:'North America', x:22, y:34 },
+  { key:'EUR',  label:'Europe',        x:50, y:30 },
+  { key:'IND',  label:'India',         x:70, y:46 },
+  { key:'APAC', label:'SEA',           x:80, y:55 },
+  { key:'AFR',  label:'Africa',        x:52, y:55 },
+  { key:'BRA',  label:'Brazil',        x:33, y:66 },
+  { key:'SAI',  label:'LATAM',         x:25, y:64 }
+];
+function dashRegionStats(){
+  return DASH_REGIONS.map(r=>{
+    const ucs = DATA.filter(u=>u.bu===r.key);
+    const trials = ucs.filter(u=>!isDemo(u));
+    const demos  = ucs.filter(u=>isDemo(u));
+    const prog = ucs.length ? Math.round(ucs.reduce((s,u)=>s+statusProgress(u.status),0)/ucs.length) : 0;
+    return {...r, trials:trials.length, demos:demos.length, progress:prog};
+  }).filter(r=>r.trials||r.demos);
+}
+// Agrège DATA par une clé → [{label,value,pct}] trié desc.
+function dashAgg(keyFn, valFn){
+  const m = {};
+  DATA.forEach(u=>{ const k=keyFn(u); if(k==null) return; m[k]=(m[k]||0)+(valFn?valFn(u):1); });
+  const total = Object.values(m).reduce((s,v)=>s+v,0)||1;
+  return Object.entries(m).map(([label,value])=>({label,value,pct:Math.round(value/total*100)})).sort((a,b)=>b.value-a.value);
+}
+// Donut SVG (anneau) — segments depuis [{label,value,pct}].
+function donutSVG(data, opts){
+  opts=opts||{}; const size=opts.size||200, sw=opts.stroke||30, r=(size-sw)/2, cx=size/2, cy=size/2;
+  const C=2*Math.PI*r; let off=0; const total=data.reduce((s,d)=>s+d.value,0)||1;
+  const segs = data.map((d,i)=>{
+    const frac=d.value/total, len=frac*C;
+    const col=DASH_PALETTE[i%DASH_PALETTE.length];
+    const el=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}" transform="rotate(-90 ${cx} ${cy})"><title>${escapeHtml(d.label)} : ${d.pct}%</title></circle>`;
+    // étiquette % au milieu du segment (si assez large)
+    let lbl='';
+    if(frac>0.04){
+      const mid=(off+len/2)/C*2*Math.PI - Math.PI/2;
+      const lr=r; const lx=cx+lr*Math.cos(mid), ly=cy+lr*Math.sin(mid);
+      lbl=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="central" font-size="11" font-weight="700" fill="${i<4?'#fff':'#1a1a1a'}">${d.pct}%</text>`;
+    }
+    off+=len;
+    return el+lbl;
+  }).join('');
+  const legend = data.map((d,i)=>`<span class="dl"><i style="background:${DASH_PALETTE[i%DASH_PALETTE.length]}"></i>${escapeHtml(d.label)}</span>`).join('');
+  return `<div class="donut-wrap"><svg viewBox="0 0 ${size} ${size}" class="donut">${segs}</svg><div class="donut-legend">${legend}</div></div>`;
+}
+function renderDashboards(){
+  const trials = DATA.filter(u=>!isDemo(u));
+  const demos  = DATA.filter(u=>isDemo(u));
+  const tPlanned=trials.length, tInstalled=trials.filter(isInstalled).length;
+  const dPlanned=demos.length,  dInstalled=demos.filter(isInstalled).length;
+  const tProg = tPlanned?Math.round(trials.reduce((s,u)=>s+statusProgress(u.status),0)/tPlanned):0;
+  const dProg = dPlanned?Math.round(demos.reduce((s,u)=>s+statusProgress(u.status),0)/dPlanned):0;
+  const regions = dashRegionStats();
+  const nRegions = regions.length, nEntities = new Set(DATA.map(u=>u.bu)).size;
+
+  const crops  = dashAgg(u=>u.crop);
+  const budget = dashAgg(u=>buOf(u.bu).nm.replace(' BU','').replace(' Corporate',''), u=>u.budget||0);
+  const partner= dashAgg(u=>{ const s=u.partner_setup; return s==='institution'?'Institutions / Universités':s==='client'?'Distributeurs / Clients':'Prestataires de service'; });
+
+  const kpi = (lab,big,sub,pct,unit)=>`<div class="dash-kpi">
+    <div class="k">${lab}</div><div class="v">${big}${unit?`<small>${unit}</small>`:''}</div>
+    <div class="s">${sub}</div>${pct!=null?`<div class="dash-bar"><i style="width:${pct}%"></i></div>`:''}</div>`;
+
+  document.getElementById('sc-dashboards').innerHTML = `
+    <div class="eyebrow">${tr('dash.eye')}</div>
+    <h2 class="h-pg">${tr('dash.h')}</h2>
+    <p class="lead">${tr('dash.lead')}</p>
+
+    <div class="dash-kpis">
+      ${kpi(tr('dash.k.tplan'), tPlanned, trf('dash.k.across',{r:nRegions,e:nEntities}), null)}
+      ${kpi(tr('dash.k.tinst'), tInstalled+'<small> / '+tPlanned+'</small>', '', tPlanned?Math.round(tInstalled/tPlanned*100):0)}
+      ${kpi(tr('dash.k.tprog'), tProg, '', tProg, '%')}
+      ${kpi(tr('dash.k.dplan'), dPlanned, trf('dash.k.across',{r:nRegions,e:nEntities}), null)}
+      ${kpi(tr('dash.k.dinst'), dInstalled+'<small> / '+dPlanned+'</small>', '', dPlanned?Math.round(dInstalled/dPlanned*100):0)}
+      ${kpi(tr('dash.k.dprog'), dProg, '', dProg, '%')}
+    </div>
+
+    <div class="card dash-map-card">
+      <div class="dash-card-h"><h3><b>A.</b> ${tr('dash.map.h')}</h3><span class="dash-legend-note">${tr('dash.map.legend')}</span></div>
+      <div class="dash-map">
+        ${regions.map(r=>`<div class="dash-bubble" style="left:${r.x}%;top:${r.y}%">
+          <div class="db-label">${escapeHtml(r.label)}</div>
+          <div class="db-pills">${r.trials?`<span class="db-pill t">${r.trials}</span>`:''}${r.demos?`<span class="db-pill d">${r.demos}</span>`:''}</div>
+          <div class="db-prog">${r.progress}% ${tr('dash.map.progress')}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="dash-donuts">
+      <div class="card"><div class="dash-card-h"><h3><b>B.</b> ${tr('dash.b.h')}</h3><span class="dash-legend-note">${tr('dash.b.sub')}</span></div>${donutSVG(partner)}</div>
+      <div class="card"><div class="dash-card-h"><h3><b>C.</b> ${tr('dash.c.h')}</h3><span class="dash-legend-note">${tr('dash.c.sub')}</span></div>${donutSVG(crops)}</div>
+      <div class="card"><div class="dash-card-h"><h3><b>D.</b> ${tr('dash.d.h')}</h3><span class="dash-legend-note">${tr('dash.d.sub')}</span></div>${donutSVG(budget)}</div>
+    </div>
+    <p class="muted" style="font-size:12px;margin-top:6px">${tr('dash.note')}</p>
+  `;
 }
 
 /* Export CSV des trials clôturés (B8 — KB / Closure). */

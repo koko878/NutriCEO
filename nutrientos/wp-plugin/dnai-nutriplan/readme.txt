@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.9.0
+Stable tag: 0.9.1
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,16 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.9.1 — Vue Dashboards dédiée (F3, demande SAI/Abdelali) =
+* Nouvel écran « Dashboards » (nav) reproduisant le PPT TRIAL DASHBOARD :
+  - Bandeau 6 KPIs : Trials/Démos planifiés · installés · avancement global.
+  - A. Carte géographique à bulles (trials ambre / démos vert) +
+    avancement régional par zone.
+  - B. Donut Type de partenaire · C. Donut Cultures · D. Donut Budget
+    par région — donuts SVG hand-rolled (zéro dépendance externe).
+* 100 % calculé en direct depuis le portefeuille (DATA) : mise à jour
+  automatique à chaque création de trial. Charte D²nAI, tabular-nums.
 
 = 0.9.0 — Couche Projet→Trial + filtres + KPIs cliquables (vague 2) =
 * COUCHE PROJET → TRIAL (changement structurel de l'Excel SAI) :
