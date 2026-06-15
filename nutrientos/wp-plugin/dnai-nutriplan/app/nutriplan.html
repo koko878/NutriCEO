@@ -552,6 +552,17 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .ref-x{border:0;background:none;cursor:pointer;font-size:13px;padding:3px 6px;border-radius:6px;opacity:.6;transition:.15s}
 .ref-x:hover{opacity:1;background:var(--bad-bg)}
 .mds-check input{vertical-align:middle}
+/* Q1 — filtres par colonne du portefeuille */
+.col-filt-row th{padding:4px 8px 8px;background:#fbfdfb}
+.col-filt{width:100%;border:1px solid var(--line-2);border-radius:7px;padding:4px 7px;font:500 11.5px 'Inter';background:#fff;color:var(--ink)}
+.col-filt:focus{outline:none;border-color:var(--green-700);box-shadow:0 0 0 2px rgba(46,125,50,.12)}
+/* Projet → Trial */
+.proj-card{cursor:pointer;transition:transform .12s,box-shadow .12s}
+.proj-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.proj-meta{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:12px;color:var(--muted);margin-top:6px}
+.proj-bar{height:6px;border-radius:4px;background:var(--green-50);overflow:hidden;margin-top:10px}
+.proj-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--green-500),var(--green-700))}
+.proj-banner{display:flex;align-items:center;gap:8px;background:var(--green-50);border:1px solid var(--green-100);border-radius:10px;padding:9px 14px;margin:0 0 14px;font-size:13px}
 </style>
 </head>
 <body>
@@ -593,6 +604,9 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 
     <!-- ----- COCKPIT SCREEN ----- -->
     <section class="screen on" id="sc-cockpit"></section>
+
+    <!-- ----- PROJECTS SCREEN (Projet → Trial) ----- -->
+    <section class="screen" id="sc-projects"></section>
 
     <!-- ----- PORTFOLIO SCREEN ----- -->
     <section class="screen" id="sc-portfolio"></section>
@@ -661,6 +675,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 const NAV = [
   { sec:'nav.sec.pilot' },
   { id:'cockpit',    ico:'⚡', lblK:'nav.cockpit',    crumbK:'nav.cockpit.cr' },
+  { id:'projects',   ico:'🗂️', lblK:'nav.projects',   crumbK:'nav.projects.cr' },
   { id:'portfolio',  ico:'📚', lblK:'nav.portfolio',  crumbK:'nav.portfolio.cr' },
   { id:'calendar',   ico:'📅', lblK:'nav.calendar',   crumbK:'nav.calendar.cr' },
   { id:'governance', ico:'⚖️', lblK:'nav.gov',        crumbK:'nav.gov.cr' },
@@ -745,6 +760,7 @@ fr:{
  'side.foot':'synchronisé avec NutriTrials',
  'nav.sec.pilot':'Pilotage','nav.sec.work':'Workflows','nav.sec.cap':'Capitalisation',
  'nav.cockpit':'Cockpit','nav.cockpit.cr':'Cockpit',
+ 'nav.projects':'Projets','nav.projects.cr':'Projets','prj.eye':'Projets · Call for Proposal','prj.h':'{n} projets','prj.lead':'Niveau parent des trials. Un projet regroupe N trials (héritage entité, pays, culture, partenaire). Clique un projet pour voir ses trials.','prj.trials':'trials','prj.progress':'{done}/{total} trials clôturés · {pct}%','prj.empty':'Aucun projet.','prj.k.projects':'Projets actifs','prj.k.trials':'Trials rattachés','prj.k.budget':'Budget total','prj.new':'Nouveau projet','prj.prompt.title':'Titre du projet ?','prj.prompt.bu':'Business Unit ?','prj.created':'✓ Projet créé','prj.col':'Projet',
  'nav.portfolio':'Portefeuille','nav.portfolio.cr':'Portefeuille trials',
  'nav.calendar':'Cycle annuel','nav.calendar.cr':'Cycle annuel · Calendrier',
  'nav.gov':'Gouvernance','nav.gov.cr':'Comités & gouvernance',
@@ -829,6 +845,8 @@ fr:{
  'pf.kn.empty':'vide',
  'pf.tbl.id':'ID','pf.tbl.uc':'Use Case','pf.tbl.bureg':'BU · Région','pf.tbl.cropprod':'Culture · Produit','pf.tbl.type':'Type','pf.tbl.status':'Statut','pf.tbl.budget':'Budget','pf.tbl.partner':'Partenaire','pf.tbl.sai':'SA&I','pf.tbl.upd':'Maj.',
  'pf.tbl.empty':'Aucun Use Case ne correspond aux filtres.',
+ 'pf.col.all':'Tous','pf.col.filter':'Filtrer…',
+ 'pf.byProject':'Filtré par projet :',
  // modal
  'uc.start':'Lancement prévu','uc.end':'Clôture prévue','uc.budget':'Budget alloué','uc.partner':'Partenaire','uc.sai':'SA&I Lead',
  'uc.plan':'Plan expérimental','uc.plan.fmt':'{t} traitements × {r} répétitions',
@@ -843,6 +861,7 @@ fr:{
  'in.lead':'Formulaire structuré qui force la complétude (objectifs, KPIs, MDS, budget, partenaire). Validation auto avant soumission au Steering Committee, puis handoff <b>automatique vers NutriTrials</b> après CEO approval.',
  'in.step1':'Objectifs & rationale','in.step2':'Périmètre & site','in.step3':'KPIs & MDS','in.step4':'Budget & partenaire','in.step5':'Soumission',
  'in.s1.h':'1 · Objectifs & rationale','in.s1.sub':'Pourquoi ce Use Case ? Quels résultats attendus ?',
+ 'in.f.project':'Projet de rattachement','in.f.projectNew':'+ Nouveau projet…','in.f.project.help':'Un trial appartient à un projet (Call for Proposal). Hérite entité/pays/culture/partenaire.',
  'in.f.name':'Nom du Use Case','in.f.name.ph':'Ex : Sulphur deficiency correction on irrigated maize',
  'in.f.bu':'BU émettrice','in.f.type':'Type de trial',
  'in.f.objPrim':'Objectif primaire','in.f.objPrim.ph':'Quantifier la réponse de…',
@@ -1013,6 +1032,7 @@ en:{
  'side.foot':'synced with NutriTrials',
  'nav.sec.pilot':'Steering','nav.sec.work':'Workflows','nav.sec.cap':'Knowledge',
  'nav.cockpit':'Cockpit','nav.cockpit.cr':'Cockpit',
+ 'nav.projects':'Projects','nav.projects.cr':'Projects','prj.eye':'Projects · Call for Proposal','prj.h':'{n} projects','prj.lead':'Parent layer of trials. A project groups N trials (inherits entity, country, crop, partner). Click a project to see its trials.','prj.trials':'trials','prj.progress':'{done}/{total} trials closed · {pct}%','prj.empty':'No project.','prj.k.projects':'Active projects','prj.k.trials':'Linked trials','prj.k.budget':'Total budget','prj.new':'New project','prj.prompt.title':'Project title?','prj.prompt.bu':'Business Unit?','prj.created':'✓ Project created','prj.col':'Project',
  'nav.portfolio':'Portfolio','nav.portfolio.cr':'Trial portfolio',
  'nav.calendar':'Annual cycle','nav.calendar.cr':'Annual cycle · Calendar',
  'nav.gov':'Governance','nav.gov.cr':'Committees & governance',
@@ -1087,6 +1107,8 @@ en:{
  'pf.kn.empty':'empty',
  'pf.tbl.id':'ID','pf.tbl.uc':'Use Case','pf.tbl.bureg':'BU · Region','pf.tbl.cropprod':'Crop · Product','pf.tbl.type':'Type','pf.tbl.status':'Status','pf.tbl.budget':'Budget','pf.tbl.partner':'Partner','pf.tbl.sai':'SA&I','pf.tbl.upd':'Upd.',
  'pf.tbl.empty':'No Use Case matches the current filters.',
+ 'pf.col.all':'All','pf.col.filter':'Filter…',
+ 'pf.byProject':'Filtered by project:',
  'uc.start':'Planned start','uc.end':'Planned end','uc.budget':'Allocated budget','uc.partner':'Partner','uc.sai':'SA&I Lead',
  'uc.plan':'Experimental plan','uc.plan.fmt':'{t} treatments × {r} replications',
  'uc.class':'Trial Class · Type','uc.partnerSetup':'Partner setup','uc.strategicObj':'Strategic objectives','uc.icIssues':'Open IC gaps',
@@ -1099,6 +1121,7 @@ en:{
  'in.lead':'Structured form that enforces completeness (objectives, KPIs, MDS, budget, partner). Auto-validation before Steering Committee submission, then <b>automatic handoff to NutriTrials</b> after CEO approval.',
  'in.step1':'Objectives & rationale','in.step2':'Scope & site','in.step3':'KPIs & MDS','in.step4':'Budget & partner','in.step5':'Submission',
  'in.s1.h':'1 · Objectives & rationale','in.s1.sub':'Why this Use Case? What outcomes are expected?',
+ 'in.f.project':'Parent project','in.f.projectNew':'+ New project…','in.f.project.help':'A trial belongs to a project (Call for Proposal). Inherits entity/country/crop/partner.',
  'in.f.name':'Use Case name','in.f.name.ph':'e.g. Sulphur deficiency correction on irrigated maize',
  'in.f.bu':'Issuing BU','in.f.type':'Trial type',
  'in.f.objPrim':'Primary objective','in.f.objPrim.ph':'Quantify the response of…',
@@ -1263,6 +1286,7 @@ pt:{
  'side.foot':'sincronizado com NutriTrials',
  'nav.sec.pilot':'Pilotagem','nav.sec.work':'Workflows','nav.sec.cap':'Capitalização',
  'nav.cockpit':'Cockpit','nav.cockpit.cr':'Cockpit',
+ 'nav.projects':'Projetos','nav.projects.cr':'Projetos','prj.eye':'Projetos · Call for Proposal','prj.h':'{n} projetos','prj.lead':'Camada pai dos trials. Um projeto agrupa N trials (herda entidade, país, cultura, parceiro). Clique num projeto para ver seus trials.','prj.trials':'trials','prj.progress':'{done}/{total} trials encerrados · {pct}%','prj.empty':'Nenhum projeto.','prj.k.projects':'Projetos ativos','prj.k.trials':'Trials vinculados','prj.k.budget':'Orçamento total','prj.new':'Novo projeto','prj.prompt.title':'Título do projeto?','prj.prompt.bu':'Business Unit?','prj.created':'✓ Projeto criado','prj.col':'Projeto',
  'nav.portfolio':'Portfólio','nav.portfolio.cr':'Portfólio de trials',
  'nav.calendar':'Ciclo anual','nav.calendar.cr':'Ciclo anual · Calendário',
  'nav.gov':'Governança','nav.gov.cr':'Comitês & governança',
@@ -1337,6 +1361,8 @@ pt:{
  'pf.kn.empty':'vazio',
  'pf.tbl.id':'ID','pf.tbl.uc':'Use Case','pf.tbl.bureg':'BU · Região','pf.tbl.cropprod':'Cultura · Produto','pf.tbl.type':'Tipo','pf.tbl.status':'Status','pf.tbl.budget':'Orçamento','pf.tbl.partner':'Parceiro','pf.tbl.sai':'SA&I','pf.tbl.upd':'Atual.',
  'pf.tbl.empty':'Nenhum Use Case corresponde aos filtros.',
+ 'pf.col.all':'Todos','pf.col.filter':'Filtrar…',
+ 'pf.byProject':'Filtrado por projeto:',
  'uc.start':'Início previsto','uc.end':'Fechamento previsto','uc.budget':'Orçamento alocado','uc.partner':'Parceiro','uc.sai':'SA&I Lead',
  'uc.plan':'Plano experimental','uc.plan.fmt':'{t} tratamentos × {r} repetições',
  'uc.class':'Trial Class · Type','uc.partnerSetup':'Setup do parceiro','uc.strategicObj':'Objetivos estratégicos','uc.icIssues':'Desvios IC abertos',
@@ -1349,6 +1375,7 @@ pt:{
  'in.lead':'Formulário estruturado que força a completude (objetivos, KPIs, MDS, orçamento, parceiro). Validação automática antes do envio ao Steering Committee, depois <b>handoff automático para NutriTrials</b> após aprovação CEO.',
  'in.step1':'Objetivos & rationale','in.step2':'Escopo & site','in.step3':'KPIs & MDS','in.step4':'Orçamento & parceiro','in.step5':'Envio',
  'in.s1.h':'1 · Objetivos & rationale','in.s1.sub':'Por que este Use Case? Que resultados são esperados?',
+ 'in.f.project':'Projeto de vínculo','in.f.projectNew':'+ Novo projeto…','in.f.project.help':'Um trial pertence a um projeto (Call for Proposal). Herda entidade/país/cultura/parceiro.',
  'in.f.name':'Nome do Use Case','in.f.name.ph':'Ex: Sulphur deficiency correction on irrigated maize',
  'in.f.bu':'BU emissora','in.f.type':'Tipo de trial',
  'in.f.objPrim':'Objetivo primário','in.f.objPrim.ph':'Quantificar a resposta de…',
@@ -1849,7 +1876,9 @@ function icOf(id){ return IC_POINTS.find(p=>p.id===id); }
  * --------------------------------------------------------------- */
 const LS_DATA = 'nplan_usecases_v1';
 const LS_PREFS = 'nplan_prefs_v1';
+const LS_PROJECTS = 'nplan_projects_v1';
 let DATA = loadData();
+let PROJECTS = loadProjects();
 let PREFS = loadPrefs();
 let CHAT_BACKEND = null; // { chat, nonce, ai } populated from window.DNAI_NPLAN
 let CHAT_HIST = [];
@@ -1858,6 +1887,52 @@ function loadData(){
   try{ const v=JSON.parse(localStorage.getItem(LS_DATA)); if(Array.isArray(v)&&v.length) return v; }catch(e){}
   return SEED_USECASES.slice();
 }
+/* -----------------------------------------------------------------
+ * PROJETS (couche parente des trials — Excel SAI : Projet → N trials).
+ *  Seed dérivé du portefeuille existant pour une hiérarchie immédiate.
+ * --------------------------------------------------------------- */
+function seedProjects(){
+  // 1 projet "ombrelle" par BU ayant des trials + rattachement round-robin.
+  const byBu = {};
+  DATA.forEach(u=>{ (byBu[u.bu]=byBu[u.bu]||[]).push(u); });
+  const projs = [];
+  Object.keys(byBu).forEach((bu,i)=>{
+    const ucs = byBu[bu];
+    const pid = 'PRJ-2026-'+String(i+1).padStart(3,'0');
+    const lead = ucs[0].partner || '—';
+    projs.push({
+      id: pid,
+      title: 'Programme '+ (buOf(bu).nm.replace(' BU','')) +' — nutrition phosphatée',
+      entity: bu, bu,
+      country: ucs[0].region, region: ucs[0].region, crop: ucs[0].crop,
+      partner: lead,
+      project_status: 'New Project',
+      contract_status: 'Signed',
+      strategic_line: (typeof STRATEGIC_LINES!=='undefined'?STRATEGIC_LINES[i%6]:''),
+      project_response: (typeof PROJECT_RESPONSE!=='undefined'?PROJECT_RESPONSE[i%PROJECT_RESPONSE.length]:''),
+      description: 'Programme régional regroupant les trials '+buOf(bu).nm+'.',
+      lead: 'SAI', owner: 'SAI',
+      start_date: '2026-01-01', end_date: '2028-12-31',
+      duration_years: 3,
+      budget: ucs.reduce((s,u)=>s+(u.budget||0),0)
+    });
+    // rattache les trials de cette BU au projet
+    ucs.forEach(u=>{ u.project_id = pid; });
+  });
+  return projs;
+}
+function loadProjects(){
+  try{ const v=JSON.parse(localStorage.getItem(LS_PROJECTS)); if(Array.isArray(v)&&v.length) return v; }catch(e){}
+  const seeded = seedProjects();
+  try{ localStorage.setItem(LS_PROJECTS, JSON.stringify(seeded)); }catch(e){}
+  return seeded;
+}
+function saveProjects(){
+  try{ localStorage.setItem(LS_PROJECTS, JSON.stringify(PROJECTS)); }catch(e){}
+  apiPush('projects', PROJECTS);
+}
+function projById(id){ return PROJECTS.find(p=>p.id===id); }
+function trialsOfProject(pid){ return DATA.filter(u=>u.project_id===pid); }
 function saveData(){
   try{ localStorage.setItem(LS_DATA, JSON.stringify(DATA)); }catch(e){}  // cache offline
   apiPush('usecases', DATA);  // persistance serveur (BDD réelle, partagée)
@@ -1928,6 +2003,13 @@ function syncFromServer(){
         .then(r=>r.ok?r.json():null)
         .then(rr=>{ if(rr && rr.data && typeof applyRefFromServer==='function') applyRefFromServer(rr.data); })
         .catch(()=>{});
+      // Projets : adopter ceux du serveur, sinon amorcer
+      fetch(c.api+'/collection/projects', { headers:{'X-WP-Nonce':c.nonce||''}, credentials:'same-origin' })
+        .then(r=>r.ok?r.json():null)
+        .then(pp=>{
+          if(pp && Array.isArray(pp.data) && pp.data.length){ PROJECTS = pp.data; try{ localStorage.setItem(LS_PROJECTS, JSON.stringify(PROJECTS)); }catch(e){} if(PREFS.view==='projects') renderProjects(); }
+          else { apiPush('projects', PROJECTS); }
+        }).catch(()=>{});
     })
     .catch(()=>{});
 }
@@ -1975,6 +2057,7 @@ function goView(id){
   const nav = NAV.find(n=>n.id===id);
   document.getElementById('crumbs').innerHTML = `<span>NutriPlan</span><span class="sep">/</span><b>${nav?tr(nav.crumbK):id}</b>`;
   if(id==='cockpit')    renderCockpit();
+  if(id==='projects')   renderProjects();
   if(id==='portfolio')  renderPortfolio();
   if(id==='intake')     renderIntake();
   if(id==='calendar')   renderCalendar();
@@ -2029,10 +2112,10 @@ function renderCockpit(){
 
     <!-- 4 official KPIs from the validated framework v1.0 (§8 KPI) -->
     <div class="kpi-grid">
-      ${kpiOfficial('🚀', tr('ck.kpi1'), pctFastTrack().toFixed(0)+'%', tr('ck.kpi1.d'), pctFastTrack(), 10, true)}
-      ${kpiOfficial('📈', tr('ck.kpi2'), pctTransform().toFixed(0)+'%', tr('ck.kpi2.d'), pctTransform(), 50, false)}
-      ${kpiOfficial('⏱', tr('ck.kpi3'),  pctOnTime().toFixed(0)+'%',   tr('ck.kpi3.d'),  pctOnTime(),    80, false)}
-      ${kpiOfficial('💰', tr('ck.kpi4'), (budgetVariance()>=0?'+':'')+budgetVariance().toFixed(1)+'%', tr('ck.kpi4.d'), Math.abs(budgetVariance()), 5, true)}
+      ${kpiOfficial('🚀', tr('ck.kpi1'), pctFastTrack().toFixed(0)+'%', tr('ck.kpi1.d'), pctFastTrack(), 10, true, {fast_track:1})}
+      ${kpiOfficial('📈', tr('ck.kpi2'), pctTransform().toFixed(0)+'%', tr('ck.kpi2.d'), pctTransform(), 50, false, {status:'monitoring'})}
+      ${kpiOfficial('⏱', tr('ck.kpi3'),  pctOnTime().toFixed(0)+'%',   tr('ck.kpi3.d'),  pctOnTime(),    80, false, {status:'execution'})}
+      ${kpiOfficial('💰', tr('ck.kpi4'), (budgetVariance()>=0?'+':'')+budgetVariance().toFixed(1)+'%', tr('ck.kpi4.d'), Math.abs(budgetVariance()), 5, true, {})}
     </div>
 
     <div class="row-2c">
@@ -2055,9 +2138,9 @@ function renderCockpit(){
       <h3 style="margin-bottom:6px">${tr('ck.bridge.h')} <span class="sub">${tr('ck.bridge.sub')}</span></h3>
       <p class="muted" style="margin:0 0 14px;font-size:13px">${tr('ck.bridge.p')}</p>
       <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:0">
-        <div class="kpi" style="cursor:default"><div class="k">${tr('ck.bridge.k1')}</div><div class="v">${DATA.filter(u=>['execution','monitoring','closed-go','closed-hold','closed-kill'].includes(u.status)).length}</div><div class="d flat">${tr('ck.bridge.d1')}</div></div>
-        <div class="kpi" style="cursor:default"><div class="k">${tr('ck.bridge.k2')}</div><div class="v">${DATA.filter(u=>u.status==='approved').length}</div><div class="d flat">${tr('ck.bridge.d2')}</div></div>
-        <div class="kpi" style="cursor:default"><div class="k">${tr('ck.bridge.k3')}</div><div class="v">${DATA.filter(u=>u.status==='monitoring' || /^closed-/.test(u.status)).length}</div><div class="d flat">${tr('ck.bridge.d3')}</div></div>
+        <div class="kpi" onclick="kpiGo({status:'execution'})"><div class="k">${tr('ck.bridge.k1')}</div><div class="v">${DATA.filter(u=>['execution','monitoring','closed-go','closed-hold','closed-kill'].includes(u.status)).length}</div><div class="d flat">${tr('ck.bridge.d1')}</div></div>
+        <div class="kpi" onclick="kpiGo({status:'approved'})"><div class="k">${tr('ck.bridge.k2')}</div><div class="v">${DATA.filter(u=>u.status==='approved').length}</div><div class="d flat">${tr('ck.bridge.d2')}</div></div>
+        <div class="kpi" onclick="kpiGo({status:'monitoring'})"><div class="k">${tr('ck.bridge.k3')}</div><div class="v">${DATA.filter(u=>u.status==='monitoring' || /^closed-/.test(u.status)).length}</div><div class="d flat">${tr('ck.bridge.d3')}</div></div>
         <div class="kpi" style="cursor:default"><div class="k">${tr('ck.bridge.k4')}</div><div class="v" style="font-size:18px;line-height:1.2"><a href="https://nutritrials.ma" target="_blank" rel="noopener" style="color:var(--green-800)">nutritrials.ma ↗</a></div><div class="d flat">${tr('ck.bridge.d4')}</div></div>
       </div>
     </div>
@@ -2082,20 +2165,25 @@ function renderCockpit(){
     </div>
   `;
 }
-function kpiTile(ico,k,v,d,pct){
-  return `<div class="kpi" onclick="goView('portfolio')">
+// Q3 — KPI cliquable qui FILTRE le portefeuille (pas juste l'ouvrir brut).
+function kpiGo(filt){
+  PREFS.filters = filt || {};
+  savePrefs();
+  goView('portfolio');
+}
+function kpiTile(ico,k,v,d,pct,filt){
+  return `<div class="kpi" onclick='kpiGo(${JSON.stringify(filt||{})})'>
     <div class="k"><span class="ico">${ico}</span>${escapeHtml(k)}</div>
     <div class="v">${v}<small>${tr('ck.k.unit')}</small></div>
     <div class="d flat">${escapeHtml(d)}</div>
     <div class="bar"><i style="width:${pct||0}%"></i></div>
   </div>`;
 }
-function kpiOfficial(ico,k,v,d,pct,target,lowerIsBetter){
+function kpiOfficial(ico,k,v,d,pct,target,lowerIsBetter,filt){
   // KPI tile aligned with the validated framework's 4 official process KPIs (§8).
-  // Color the bar based on whether the value beats the implicit target.
   const ok = lowerIsBetter ? (pct<=target) : (pct>=target);
   const cls = ok ? '' : 'kpi-bad';
-  return `<div class="kpi ${cls}" onclick="goView('portfolio')" title="${escapeHtml(d)}">
+  return `<div class="kpi ${cls}" onclick='kpiGo(${JSON.stringify(filt||{})})' title="${escapeHtml(d)}">
     <div class="k"><span class="ico">${ico}</span>${escapeHtml(k)}</div>
     <div class="v">${v}</div>
     <div class="d ${ok?'up':'down'}">${ok?'✓':'⚠'} ${escapeHtml(d)}</div>
@@ -2235,16 +2323,99 @@ function renderHeatmap(){
   return `<div class="heat">${head}${rows}</div>`;
 }
 
+/* Export CSV des trials clôturés (B8 — KB / Closure). */
+function exportClosedCsv(){
+  const closed = DATA.filter(u=>/^closed-/.test(u.status));
+  if(!closed.length){ toast(tr('kb.export.empty')||'—'); return; }
+  const head=['id','name','status','bu','region','crop','product','partner','budget','project_id'];
+  const rows=[head].concat(closed.map(u=>head.map(k=>u[k]==null?'':u[k])));
+  const csv='﻿'+rows.map(r=>r.map(c=>{c=String(c);return /[",;\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c;}).join(';')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='nutriplan-closed-'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* -----------------------------------------------------------------
+ * 5bis. PROJETS — couche parente des trials (Excel SAI : Projet → N trials)
+ * --------------------------------------------------------------- */
+function renderProjects(){
+  const totalBudget = PROJECTS.reduce((s,p)=>s+(p.budget||0),0);
+  const totalTrials = DATA.filter(u=>u.project_id).length;
+  const cards = PROJECTS.map(p=>{
+    const trials = trialsOfProject(p.id);
+    const done = trials.filter(u=>/^closed-/.test(u.status)).length;
+    const pct = trials.length ? Math.round(done/trials.length*100) : 0;
+    const bu = buOf(p.bu);
+    return `<div class="card proj-card" onclick="openProject('${p.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+        <div><div class="eye" style="font-size:11px;color:var(--muted)">${p.id} · <span class="av ${bu.color}">${bu.id}</span></div>
+        <h3 style="margin:4px 0 0">${escapeHtml(p.title)}</h3></div>
+        <span class="pill">${escapeHtml(p.project_status||'')}</span>
+      </div>
+      <div class="proj-meta">
+        <span>🤝 ${escapeHtml(p.partner||'—')}</span>
+        <span>🌾 ${escapeHtml(p.crop||'—')}</span>
+        <span>🧪 ${trials.length} ${tr('prj.trials')}</span>
+        <span>💰 ${fmtMoney(p.budget)}</span>
+      </div>
+      <div class="proj-bar"><i style="width:${pct}%"></i></div>
+      <div class="muted" style="font-size:11.5px;margin-top:5px">${trf('prj.progress',{done:done,total:trials.length,pct:pct})}</div>
+    </div>`;
+  }).join('') || `<div class="muted">${tr('prj.empty')}</div>`;
+  document.getElementById('sc-projects').innerHTML = `
+    <div class="eyebrow">${tr('prj.eye')}</div>
+    <h2 class="h-pg">${trf('prj.h',{n:PROJECTS.length})}</h2>
+    <p class="lead">${tr('prj.lead')}</p>
+    <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
+      <div class="kpi" style="cursor:default"><div class="k">${tr('prj.k.projects')}</div><div class="v">${PROJECTS.length}</div></div>
+      <div class="kpi" style="cursor:default"><div class="k">${tr('prj.k.trials')}</div><div class="v">${totalTrials}</div></div>
+      <div class="kpi" style="cursor:default"><div class="k">${tr('prj.k.budget')}</div><div class="v" style="font-size:20px">${fmtMoney(totalBudget)}</div></div>
+    </div>
+    <div class="tool-bar"><div class="sp"></div><button class="btn primary" onclick="newProject()">+ ${tr('prj.new')}</button></div>
+    <div class="ref-grid" style="margin-top:12px">${cards}</div>
+  `;
+}
+function openProject(pid){
+  // Ouvre le portefeuille filtré sur les trials du projet (Q2).
+  PREFS.filters = { project: pid };
+  savePrefs();
+  goView('portfolio');
+}
+function newProject(){
+  const title = prompt(tr('prj.prompt.title')); if(!title) return;
+  const buCode = (prompt(tr('prj.prompt.bu')+' ('+BUS.map(b=>b.id).join(', ')+')','SAI')||'SAI').toUpperCase();
+  const bu = BUS.find(b=>b.id===buCode) ? buCode : 'SAI';
+  const num = (PROJECTS.length+1).toString().padStart(3,'0');
+  const p = {
+    id:'PRJ-2026-'+num, title:title.trim(), entity:bu, bu,
+    country:'—', region:'—', crop:'—', partner:'—',
+    project_status:'New Project', contract_status:'Not started',
+    strategic_line: STRATEGIC_LINES[0], project_response: PROJECT_RESPONSE[0],
+    description:'', lead:'SAI', owner:'SAI',
+    start_date:null, end_date:null, duration_years:1, budget:0
+  };
+  PROJECTS.unshift(p);
+  apiUpsert('projects', p);
+  try{ localStorage.setItem(LS_PROJECTS, JSON.stringify(PROJECTS)); }catch(e){}
+  renderSidebar(); renderProjects();
+  toast(tr('prj.created'));
+}
+
 /* -----------------------------------------------------------------
  * 6. PORTFOLIO — Kanban + Table views with filters
  * --------------------------------------------------------------- */
 function renderPortfolio(){
   const view = PREFS.portfolioView||'kanban';
   const list = filteredUCs();
+  const pf = (PREFS.filters||{}).project;
+  const proj = pf ? projById(pf) : null;
+  const banner = proj ? `<div class="proj-banner">🗂️ ${tr('pf.byProject')} <b>${escapeHtml(proj.title)}</b> <span class="muted">(${proj.id})</span>
+      <button class="btn ghost sm" style="margin-left:auto" onclick="clearFilter('project')">✕ ${tr('pf.filt.reset')}</button></div>` : '';
   document.getElementById('sc-portfolio').innerHTML = `
     <div class="eyebrow">${tr('pf.eye')}</div>
     <h2 class="h-pg">${trf('pf.h',{n:list.length, y:2026})}</h2>
     <p class="lead">${tr('pf.lead')}</p>
+    ${banner}
 
     <div class="tool-bar">
       <div class="subnav">
@@ -2284,6 +2455,9 @@ function filteredUCs(){
     if(f.type && u.type!==f.type) return false;
     if(f.bu && u.bu!==f.bu) return false;
     if(f.status && u.status!==f.status) return false;
+    if(f.crop && u.crop!==f.crop) return false;
+    if(f.project && u.project_id!==f.project) return false;
+    if(f.partnerq && !String(u.partner||'').toLowerCase().includes(f.partnerq.toLowerCase())) return false;
     if(f.fast_track && !u.fast_track) return false;
     if(q){
       const hay = [u.id,u.name,u.partner,u.crop,u.product,u.region,buOf(u.bu).nm].join(' ').toLowerCase();
@@ -2322,9 +2496,31 @@ function kanbanCard(u){
     <div class="foot"><span>🌾 ${escapeHtml(u.crop)} · ${escapeHtml(u.product)}</span><span class="sp"></span><span>${fmtMoney(u.budget)}</span></div>
   </div>`;
 }
+function colSel(key, options, cur){
+  return `<select class="col-filt" onchange="setColFilter('${key}', this.value)">
+    <option value="">${tr('pf.col.all')}</option>
+    ${options.map(o=>`<option value="${escapeHtml(o[0])}" ${cur===o[0]?'selected':''}>${escapeHtml(o[1])}</option>`).join('')}
+  </select>`;
+}
+function setColFilter(key, val){
+  PREFS.filters = PREFS.filters||{};
+  if(val) PREFS.filters[key]=val; else delete PREFS.filters[key];
+  savePrefs(); renderPortfolio();
+}
 function renderTable(list){
+  const f = PREFS.filters||{};
   return `<div class="tbl-wrap"><table class="tbl">
-    <thead><tr><th>${tr('pf.tbl.id')}</th><th>${tr('pf.tbl.uc')}</th><th>${tr('pf.tbl.bureg')}</th><th>${tr('pf.tbl.cropprod')}</th><th>${tr('pf.tbl.type')}</th><th>${tr('pf.tbl.status')}</th><th>${tr('pf.tbl.budget')}</th><th>${tr('pf.tbl.partner')}</th><th>${tr('pf.tbl.sai')}</th><th>${tr('pf.tbl.upd')}</th></tr></thead>
+    <thead><tr><th>${tr('pf.tbl.id')}</th><th>${tr('pf.tbl.uc')}</th><th>${tr('pf.tbl.bureg')}</th><th>${tr('pf.tbl.cropprod')}</th><th>${tr('pf.tbl.type')}</th><th>${tr('pf.tbl.status')}</th><th>${tr('pf.tbl.budget')}</th><th>${tr('pf.tbl.partner')}</th><th>${tr('pf.tbl.sai')}</th><th>${tr('pf.tbl.upd')}</th></tr>
+    <tr class="col-filt-row">
+      <th></th><th></th>
+      <th>${colSel('bu', BUS.map(b=>[b.id,b.id]), f.bu)}</th>
+      <th>${colSel('crop', CROPS.map(c=>[c,c]), f.crop)}</th>
+      <th>${colSel('type', TYPES.map(t=>[t.id,tyLbl(t)]), f.type)}</th>
+      <th>${colSel('status', STATUSES.map(s=>[s.id,stLbl(s)]), f.status)}</th>
+      <th></th>
+      <th><input class="col-filt" type="text" value="${escapeHtml(f.partnerq||'')}" placeholder="${tr('pf.col.filter')}" onchange="setColFilter('partnerq', this.value)"></th>
+      <th></th><th></th>
+    </tr></thead>
     <tbody>${list.map(u=>{
       const st = statusOf(u.status), ty = typeOf(u.type), bu = buOf(u.bu);
       return `<tr class="t-link" onclick="openUc('${u.id}')">
@@ -2640,6 +2836,9 @@ function renderIntake(){
       <h3>${tr('in.s1.h')}</h3>
       <p class="sub">${tr('in.s1.sub')}</p>
       <div class="form-grid">
+        <div class="fld full"><label>${tr('in.f.project')} <span class="req">*</span></label>
+          <select id="if_project">${PROJECTS.map(p=>`<option value="${p.id}">${escapeHtml(p.id+' · '+p.title)}</option>`).join('')}</select>
+          <span class="muted" style="display:block;font-size:11.5px;margin-top:4px">${tr('in.f.project.help')}</span></div>
         <div class="fld full"><label>${tr('in.f.name')} <span class="req">*</span></label><input id="if_name" type="text" placeholder="${tr('in.f.name.ph')}"></div>
         <div class="fld"><label>${tr('in.f.bu')} <span class="req">*</span></label>
           <select id="if_bu">${BUS.map(b=>`<option value="${b.id}">${b.nm}</option>`).join('')}</select></div>
@@ -2748,6 +2947,7 @@ function submitUc(isDraft){
   const num = (DATA.length+1).toString().padStart(3,'0');
   const uc = {
     id:'UC-2026-'+num, name,
+    project_id: ifVal('if_project')||null,
     bu: ifVal('if_bu')||'SAI',
     region: ifVal('if_region')||'—',
     crop: ifVal('if_crop')||'—',
@@ -2983,7 +3183,7 @@ function renderKB(){
       <div class="chip">${tr('kb.filt.hold')} (${closed.filter(u=>u.status==='closed-hold').length})</div>
       <div class="chip">${tr('kb.filt.kill')} (${closed.filter(u=>u.status==='closed-kill').length})</div>
       <div class="sp"></div>
-      <button class="btn ghost sm">${tr('kb.export')}</button>
+      <button class="btn ghost sm" onclick="exportClosedCsv()">⤓ ${tr('kb.export')}</button>
     </div>
 
     <div class="kb-grid">${lessons.map(u=>{

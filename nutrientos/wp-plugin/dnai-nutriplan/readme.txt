@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.8.0
+Stable tag: 0.9.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,24 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.9.0 — Couche Projet→Trial + filtres + KPIs cliquables (vague 2) =
+* COUCHE PROJET → TRIAL (changement structurel de l'Excel SAI) :
+  - Nouvelle entité Projet (Call for Proposal), persistée en BDD
+    (collection 'projects'), avec champs Excel (entité, statut projet/
+    contrat, ligne stratégique, type de projet, budget, durée).
+  - Nouvel écran « Projets » (nav) : cartes projet + KPIs + création.
+  - Trials rattachés à un projet (héritage), sélecteur projet dans le
+    formulaire de création de trial.
+  - Clic sur un projet → portefeuille filtré sur ses trials (Q2),
+    bannière de contexte + reset.
+* Q1 — Filtres par colonne dans la table du portefeuille (BU, culture,
+  type, statut, partenaire) en plus des chips existants.
+* Q3 — KPIs du cockpit CLIQUABLES et FILTRANTS (Fast Track → filtre
+  fast_track ; transform/on-time/bridge → filtres de statut), au lieu
+  d'ouvrir le portefeuille brut.
+* B8 — Export CSV des trials clôturés (Knowledge Base) fonctionnel.
+* Projets synchronisés serveur (sync au boot, amorçage au 1er run).
 
 = 0.8.0 — Backend BDD réel + retours métier (vague 1) =
 * BASE DE DONNÉES RÉELLE (MVP ouvrable aux utilisateurs) : table custom
