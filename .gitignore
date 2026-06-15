@@ -1,0 +1,8 @@
+# Sub-agent worktrees (isolated working copies created by the harness)
+.claude/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*~
