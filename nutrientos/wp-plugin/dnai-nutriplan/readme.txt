@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.14.0
+Stable tag: 0.15.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,36 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.15.0 — Retours métier : drill-downs honnêtes + AI command-bar hybride =
+* COCKPIT — Drill-down « % Transform → Demo / Launch » corrigé : le
+  filtre pointait sur status:'monitoring' (incohérent avec la métrique
+  qui mesure closed-go/closed). Désormais clic → portefeuille filtré
+  sur status:'closed-go' (les trials qui ont vraiment transformé).
+* COCKPIT — Heatmap « Couverture portefeuille BU × Culture »
+  désormais cliquable : chaque cellule non-vide drille avec filtre
+  combiné {bu, crop}, ring vert au hover + curseur pointer +
+  role=button/tabindex (a11y), cellules vides restent inertes
+  (cursor:default).
+* COCKPIT — Nouvelle barre de commande AI sticky (hybride) :
+  input large « Demande-moi ... » + bouton Demander + 4 chips
+  suggestions, ouvre le chat panel pré-rempli avec la requête.
+  Pattern Linear / Notion AI : dashboard reste le landing
+  (orientation immédiate), bot est one-tap away en haut, le panneau
+  full-chat slide à la demande. i18n FR/EN/PT-BR complète.
+* AI CHAT PANEL — Polish UX : largeur 380px (vs 420 trop large sur
+  écrans moyens), breakpoint à 1240px pour passer en overlay flottant
+  (au lieu de 980), close X bouton dédié plus visible (32×32, bordure
+  + bg, hover rouge), texte wrap correct (word-break:break-word /
+  overflow-wrap:anywhere) sur bulles + suggestions, suggestions
+  scrollables (max-height 38vh), ESC pour fermer le chat (en plus du
+  bouton ✕ et du clic sur la pastille).
+* KANBAN — Fix overflow des cards : titre + meta + footer ne
+  débordaient plus de la card 280px (bleed visible). Ajout
+  overflow:hidden + min-width:0 sur card et enfants, text-overflow:
+  ellipsis sur la ligne foot (« Crop · Product »), white-space:nowrap
+  sur le prix (tabular-nums préservé), word-break:break-word sur ttl
+  + meta.
 
 = 0.14.0 — Polish final + re-audit cible 16+/20 =
 * Pass finale : relecture end-to-end, vérification des states

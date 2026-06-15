@@ -46,10 +46,12 @@ a{color:var(--green-700);text-decoration:none}
  * ========================================================================== */
 .app{display:grid;grid-template-columns:240px 1fr;grid-template-rows:56px 1fr;height:100vh;
      grid-template-areas:'sidebar topbar' 'sidebar main'}
-.app.chat-open{grid-template-columns:240px 1fr 420px;
+.app.chat-open{grid-template-columns:240px 1fr 380px;
      grid-template-areas:'sidebar topbar chat' 'sidebar main chat'}
+@media(max-width:1240px){.app.chat-open{grid-template-columns:240px 1fr;grid-template-areas:'sidebar topbar' 'sidebar main'}
+  .app.chat-open .chat{position:fixed;top:56px;right:0;bottom:0;width:min(380px,92vw);z-index:80;box-shadow:var(--shadow-lg)}}
 @media(max-width:980px){.app,.app.chat-open{grid-template-columns:56px 1fr;grid-template-areas:'sidebar topbar' 'sidebar main'}
-  .app.chat-open .chat{position:fixed;top:56px;right:0;bottom:0;width:min(420px,90vw);z-index:80;box-shadow:var(--shadow-lg)}}
+  .app.chat-open .chat{position:fixed;top:56px;right:0;bottom:0;width:min(380px,92vw);z-index:80;box-shadow:var(--shadow-lg)}}
 
 /* ----- sidenav ----- */
 .sidebar{grid-area:sidebar;background:linear-gradient(180deg,#0a1812 0%,#07140c 100%);color:#dff0e3;display:flex;flex-direction:column;border-right:1px solid rgba(255,255,255,.06)}
@@ -231,6 +233,24 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .ck-hs .v small{font-size:13px;color:#9fb3a6;font-weight:600}
 .ck-hs .d{margin-top:5px;font:700 12px 'Inter';color:#9fb3a6}
 
+/* AI command-bar (hybrid landing: cockpit + bot-on-demand, top-of-screen) */
+.ck-ai{background:#fff;border:1px solid var(--line);border-radius:var(--rad-md);padding:14px 16px;margin-bottom:18px;transition:border-color .2s,box-shadow .2s;position:relative}
+.ck-ai:focus-within{border-color:var(--green-500);box-shadow:0 0 0 4px rgba(46,125,50,.10)}
+.ck-ai .ck-ai-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;min-width:0}
+.ck-ai .ck-ai-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#7cfc9a,#3f9c5d);display:grid;place-items:center;font:900 12px 'Inter';color:#04100a;flex-shrink:0}
+.ck-ai .ck-ai-lbl{font:700 11px 'Inter';color:var(--green-800);text-transform:uppercase;letter-spacing:.08em}
+.ck-ai .ck-ai-lbl b{color:var(--green-700)}
+.ck-ai .ck-ai-row{display:flex;gap:8px;align-items:center}
+.ck-ai input{flex:1;min-width:0;border:0;outline:0;background:none;font:500 14px 'Inter';color:var(--ink);padding:8px 4px}
+.ck-ai input::placeholder{color:var(--muted)}
+.ck-ai .ck-ai-go{flex-shrink:0;display:inline-flex;align-items:center;gap:5px;font:700 12.5px 'Inter';padding:8px 14px;border-radius:8px;background:var(--green-700);color:#fff;border:0;cursor:pointer;transition:background .15s,transform .1s}
+.ck-ai .ck-ai-go:hover{background:var(--green-800)}
+.ck-ai .ck-ai-go:active{transform:translateY(1px)}
+.ck-ai .ck-ai-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.ck-ai .ck-ai-chip{font:600 11.5px 'Inter';color:var(--green-800);background:var(--green-50);border:1px solid var(--green-200);border-radius:999px;padding:5px 11px;cursor:pointer;transition:background .15s,border-color .15s}
+.ck-ai .ck-ai-chip:hover{background:#dfeee3;border-color:var(--green-500)}
+@media(max-width:560px){.ck-ai .ck-ai-row{flex-wrap:wrap}.ck-ai .ck-ai-go{width:100%;justify-content:center}}
+
 /* alerts (v0.11 — bg tint instead of side-stripe) */
 .alert{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1px solid var(--line);border-radius:var(--rad-sm);padding:11px 14px;margin-bottom:8px;transition:background .15s}
 .alert:hover{background:#fafdfa}
@@ -262,8 +282,9 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .heat-head .h-cell{text-align:center;padding:4px 0}
 .heat-row{display:grid;grid-template-columns:160px repeat(7,1fr);gap:2px;align-items:stretch}
 .heat-row .h-lbl{font:600 12px 'Inter';color:var(--ink);padding:8px 10px;background:var(--soft);border-radius:6px;display:flex;align-items:center}
-.heat-row .h-cell{height:30px;display:flex;align-items:center;justify-content:center;font:700 11px 'Inter';color:var(--ink);border-radius:6px;cursor:pointer;transition:transform .12s;background:#f1f4f1;color:var(--muted)}
-.heat-row .h-cell:hover{transform:scale(1.1);z-index:2;box-shadow:var(--shadow-md)}
+.heat-row .h-cell{height:30px;display:flex;align-items:center;justify-content:center;font:700 11px 'Inter';color:var(--ink);border-radius:6px;transition:transform .12s;background:#f1f4f1;color:var(--muted);cursor:default}
+.heat-row .h-cell.h-click{cursor:pointer}
+.heat-row .h-cell.h-click:hover{transform:scale(1.08);z-index:2;box-shadow:var(--shadow-md);outline:2px solid var(--green-500);outline-offset:-2px}
 .heat-row .h-cell.h-1{background:#e6f3e9;color:var(--green-800)}
 .heat-row .h-cell.h-2{background:#bfe2c7;color:var(--green-800)}
 .heat-row .h-cell.h-3{background:#7cc795;color:#fff}
@@ -280,31 +301,35 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .kn-col-h .cnt{font:700 10.5px 'Inter';color:var(--muted);background:#fff;border:1px solid var(--line);padding:1px 6px;border-radius:999px}
 .kn-col-h .dot{width:8px;height:8px;border-radius:50%}
 .kn-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:2px}
-.kn-card{background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px;min-height:44px;cursor:pointer;transition:transform .12s,box-shadow .15s,border-color .15s}
+.kn-card{background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px;min-height:44px;cursor:pointer;transition:transform .12s,box-shadow .15s,border-color .15s;overflow:hidden;min-width:0}
 .kn-card:hover{transform:translateY(-1px);box-shadow:var(--shadow-md);border-color:var(--green-200)}
-.kn-card .ttl{font:700 13px 'Inter';color:var(--ink);margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.kn-card .meta{font:500 11px 'Inter';color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.kn-card *{min-width:0}
+.kn-card .ttl{font:700 13px 'Inter';color:var(--ink);margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word;overflow-wrap:anywhere}
+.kn-card .meta{font:500 11px 'Inter';color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;word-break:break-word;overflow-wrap:anywhere}
 .kn-card .pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px}
-.kn-card .foot{display:flex;align-items:center;gap:8px;font:500 11px 'Inter';color:var(--muted)}
+.kn-card .foot{display:flex;align-items:center;gap:8px;font:500 11px 'Inter';color:var(--muted);flex-wrap:wrap}
+.kn-card .foot > span:first-child{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kn-card .foot > span:last-child{flex-shrink:0;font-variant-numeric:tabular-nums}
 .kn-card .foot .sp{flex:1}
 
 /* ==========================================================================
  * AI CHAT panel (slide-in from right)
  * ========================================================================== */
 .chat{grid-area:chat;background:linear-gradient(180deg,#0a1812 0%,#07140c 100%);color:#dff0e3;display:flex;flex-direction:column;border-left:1px solid rgba(124,252,154,.15);position:relative;overflow:hidden}
-.chat-h{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px;flex-shrink:0}
-.chat-h .ai-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#7cfc9a,#3f9c5d);display:grid;place-items:center;font:900 14px 'Inter';color:#04100a}
-.chat-h .nm{font:700 14px 'Inter';color:#fff}
-.chat-h .sub{font:500 11.5px 'Inter';color:#7cfc9a}
-.chat-h .x{margin-left:auto;color:#9fb3a6;padding:6px 10px;border-radius:6px}
-.chat-h .x:hover{background:rgba(255,255,255,.07);color:#fff}
+.chat-h{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px;flex-shrink:0;min-width:0}
+.chat-h .ai-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#7cfc9a,#3f9c5d);display:grid;place-items:center;font:900 13px 'Inter';color:#04100a;flex-shrink:0}
+.chat-h .nm-wrap{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2;overflow:hidden}
+.chat-h .nm{font:700 13.5px 'Inter';color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-h .sub{font:500 11px 'Inter';color:#7cfc9a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-h .x{margin-left:auto;color:#bcd4c2;padding:6px;border-radius:8px;width:32px;height:32px;display:grid;place-items:center;font-size:18px;flex-shrink:0;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);transition:background .15s,color .15s,border-color .15s}
+.chat-h .x:hover{background:rgba(255,82,82,.15);color:#fff;border-color:rgba(255,82,82,.4)}
 .chat-body{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
 .chat-msg{display:flex;gap:10px;animation:msgIn .25s ease}
 @keyframes msgIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 .chat-msg .av{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.08);display:grid;place-items:center;font:800 11px 'Inter';color:#bcd4c2;flex-shrink:0}
 .chat-msg.you .av{background:var(--green-700);color:#fff}
 .chat-msg.ai .av{background:linear-gradient(135deg,#7cfc9a,#3f9c5d);color:#04100a}
-.chat-msg .bub{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:9px 12px;font-size:13.5px;line-height:1.55;min-width:0;white-space:pre-wrap;word-wrap:break-word}
+.chat-msg .bub{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:9px 12px;font-size:13.5px;line-height:1.55;min-width:0;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere}
 .chat-msg.you .bub{background:rgba(124,252,154,.08);border-color:rgba(124,252,154,.18)}
 .chat-msg .bub b{color:#fff}
 .chat-msg .bub h1,.chat-msg .bub h2,.chat-msg .bub h3,.chat-msg .bub h4{font-family:'Inter',sans-serif;color:#fff;margin:8px 0 4px;font-weight:700;font-size:14px}
@@ -318,9 +343,9 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .chat-msg.thinking .bub{color:#7cfc9a;font-style:italic}
 .chat-msg.thinking .bub::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#7cfc9a;margin-left:4px;animation:dot 1s infinite}
 @keyframes dot{0%,80%,100%{opacity:.2}40%{opacity:1}}
-.chat-sugs{padding:10px 18px;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.chat-sugs{padding:8px 14px 10px;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:5px;flex-shrink:0;max-height:38vh;overflow-y:auto}
 .chat-sugs .l{font:700 10px 'Inter';color:#5d7a68;letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px}
-.chat-sugs button{text-align:left;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:7px 10px;color:#bcd4c2;font:500 12px 'Inter';transition:background .15s,color .15s;cursor:pointer}
+.chat-sugs button{text-align:left;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:7px 10px;color:#bcd4c2;font:500 12px 'Inter';transition:background .15s,color .15s;cursor:pointer;line-height:1.4;word-break:break-word;overflow-wrap:anywhere}
 .chat-sugs button:hover{background:rgba(124,252,154,.1);color:#fff;border-color:rgba(124,252,154,.25)}
 .chat-input-wrap{padding:12px 18px 14px;border-top:1px solid rgba(255,255,255,.06);background:#04100a;flex-shrink:0}
 .chat-input{display:flex;align-items:flex-end;gap:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:6px 6px 6px 12px;transition:border-color .15s}
@@ -859,11 +884,11 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
   <aside class="chat" id="chatPanel" style="display:none">
     <div class="chat-h">
       <div class="ai-av">⚡</div>
-      <div>
+      <div class="nm-wrap">
         <div class="nm">D²nAI bot</div>
         <div class="sub">Chat with your Trial data</div>
       </div>
-      <button class="x" onclick="toggleChat()" title="Fermer" aria-label="Fermer le panneau D²nAI bot">✕</button>
+      <button class="x" onclick="toggleChat()" title="Fermer (Esc)" aria-label="Fermer le panneau D²nAI bot">✕</button>
     </div>
     <div class="chat-body" id="chatBody"></div>
     <div class="chat-sugs" id="chatSugs"></div>
@@ -1025,6 +1050,14 @@ fr:{
  'ck.kpi2':'% Transform → Demo / Launch','ck.kpi2.d':'Cible : ≥ 50 % (impact business)',
  'ck.kpi3':'% On time','ck.kpi3.d':'Cible : ≥ 80 % (discipline d\'exécution)',
  'ck.kpi4':'Budget variance','ck.kpi4.d':'Cible : ± 5 % (adhérence financière)',
+ // Hybrid AI command-bar (cockpit landing)
+ 'ck.ai.lbl':'Demande à <b>D²nAI bot</b> ce que tu veux savoir',
+ 'ck.ai.ph':'Ex : « Quels UCs Africa sont à risque ? »',
+ 'ck.ai.go':'Demander',
+ 'ck.ai.s1':'Quels Use Cases ont un MDS incomplet ?',
+ 'ck.ai.s2':'Brief Steering Committee de la semaine prochaine',
+ 'ck.ai.s3':'Compare Brazil vs India',
+ 'ck.ai.s4':'UCs prêts au handoff NutriTrials',
  // Macro-phases (4)
  'mp.launch':'Trial Cycle Launch','mp.readiness':'Operational Readiness','mp.execution':'Execution — Data & Analysis','mp.decision':'Decision',
  // Trial Classes & Types
@@ -1299,6 +1332,13 @@ en:{
  'ck.kpi2':'% Transform → Demo / Launch','ck.kpi2.d':'Target: ≥ 50% (business impact)',
  'ck.kpi3':'% On time','ck.kpi3.d':'Target: ≥ 80% (execution discipline)',
  'ck.kpi4':'Budget variance','ck.kpi4.d':'Target: ± 5% (financial adherence)',
+ 'ck.ai.lbl':'Ask <b>D²nAI bot</b> anything about your trials',
+ 'ck.ai.ph':'e.g. "Which Africa UCs are at risk?"',
+ 'ck.ai.go':'Ask',
+ 'ck.ai.s1':'Which Use Cases have an incomplete MDS?',
+ 'ck.ai.s2':'Brief for next week\'s Steering Committee',
+ 'ck.ai.s3':'Compare Brazil vs India',
+ 'ck.ai.s4':'UCs ready for NutriTrials handoff',
  'mp.launch':'Trial Cycle Launch','mp.readiness':'Operational Readiness','mp.execution':'Execution — Data & Analysis','mp.decision':'Decision',
  'cls.fundamental':'Fundamental & Discovery','cls.validation':'Validation','cls.prelaunch':'Pre-launch','cls.demo':'Demo Plots',
  'tp.ctrl':'Controlled trials','tp.station':'At-station trials',
@@ -1558,6 +1598,13 @@ pt:{
  'ck.kpi2':'% Transform → Demo / Launch','ck.kpi2.d':'Meta: ≥ 50% (impacto business)',
  'ck.kpi3':'% On time','ck.kpi3.d':'Meta: ≥ 80% (disciplina de execução)',
  'ck.kpi4':'Variância orçamentária','ck.kpi4.d':'Meta: ± 5% (aderência financeira)',
+ 'ck.ai.lbl':'Pergunta ao <b>D²nAI bot</b> o que quiseres saber',
+ 'ck.ai.ph':'Ex: "Quais UCs da Africa estão em risco?"',
+ 'ck.ai.go':'Perguntar',
+ 'ck.ai.s1':'Quais Use Cases têm MDS incompleto?',
+ 'ck.ai.s2':'Briefing do próximo Steering Committee',
+ 'ck.ai.s3':'Comparar Brazil vs India',
+ 'ck.ai.s4':'UCs prontos para handoff NutriTrials',
  'mp.launch':'Trial Cycle Launch','mp.readiness':'Operational Readiness','mp.execution':'Execução — Dados & Análise','mp.decision':'Decisão',
  'cls.fundamental':'Fundamental & Discovery','cls.validation':'Validation','cls.prelaunch':'Pre-launch','cls.demo':'Demo Plots',
  'tp.ctrl':'Controlled trials','tp.station':'At-station trials',
@@ -2453,10 +2500,28 @@ function renderCockpit(){
       </div>
     </div>
 
+    <!-- Hybrid AI command-bar: cockpit gives orientation, bot stays one-tap away -->
+    <div class="ck-ai">
+      <div class="ck-ai-head">
+        <div class="ck-ai-av">⚡</div>
+        <div class="ck-ai-lbl">${tr('ck.ai.lbl')}</div>
+      </div>
+      <div class="ck-ai-row">
+        <input type="text" id="ckAiInput" placeholder="${tr('ck.ai.ph')}" onkeydown="if(event.key==='Enter'){event.preventDefault();ckAiAsk()}" aria-label="${tr('ck.ai.lbl')}">
+        <button class="ck-ai-go" onclick="ckAiAsk()" aria-label="${tr('ck.ai.go')}">${tr('ck.ai.go')} →</button>
+      </div>
+      <div class="ck-ai-chips">
+        <button class="ck-ai-chip" onclick="ckAiAsk('${escapeAttrJs(tr('ck.ai.s1'))}')">${tr('ck.ai.s1')}</button>
+        <button class="ck-ai-chip" onclick="ckAiAsk('${escapeAttrJs(tr('ck.ai.s2'))}')">${tr('ck.ai.s2')}</button>
+        <button class="ck-ai-chip" onclick="ckAiAsk('${escapeAttrJs(tr('ck.ai.s3'))}')">${tr('ck.ai.s3')}</button>
+        <button class="ck-ai-chip" onclick="ckAiAsk('${escapeAttrJs(tr('ck.ai.s4'))}')">${tr('ck.ai.s4')}</button>
+      </div>
+    </div>
+
     <!-- 4 official KPIs from the validated framework v1.0 (§8 KPI) -->
     <div class="kpi-grid">
       ${kpiOfficial('🚀', tr('ck.kpi1'), pctFastTrack().toFixed(0)+'%', tr('ck.kpi1.d'), pctFastTrack(), 10, true, {fast_track:1})}
-      ${kpiOfficial('📈', tr('ck.kpi2'), pctTransform().toFixed(0)+'%', tr('ck.kpi2.d'), pctTransform(), 50, false, {status:'monitoring'})}
+      ${kpiOfficial('📈', tr('ck.kpi2'), pctTransform().toFixed(0)+'%', tr('ck.kpi2.d'), pctTransform(), 50, false, {status:'closed-go'})}
       ${kpiOfficial('⏱', tr('ck.kpi3'),  pctOnTime().toFixed(0)+'%',   tr('ck.kpi3.d'),  pctOnTime(),    80, false, {status:'execution'})}
       ${kpiOfficial('💰', tr('ck.kpi4'), (budgetVariance()>=0?'+':'')+budgetVariance().toFixed(1)+'%', tr('ck.kpi4.d'), Math.abs(budgetVariance()), 5, true, null)}
     </div>
@@ -2663,7 +2728,9 @@ function renderHeatmap(){
     const cells = cropsTop.map(c=>{
       const n = DATA.filter(u=>u.bu===b.id && u.crop===c).length;
       const lvl = n===0?0:Math.min(5, n);
-      return `<div class="h-cell h-${lvl}" title="${b.nm} · ${c} · ${n} UCs">${n||''}</div>`;
+      const click = n>0 ? ` onclick="kpiGo({bu:'${b.id}',crop:'${escapeHtml(c)}'})" role="button" tabindex="0"` : '';
+      const tip = n>0 ? `${b.nm} · ${c} · ${n} UCs · clic pour filtrer` : `${b.nm} · ${c} · aucun trial`;
+      return `<div class="h-cell h-${lvl}${n>0?' h-click':''}" title="${escapeHtml(tip)}"${click}>${n||''}</div>`;
     }).join('');
     return `<div class="heat-row"><div class="h-lbl"><span class="av ${b.color}" style="margin-right:6px">${b.id}</span>${escapeHtml(b.nm)}</div>${cells}</div>`;
   }).join('');
@@ -3271,8 +3338,8 @@ function closeUc(){
  *    Mock data is stuffed into the system prompt so the chat
  *    can answer real questions on the portfolio without RAG.
  * --------------------------------------------------------------- */
-function toggleChat(){
-  PREFS.chatOpen = !PREFS.chatOpen; savePrefs();
+function toggleChat(forceOpen){
+  PREFS.chatOpen = (typeof forceOpen === 'boolean') ? forceOpen : !PREFS.chatOpen; savePrefs();
   document.getElementById('app').classList.toggle('chat-open', PREFS.chatOpen);
   document.getElementById('chatPanel').style.display = PREFS.chatOpen?'flex':'none';
   if(PREFS.chatOpen){
@@ -3280,6 +3347,22 @@ function toggleChat(){
     renderChatSugs();
     setTimeout(()=>document.getElementById('chatInput').focus(),120);
   }
+}
+function openChatWith(text){
+  toggleChat(true);
+  setTimeout(()=>{
+    const ta=document.getElementById('chatInput');
+    if(ta){ ta.value=text; ta.focus(); }
+    if(typeof chatSend==='function') chatSend();
+  }, 160);
+}
+function escapeAttrJs(s){ return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' '); }
+function ckAiAsk(preset){
+  const input=document.getElementById('ckAiInput');
+  const text = (typeof preset==='string' && preset) ? preset : (input ? input.value.trim() : '');
+  if(!text) { if(input) input.focus(); return; }
+  if(input) input.value='';
+  openChatWith(text);
 }
 function chatGreet(){
   CHAT_HIST.length = 0;
@@ -4061,7 +4144,12 @@ syncFromServer();  // full-screen : window.DNAI_NPLAN injecté → sync BDD imm�
 // Global shortcut: ⌘K / Ctrl+K focus search
 document.addEventListener('keydown', e=>{
   if((e.metaKey||e.ctrlKey) && e.key==='k'){ e.preventDefault(); document.getElementById('globalSearch').focus(); }
-  if(e.key==='Escape'){ closeUc(); }
+  if(e.key==='Escape'){
+    closeUc();
+    if(PREFS.chatOpen && !document.querySelector('.modal-bg.on, .ui-shell, .fb-modal-wrap')){
+      toggleChat(false);
+    }
+  }
 });
 
 // Global search wiring (fix B2) — filters the portfolio live, navigates there on type.
