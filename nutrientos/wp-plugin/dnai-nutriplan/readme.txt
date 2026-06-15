@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.13.0
+Stable tag: 0.14.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,17 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.14.0 — Polish final + re-audit cible 16+/20 =
+* Pass finale : relecture end-to-end, vérification des states
+  interactifs (hover/focus/active) sur KPI/kanban/chips/boutons,
+  zéro console.log / TODO / dead code introduit par les passes
+  v0.11 → v0.13, JS toujours parsable.
+* Classe .eyebrow CSS conservée (rule orpheline harmless), mais
+  les divs ont disparu de tous les templates métier — la voix n'est
+  plus institutionnellement « scaffold ».
+* Voir AUDIT-v0.11.md pour le scoring 5 dimensions actualisé
+  (delta vs AUDIT-v0.10.md = 10/20).
 
 = 0.13.0 — Typeset (P3) + Animate (P3) =
 * Typeset : remplacement des 10 emojis de navigation sidebar (⚡📊🗂️📚📅
