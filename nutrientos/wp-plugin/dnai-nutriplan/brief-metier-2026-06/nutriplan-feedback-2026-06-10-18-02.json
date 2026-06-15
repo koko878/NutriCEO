@@ -1,0 +1,256 @@
+{
+  "exportedAt": "2026-06-10T18:02:20.055Z",
+  "count": 25,
+  "comments": [
+    {
+      "id": "fb-mq8djw1wtt26",
+      "ts": "2026-06-10T18:00:43.268Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Reference data · Admin",
+      "block": "🔥 Alerts & escalations — issues detected on your portfolio",
+      "selector": "body > div.app > aside.sidebar > nav.sb-nav > button.sb-item.on",
+      "lang": "en",
+      "comment": "In Case of addition of a reference, users should have the option to add a reference. this addition should prompt a validation process by SAI"
+    },
+    {
+      "id": "fb-mq8dfikhqtsv",
+      "ts": "2026-06-10T17:57:19.169Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Fast Track",
+      "block": "🔥 Alerts & escalations — issues detected on your portfolio",
+      "selector": "div.app > aside.sidebar > nav.sb-nav > button.sb-item > span.lbl.fb-highlight",
+      "lang": "en",
+      "comment": "Add the option of Fast track or Standard process"
+    },
+    {
+      "id": "fb-mq8d7kjx7jvs",
+      "ts": "2026-06-10T17:51:08.493Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Internal controls · Compliance",
+      "block": "kpi",
+      "selector": "div.app > main.main > section.screen.on > div.kpi-grid > div.kpi.kpi-bad",
+      "lang": "en",
+      "comment": "Once we click on this one we need them to be filtered on the  portfolio tab that pops up"
+    },
+    {
+      "id": "fb-mq8cybzzli64",
+      "ts": "2026-06-10T17:43:57.503Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Committees & governance",
+      "block": "PK Custom on irrigated cotton — saline soils",
+      "selector": "div.modal-bg.on > div.modal > div.modal-h > div.ttl > h2.fb-highlight",
+      "lang": "en",
+      "comment": "Gate numbers to harmonized (Halima)"
+    },
+    {
+      "id": "fb-mq8cn0is1kfk",
+      "ts": "2026-06-10T17:35:09.412Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Annual cycle · Calendar",
+      "block": "cal-row",
+      "selector": "div.cal-wrap > div.cal-grid.cal16 > div.cal-row > div.cal-cell > div.cal-bar.b-decision",
+      "lang": "en",
+      "comment": "this overlaps with the monitoring committee monthly calls"
+    },
+    {
+      "id": "fb-mq8clbyb5ltc",
+      "ts": "2026-06-10T17:33:50.915Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Annual cycle · Calendar",
+      "block": "Annual cycle",
+      "selector": "main.main > section.screen.on > div.cal-wrap > div.cal-grid.cal16 > div.cal-h.lbl",
+      "lang": "en",
+      "comment": "Add Agri-days"
+    },
+    {
+      "id": "fb-mq8cktcybygn",
+      "ts": "2026-06-10T17:33:26.818Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Annual cycle · Calendar",
+      "block": "Annual cycle",
+      "selector": "section.screen.on > div.cal-wrap > div.cal-grid.cal16 > div.cal-h.cal-h-qbr > span.qbr-dot.fb-highlight",
+      "lang": "en",
+      "comment": "Visualize QBR"
+    },
+    {
+      "id": "fb-mq8cjnbns5cg",
+      "ts": "2026-06-10T17:32:32.339Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Annual cycle · Calendar",
+      "block": "cal-row",
+      "selector": "div.cal-wrap > div.cal-grid.cal16 > div.cal-row > div.cal-cell > div.cal-bar.b-gate",
+      "lang": "en",
+      "comment": "This is a monthly call and should include all months from Jan to Dec"
+    },
+    {
+      "id": "fb-mq8cijornkx8",
+      "ts": "2026-06-10T17:31:40.971Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Annual cycle · Calendar",
+      "block": "cal-row",
+      "selector": "div.cal-wrap > div.cal-grid.cal16 > div.cal-row > div.cal-cell > div.cal-bar.b-exec",
+      "lang": "en",
+      "comment": "Execution from Jan to DEC to accommodate everyone"
+    },
+    {
+      "id": "fb-mq8cg3n77hxd",
+      "ts": "2026-06-10T17:29:46.867Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Annual cycle · Calendar",
+      "block": "cal-row",
+      "selector": "section.screen.on > div.cal-wrap > div.cal-grid.cal16 > div.cal-row > div.cal-cell.fb-highlight",
+      "lang": "en",
+      "comment": "Extend from Jan to DEC"
+    },
+    {
+      "id": "fb-mq8cetyc841b",
+      "ts": "2026-06-10T17:28:47.652Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Annual cycle · Calendar",
+      "block": "cal-row",
+      "selector": "div.cal-wrap > div.cal-grid.cal16 > div.cal-row > div.cal-cell > div.cal-bar.b-gate",
+      "lang": "en",
+      "comment": "Steering committe between October and November"
+    },
+    {
+      "id": "fb-mq8ce860fscl",
+      "ts": "2026-06-10T17:28:19.416Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Annual cycle · Calendar",
+      "block": "cal-row",
+      "selector": "div.cal-wrap > div.cal-grid.cal16 > div.cal-row > div.cal-cell > div.cal-bar.b-launch",
+      "lang": "en",
+      "comment": "Use case Between August and September"
+    },
+    {
+      "id": "fb-mq8ccrndm1o4",
+      "ts": "2026-06-10T17:27:11.353Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Annual cycle · Calendar",
+      "block": "cal-row",
+      "selector": "div.cal-wrap > div.cal-grid.cal16 > div.cal-row > div.cal-cell > div.cal-bar.b-launch",
+      "lang": "en",
+      "comment": "Notification to be started first of August"
+    },
+    {
+      "id": "fb-mq8c9j1qce5p",
+      "ts": "2026-06-10T17:24:40.238Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Trial portfolio",
+      "block": "🔥 Alerts & escalations — issues detected on your portfolio",
+      "selector": "div.app > aside.sidebar > nav.sb-nav > button.sb-item.on > span.lbl.fb-highlight",
+      "lang": "en",
+      "comment": "We need  to visualize by trials and project"
+    },
+    {
+      "id": "fb-mq8c6r1m9vyn",
+      "ts": "2026-06-10T17:22:30.634Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Cockpit",
+      "block": "🔥 Alerts & escalations — issues detected on your portfolio",
+      "selector": "body > div.app > aside.sidebar > nav.sb-nav > div.sb-section.fb-highlight",
+      "lang": "en",
+      "comment": "We would like to add a dashboard that is informative. A template as ppt will be shared by SAI : PPT TRIAL DASHBOARD"
+    },
+    {
+      "id": "fb-mq8c5ca2pval",
+      "ts": "2026-06-10T17:21:24.842Z",
+      "author": "Abdelali El Tahiri",
+      "view": "New Use Case",
+      "block": "Workflow · Submission",
+      "selector": "body > div.app > main.main > section.screen.on > p.lead.fb-highlight",
+      "lang": "en",
+      "comment": "Add another section where the user can attach documents (Optional)"
+    },
+    {
+      "id": "fb-mq8bazontqg5",
+      "ts": "2026-06-10T16:57:48.839Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Trial portfolio",
+      "block": "🔥 Alerts & escalations — issues detected on your portfolio",
+      "selector": "body > div.app > header.topbar > div.tb-search > span.fb-highlight",
+      "lang": "en",
+      "comment": "Research function does not function"
+    },
+    {
+      "id": "fb-mq8b4gr3bjuq",
+      "ts": "2026-06-10T16:52:44.367Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Trial portfolio",
+      "block": "Portfolio",
+      "selector": "div.tbl-wrap > table.tbl > thead > tr > th.fb-highlight",
+      "lang": "en",
+      "comment": "Add filters on the headers"
+    },
+    {
+      "id": "fb-mq8aw3sffs47",
+      "ts": "2026-06-10T16:46:14.319Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Cockpit",
+      "block": "kpi",
+      "selector": "main.main > section.screen.on > div.kpi-grid > div.kpi > div.k.fb-highlight",
+      "lang": "en",
+      "comment": "When Clicking on these tabs : % of fast track, % transform>DEMO/Launch. % on time. they all take us to portfolio"
+    },
+    {
+      "id": "fb-mq8a9ehu02uo",
+      "ts": "2026-06-10T16:28:35.106Z",
+      "author": "Abdelali El Tahiri",
+      "view": "New Use Case",
+      "block": "4 · Budget & partner",
+      "selector": "div.app > main.main > section.screen.on > div.form-section > h3.fb-highlight",
+      "lang": "en",
+      "comment": "Regarding the partner, we need a section where the users can add a partner not previously stated on the list. Example : Partner -> Other-> if Yes -> Write the Official name"
+    },
+    {
+      "id": "fb-mq8a0hiq8fvv",
+      "ts": "2026-06-10T16:21:39.122Z",
+      "author": "Abdelali El Tahiri",
+      "view": "New Use Case",
+      "block": "Workflow · Submission",
+      "selector": "main.main > section.screen.on > div.steps-bar > div.s > span.n.fb-highlight",
+      "lang": "en",
+      "comment": "The tabs here would be represented by the sheets of the excel file to be shared by SAI. Each Tab contains a category of information related to the trial"
+    },
+    {
+      "id": "fb-mq89yvexx6uf",
+      "ts": "2026-06-10T16:20:23.817Z",
+      "author": "Abdelali El Tahiri",
+      "view": "New Use Case",
+      "block": "4 · Budget & partner",
+      "selector": "body > div.app > main.main > section.screen.on > div.form-section.fb-highlight",
+      "lang": "en",
+      "comment": "Attach Word format of the protocol to be used, This protocol should be created by the trial owner, The field should be mandatory. The word document should be the reference for the steering committe to review the compliance of the research effort"
+    },
+    {
+      "id": "fb-mq86rgdy8hu8",
+      "ts": "2026-06-10T14:50:38.902Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Annual cycle · Calendar",
+      "block": "cal-row",
+      "selector": "section.screen.on > div.cal-wrap > div.cal-grid.cal16 > div.cal-row > div.cal-cell.fb-highlight",
+      "lang": "en",
+      "comment": "Not defined in the process, but there is a need for a review session of geographies harvesting during September to December. as by the submission time in September N-1 they wouldn't have a final say on their projects/trials"
+    },
+    {
+      "id": "fb-mq86czxqdzd9",
+      "ts": "2026-06-10T14:39:24.398Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Nouveau Use Case",
+      "block": "Workflow · Soumission",
+      "selector": "main.main > section.screen.on > div.steps-bar > div.s.on > span.n.fb-highlight",
+      "lang": "fr",
+      "comment": "We would like to link projects to trials, Can we start with a list of information defining the project first and from there get into trials ?"
+    },
+    {
+      "id": "fb-mq868xb19bmk",
+      "ts": "2026-06-10T14:36:14.365Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Référentiels · Admin",
+      "block": "🏢 Business Units (7)",
+      "selector": "div.tbl-wrap > table.tbl > thead > tr > th.fb-highlight",
+      "lang": "fr",
+      "comment": "Can you please add other BU As customization, BU Nutrition, BU Green Solution etc"
+    }
+  ]
+}

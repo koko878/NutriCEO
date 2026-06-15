@@ -1,0 +1,222 @@
+L JADDAOUI Halima
+0 minutes 3 secondes0:03
+EL JADDAOUI Halima 0 minutes 3 secondes
+Oui, bien sûr.
+EL JADDAOUI Halima 0 minutes 14 secondes
+Vas-y.
+
+HANNANE Khalid
+0 minutes 17 secondes0:17
+HANNANE Khalid 0 minutes 17 secondes
+Alors juste une petite question puisque tu as fait référence le projet la notion de projet elle est déclarée dans en fait elle est supportée par quel process et à quel moment il y a la déclaration et la validation du projet ?
+
+KOHEN Hamza
+0 minutes 33 secondes0:33
+KOHEN Hamza 0 minutes 33 secondes
+Déjà déjà de ce que j'ai compris, le projet doit être géré ici, faire de l'application.
+KOHEN Hamza 0 minutes 39 secondes
+Là, c'est plutôt un input qu'on donne à l'application.
+
+HANNANE Khalid
+0 minutes 42 secondes0:42
+HANNANE Khalid 0 minutes 42 secondes
+Alors c'est pour c'est pour ça que je préfère que wuda en précise le point. Où est-ce que on parle de digitalisation d'un le process hadda mais il fait référence à un autre process wakira parce qu'on fait le lien entre le trail, cycle, lunch, liens.
+
+EL JADDAOUI Halima
+0 minutes 55 secondes0:55
+EL JADDAOUI Halima 0 minutes 55 secondes
+Ouais.
+
+HANNANE Khalid
+0 minutes 57 secondes0:57
+HANNANE Khalid 0 minutes 57 secondes
+Et en amont de ça, y a un process, y a un autre process qui permet de déclarer les projets, de valider les projets et de suivre les projets.
+
+EL JADDAOUI Halima
+1 minute 4 secondes1:04
+EL JADDAOUI Halima 1 minute 4 secondes
+Ouais.
+KH
+
+KILITO Houda
+1 minute 4 secondes1:04
+KILITO Houda 1 minute 4 secondes
+Alors oui alors il y a 2 choses, il y a tout ce qui est Call for proposal donc ça c'est vraiment les projets de façon de façon globale avec enfin sur les aspects lancement avec l'u. M 6B et après on a tout ce qui est trial donc il faudrait je pense qu'on fasse la distinction entre ce qui rentre.
+
+KOHEN Hamza
+23 minutes 59 secondes23:59
+KOHEN Hamza 23 minutes 59 secondes
+Ah ça c'est un bug, c'est un bug, ça c'est un bug ça.
+KH
+KILITO Houda
+24 minutes24:00
+KILITO Houda 24 minutes
+Oui.
+KILITO Houda 24 minutes 6 secondes
+Pour compléter, si y a de la liste que vous avez dit pareil en fait, même quand je viens de je viens de créer le use case, il n'apparaît nulle part après le dashboard ou le portefeuille global.
+KILITO Houda 24 minutes 21 secondes
+Donc je sais pas si c'était mon c'est que mon cas isolé ou là c'est un bug peut-être de toute façon là je l'ai remonté les commentaires je vais le renvoyer.
+
+KOHEN Hamza
+24 minutes 39 secondes24:39
+KOHEN Hamza 24 minutes 39 secondes
+Ouais, ça doit juste être un bug base de données très bien.
+KH
+KILITO Houda
+24 minutes 42 secondes24:42
+KILITO Houda 24 minutes 42 secondes
+Ok.
+
+KOHEN Hamza
+24 minutes 44 secondes24:44
+KOHEN Hamza 24 minutes 44 secondes
+Donc voilà les commentaires. Franchement, amusez-vous bien les amis sur le truc, chargez un Max de commentaires, un Max de remarques, vous téléchargez le fichier Jason et grâce à ça, grâce à ça on pourra avancer super.
+KOHEN Hamza 25 minutes 3 secondes
+Inchallah.
+
+EL JADDAOUI Halima
+25 minutes 6 secondes25:06
+EL JADDAOUI Halima 25 minutes 6 secondes
+On fait d'accord sur ça ?
+EA
+El Tahiri Abdelali
+25 minutes 6 secondes25:06
+El Tahiri Abdelali 25 minutes 6 secondes
+Ciao, ma mère, s'il vous plaît.
+
+EL JADDAOUI Halima
+25 minutes 9 secondes25:09
+EL JADDAOUI Halima 25 minutes 9 secondes
+Merci beaucoup.
+
+KOHEN Hamza
+25 minutes 9 secondes25:09
+KOHEN Hamza 25 minutes 9 secondes
+C'est juste, c'est juste une IA qui est branchée sur l'application qui vous permettra de discuter avec vos données.
+
+EL JADDAOUI Halima
+25 minutes 21 secondes25:21
+EL JADDAOUI Halima 25 minutes 21 secondes
+D'accord ?
+EL JADDAOUI Halima 25 minutes 25 secondes
+Parfait.
+KH
+KILITO Houda
+25 minutes 28 secondes25:28
+KILITO Houda 25 minutes 28 secondes
+Merci beaucoup.
+EA
+El Tahiri Abdelali
+25 minutes 28 secondes25:28
+El Tahiri Abdelali 25 minutes 28 secondes
+OK, donc en retard, on revient vers vous avec une face finale de l'Excel avec toutes les données.
+
+KOHEN Hamza
+25 minutes 35 secondes25:35
+KOHEN Hamza 25 minutes 35 secondes
+Ajá.
+EA
+El Tahiri Abdelali
+25 minutes 37 secondes25:37
+El Tahiri Abdelali 25 minutes 37 secondes
+Ou bien sur les commentaires au fur et à mesure.
+
+KOHEN Hamza
+25 minutes 40 secondes25:40
+KOHEN Hamza 25 minutes 40 secondes
+Ah dans ma canne.
+EA
+El Tahiri Abdelali
+25 minutes 43 secondes25:43
+El Tahiri Abdelali 25 minutes 43 secondes
+C'est prévu le.
+
+HANNANE Khalid
+25 minutes 49 secondes25:49
+HANNANE Khalid 25 minutes 49 secondes
+Demain, demain, demain, demain, on rentre à la session, tu mets des commentaires, on trouvera le moyen parce que les communications alors même alors ce que je vous propose teams.
+
+KOHEN Hamza
+25 minutes 50 secondes25:50
+KOHEN Hamza 25 minutes 50 secondes
+Non sophie, sorella.
+
+EL JADDAOUI Halima
+25 minutes 58 secondes25:58
+EL JADDAOUI Halima 25 minutes 58 secondes
+Merci.
+
+KOHEN Hamza
+26 minutes26:00
+KOHEN Hamza 26 minutes
+Voilà.
+
+HANNANE Khalid
+26 minutes 4 secondes26:04
+HANNANE Khalid 26 minutes 4 secondes
+Le canal teams, on partageait les informations, je vais reconduire.
+
+KOHEN Hamza
+26 minutes 9 secondes26:09
+KOHEN Hamza 26 minutes 9 secondes
+Exactement demain demain en fin d'après-midi. Comme ça il a les si les collègues nous envoient les commentaires ou le fichier Excel.
+
+EL JADDAOUI Halima
+26 minutes 13 secondes26:13
+EL JADDAOUI Halima 26 minutes 13 secondes
+Ok.
+
+HANNANE Khalid
+26 minutes 19 secondes26:19
+HANNANE Khalid 26 minutes 19 secondes
+Ah le temps.
+
+KOHEN Hamza
+26 minutes 24 secondes26:24
+KOHEN Hamza 26 minutes 24 secondes
+Ils se mettent en Task force demain, ils essaient de produire une nouvelle version comme ça sur la nouvelle version.
+
+EL JADDAOUI Halima
+26 minutes 25 secondes26:25
+EL JADDAOUI Halima 26 minutes 25 secondes
+Merci.
+
+HANNANE Khalid
+26 minutes 32 secondes26:32
+HANNANE Khalid 26 minutes 32 secondes
+Donc ce que tu proposes, c'est qu'on priorise le sujet.
+
+KOHEN Hamza
+26 minutes 36 secondes26:36
+KOHEN Hamza 26 minutes 36 secondes
+Exactement, exactement.
+
+HANNANE Khalid
+26 minutes 37 secondes26:37
+HANNANE Khalid 26 minutes 37 secondes
+Ça fait d'accord, d'accord, pas de problème, on fait comme ça. Bon les amis, merci beaucoup.
+EA
+El Tahiri Abdelali
+26 minutes 42 secondes26:42
+El Tahiri Abdelali 26 minutes 42 secondes
+Merci beaucoup.
+KH
+KILITO Houda
+26 minutes 42 secondes26:42
+KILITO Houda 26 minutes 42 secondes
+Merci encore.
+
+HANNANE Khalid
+26 minutes 44 secondes26:44
+HANNANE Khalid 26 minutes 44 secondes
+Très bonne journée.
+KH
+KILITO Houda
+26 minutes 45 secondes26:45
+KILITO Houda 26 minutes 45 secondes
+Bonne journée, au revoir.
+
+CHRAIBI FatimaZahra
+26 minutes 45 secondes26:45
+CHRAIBI FatimaZahra 26 minutes 45 secondes
+Merci à tous, à demain, au revoir.

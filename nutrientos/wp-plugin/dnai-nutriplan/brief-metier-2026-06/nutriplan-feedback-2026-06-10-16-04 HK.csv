@@ -1,0 +1,5 @@
+﻿ts,author,view,block,comment,selector,lang
+"2026-06-10T15:40:07.680Z,""Houda"",""Portefeuille trials"",""🔥 Alertes & escalations — issues détectées sur ton portefeuille"",""Je viens de rajouter un Use case mais il ne me semble pas visible sur cette liste"",""#main"",""fr"""
+"2026-06-10T15:38:27.934Z,""Houda"",""Nouveau Use Case"",""4 · Budget & partenaire"",""ID lié au budget ?"",""body > div.app > main.main > section.screen.on > div.form-section.fb-highlight"",""fr"""
+"2026-06-10T15:30:10.146Z,""Houda"",""Nouveau Use Case"",""3 · KPIs & Minimum Data Set"",""Je ne pense pas que la saisie soit possible ?"",""body > div.app > main.main > section.screen.on > div.form-section.fb-highlight"",""fr"""
+"2026-06-10T15:28:37.414Z,""Houda"",""Nouveau Use Case"",""2 · Périmètre & site"",""La date de fin ne prend pas en compte la date de début ==> Ajouter un controle sur les dates"",""body > div.app > main.main > section.screen.on > div.form-section.fb-highlight"",""fr"""

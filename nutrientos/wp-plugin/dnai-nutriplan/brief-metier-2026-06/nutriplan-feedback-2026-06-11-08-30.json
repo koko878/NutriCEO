@@ -1,0 +1,126 @@
+{
+  "exportedAt": "2026-06-11T08:30:09.258Z",
+  "count": 12,
+  "comments": [
+    {
+      "id": "fb-mq9892ayqg83",
+      "ts": "2026-06-11T08:20:06.250Z",
+      "author": "Houda",
+      "view": "Comités & gouvernance",
+      "block": "⚖️ Trial Steering Committee — Gate 1 · Design & readiness",
+      "selector": "main.main > section.screen.on > div.row-2c > div.card > p.muted.fb-highlight",
+      "lang": "fr",
+      "comment": "Comment la date du steering comité est elle mise à jour ?"
+    },
+    {
+      "id": "fb-mq9888ue8i0c",
+      "ts": "2026-06-11T08:19:28.070Z",
+      "author": "Houda",
+      "view": "Closure & Knowledge Base",
+      "block": "Objectif primaire",
+      "selector": "html > body > div.modal-bg.on > div.modal > div.modal-body.fb-highlight",
+      "lang": "fr",
+      "comment": "Le bouton Editer n'est pas actif"
+    },
+    {
+      "id": "fb-mq986t0lj4sh",
+      "ts": "2026-06-11T08:18:20.901Z",
+      "author": "Houda",
+      "view": "Closure & Knowledge Base",
+      "block": "Capitalisation",
+      "selector": "#sc-kb",
+      "lang": "fr",
+      "comment": "Export pdf ne fonctionne pas"
+    },
+    {
+      "id": "fb-mq985ru0618b",
+      "ts": "2026-06-11T08:17:32.712Z",
+      "author": "Houda",
+      "view": "Référentiels · Admin",
+      "block": "🏢 Business Units (7)",
+      "selector": "main.main > section.screen.on > div.row-2c > div.card > h3.fb-highlight",
+      "lang": "fr",
+      "comment": "Peut-on élargir la liste des BU ?"
+    },
+    {
+      "id": "fb-mq984wnb22ip",
+      "ts": "2026-06-11T08:16:52.295Z",
+      "author": "Houda",
+      "view": "Référentiels · Admin",
+      "block": "🔬 Trial Classes & Types — taxonomie framework v1.0",
+      "selector": "main.main > section.screen.on > div.row-2c > div.card > h3.fb-highlight",
+      "lang": "fr",
+      "comment": "Ya indiqué Taxonomie ?"
+    },
+    {
+      "id": "fb-mq9835ahwmdg",
+      "ts": "2026-06-11T08:15:30.185Z",
+      "author": "Houda",
+      "view": "Nouveau Use Case",
+      "block": "Workflow · Soumission",
+      "selector": "body > div.app > main.main > section.screen.on > div.eyebrow.fb-highlight",
+      "lang": "fr",
+      "comment": "La barre de recherche ne fonctionne pas"
+    },
+    {
+      "id": "fb-mq98282sjist",
+      "ts": "2026-06-11T08:14:47.140Z",
+      "author": "Houda",
+      "view": "Nouveau Use Case",
+      "block": "Workflow · Soumission",
+      "selector": "body > div.app > main.main > section.screen.on > div.tool-bar.fb-highlight",
+      "lang": "fr",
+      "comment": "Je ne peux uploader des documents"
+    },
+    {
+      "id": "fb-mq980us0ht3n",
+      "ts": "2026-06-11T08:13:43.248Z",
+      "author": "Houda",
+      "view": "Comités & gouvernance",
+      "block": "Gouvernance",
+      "selector": "body > div.app > main.main > section.screen.on > h2.h-pg.fb-highlight",
+      "lang": "fr",
+      "comment": "Aucune mise à jour n'est faite une fois les uses cases à ajouter"
+    },
+    {
+      "id": "fb-mq88j340y5ap",
+      "ts": "2026-06-10T15:40:07.680Z",
+      "author": "Houda",
+      "view": "Portefeuille trials",
+      "block": "🔥 Alertes & escalations — issues détectées sur ton portefeuille",
+      "selector": "#main",
+      "lang": "fr",
+      "comment": "Je viens de rajouter un Use case mais il ne me semble pas visible sur cette liste"
+    },
+    {
+      "id": "fb-mq88gy5anjto",
+      "ts": "2026-06-10T15:38:27.934Z",
+      "author": "Houda",
+      "view": "Nouveau Use Case",
+      "block": "4 · Budget & partenaire",
+      "selector": "body > div.app > main.main > section.screen.on > div.form-section.fb-highlight",
+      "lang": "fr",
+      "comment": "ID lié au budget ?"
+    },
+    {
+      "id": "fb-mq886a1utrea",
+      "ts": "2026-06-10T15:30:10.146Z",
+      "author": "Houda",
+      "view": "Nouveau Use Case",
+      "block": "3 · KPIs & Minimum Data Set",
+      "selector": "body > div.app > main.main > section.screen.on > div.form-section.fb-highlight",
+      "lang": "fr",
+      "comment": "Je ne pense pas que la saisie soit possible ?"
+    },
+    {
+      "id": "fb-mq884ahya8nb",
+      "ts": "2026-06-10T15:28:37.414Z",
+      "author": "Houda",
+      "view": "Nouveau Use Case",
+      "block": "2 · Périmètre & site",
+      "selector": "body > div.app > main.main > section.screen.on > div.form-section.fb-highlight",
+      "lang": "fr",
+      "comment": "La date de fin ne prend pas en compte la date de début ==> Ajouter un controle sur les dates"
+    }
+  ]
+}

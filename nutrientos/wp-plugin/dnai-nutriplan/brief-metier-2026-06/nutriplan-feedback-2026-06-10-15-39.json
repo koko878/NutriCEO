@@ -1,0 +1,36 @@
+{
+  "exportedAt": "2026-06-10T15:39:01.049Z",
+  "count": 3,
+  "comments": [
+    {
+      "id": "fb-mq86rgdy8hu8",
+      "ts": "2026-06-10T14:50:38.902Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Annual cycle · Calendar",
+      "block": "cal-row",
+      "selector": "section.screen.on > div.cal-wrap > div.cal-grid.cal16 > div.cal-row > div.cal-cell.fb-highlight",
+      "lang": "en",
+      "comment": "Not defined in the process, but there is a need for a review session of geographies harvesting during September to December. as by the submission time in September N-1 they wouldn't have a final say on their projects/trials"
+    },
+    {
+      "id": "fb-mq86czxqdzd9",
+      "ts": "2026-06-10T14:39:24.398Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Nouveau Use Case",
+      "block": "Workflow · Soumission",
+      "selector": "main.main > section.screen.on > div.steps-bar > div.s.on > span.n.fb-highlight",
+      "lang": "fr",
+      "comment": "We would like to link projects to trials, Can we start with a list of information defining the project first and from there get into trials ?"
+    },
+    {
+      "id": "fb-mq868xb19bmk",
+      "ts": "2026-06-10T14:36:14.365Z",
+      "author": "Abdelali El Tahiri",
+      "view": "Référentiels · Admin",
+      "block": "🏢 Business Units (7)",
+      "selector": "div.tbl-wrap > table.tbl > thead > tr > th.fb-highlight",
+      "lang": "fr",
+      "comment": "Can you please add other BU As customization, BU Nutrition, BU Green Solution etc"
+    }
+  ]
+}
