@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.11.0
+Stable tag: 0.12.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,21 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.12.0 — Distill (P2) + Adapt (P2) =
+* Distill : suppression des préfixes A./B./C./D. sur les 4 cards Dashboards
+  (numbered scaffolding) — les cards parallèles parlent d'elles-mêmes.
+  Cockpit hero bridge déjà à 3 KPIs (validé, pas de compression
+  supplémentaire). Aucune copie sub-titre redondante détectée
+  (les .dash-card-h.dash-legend-note portent un sub différent du h3).
+* Adapt : touch targets ≥44px via media (pointer:coarse) sur
+  .kpi/.chip/.btn/.sb-item/.tb-btn/.pill/.tb-lang button/.ref-chip/.kn-card.
+  Language switcher passe à 36px min-height par défaut (44px sur tactile).
+  Ref-chip CRUD passe à 36px min-height, button × interne 18→22px.
+  Kanban responsive : sous 560px viewport, .kn-col passe à
+  `flex:0 0 calc(100vw - 60px)` (1 colonne plein écran swipeable au lieu
+  d'un scroll horizontal claustrophobique sur mobile).
+* Kanban card : padding uniforme 12px (vs 10px 12px), min-height 44px.
 
 = 0.11.0 — Audit impeccable P0/P1 (a11y + tokens + AI-grammar cleanup) =
 * A11Y P0 : label/for binding sur 18 champs du formulaire intake,
