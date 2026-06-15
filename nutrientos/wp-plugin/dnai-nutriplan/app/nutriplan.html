@@ -596,6 +596,105 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .donut-legend{display:flex;flex-wrap:wrap;gap:6px 12px;justify-content:center;width:100%}
 .donut-legend .dl{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-2)}
 .donut-legend .dl i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+/* ===== Fiche projet (vue dédiée post-création) ===== */
+.proj-detail{animation:pd-in 480ms var(--ease-soft) both}
+@keyframes pd-in{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+.proj-detail-h{padding:6px;border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,.35));box-shadow:0 24px 60px -22px rgba(16,94,32,.22), inset 0 1px 0 rgba(255,255,255,.6);margin-bottom:18px}
+.proj-detail-h > .ui-eye{margin:18px 0 6px 22px;display:inline-block}
+.proj-detail-title{font:700 36px/1.05 'Cormorant Garamond',serif;color:var(--green-900);margin:6px 22px 4px;letter-spacing:-.015em;text-wrap:balance}
+.proj-detail-sub{margin:0 22px 20px;color:var(--muted);font-size:14px;max-width:65ch}
+.proj-detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+@media(max-width:760px){.proj-detail-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.proj-detail-grid{grid-template-columns:1fr}}
+.pd-cell{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:0 1px 2px rgba(16,94,32,.08);transition:transform 320ms cubic-bezier(.32,.72,0,1), box-shadow 320ms cubic-bezier(.32,.72,0,1)}
+.pd-cell:hover{transform:translateY(-2px);box-shadow:0 6px 18px -8px rgba(16,94,32,.22)}
+.pd-k{font:700 10px 'Inter',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2)}
+.pd-v{font:700 20px 'Cormorant Garamond',serif;color:var(--green-900);margin-top:4px;font-variant-numeric:tabular-nums}
+.proj-detail-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}
+
+/* ===== POLISH GLOBAL — easings, motion, micro-interactions (v0.10) ===== */
+:root{
+  --ease-soft:cubic-bezier(.32,.72,0,1);
+  --ease-out-quart:cubic-bezier(.25,1,.5,1);
+  --ease-spring:cubic-bezier(.5,1.55,.4,.98);
+  --shadow-green-sm:0 1px 2px rgba(16,94,32,.08), 0 0 0 1px rgba(16,94,32,.04);
+  --shadow-green-md:0 6px 18px -8px rgba(16,94,32,.22), 0 1px 3px rgba(16,94,32,.06);
+  --shadow-green-lg:0 24px 60px -22px rgba(16,94,32,.32), 0 4px 12px -6px rgba(16,94,32,.1);
+}
+/* Tabular nums sur tous les chiffres KPI/dashboards/portefeuille */
+.kpi .v, .dash-kpi .v, .v, td.t-num, .kpi-b b, .ref-count{font-variant-numeric:tabular-nums}
+/* Cards : inner highlight (Double-Bezel light) — physical feel */
+.card{position:relative;transition:box-shadow 380ms var(--ease-soft), transform 380ms var(--ease-soft)}
+.card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.6);opacity:.9}
+/* KPI hover physics (Q3 — déjà filtrants, on rend le ressenti physique) */
+.kpi{transition:transform 320ms var(--ease-soft), box-shadow 320ms var(--ease-soft), border-color 320ms var(--ease-soft);cursor:pointer}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-green-md);border-color:var(--green-300)}
+.kpi:active{transform:translateY(0) scale(.99);transition-duration:120ms}
+/* Boutons : spring + pressed feedback */
+.btn{transition:transform 240ms var(--ease-soft), background 240ms var(--ease-soft), box-shadow 240ms var(--ease-soft), border-color 240ms var(--ease-soft);will-change:transform}
+.btn:active{transform:scale(.97)}
+.btn.primary{box-shadow:0 4px 14px -4px rgba(46,125,50,.45), inset 0 1px 0 rgba(255,255,255,.18)}
+.btn.primary:hover{box-shadow:0 10px 24px -8px rgba(46,125,50,.55), inset 0 1px 0 rgba(255,255,255,.22);transform:translateY(-1px)}
+.btn.ghost:hover{background:var(--green-50);border-color:var(--green-300)}
+/* Projets cards — déjà animées, on tinte l'ombre en vert */
+.proj-card:hover{box-shadow:var(--shadow-green-md)}
+/* Pills : hover lift */
+.pill{transition:transform 220ms var(--ease-soft)}
+/* Sidebar items */
+.sb-item{transition:background 200ms var(--ease-soft), color 200ms var(--ease-soft), transform 200ms var(--ease-soft)}
+.sb-item:not(.on):hover{transform:translateX(2px)}
+/* Toast : ressenti spring + colored shadow + variantes */
+.toast{transition:transform 380ms var(--ease-spring), opacity 380ms var(--ease-soft) !important;box-shadow:var(--shadow-green-lg) !important}
+.toast.show{transform:translate(-50%, 0) scale(1) !important}
+.toast.toast-err{background:#fff;color:var(--bad);border:1px solid #f4c8c8;box-shadow:0 24px 60px -22px rgba(185,28,28,.35) !important}
+.toast.toast-ok{background:linear-gradient(180deg,#fff,#f6fbf6);color:var(--green-800);border:1px solid var(--green-100)}
+
+/* ===== MODALE PREMIUM (UI.prompt/confirm/alert) ===== */
+.ui-wrap{position:fixed;inset:0;z-index:9990;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;transition:opacity 240ms var(--ease-soft)}
+.ui-wrap.ui-in{opacity:1}
+.ui-wrap.ui-out{opacity:0}
+.ui-back{position:absolute;inset:0;background:rgba(10,30,16,.42);backdrop-filter:blur(8px) saturate(120%);-webkit-backdrop-filter:blur(8px) saturate(120%)}
+.ui-shell{position:relative;width:min(520px, calc(100% - 8px));padding:6px;border-radius:24px;
+  background:linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,.35));
+  box-shadow:0 30px 80px -20px rgba(16,35,26,.45), 0 0 0 1px rgba(255,255,255,.4);
+  transform:translateY(14px) scale(.98);opacity:0;transition:transform 380ms var(--ease-spring), opacity 280ms var(--ease-soft)}
+.ui-wrap.ui-in .ui-shell{transform:translateY(0) scale(1);opacity:1}
+.ui-wrap.ui-out .ui-shell{transform:translateY(8px) scale(.985);opacity:0}
+.ui-modal{background:#ffffff;border-radius:calc(24px - 6px);padding:26px 28px 22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.9)}
+.ui-modal--danger{box-shadow:inset 0 0 0 1px rgba(185,28,28,.08)}
+.ui-eye{display:inline-block;font:700 10px 'Inter',sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--green-700);background:var(--green-50);border:1px solid var(--green-100);border-radius:999px;padding:4px 10px;margin-bottom:10px}
+.ui-modal--danger .ui-eye{color:var(--bad);background:var(--bad-bg);border-color:#f4c8c8}
+.ui-title{margin:0 0 6px;font:700 22px 'Cormorant Garamond',serif;color:var(--ink);letter-spacing:-.01em}
+.ui-body{margin:0 0 14px;font-size:13.5px;color:var(--muted);line-height:1.55}
+.ui-form{display:flex;flex-direction:column;gap:14px;margin:14px 0 6px}
+.ui-fld{display:flex;flex-direction:column;gap:6px}
+.ui-lbl{font:700 11px 'Inter',sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}
+.ui-lbl em{color:var(--bad);font-style:normal;margin-left:3px}
+.ui-fld input, .ui-fld select, .ui-fld textarea{font:500 14px 'Inter',sans-serif;color:var(--ink);background:#fafbf9;border:1px solid var(--line-2);border-radius:11px;padding:11px 14px;outline:none;transition:border-color 240ms var(--ease-soft), box-shadow 240ms var(--ease-soft), background 240ms var(--ease-soft)}
+.ui-fld input:focus, .ui-fld select:focus, .ui-fld textarea:focus{background:#fff;border-color:var(--green-700);box-shadow:0 0 0 4px rgba(46,125,50,.13)}
+.ui-fld textarea{resize:vertical;min-height:84px;line-height:1.55}
+.ui-fld .ui-err{border-color:var(--bad);box-shadow:0 0 0 4px rgba(185,28,28,.12);animation:ui-shake .35s var(--ease-soft)}
+.ui-hint{font-size:11.5px;color:var(--muted-2);line-height:1.4}
+.ui-act{display:flex;gap:8px;justify-content:flex-end;align-items:center;margin-top:18px}
+.ui-btn{display:inline-flex;align-items:center;gap:10px;border:0;border-radius:999px;padding:10px 14px 10px 18px;font:700 13px 'Inter',sans-serif;cursor:pointer;transition:transform 240ms var(--ease-soft), background 240ms var(--ease-soft), color 240ms var(--ease-soft), box-shadow 240ms var(--ease-soft);will-change:transform}
+.ui-btn:active{transform:scale(.96)}
+.ui-btn--ghost{background:transparent;color:var(--ink-2);padding:10px 18px}
+.ui-btn--ghost:hover{background:var(--green-50);color:var(--green-800)}
+.ui-btn--primary{background:var(--green-700);color:#fff;box-shadow:0 6px 18px -6px rgba(46,125,50,.55), inset 0 1px 0 rgba(255,255,255,.22)}
+.ui-btn--primary:hover{background:var(--green-800);transform:translateY(-1px);box-shadow:0 10px 22px -6px rgba(27,94,32,.55)}
+.ui-modal--danger .ui-btn--primary{background:var(--bad);box-shadow:0 6px 18px -6px rgba(185,28,28,.55)}
+.ui-modal--danger .ui-btn--primary:hover{background:#9b1818}
+.ui-btn-arrow{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.18);font-size:13px;line-height:1;transition:transform 280ms var(--ease-spring)}
+.ui-btn--primary:hover .ui-btn-arrow{transform:translateX(2px)}
+@keyframes ui-shake{
+  0%{transform:translateX(0)} 25%{transform:translateX(-4px)} 50%{transform:translateX(4px)} 75%{transform:translateX(-2px)} 100%{transform:translateX(0)}
+}
+@media(max-width:520px){
+  .ui-shell{width:100%;border-radius:20px}
+  .ui-modal{padding:22px 20px 18px}
+  .ui-title{font-size:20px}
+}
 </style>
 </head>
 <body>
@@ -799,6 +898,7 @@ fr:{
  'nav.cockpit':'Cockpit','nav.cockpit.cr':'Cockpit',
  'nav.dash':'Dashboards','nav.dash.cr':'Dashboards','dash.eye':'Vue dédiée · portefeuille agronomique','dash.h':'Dashboards','dash.lead':'Vue globale du portefeuille trials & démos. Données calculées en direct depuis le portefeuille.','dash.k.tplan':'Trials planifiés','dash.k.tinst':'Trials installés','dash.k.tprog':'Trials — avancement global','dash.k.dplan':'Démos planifiées','dash.k.dinst':'Démos installées','dash.k.dprog':'Démos — avancement global','dash.k.across':'Sur {r} régions / {e} entités','dash.map.h':'Trials & Démos — répartition géographique & avancement régional','dash.map.legend':'Bulles = trials (ambre) / démos (vert)','dash.map.progress':'avancement','dash.b.h':'Type de partenaire','dash.b.sub':'% des expériences','dash.c.h':'Cultures','dash.c.sub':'% des trials & démos par culture','dash.d.h':'Budget','dash.d.sub':'% du budget portefeuille par région','dash.note':'Donuts et carte calculés en direct depuis le portefeuille (DATA). Mise à jour automatique à chaque création de trial.',
  'nav.projects':'Projets','nav.projects.cr':'Projets','prj.eye':'Projets · Call for Proposal','prj.h':'{n} projets','prj.lead':'Niveau parent des trials. Un projet regroupe N trials (héritage entité, pays, culture, partenaire). Clique un projet pour voir ses trials.','prj.trials':'trials','prj.progress':'{done}/{total} trials clôturés · {pct}%','prj.empty':'Aucun projet.','prj.k.projects':'Projets actifs','prj.k.trials':'Trials rattachés','prj.k.budget':'Budget total','prj.new':'Nouveau projet','prj.prompt.title':'Titre du projet ?','prj.prompt.bu':'Business Unit ?','prj.created':'✓ Projet créé','prj.col':'Projet',
+ 'prj.new.body':'Crée un nouveau projet (Call for Proposal). Les trials qui s\'y rattacheront hériteront automatiquement de la BU, du partenaire et de la culture.','prj.create':'Créer le projet','prj.f.title':'Titre du projet','prj.f.title.ph':'Ex. Programme Africa — nutrition phosphatée','prj.f.bu':'Business Unit','prj.f.partner':'Partenaire principal','prj.f.partner.ph':'Dénomination officielle','prj.f.crop':'Culture cible','prj.f.budget':'Budget total ($)','prj.f.budget.hint':'OPEX + amortissement CAPEX. Modifiable plus tard.','prj.f.desc':'Description courte','prj.f.desc.ph':'Rationale, objectif, outcomes attendus.','prj.detail.noDesc':'Pas encore de description — éditable ultérieurement.','prj.detail.back':'Liste des projets','prj.detail.viewTrials':'Voir les trials','prj.detail.newTrial':'Ajouter un trial','adm.confirmDel.body':'Cette action retire la valeur du référentiel partagé. Les trials qui l\'utilisaient gardent leur valeur historique.','adm.cancel':'Annuler',
  'nav.portfolio':'Portefeuille','nav.portfolio.cr':'Portefeuille trials',
  'nav.calendar':'Cycle annuel','nav.calendar.cr':'Cycle annuel · Calendrier',
  'nav.gov':'Gouvernance','nav.gov.cr':'Comités & gouvernance',
@@ -1072,6 +1172,7 @@ en:{
  'nav.cockpit':'Cockpit','nav.cockpit.cr':'Cockpit',
  'nav.dash':'Dashboards','nav.dash.cr':'Dashboards','dash.eye':'Dedicated view · agronomic portfolio','dash.h':'Dashboards','dash.lead':'Global view of the trial & demo portfolio. Computed live from the portfolio.','dash.k.tplan':'Trials planned','dash.k.tinst':'Trials installed','dash.k.tprog':'Trials — overall progress','dash.k.dplan':'Demos planned','dash.k.dinst':'Demos installed','dash.k.dprog':'Demos — overall progress','dash.k.across':'Across {r} regions / {e} entities','dash.map.h':'Trials & Demos — geographic split & regional progress','dash.map.legend':'Bubbles = trials (amber) / demos (green)','dash.map.progress':'progress','dash.b.h':'Partner Type','dash.b.sub':'% of experiments','dash.c.h':'Crops','dash.c.sub':'% of trials & demos by crop','dash.d.h':'Budget','dash.d.sub':'% of total portfolio budget by region','dash.note':'Donuts and map computed live from the portfolio (DATA). Auto-updates on every trial creation.',
  'nav.projects':'Projects','nav.projects.cr':'Projects','prj.eye':'Projects · Call for Proposal','prj.h':'{n} projects','prj.lead':'Parent layer of trials. A project groups N trials (inherits entity, country, crop, partner). Click a project to see its trials.','prj.trials':'trials','prj.progress':'{done}/{total} trials closed · {pct}%','prj.empty':'No project.','prj.k.projects':'Active projects','prj.k.trials':'Linked trials','prj.k.budget':'Total budget','prj.new':'New project','prj.prompt.title':'Project title?','prj.prompt.bu':'Business Unit?','prj.created':'✓ Project created','prj.col':'Project',
+ 'prj.new.body':'Create a new project (Call for Proposal). Trials attached to it will inherit the BU, partner and crop automatically.','prj.create':'Create project','prj.f.title':'Project title','prj.f.title.ph':'e.g. Africa programme — phosphate nutrition','prj.f.bu':'Business Unit','prj.f.partner':'Main partner','prj.f.partner.ph':'Official denomination','prj.f.crop':'Target crop','prj.f.budget':'Total budget ($)','prj.f.budget.hint':'OPEX + CAPEX depreciation. Editable later.','prj.f.desc':'Short description','prj.f.desc.ph':'Rationale, objective, expected outcomes.','prj.detail.noDesc':'No description yet — editable later.','prj.detail.back':'Projects list','prj.detail.viewTrials':'View trials','prj.detail.newTrial':'Add a trial','adm.confirmDel.body':'This removes the value from the shared reference. Trials that used it keep their historical value.','adm.cancel':'Cancel',
  'nav.portfolio':'Portfolio','nav.portfolio.cr':'Trial portfolio',
  'nav.calendar':'Annual cycle','nav.calendar.cr':'Annual cycle · Calendar',
  'nav.gov':'Governance','nav.gov.cr':'Committees & governance',
@@ -1327,6 +1428,7 @@ pt:{
  'nav.cockpit':'Cockpit','nav.cockpit.cr':'Cockpit',
  'nav.dash':'Dashboards','nav.dash.cr':'Dashboards','dash.eye':'Vista dedicada · portfólio agronômico','dash.h':'Dashboards','dash.lead':'Visão global do portfólio de trials & demos. Calculado em tempo real.','dash.k.tplan':'Trials planejados','dash.k.tinst':'Trials instalados','dash.k.tprog':'Trials — progresso geral','dash.k.dplan':'Demos planejadas','dash.k.dinst':'Demos instaladas','dash.k.dprog':'Demos — progresso geral','dash.k.across':'Em {r} regiões / {e} entidades','dash.map.h':'Trials & Demos — divisão geográfica & progresso regional','dash.map.legend':'Bolhas = trials (âmbar) / demos (verde)','dash.map.progress':'progresso','dash.b.h':'Tipo de parceiro','dash.b.sub':'% dos experimentos','dash.c.h':'Culturas','dash.c.sub':'% de trials & demos por cultura','dash.d.h':'Orçamento','dash.d.sub':'% do orçamento do portfólio por região','dash.note':'Donuts e mapa calculados em tempo real do portfólio (DATA).',
  'nav.projects':'Projetos','nav.projects.cr':'Projetos','prj.eye':'Projetos · Call for Proposal','prj.h':'{n} projetos','prj.lead':'Camada pai dos trials. Um projeto agrupa N trials (herda entidade, país, cultura, parceiro). Clique num projeto para ver seus trials.','prj.trials':'trials','prj.progress':'{done}/{total} trials encerrados · {pct}%','prj.empty':'Nenhum projeto.','prj.k.projects':'Projetos ativos','prj.k.trials':'Trials vinculados','prj.k.budget':'Orçamento total','prj.new':'Novo projeto','prj.prompt.title':'Título do projeto?','prj.prompt.bu':'Business Unit?','prj.created':'✓ Projeto criado','prj.col':'Projeto',
+ 'prj.new.body':'Crie um novo projeto (Call for Proposal). Trials vinculados herdarão BU, parceiro e cultura.','prj.create':'Criar projeto','prj.f.title':'Título do projeto','prj.f.title.ph':'Ex. Programa Africa — nutrição fosfatada','prj.f.bu':'Business Unit','prj.f.partner':'Parceiro principal','prj.f.partner.ph':'Denominação oficial','prj.f.crop':'Cultura alvo','prj.f.budget':'Orçamento total ($)','prj.f.budget.hint':'OPEX + depreciação CAPEX. Editável depois.','prj.f.desc':'Descrição curta','prj.f.desc.ph':'Racional, objetivo, resultados esperados.','prj.detail.noDesc':'Sem descrição ainda — editável depois.','prj.detail.back':'Lista de projetos','prj.detail.viewTrials':'Ver trials','prj.detail.newTrial':'Adicionar trial','adm.confirmDel.body':'Esta ação remove o valor do catálogo compartilhado. Trials que o usavam mantêm seu valor histórico.','adm.cancel':'Cancelar',
  'nav.portfolio':'Portfólio','nav.portfolio.cr':'Portfólio de trials',
  'nav.calendar':'Ciclo anual','nav.calendar.cr':'Ciclo anual · Calendário',
  'nav.gov':'Governança','nav.gov.cr':'Comitês & governança',
@@ -2067,7 +2169,111 @@ function buOf(id){ return BUS.find(b=>b.id===id) || BUS[6]; }
 function fmtMoney(n){ return '$'+(n||0).toLocaleString('en-US',{maximumFractionDigits:0}); }
 function fmtDate(s){ if(!s) return '—'; try{ return new Date(s).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'2-digit'}); }catch(e){ return s; } }
 function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);}
-function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2400); }
+function toast(m, kind){
+  const t=document.getElementById('toast');
+  t.textContent=m;
+  t.className='toast show' + (kind?(' toast-'+kind):'');
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+/* =================================================================
+ * UI · système de modale premium (remplace prompt/alert/confirm
+ * natifs — Double-Bezel, spring physics, focus trap, ESC/Enter).
+ * ================================================================= */
+const UI = (()=>{
+  let _open = null;
+  function close(val){
+    if(!_open) return;
+    const {wrap, resolve} = _open;
+    wrap.classList.add('ui-out');
+    setTimeout(()=>{ wrap.remove(); document.removeEventListener('keydown', _open.kh, true); _open=null; resolve(val); }, 220);
+  }
+  function build(opts){
+    if(_open) close(null);
+    return new Promise(resolve=>{
+      const wrap = document.createElement('div');
+      wrap.className = 'ui-wrap';
+      const danger = opts.danger ? ' ui-modal--danger' : '';
+      const fieldsHtml = (opts.fields||[]).map((f,i)=>{
+        const id='ui_f_'+i;
+        const required = f.required ? ' required' : '';
+        const auto = i===0 ? ' autofocus' : '';
+        if(f.type==='select'){
+          return `<label class="ui-fld"><span class="ui-lbl">${escapeHtml(f.label)}${f.required?' <em>*</em>':''}</span>
+            <select id="${id}" data-name="${escapeHtml(f.name||id)}"${required}>
+              ${(f.options||[]).map(o=>`<option value="${escapeHtml(o[0])}"${o[0]==f.value?' selected':''}>${escapeHtml(o[1])}</option>`).join('')}
+            </select></label>`;
+        }
+        if(f.type==='textarea'){
+          return `<label class="ui-fld"><span class="ui-lbl">${escapeHtml(f.label)}${f.required?' <em>*</em>':''}</span>
+            <textarea id="${id}" data-name="${escapeHtml(f.name||id)}" rows="${f.rows||3}" placeholder="${escapeHtml(f.placeholder||'')}"${required}${auto}>${escapeHtml(f.value||'')}</textarea>
+            ${f.hint?`<span class="ui-hint">${escapeHtml(f.hint)}</span>`:''}</label>`;
+        }
+        return `<label class="ui-fld"><span class="ui-lbl">${escapeHtml(f.label)}${f.required?' <em>*</em>':''}</span>
+          <input id="${id}" data-name="${escapeHtml(f.name||id)}" type="${f.type||'text'}" placeholder="${escapeHtml(f.placeholder||'')}" value="${escapeHtml(f.value||'')}"${required}${auto}>
+          ${f.hint?`<span class="ui-hint">${escapeHtml(f.hint)}</span>`:''}</label>`;
+      }).join('');
+      wrap.innerHTML = `<div class="ui-back"></div>
+        <div class="ui-shell" role="dialog" aria-modal="true">
+          <div class="ui-modal${danger}">
+            ${opts.eyebrow?`<div class="ui-eye">${escapeHtml(opts.eyebrow)}</div>`:''}
+            <h3 class="ui-title">${escapeHtml(opts.title||'')}</h3>
+            ${opts.body?`<p class="ui-body">${opts.body}</p>`:''}
+            ${fieldsHtml?`<form class="ui-form" onsubmit="return false">${fieldsHtml}</form>`:''}
+            <div class="ui-act">
+              ${opts.cancel===false?'':`<button type="button" class="ui-btn ui-btn--ghost" data-act="cancel">${escapeHtml(opts.cancel||'Annuler')}</button>`}
+              <button type="button" class="ui-btn ui-btn--primary" data-act="ok">
+                <span>${escapeHtml(opts.ok||'OK')}</span>
+                <span class="ui-btn-arrow" aria-hidden="true">→</span>
+              </button>
+            </div>
+          </div>
+        </div>`;
+      document.body.appendChild(wrap);
+      // Spring entrance via class added on next frame
+      requestAnimationFrame(()=>wrap.classList.add('ui-in'));
+      const kh = (e)=>{
+        if(e.key==='Escape'){ e.preventDefault(); _open.resolve=resolve; close(null); }
+        else if(e.key==='Enter' && (e.target.tagName!=='TEXTAREA')){ e.preventDefault(); doOk(); }
+      };
+      _open = { wrap, resolve, kh };
+      document.addEventListener('keydown', kh, true);
+      wrap.querySelector('.ui-back').addEventListener('click', ()=>close(null));
+      wrap.querySelector('[data-act=cancel]')?.addEventListener('click', ()=>close(null));
+      function doOk(){
+        if(opts.fields){
+          const values = {};
+          let firstInvalid=null;
+          wrap.querySelectorAll('[data-name]').forEach(el=>{
+            const v = (el.value||'').trim();
+            values[el.dataset.name]=v;
+            if(el.required && !v && !firstInvalid){ firstInvalid=el; }
+          });
+          if(firstInvalid){
+            firstInvalid.classList.add('ui-err');
+            firstInvalid.focus();
+            setTimeout(()=>firstInvalid.classList.remove('ui-err'), 800);
+            return;
+          }
+          close(values);
+        } else {
+          close(true);
+        }
+      }
+      wrap.querySelector('[data-act=ok]').addEventListener('click', doOk);
+      // Focus first input
+      setTimeout(()=>{
+        const fst = wrap.querySelector('input,select,textarea');
+        if(fst) fst.focus();
+      }, 80);
+    });
+  }
+  return {
+    prompt: (opts)=>build({ok:'Valider', ...opts}),
+    confirm: (opts)=>build({cancel:'Annuler', ok:'Confirmer', ...opts}),
+    alert:   (opts)=>build({cancel:false, ok:'OK', ...(typeof opts==='string'?{title:opts}:opts)})
+  };
+})();
 
 /* -----------------------------------------------------------------
  * 4. SIDENAV + VIEW ROUTING
@@ -2527,29 +2733,90 @@ function renderProjects(){
   `;
 }
 function openProject(pid){
-  // Ouvre le portefeuille filtré sur les trials du projet (Q2).
+  // Bascule sur le portefeuille filtré sur ce projet (vue d'ensemble trials).
   PREFS.filters = { project: pid };
   savePrefs();
   goView('portfolio');
 }
-function newProject(){
-  const title = prompt(tr('prj.prompt.title')); if(!title) return;
-  const buCode = (prompt(tr('prj.prompt.bu')+' ('+BUS.map(b=>b.id).join(', ')+')','SAI')||'SAI').toUpperCase();
-  const bu = BUS.find(b=>b.id===buCode) ? buCode : 'SAI';
+async function newProject(){
+  const values = await UI.prompt({
+    eyebrow: tr('prj.eye'),
+    title: tr('prj.new'),
+    body: tr('prj.new.body'),
+    ok: tr('prj.create'),
+    fields: [
+      { name:'title',    label:tr('prj.f.title'),    required:true, placeholder:tr('prj.f.title.ph') },
+      { name:'bu',       label:tr('prj.f.bu'),       type:'select', value:'SAI', options: BUS.map(b=>[b.id, b.id+' — '+b.nm]) },
+      { name:'partner',  label:tr('prj.f.partner'),  placeholder:tr('prj.f.partner.ph') },
+      { name:'crop',     label:tr('prj.f.crop'),     type:'select', value:CROPS[0], options: CROPS.map(c=>[c,c]) },
+      { name:'budget',   label:tr('prj.f.budget'),   type:'number', placeholder:'0', hint:tr('prj.f.budget.hint') },
+      { name:'description', label:tr('prj.f.desc'), type:'textarea', rows:3, placeholder:tr('prj.f.desc.ph') }
+    ]
+  });
+  if(!values) return;
+  const buCode = BUS.find(b=>b.id===values.bu) ? values.bu : 'SAI';
   const num = (PROJECTS.length+1).toString().padStart(3,'0');
   const p = {
-    id:'PRJ-2026-'+num, title:title.trim(), entity:bu, bu,
-    country:'—', region:'—', crop:'—', partner:'—',
-    project_status:'New Project', contract_status:'Not started',
-    strategic_line: STRATEGIC_LINES[0], project_response: PROJECT_RESPONSE[0],
-    description:'', lead:'SAI', owner:'SAI',
-    start_date:null, end_date:null, duration_years:1, budget:0
+    id:'PRJ-2026-'+num,
+    title: values.title.trim(),
+    entity: buCode, bu: buCode,
+    country:'—', region:'—',
+    crop: values.crop || CROPS[0],
+    partner: (values.partner||'').trim() || '—',
+    project_status:'New Project',
+    contract_status:'Not started',
+    strategic_line: STRATEGIC_LINES[0],
+    project_response: PROJECT_RESPONSE[0],
+    description: (values.description||'').trim(),
+    lead:'SAI', owner: (apiCfg()&&apiCfg().user)||'SAI',
+    start_date: new Date().toISOString().slice(0,10),
+    end_date: null,
+    duration_years: 1,
+    budget: Number(values.budget)||0
   };
   PROJECTS.unshift(p);
   apiUpsert('projects', p);
   try{ localStorage.setItem(LS_PROJECTS, JSON.stringify(PROJECTS)); }catch(e){}
-  renderSidebar(); renderProjects();
-  toast(tr('prj.created'));
+  renderSidebar();
+  toast(tr('prj.created'), 'ok');
+  // Ouverture directe de la fiche du projet créé (UX best-practice : pas de detour)
+  openProjectDetail(p.id);
+}
+
+/* Fiche projet — vue dédiée après création (ou clic sur "Voir détails") */
+function openProjectDetail(pid){
+  const p = projById(pid); if(!p) return;
+  const trials = trialsOfProject(pid);
+  const bu = buOf(p.bu);
+  const html = `<div class="proj-detail">
+    <div class="proj-detail-h">
+      <div class="ui-eye">${escapeHtml(p.id)} · <span class="av ${bu.color}">${bu.id}</span></div>
+      <h2 class="proj-detail-title">${escapeHtml(p.title)}</h2>
+      <p class="proj-detail-sub">${escapeHtml(p.description||tr('prj.detail.noDesc'))}</p>
+    </div>
+    <div class="proj-detail-grid">
+      <div class="pd-cell"><div class="pd-k">${tr('prj.f.partner')}</div><div class="pd-v">${escapeHtml(p.partner||'—')}</div></div>
+      <div class="pd-cell"><div class="pd-k">${tr('prj.f.crop')}</div><div class="pd-v">${escapeHtml(p.crop||'—')}</div></div>
+      <div class="pd-cell"><div class="pd-k">${tr('prj.f.budget')}</div><div class="pd-v">${fmtMoney(p.budget)}</div></div>
+      <div class="pd-cell"><div class="pd-k">${tr('adm.r.cstatus')}</div><div class="pd-v">${escapeHtml(p.contract_status||'—')}</div></div>
+      <div class="pd-cell"><div class="pd-k">${tr('adm.r.pstatus')}</div><div class="pd-v">${escapeHtml(p.project_status||'—')}</div></div>
+      <div class="pd-cell"><div class="pd-k">${tr('prj.k.trials')}</div><div class="pd-v">${trials.length}</div></div>
+    </div>
+    <div class="proj-detail-actions">
+      <button class="btn ghost" onclick="goView('projects')">← ${tr('prj.detail.back')}</button>
+      <span class="sp" style="flex:1"></span>
+      <button class="btn ghost" onclick="openProject('${pid}')">${tr('prj.detail.viewTrials')} (${trials.length})</button>
+      <button class="btn primary" onclick="newTrialForProject('${pid}')">+ ${tr('prj.detail.newTrial')}</button>
+    </div>
+  </div>`;
+  document.getElementById('sc-projects').innerHTML = html;
+  document.getElementById('main').scrollTo({top:0, behavior:'instant'});
+}
+function newTrialForProject(pid){
+  // Pré-sélectionne le projet dans le formulaire intake (raccourci UX)
+  PREFS._prefillProject = pid;
+  savePrefs();
+  goView('intake');
 }
 
 /* -----------------------------------------------------------------
@@ -2967,6 +3234,7 @@ function _localFallback(q){
  * 9. INTAKE FORM (placeholder for MVP V1 — full form coming next iteration)
  * --------------------------------------------------------------- */
 function renderIntake(){
+  const _prefillCleanup = PREFS._prefillProject;  // consume + clear so it doesn't stick
   document.getElementById('sc-intake').innerHTML = `
     <div class="eyebrow">${tr('in.eye')}</div>
     <h2 class="h-pg">${tr('in.h')}</h2>
@@ -2988,7 +3256,7 @@ function renderIntake(){
       <p class="sub">${tr('in.s1.sub')}</p>
       <div class="form-grid">
         <div class="fld full"><label>${tr('in.f.project')} <span class="req">*</span></label>
-          <select id="if_project">${PROJECTS.map(p=>`<option value="${p.id}">${escapeHtml(p.id+' · '+p.title)}</option>`).join('')}</select>
+          <select id="if_project">${PROJECTS.map(p=>`<option value="${p.id}"${PREFS._prefillProject===p.id?' selected':''}>${escapeHtml(p.id+' · '+p.title)}</option>`).join('')}</select>
           <span class="muted" style="display:block;font-size:11.5px;margin-top:4px">${tr('in.f.project.help')}</span></div>
         <div class="fld full"><label>${tr('in.f.name')} <span class="req">*</span></label><input id="if_name" type="text" placeholder="${tr('in.f.name.ph')}"></div>
         <div class="fld"><label>${tr('in.f.bu')} <span class="req">*</span></label>
@@ -3057,6 +3325,7 @@ function renderIntake(){
     </div>
     <p class="muted" style="text-align:center;margin:10px 0 0">${tr('in.note')}</p>
   `;
+  if(_prefillCleanup){ delete PREFS._prefillProject; savePrefs(); }
 }
 
 /* Intake helpers + real submission (fixes B1/B3/B4/B5, Q4/Q6/Q7) */
@@ -3431,12 +3700,20 @@ function refUpdObj(key,i,field,val){
   const r=refByKey(key); const list=r.get().slice(); if(!list[i]) return;
   list[i]={...list[i],[field]:val}; r.set(list); persistRef();
 }
-function refDel(key,i){
+async function refDel(key,i){
   const r=refByKey(key); const list=r.get().slice(); const val=list[i];
   const label = (typeof val==='object')?(val.nm||val.id):val;
   const used = refUsageCount(key, (typeof val==='object')?(val.id||val.nm):val);
-  if(used>0){ toast(trf('adm.usedBy',{n:used})); return; }
-  if(!confirm(trf('adm.confirmDel',{v:label}))) return;
+  if(used>0){ toast(trf('adm.usedBy',{n:used}), 'err'); return; }
+  const ok = await UI.confirm({
+    eyebrow: tr('adm.del'),
+    title: trf('adm.confirmDel',{v:label}),
+    body: tr('adm.confirmDel.body')||'',
+    danger: true,
+    ok: tr('adm.del'),
+    cancel: tr('adm.cancel')||'Annuler'
+  });
+  if(!ok) return;
   list.splice(i,1); r.set(list); refAfterChange();
 }
 function refExport(){
@@ -3444,8 +3721,15 @@ function refExport(){
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='nutriplan-referentiels-'+new Date().toISOString().slice(0,10)+'.json';
   document.body.appendChild(a); a.click(); a.remove();
 }
-function refResetDefaults(){
-  if(!confirm(tr('adm.confirmReset'))) return;
+async function refResetDefaults(){
+  const ok = await UI.confirm({
+    eyebrow: tr('adm.reset'),
+    title: tr('adm.confirmReset'),
+    danger: true,
+    ok: tr('adm.reset'),
+    cancel: tr('adm.cancel')||'Annuler'
+  });
+  if(!ok) return;
   try{ localStorage.removeItem('nplan_reference_v1'); }catch(e){}
   location.reload();
 }
@@ -3615,7 +3899,7 @@ const FB = (function(){
     modal.querySelector('.fb-save').onclick=function(){
       const a=modal.querySelector('.fb-author').value.trim();
       const text=modal.querySelector('.fb-text').value.trim();
-      if(!text){ alert('Le commentaire est vide.'); return; }
+      if(!text){ toast('Le commentaire est vide.', 'err'); return; }
       setAuthor(a);
       list.unshift({id:uid(), ts:new Date().toISOString(), author:a, view:view, block:block, selector:sel, lang:LANG, comment:text});
       save(); close(); flashBadge();
@@ -3659,10 +3943,13 @@ const FB = (function(){
     panel.querySelectorAll('.fb-del').forEach(b=>b.onclick=function(e){ e.stopPropagation();
       const id=this.closest('.fb-item').dataset.id; list=list.filter(x=>x.id!==id); save(); panel.remove(); panel=null; openPanel();
     });
-    panel.querySelector('[data-act=clear]').onclick=function(){ if(!confirm('Effacer tous les commentaires ?')) return; list=[]; save(); panel.remove(); panel=null; openPanel(); };
+    panel.querySelector('[data-act=clear]').onclick=async function(){
+      const ok=await UI.confirm({title:'Effacer tous les commentaires ?', danger:true, ok:'Tout effacer'});
+      if(!ok) return; list=[]; save(); panel.remove(); panel=null; openPanel();
+    };
     panel.querySelector('[data-act=exjson]').onclick=()=>exportFile('nutriplan-feedback-'+stamp()+'.json', JSON.stringify({exportedAt:new Date().toISOString(),count:list.length,comments:list},null,2), 'application/json');
     panel.querySelector('[data-act=excsv]').onclick=()=>exportFile('nutriplan-feedback-'+stamp()+'.csv', toCsv(), 'text/csv;charset=utf-8');
-    panel.querySelector('[data-act=excopy]').onclick=()=>{ navigator.clipboard.writeText(toMarkdown()).then(()=>alert('Copié en markdown — colle dans Teams/Slack/Notion.')); };
+    panel.querySelector('[data-act=excopy]').onclick=()=>{ navigator.clipboard.writeText(toMarkdown()).then(()=>toast('📋 Copié — colle dans Teams/Slack/Notion.','ok')); };
   }
   function stamp(){ const d=new Date(); return d.toISOString().slice(0,16).replace(/[:T]/g,'-'); }
   function csvQ(s){ s=String(s==null?'':s); return '"'+s.replace(/"/g,'""')+'"'; }

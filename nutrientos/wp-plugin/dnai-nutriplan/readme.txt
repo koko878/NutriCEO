@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.9.1
+Stable tag: 0.10.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,31 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.10.0 — Polish premium UI/UX (modales natives bannies + spring physics) =
+* SYSTÈME DE MODALE PREMIUM (UI.prompt / UI.confirm / UI.alert) —
+  fin des `prompt()` / `confirm()` / `alert()` natifs du navigateur
+  (qui affichaient la chaîne AFD complète). Double-Bezel glass shell,
+  backdrop-blur, spring physics, focus auto, ESC pour fermer, Enter
+  pour valider, variante danger (confirmations destructives).
+* Création de projet refondue : vrai formulaire 6 champs (titre, BU,
+  partenaire, culture, budget, description) au lieu de 2 prompts
+  successifs. Après création → ouverture directe de la FICHE PROJET
+  (vue dédiée premium) avec actions « Voir les trials » et « Ajouter
+  un trial » (raccourci UX, pas de détour par le portefeuille).
+* Bouton « + Ajouter un trial » depuis la fiche projet pré-sélectionne
+  le projet dans le formulaire d'intake.
+* Polish global appliqué partout :
+  - Variables d'easing custom (cubic-bezier spring) sur transitions
+  - Tabular-nums sur tous les chiffres (KPI, dashboards, table)
+  - Hover physics : translateY + colored shadow tintée vert (au lieu
+    de noir générique) sur KPIs / cards / boutons
+  - Active state scale(.97) — pressed feedback physique
+  - Inner highlight (Double-Bezel light) sur toutes les cards
+  - Toast amélioré : spring entrance + colored shadow + variantes
+    success/error
+* Toutes les confirmations (suppression référence, reset défauts,
+  clear feedback, copie markdown) passent par les modales premium.
 
 = 0.9.1 — Vue Dashboards dédiée (F3, demande SAI/Abdelali) =
 * Nouvel écran « Dashboards » (nav) reproduisant le PPT TRIAL DASHBOARD :
