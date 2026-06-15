@@ -44,14 +44,18 @@ a{color:var(--green-700);text-decoration:none}
 /* ==========================================================================
  * APP SHELL — sidenav (left) + main + chat panel (right, slide-in)
  * ========================================================================== */
-.app{display:grid;grid-template-columns:240px 1fr;grid-template-rows:56px 1fr;height:100vh;
+/* minmax(0,1fr) sur la colonne main : sans ça, un contenu large (table / kanban)
+ * refuse de rétrécir et POUSSE la colonne chat (et sa croix de fermeture) hors
+ * de l'écran à droite — d'où "pas de croix + texte coupé". */
+.app{display:grid;grid-template-columns:240px minmax(0,1fr);grid-template-rows:56px 1fr;height:100vh;
      grid-template-areas:'sidebar topbar' 'sidebar main'}
-.app.chat-open{grid-template-columns:240px 1fr 380px;
+/* Chat ouvert : on resserre le menu gauche (240→200) et on élargit le chat (380→460). */
+.app.chat-open{grid-template-columns:200px minmax(0,1fr) 460px;
      grid-template-areas:'sidebar topbar chat' 'sidebar main chat'}
-@media(max-width:1240px){.app.chat-open{grid-template-columns:240px 1fr;grid-template-areas:'sidebar topbar' 'sidebar main'}
-  .app.chat-open .chat{position:fixed;top:56px;right:0;bottom:0;width:min(380px,92vw);z-index:80;box-shadow:var(--shadow-lg)}}
-@media(max-width:980px){.app,.app.chat-open{grid-template-columns:56px 1fr;grid-template-areas:'sidebar topbar' 'sidebar main'}
-  .app.chat-open .chat{position:fixed;top:56px;right:0;bottom:0;width:min(380px,92vw);z-index:80;box-shadow:var(--shadow-lg)}}
+@media(max-width:1280px){.app.chat-open{grid-template-columns:200px minmax(0,1fr);grid-template-areas:'sidebar topbar' 'sidebar main'}
+  .app.chat-open .chat{position:fixed;top:56px;right:0;bottom:0;width:min(460px,94vw);z-index:80;box-shadow:var(--shadow-lg)}}
+@media(max-width:980px){.app,.app.chat-open{grid-template-columns:56px minmax(0,1fr);grid-template-areas:'sidebar topbar' 'sidebar main'}
+  .app.chat-open .chat{position:fixed;top:56px;right:0;bottom:0;width:min(460px,94vw);z-index:80;box-shadow:var(--shadow-lg)}}
 
 /* ----- sidenav ----- */
 .sidebar{grid-area:sidebar;background:linear-gradient(180deg,#0a1812 0%,#07140c 100%);color:#dff0e3;display:flex;flex-direction:column;border-right:1px solid rgba(255,255,255,.06)}
@@ -104,7 +108,7 @@ a{color:var(--green-700);text-decoration:none}
 @media(max-width:780px){.tb-search{display:none}.tb-prof .nm,.tb-prof .ro{display:none}}
 
 /* ----- main ----- */
-.main{grid-area:main;overflow-y:auto;background:var(--soft);padding:24px 28px 60px}
+.main{grid-area:main;overflow-y:auto;background:var(--soft);padding:24px 28px 60px;min-width:0}
 @media(max-width:560px){.main{padding:18px 16px 40px}}
 .screen{display:none;animation:fadeIn .25s ease}
 .screen.on{display:block}
@@ -307,15 +311,14 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .kn-card .ttl{font:700 13px 'Inter';color:var(--ink);margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word;overflow-wrap:anywhere}
 .kn-card .meta{font:500 11px 'Inter';color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;word-break:break-word;overflow-wrap:anywhere}
 .kn-card .pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px}
-.kn-card .foot{display:flex;align-items:center;gap:8px;font:500 11px 'Inter';color:var(--muted);flex-wrap:wrap}
-.kn-card .foot > span:first-child{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.kn-card .foot > span:last-child{flex-shrink:0;font-variant-numeric:tabular-nums}
-.kn-card .foot .sp{flex:1}
+.kn-card .foot{display:flex;align-items:center;gap:8px;font:500 11px 'Inter';color:var(--muted);justify-content:space-between}
+.kn-card .foot > .crop{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kn-card .foot > .bdg{flex-shrink:0;white-space:nowrap;font-variant-numeric:tabular-nums}
 
 /* ==========================================================================
  * AI CHAT panel (slide-in from right)
  * ========================================================================== */
-.chat{grid-area:chat;background:linear-gradient(180deg,#0a1812 0%,#07140c 100%);color:#dff0e3;display:flex;flex-direction:column;border-left:1px solid rgba(124,252,154,.15);position:relative;overflow:hidden}
+.chat{grid-area:chat;background:linear-gradient(180deg,#0a1812 0%,#07140c 100%);color:#dff0e3;display:flex;flex-direction:column;border-left:1px solid rgba(124,252,154,.15);position:relative;overflow:hidden;min-width:0}
 .chat-h{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px;flex-shrink:0;min-width:0}
 .chat-h .ai-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#7cfc9a,#3f9c5d);display:grid;place-items:center;font:900 13px 'Inter';color:#04100a;flex-shrink:0}
 .chat-h .nm-wrap{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2;overflow:hidden}
@@ -324,7 +327,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .chat-h .x{margin-left:auto;color:#bcd4c2;padding:6px;border-radius:8px;width:32px;height:32px;display:grid;place-items:center;font-size:18px;flex-shrink:0;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);transition:background .15s,color .15s,border-color .15s}
 .chat-h .x:hover{background:rgba(255,82,82,.15);color:#fff;border-color:rgba(255,82,82,.4)}
 .chat-body{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
-.chat-msg{display:flex;gap:10px;animation:msgIn .25s ease}
+.chat-msg{display:flex;gap:10px;animation:msgIn .25s ease;min-width:0}
 @keyframes msgIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 .chat-msg .av{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.08);display:grid;place-items:center;font:800 11px 'Inter';color:#bcd4c2;flex-shrink:0}
 .chat-msg.you .av{background:var(--green-700);color:#fff}
@@ -2574,8 +2577,14 @@ function renderCockpit(){
   `;
 }
 // Q3 — KPI cliquable qui FILTRE le portefeuille (pas juste l'ouvrir brut).
-function kpiGo(filt){
+// IMPORTANT : on atterrit en vue TABLE, pas Kanban. Un drill-down peut cibler
+// un statut tardif (closed-go, execution, monitoring) qui vit dans les colonnes
+// Kanban 5-6 (hors écran) → l'utilisateur voyait 4 colonnes vides alors que le
+// filtre comptait bien des résultats. La table montre la liste filtrée à plat,
+// tout de suite visible, sans scroll horizontal ni colonnes vides.
+function kpiGo(filt, view){
   PREFS.filters = filt || {};
+  PREFS.portfolioView = view || 'table';
   savePrefs();
   goView('portfolio');
 }
@@ -3152,11 +3161,19 @@ function renderKanban(list){
     { ids:['execution','monitoring'],                 lblK:'pf.kn.inflight',  dot:'#2E7D32' },
     { ids:['closed-go','closed-hold','closed-kill'],  lblK:'pf.kn.closed',    dot:'#103d17' }
   ];
-  return `<div class="kanban">${cols.map(c=>{
-    const items = list.filter(u=>c.ids.includes(u.status));
+  // Quand un filtre est actif, on masque les colonnes vides : sinon l'utilisateur
+  // voit un mur de colonnes "vide" alors que ses résultats sont dans une colonne
+  // plus loin (hors écran). Sans filtre, on garde les 6 colonnes (vue pipeline).
+  const filtered = Object.keys(PREFS.filters||{}).length > 0;
+  let shown = cols.map(c=>({ ...c, items: list.filter(u=>c.ids.includes(u.status)) }));
+  if(filtered) shown = shown.filter(c=>c.items.length>0);
+  if(!shown.length){
+    return `<div class="empty" style="padding:48px 20px"><div class="big">${tr('pf.kn.empty.dot')}</div>${tr('pf.kn.empty')}</div>`;
+  }
+  return `<div class="kanban">${shown.map(c=>{
     return `<div class="kn-col">
-      <div class="kn-col-h"><span class="dot" style="background:${c.dot}"></span><span class="nm">${tr(c.lblK)}</span><span class="cnt">${items.length}</span></div>
-      <div class="kn-list">${items.map(kanbanCard).join('') || `<div class="empty" style="padding:14px 6px"><div class="big">${tr('pf.kn.empty.dot')}</div>${tr('pf.kn.empty')}</div>`}</div>
+      <div class="kn-col-h"><span class="dot" style="background:${c.dot}"></span><span class="nm">${tr(c.lblK)}</span><span class="cnt">${c.items.length}</span></div>
+      <div class="kn-list">${c.items.map(kanbanCard).join('') || `<div class="empty" style="padding:14px 6px"><div class="big">${tr('pf.kn.empty.dot')}</div>${tr('pf.kn.empty')}</div>`}</div>
     </div>`;
   }).join('')}</div>`;
 }
@@ -3170,7 +3187,7 @@ function kanbanCard(u){
       <span class="pill ${pr.pill}">${prLbl(pr)}</span>
       ${u.fast_track?`<span class="pill" style="background:#fde7e7;color:#a01f1f">${tr('badge.ft')}</span>`:''}
     </div>
-    <div class="foot"><span>🌾 ${escapeHtml(u.crop)} · ${escapeHtml(u.product)}</span><span class="sp"></span><span>${fmtMoney(u.budget)}</span></div>
+    <div class="foot"><span class="crop">🌾 ${escapeHtml(u.crop)} · ${escapeHtml(u.product)}</span><span class="bdg">${fmtMoney(u.budget)}</span></div>
   </div>`;
 }
 function colSel(key, options, cur){

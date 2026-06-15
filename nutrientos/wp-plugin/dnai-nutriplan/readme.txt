@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.15.0
+Stable tag: 0.16.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,31 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.16.0 — Fix critiques : drill-down visible, chat débordant + croix masquée =
+* DRILL-DOWN ENFIN VISIBLE (bug majeur) — cliquer un KPI cockpit
+  (« Transform → Demo/Launch », « On time »…) ou une cellule de la
+  heatmap filtrait correctement (« 3 résultats ») MAIS atterrissait en
+  vue Kanban : les trials closed-go / en exécution vivent dans les
+  colonnes Kanban 5-6, HORS écran à droite. L'utilisateur voyait
+  4 colonnes vides et croyait le drill-down cassé. Désormais : tout
+  drill-down (kpiGo) atterrit en vue TABLE → la liste filtrée est
+  visible immédiatement, sans scroll horizontal ni colonnes vides.
+* KANBAN — quand un filtre est actif, les colonnes vides sont masquées
+  (fini le mur de colonnes « vide » qui cachait la colonne peuplée).
+* CHAT DÉBORDANT + CROIX INVISIBLE (même cause racine) — la colonne
+  « main » était en `1fr` au lieu de `minmax(0,1fr)` : un contenu large
+  (table/kanban) empêchait `main` de rétrécir et POUSSAIT le panneau
+  chat (et sa croix de fermeture) hors de l'écran à droite. Fix :
+  `minmax(0,1fr)` sur la colonne main + `min-width:0` sur main/chat/
+  bulles. La croix ✕ est de nouveau visible, le texte du chat ne
+  déborde plus.
+* CHAT plus large — quand le chat est ouvert, le menu gauche se
+  resserre (240→200px) et le panneau chat s'élargit (380→460px).
+  Overlay flottant à 460px sous 1280px.
+* KANBAN — texte des cards garanti sans débordement : footer
+  « culture · produit » en ellipsis, budget en tabular-nums
+  non-cassable, titre + meta en word-break, card en overflow:hidden.
 
 = 0.15.0 — Retours métier : drill-downs honnêtes + AI command-bar hybride =
 * COCKPIT — Drill-down « % Transform → Demo / Launch » corrigé : le
