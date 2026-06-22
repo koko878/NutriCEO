@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NutriBudget — Consolidation budgétaire · OCP Nutricrops · D²nAI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-900:#103d17;--green-800:#1B5E20;--green-700:#2E7D32;--green-600:#2f8a39;--green-500:#4CAF50;
+  --green-300:#66BB6A;--green-200:#A5D6A7;--green-100:#D6EADb;--green-50:#EAF4EC;
+  --ink:#10231a;--ink-2:#1f3a2a;--muted:#5f7269;--line:#e3ebe5;--line-2:#cfdcd4;
+  --bad:#B91C1C;--bad-bg:#fdeced;--ok:#15803D;--ok-bg:#dcfce7;--warn:#B45309;--warn-bg:#fef3c7;
+  --info:#0e4f6e;--info-bg:#dff1fb;--soft:#f5f9f6;--paper:#fbfdfb;
+  --capex:#1d5e94;--capex-bg:#e5f0fa;--opex:#583c8d;--opex-bg:#ede5f8;
+  --shadow-sm:0 1px 2px rgba(16,35,26,.06);--shadow-md:0 6px 18px -6px rgba(16,35,26,.18);
+  --shadow-lg:0 24px 60px -20px rgba(16,35,26,.30);
+  --rad:12px;--rad-lg:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--soft);line-height:1.5}
+.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.01em}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;letter-spacing:-.01em}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select,textarea{font-family:inherit;color:inherit;font-size:13.5px}
+.tnum{font-variant-numeric:tabular-nums}
+:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(46,125,50,.35);border-radius:6px}
+
+/* shell */
+.top{background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 22px;height:58px;position:sticky;top:0;z-index:20}
+.brand{display:flex;flex-direction:column;line-height:1.1}
+.brand .by{font:700 9px 'Inter';letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.brand .nm{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:21px;color:var(--green-800)}
+.brand .nm b{color:var(--green-500)}
+.top .sp{flex:1}
+.ctl{display:flex;align-items:center;gap:7px;font:600 12.5px 'Inter';color:var(--ink-2);background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:7px 11px}
+.ctl select{border:0;background:none;outline:0;font-weight:700;color:var(--green-800);cursor:pointer}
+.btn{display:inline-flex;align-items:center;gap:7px;font:700 12.5px 'Inter';padding:8px 14px;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--ink-2);transition:background .15s,border-color .15s,transform .1s}
+.btn:hover{background:var(--soft);border-color:var(--line-2)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--green-700);color:#fff;border-color:var(--green-700)}
+.btn.primary:hover{background:var(--green-800)}
+.role{display:flex;align-items:center;gap:8px;background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:4px 6px 4px 11px}
+.role .av{width:28px;height:28px;border-radius:50%;background:var(--green-700);color:#fff;display:grid;place-items:center;font:800 11px 'Inter'}
+.role .t{font:700 12px 'Inter'}.role .r{font:500 10.5px 'Inter';color:var(--muted)}
+
+.nav{display:flex;gap:2px;background:#fff;border-bottom:1px solid var(--line);padding:0 18px;position:sticky;top:58px;z-index:19;overflow-x:auto}
+.nav button{font:700 13px 'Inter';color:var(--muted);padding:13px 16px;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s,border-color .15s}
+.nav button:hover{color:var(--ink)}
+.nav button.on{color:var(--green-800);border-bottom-color:var(--green-700)}
+
+.main{max-width:1280px;margin:0 auto;padding:24px 24px 80px}
+.screen{display:none;animation:fade .25s ease}.screen.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.h-pg{font-size:28px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.lead{color:var(--muted);font-size:14px;margin-bottom:20px;max-width:80ch}
+.banner{display:flex;align-items:center;gap:10px;background:var(--warn-bg);border:1px solid #f0d9a4;border-radius:10px;padding:10px 14px;font:600 12.5px 'Inter';color:#7a4f08;margin-bottom:18px}
+.banner.ro{background:var(--info-bg);border-color:#bfe0f2;color:#0e4f6e}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+@media(max-width:1080px){.kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.kpis{grid-template-columns:1fr}}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--rad);padding:16px 18px;position:relative;overflow:hidden}
+.kpi .k{font:600 11px 'Inter';color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.kpi .v{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--green-800);line-height:1;font-variant-numeric:tabular-nums}
+.kpi .v small{font-family:'Inter';font-size:13px;font-weight:600;color:var(--muted)}
+.kpi .d{font:600 11.5px 'Inter';margin-top:7px;color:var(--muted)}
+.kpi.capex .v{color:var(--capex)}.kpi.opex .v{color:var(--opex)}
+.kpi.bad .v{color:var(--bad)}
+.kpi .bar{margin-top:9px;height:5px;background:var(--soft);border-radius:999px;overflow:hidden}
+.kpi .bar > i{display:block;height:100%;border-radius:999px;background:var(--green-500)}
+
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:900px){.row2{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--rad);padding:18px 20px;margin-bottom:16px}
+.card h3{font:700 15px 'Inter';color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card h3 .sp{flex:1}
+.card h3 .hint{font:500 12px 'Inter';color:var(--muted);font-style:italic}
+
+/* bar chart */
+.bars{display:flex;flex-direction:column;gap:10px}
+.barrow{display:grid;grid-template-columns:130px 1fr 92px;gap:10px;align-items:center;font:600 12.5px 'Inter'}
+.barrow .lbl{color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.barrow .track{background:var(--soft);border-radius:999px;height:20px;overflow:hidden;position:relative}
+.barrow .fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--green-500),var(--green-700));transition:width .5s ease;min-width:2px}
+.barrow .fill.capex{background:linear-gradient(90deg,#5b9bd1,var(--capex))}
+.barrow .fill.opex{background:linear-gradient(90deg,#8a6cc0,var(--opex))}
+.barrow .amt{text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.barrow.clk{cursor:pointer}.barrow.clk:hover .lbl{color:var(--green-700)}
+
+/* split capex/opex */
+.split{display:flex;height:34px;border-radius:9px;overflow:hidden;border:1px solid var(--line)}
+.split .seg{display:flex;align-items:center;justify-content:center;font:700 12px 'Inter';color:#fff;white-space:nowrap}
+.split .seg.capex{background:var(--capex)}.split .seg.opex{background:var(--opex)}
+.legend{display:flex;gap:16px;margin-top:10px;font:600 12px 'Inter';color:var(--muted)}
+.legend .it{display:flex;align-items:center;gap:6px}
+.legend .sw{width:12px;height:12px;border-radius:3px}
+
+/* table */
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.toolbar .sp{flex:1}
+.search{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:7px 11px;min-width:200px}
+.search input{border:0;outline:0;background:none;flex:1}
+.sel{background:#fff;border:1px solid var(--line);border-radius:9px;padding:8px 11px;font:600 12.5px 'Inter';cursor:pointer;color:var(--ink-2)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--rad);background:#fff}
+table.tbl{width:100%;border-collapse:collapse;font-size:12.5px;min-width:880px}
+.tbl th{font:700 10px 'Inter';text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:11px 12px;text-align:left;background:#fbfdfb;border-bottom:1px solid var(--line);position:sticky;top:0;white-space:nowrap;cursor:pointer;user-select:none}
+.tbl th:hover{color:var(--green-700)}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tr:hover td{background:#fafdfa}
+.tbl .num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.tbl .prim{font-weight:700;color:var(--ink)}
+.tbl .prim .meta{font:500 11px 'Inter';color:var(--muted);font-weight:500}
+.pill{display:inline-flex;align-items:center;gap:5px;font:700 10px 'Inter';padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.02em;white-space:nowrap}
+.pill.capex{background:var(--capex-bg);color:var(--capex)}.pill.opex{background:var(--opex-bg);color:var(--opex)}
+.pill.paid{background:var(--ok-bg);color:var(--ok)}
+.pill.pending{background:var(--warn-bg);color:var(--warn)}
+.pill.blocked{background:var(--bad-bg);color:var(--bad)}
+.pill.draft{background:#eef0ef;color:#5c6b62}
+.ic-btn{width:30px;height:30px;border-radius:7px;display:inline-grid;place-items:center;color:var(--muted);border:1px solid transparent}
+.ic-btn:hover{background:var(--soft);color:var(--ink);border-color:var(--line)}
+
+/* modal */
+.modal-bg{position:fixed;inset:0;background:rgba(7,20,12,.5);display:none;align-items:flex-start;justify-content:center;z-index:90;padding:34px 20px;overflow-y:auto}
+.modal-bg.on{display:flex}
+.modal{background:#fff;border-radius:var(--rad-lg);max-width:680px;width:100%;box-shadow:var(--shadow-lg);overflow:hidden;animation:min .2s ease}
+@keyframes min{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:none}}
+.modal-h{padding:18px 22px 14px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:12px}
+.modal-h h2{font-size:22px;font-weight:700;flex:1}
+.modal-h .x{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:var(--muted);font-size:16px}
+.modal-h .x:hover{background:var(--soft);color:var(--ink)}
+.modal-b{padding:20px 22px;max-height:calc(100vh - 240px);overflow-y:auto}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.grid2{grid-template-columns:1fr}}
+.fld{display:flex;flex-direction:column;gap:5px}
+.fld.full{grid-column:1/-1}
+.fld label{font:700 10.5px 'Inter';text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.fld input,.fld select,.fld textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--green-500)}
+.modal-f{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;background:#fbfdfb}
+.modal-f .sp{flex:1}
+
+.empty{padding:48px 20px;text-align:center;color:var(--muted)}
+.empty .big{font-size:34px;opacity:.5;margin-bottom:8px}
+.muted{color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(16px);background:#07140c;color:#dff0e3;border:1px solid rgba(124,252,154,.4);border-radius:10px;padding:11px 18px;font:600 13px 'Inter';box-shadow:var(--shadow-lg);opacity:0;transition:opacity .25s,transform .25s;z-index:9000;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.vendorlist{display:flex;flex-direction:column;gap:2px}
+.vrow{display:grid;grid-template-columns:1fr 90px 70px;gap:10px;align-items:center;padding:9px 4px;border-bottom:1px solid var(--line);font:600 12.5px 'Inter'}
+.vrow:last-child{border-bottom:0}
+.vrow .vn{color:var(--ink)}.vrow .va{text-align:right;font-variant-numeric:tabular-nums}.vrow .vp{text-align:right;color:var(--muted);font-weight:500}
+.note{font-size:12.5px;color:var(--muted);background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:10px 13px;margin-top:6px}
+@media print{.top,.nav,.toolbar,.btn,.controls{display:none!important}.main{max-width:none}.screen{display:block!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><span class="by">OCP · Nutricrops</span><span class="nm">Nutri<b>Budget</b></span></div>
+  <span class="sp"></span>
+  <label class="ctl">Exercice <select id="yearSel"><option>2026</option></select></label>
+  <label class="ctl">Devise <select id="curSel"><option value="MAD">MAD</option><option value="USD">USD</option><option value="EUR">EUR</option></select></label>
+  <button class="btn" id="shareBtn">🔗 Partager</button>
+  <button class="btn primary" id="addBtn">+ Ligne</button>
+  <div class="role"><div class="av" id="roleAv">HK</div><div><div class="t" id="roleNm">Hamza K.</div><div class="r" id="roleR">Éditeur · D²nAI</div></div></div>
+</header>
+
+<nav class="nav" id="nav"></nav>
+
+<main class="main">
+  <div id="roBanner"></div>
+  <section class="screen on" id="sc-conso"></section>
+  <section class="screen" id="sc-lines"></section>
+  <section class="screen" id="sc-vendors"></section>
+  <section class="screen" id="sc-exec"></section>
+  <section class="screen" id="sc-share"></section>
+</main>
+
+<div class="modal-bg" id="modal" onclick="if(event.target===this)closeModal()"><div class="modal" id="modalBox"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================================
+ * NutriBudget — outil tactique de consolidation budgétaire Nutricrops
+ * Pont avant Anaplan (~2 ans). Mono-fichier, vanilla JS, zéro install.
+ * Modèle canonique : EngagementLine (+ paiement intégré au MVP).
+ * Persistance localStorage (MVP). Cible : REST + MySQL comme NutriPlan.
+ * ===================================================================== */
+
+// ---- Référentiels ----
+const BUS = ['Digital Solutions','Core IT','Data & AI','Africa','Brazil','North America','HR'];
+const CATS = ['Consulting & professional fees','Licences & subscriptions','Infrastructure & cloud','Build / projet','Run / maintenance','Business operations'];
+const CURRENCIES = ['MAD','USD','EUR'];
+// Taux de conversion vers MAD (éditables). Indicatifs — à brancher sur un taux officiel.
+let RATES = { MAD:1, USD:10.0, EUR:10.8 };
+
+// ---- Données seed (réalistes, dérivées des mails — montants illustratifs) ----
+const SEED = [
+  {id:'L-001', bu:'Digital Solutions', costType:'CAPEX', cat:'Licences & subscriptions', project:'Salesforce — CRM (3rd wave)', vendor:'Salesforce', sponsor:'Waseem Rashid', spoc:'Fatima Z. Chraibi', amount:758423, cur:'USD', otp:'IV-003411-002', po:'3960018865', pay:'blocked', payNote:'Bloqué dans SAP (Budget control)', justif:'Licences CRM cœur — déjà déployées, paiement à régulariser.', progress:90},
+  {id:'L-002', bu:'Digital Solutions', costType:'OPEX', cat:'Licences & subscriptions', project:'Salesforce — Slack', vendor:'Salesforce', sponsor:'Waseem Rashid', spoc:'Fatima Z. Chraibi', amount:45000, cur:'USD', otp:'GT-004202-014', po:'', pay:'blocked', payNote:'Bloqué Procurement (SAP)', justif:'Collaboration équipes Digital.', progress:60},
+  {id:'L-003', bu:'HR', costType:'CAPEX', cat:'Build / projet', project:'HR Connect — licences (Workday)', vendor:'Teal', sponsor:'Karim Yousfi', spoc:'Saoussane El Hannachi', amount:4094225, cur:'MAD', otp:'', po:'', pay:'blocked', payNote:'Bloqué Procurement (SAP)', justif:'Socle SIRH groupe — déploiement Workday.', progress:55},
+  {id:'L-004', bu:'HR', costType:'OPEX', cat:'Run / maintenance', project:'HR Connect — AMS / support', vendor:'Teal', sponsor:'Karim Yousfi', spoc:'Saoussane El Hannachi', amount:545261, cur:'MAD', otp:'', po:'', pay:'pending', payNote:'En attente OTP', justif:'Maintenance applicative SIRH.', progress:40},
+  {id:'L-005', bu:'Data & AI', costType:'OPEX', cat:'Run / maintenance', project:'Data platform run : external support (ref 137)', vendor:'BINewVision', sponsor:'Hamza Kohen', spoc:'Faïçal Congo', amount:2000000, cur:'MAD', otp:'', po:'', pay:'pending', payNote:'Avenant 2 en cours', justif:'Ressources Data/DevSecOps critiques pour le maintien en conditions opérationnelles, en attente d’internalisation (freeze recrutement).', progress:70},
+  {id:'L-006', bu:'Data & AI', costType:'CAPEX', cat:'Build / projet', project:'COO Cockpit — tableaux de bord direction Opérations', vendor:'BINewVision', sponsor:'Hamza Kohen', spoc:'Faïçal Congo', amount:1040000, cur:'MAD', otp:'', po:'', pay:'pending', payNote:'OTP à fournir', justif:'Cockpit décisionnel COO — build par vagues puis maintenance évolutive.', progress:80},
+  {id:'L-007', bu:'Data & AI', costType:'OPEX', cat:'Consulting & professional fees', project:'Data Catalog & Metadata Management', vendor:'OCP Solutions', sponsor:'Hamza Kohen', spoc:'Marwane Bouayad', amount:900000, cur:'MAD', otp:'', po:'', pay:'draft', payNote:'', justif:'Déploiement OpenMetadata comme catalogue data Nutricrops — gouvernance (PoV 2025).', progress:30},
+  {id:'L-008', bu:'Data & AI', costType:'CAPEX', cat:'Consulting & professional fees', project:'Data platform framing', vendor:'BCG', sponsor:'Hamza Kohen', spoc:'Faïçal Congo', amount:320000, cur:'EUR', otp:'', po:'', pay:'draft', payNote:'Proposition reçue', justif:'Cadrage stratégique plateforme data.', progress:15},
+  {id:'L-009', bu:'Digital Solutions', costType:'CAPEX', cat:'Build / projet', project:'NutriTravel — volet National (web)', vendor:'Teal', sponsor:'Karim Yousfi', spoc:'Saoussane El Hannachi', amount:513714, cur:'MAD', otp:'', po:'', pay:'draft', payNote:'Estimation indicative', justif:'Gestion NDF & OM — extension plateforme NutriTravel.', progress:10},
+  {id:'L-010', bu:'Digital Solutions', costType:'OPEX', cat:'Licences & subscriptions', project:'Mulesoft — intégrateur', vendor:'Salesforce', sponsor:'Waseem Rashid', spoc:'Fatima Z. Chraibi', amount:85425, cur:'USD', otp:'IV-004130-001', po:'', pay:'paid', payNote:'Réglé', justif:'Intégration applicative.', progress:100},
+  {id:'L-011', bu:'Digital Solutions', costType:'OPEX', cat:'Licences & subscriptions', project:'Microsoft 365 E5 — 500 licences', vendor:'MicroData', sponsor:'Waseem Rashid', spoc:'Faïçal Congo', amount:5033000, cur:'MAD', otp:'', po:'', pay:'blocked', payNote:'HT non payé — litige', justif:'Licences M365 achetées, paiement en souffrance.', progress:100},
+  {id:'L-012', bu:'Data & AI', costType:'OPEX', cat:'Consulting & professional fees', project:'Mission architecture d’entreprise (MVA)', vendor:'OGESSI', sponsor:'Hamza Kohen', spoc:'Faïçal Congo', amount:15*9000, cur:'MAD', otp:'', po:'', pay:'pending', payNote:'15 JH consommés (TJM 9000)', justif:'Architecture AS-IS / cible, sync task-force MVA groupe.', progress:35},
+  {id:'L-013', bu:'Core IT', costType:'CAPEX', cat:'Infrastructure & cloud', project:'Budget CAPEX Core IT Nutricrops', vendor:'OCP Group (Backbone)', sponsor:'El Hassane Moubarak', spoc:'Marwane Bouayad', amount:3000000, cur:'MAD', otp:'', po:'', pay:'draft', payNote:'Consolidé Core IT', justif:'Socle infrastructure Core IT.', progress:25},
+];
+
+const PAY_LABELS = {draft:'Brouillon', pending:'En attente', blocked:'Bloqué', paid:'Payé'};
+const PAY_ORDER = {blocked:0, pending:1, draft:2, paid:3};
+
+// ---- État + persistance ----
+const LS='nutribudget_v1';
+let DATA = load();
+let CUR = 'MAD';                 // devise d'affichage
+let READONLY = new URLSearchParams(location.search).get('view')==='shared';
+let UI = { tab:'conso', q:'', fBu:'', fType:'', fPay:'', sort:{key:'amountMAD',dir:-1} };
+
+function load(){ try{const s=JSON.parse(localStorage.getItem(LS)); if(s&&s.length) return s;}catch(e){} return JSON.parse(JSON.stringify(SEED)); }
+function save(){ if(READONLY) return; try{localStorage.setItem(LS, JSON.stringify(DATA));}catch(e){} }
+
+// ---- Helpers ----
+function toMAD(amount, cur){ return amount * (RATES[cur]||1); }
+function inCur(mad){ return mad / (RATES[CUR]||1); }
+function fmt(n){ return Math.round(n).toLocaleString('fr-FR'); }
+function money(mad){ const v=inCur(mad); const sym={MAD:'MAD',USD:'$',EUR:'€'}[CUR];
+  if(Math.abs(v)>=1e6) return (CUR==='MAD'?'':sym+' ')+ (v/1e6).toLocaleString('fr-FR',{maximumFractionDigits:2})+' M'+(CUR==='MAD'?' MAD':'');
+  return (CUR==='MAD'?'':sym+' ')+ fmt(v)+(CUR==='MAD'?' MAD':''); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+function lineMAD(l){ return toMAD(l.amount, l.cur); }
+
+// ---- Agrégations ----
+function totals(){
+  const t={total:0,capex:0,opex:0,paid:0,blocked:0,pending:0,nBlocked:0};
+  DATA.forEach(l=>{ const m=lineMAD(l); t.total+=m; t[l.costType.toLowerCase()]+=m;
+    if(l.pay==='paid')t.paid+=m; if(l.pay==='blocked'){t.blocked+=m;t.nBlocked++;} if(l.pay==='pending')t.pending+=m; });
+  return t;
+}
+function groupBy(key){ const g={}; DATA.forEach(l=>{ const k=l[key]||'—'; g[k]=(g[k]||0)+lineMAD(l); });
+  return Object.entries(g).sort((a,b)=>b[1]-a[1]); }
+function groupVendor(){ const g={}; DATA.forEach(l=>{ g[l.vendor]=g[l.vendor]||{a:0,n:0}; g[l.vendor].a+=lineMAD(l); g[l.vendor].n++; });
+  return Object.entries(g).sort((a,b)=>b[1].a-a[1].a); }
+
+// ---- NAV ----
+const TABS=[['conso','Consolidé'],['lines','Lignes'],['vendors','Prestataires'],['exec','Exécution & paiement'],['share','Partage & export']];
+function renderNav(){
+  document.getElementById('nav').innerHTML = TABS.map(([id,lbl])=>
+    `<button class="${UI.tab===id?'on':''}" onclick="go('${id}')">${lbl}</button>`).join('');
+}
+function go(tab){ UI.tab=tab; renderNav();
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById('sc-'+tab).classList.add('on');
+  ({conso:renderConso,lines:renderLines,vendors:renderVendors,exec:renderExec,share:renderShare}[tab])();
+}
+
+/* ===================== CONSOLIDÉ ===================== */
+function renderConso(){
+  const t=totals();
+  const capexPct = t.total? Math.round(t.capex/t.total*100):0;
+  const byBu = groupBy('bu');
+  const byCat = groupBy('cat');
+  const maxBu = Math.max(1,...byBu.map(x=>x[1]));
+  const maxCat = Math.max(1,...byCat.map(x=>x[1]));
+  document.getElementById('sc-conso').innerHTML = `
+    <h1 class="h-pg">Budget consolidé ${new Date().getFullYear()} — Nutricrops</h1>
+    <p class="lead">Vue unique de toutes les lignes d'engagement, toutes BU et prestataires. Conversion en ${CUR} au taux courant. ${DATA.length} lignes.</p>
+    <div class="kpis">
+      <div class="kpi"><div class="k">💼 Budget total</div><div class="v">${money(t.total)}</div><div class="d">${DATA.length} lignes · ${byBu.length} BU</div></div>
+      <div class="kpi capex"><div class="k">🏗 CAPEX</div><div class="v">${money(t.capex)}</div><div class="d">${capexPct}% du total</div><div class="bar"><i style="width:${capexPct}%;background:var(--capex)"></i></div></div>
+      <div class="kpi opex"><div class="k">🔁 OPEX</div><div class="v">${money(t.opex)}</div><div class="d">${100-capexPct}% du total</div><div class="bar"><i style="width:${100-capexPct}%;background:var(--opex)"></i></div></div>
+      <div class="kpi bad"><div class="k">⛔ Bloqué en paiement</div><div class="v">${money(t.blocked)}</div><div class="d">${t.nBlocked} ligne(s) bloquée(s) en SAP/Procurement</div></div>
+    </div>
+    <div class="card">
+      <h3>Répartition CAPEX / OPEX <span class="sp"></span><span class="hint">visuel = part du budget</span></h3>
+      <div class="split">
+        <div class="seg capex" style="width:${capexPct}%">${capexPct>8?'CAPEX '+capexPct+'%':''}</div>
+        <div class="seg opex" style="width:${100-capexPct}%">${(100-capexPct)>8?'OPEX '+(100-capexPct)+'%':''}</div>
+      </div>
+      <div class="legend"><span class="it"><span class="sw" style="background:var(--capex)"></span>CAPEX ${money(t.capex)}</span><span class="it"><span class="sw" style="background:var(--opex)"></span>OPEX ${money(t.opex)}</span></div>
+    </div>
+    <div class="row2">
+      <div class="card"><h3>Par Business Unit</h3><div class="bars">${byBu.map(([k,v])=>`
+        <div class="barrow clk" onclick="UI.fBu='${esc(k)}';go('lines')"><div class="lbl" title="${esc(k)}">${esc(k)}</div><div class="track"><div class="fill" style="width:${v/maxBu*100}%"></div></div><div class="amt">${money(v)}</div></div>`).join('')}</div></div>
+      <div class="card"><h3>Par catégorie de coût</h3><div class="bars">${byCat.map(([k,v])=>`
+        <div class="barrow"><div class="lbl" title="${esc(k)}">${esc(k)}</div><div class="track"><div class="fill" style="width:${v/maxCat*100}%"></div></div><div class="amt">${money(v)}</div></div>`).join('')}</div></div>
+    </div>
+    <div class="card"><h3>Statut de paiement <span class="sp"></span><span class="hint">clic pour filtrer les lignes</span></h3>
+      <div class="bars">${['blocked','pending','draft','paid'].map(st=>{
+        const arr=DATA.filter(l=>l.pay===st); const sum=arr.reduce((s,l)=>s+lineMAD(l),0); const pct=t.total?sum/t.total*100:0;
+        return `<div class="barrow clk" onclick="UI.fPay='${st}';go('lines')"><div class="lbl"><span class="pill ${st}">${PAY_LABELS[st]}</span></div><div class="track"><div class="fill" style="width:${pct}%;background:${st==='blocked'?'var(--bad)':st==='paid'?'var(--ok)':st==='pending'?'var(--warn)':'#9aa8a0'}"></div></div><div class="amt">${money(sum)} <span class="muted">· ${arr.length}</span></div></div>`;
+      }).join('')}</div>
+    </div>`;
+}
+
+/* ===================== LIGNES ===================== */
+function filteredLines(){
+  let a=DATA.slice();
+  if(UI.q){ const q=UI.q.toLowerCase(); a=a.filter(l=>(l.project+l.vendor+l.bu+l.sponsor+l.spoc).toLowerCase().includes(q)); }
+  if(UI.fBu) a=a.filter(l=>l.bu===UI.fBu);
+  if(UI.fType) a=a.filter(l=>l.costType===UI.fType);
+  if(UI.fPay) a=a.filter(l=>l.pay===UI.fPay);
+  const k=UI.sort.key, d=UI.sort.dir;
+  a.sort((x,y)=>{ let xv=k==='amountMAD'?lineMAD(x):x[k], yv=k==='amountMAD'?lineMAD(y):y[k];
+    if(typeof xv==='string'){return xv.localeCompare(yv)*d;} return (xv-yv)*d; });
+  return a;
+}
+function renderLines(){
+  const a=filteredLines();
+  const sum=a.reduce((s,l)=>s+lineMAD(l),0);
+  const chips=[];
+  if(UI.fBu)chips.push(['BU: '+UI.fBu,"UI.fBu=''"]);
+  if(UI.fType)chips.push([UI.fType,"UI.fType=''"]);
+  if(UI.fPay)chips.push([PAY_LABELS[UI.fPay],"UI.fPay=''"]);
+  document.getElementById('sc-lines').innerHTML = `
+    <h1 class="h-pg">Lignes d'engagement</h1>
+    <p class="lead">${a.length} ligne(s) · total filtré <b>${money(sum)}</b>. Clique un en-tête pour trier. ${READONLY?'':'Clic ✎ pour éditer.'}</p>
+    <div class="toolbar">
+      <div class="search">🔎<input id="q" placeholder="Projet, prestataire, BU, sponsor…" value="${esc(UI.q)}"></div>
+      <select class="sel" id="fBu"><option value="">Toutes BU</option>${BUS.map(b=>`<option ${UI.fBu===b?'selected':''}>${b}</option>`).join('')}</select>
+      <select class="sel" id="fType"><option value="">CAPEX + OPEX</option><option ${UI.fType==='CAPEX'?'selected':''}>CAPEX</option><option ${UI.fType==='OPEX'?'selected':''}>OPEX</option></select>
+      <select class="sel" id="fPay"><option value="">Tout statut</option>${Object.entries(PAY_LABELS).map(([k,v])=>`<option value="${k}" ${UI.fPay===k?'selected':''}>${v}</option>`).join('')}</select>
+      ${chips.length?`<button class="btn" onclick="${chips.map(c=>c[1]).join(';')};go('lines')">✕ Filtres</button>`:''}
+      <span class="sp"></span>
+      ${READONLY?'':'<button class="btn primary" onclick="editLine()">+ Ligne</button>'}
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr>
+        ${th('project','Projet')}${th('bu','BU')}${th('costType','Type')}${th('vendor','Prestataire')}
+        ${th('amountMAD','Montant')}${th('pay','Paiement')}${th('progress','Avanc.')}<th></th>
+      </tr></thead>
+      <tbody>${a.length?a.map(rowLine).join(''):`<tr><td colspan="8"><div class="empty"><div class="big">∅</div>Aucune ligne. ${READONLY?'':'Ajoute-en une.'}</div></td></tr>`}</tbody>
+    </table></div>`;
+  const q=document.getElementById('q'); if(q){q.oninput=e=>{UI.q=e.target.value;const a=filteredLines();/*light*/renderLines();document.getElementById('q').focus();};}
+  ['fBu','fType','fPay'].forEach(id=>{const el=document.getElementById(id); if(el)el.onchange=e=>{UI[id]=e.target.value;go('lines');};});
+}
+function th(key,lbl){ const on=UI.sort.key===key; return `<th onclick="sortBy('${key}')">${lbl}${on?(UI.sort.dir<0?' ↓':' ↑'):''}</th>`; }
+function sortBy(k){ if(UI.sort.key===k)UI.sort.dir*=-1; else UI.sort={key:k,dir:1}; renderLines(); }
+function rowLine(l){
+  return `<tr>
+    <td class="prim">${esc(l.project)}<div class="meta">${esc(l.cat)}${l.otp?' · OTP '+esc(l.otp):''}</div></td>
+    <td>${esc(l.bu)}</td>
+    <td><span class="pill ${l.costType.toLowerCase()}">${l.costType}</span></td>
+    <td>${esc(l.vendor)}<div class="meta">${esc(l.sponsor)}</div></td>
+    <td class="num">${money(lineMAD(l))}<div class="meta">${fmt(l.amount)} ${l.cur}</div></td>
+    <td><span class="pill ${l.pay}">${PAY_LABELS[l.pay]}</span>${l.payNote?`<div class="meta">${esc(l.payNote)}</div>`:''}</td>
+    <td class="num">${l.progress||0}%</td>
+    <td>${READONLY?'':`<button class="ic-btn" title="Éditer" onclick="editLine('${l.id}')">✎</button>`}</td>
+  </tr>`;
+}
+
+/* ===================== PRESTATAIRES ===================== */
+function renderVendors(){
+  const g=groupVendor(); const tot=g.reduce((s,x)=>s+x[1].a,0);
+  document.getElementById('sc-vendors').innerHTML=`
+    <h1 class="h-pg">Prestataires</h1>
+    <p class="lead">Vue consolidée par prestataire — montant total engagé et nombre de lignes. ${g.length} prestataires.</p>
+    <div class="card"><div class="vendorlist">
+      <div class="vrow" style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)"><div>Prestataire</div><div class="va">Engagé</div><div class="vp">Part</div></div>
+      ${g.map(([v,o])=>`<div class="vrow"><div class="vn">${esc(v)} <span class="muted" style="font-weight:500">· ${o.n} ligne(s)</span></div><div class="va">${money(o.a)}</div><div class="vp">${Math.round(o.a/tot*100)}%</div></div>`).join('')}
+    </div></div>
+    <div class="note">⚠ Pensez à normaliser les variantes d'un même prestataire (ex. « BI new vision » / « BI NewVision » / « BINewVision ») et à rattacher contrats + avenants. Master prestataire = besoin #9 du tableau.</div>`;
+}
+
+/* ===================== EXÉCUTION & PAIEMENT ===================== */
+function renderExec(){
+  const a=DATA.slice().sort((x,y)=>(PAY_ORDER[x.pay]-PAY_ORDER[y.pay]) || (lineMAD(y)-lineMAD(x)));
+  const t=totals();
+  document.getElementById('sc-exec').innerHTML=`
+    <h1 class="h-pg">Exécution &amp; paiement</h1>
+    <p class="lead">Suivi de la chaîne OTP → PO → paiement. Les lignes bloquées remontent en haut. Bloqué : <b>${money(t.blocked)}</b> · En attente : <b>${money(t.pending)}</b> · Payé : <b>${money(t.paid)}</b>.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Projet</th><th>Prestataire</th><th>OTP</th><th>PO</th><th class="num">Montant</th><th>Statut</th><th>Blocage / note</th></tr></thead>
+      <tbody>${a.map(l=>`<tr>
+        <td class="prim">${esc(l.project)}<div class="meta">${esc(l.bu)}</div></td>
+        <td>${esc(l.vendor)}</td>
+        <td>${l.otp?esc(l.otp):'<span class="muted">—</span>'}</td>
+        <td>${l.po?esc(l.po):'<span class="muted">—</span>'}</td>
+        <td class="num">${money(lineMAD(l))}</td>
+        <td><span class="pill ${l.pay}">${PAY_LABELS[l.pay]}</span></td>
+        <td class="muted">${esc(l.payNote||'—')}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+    <div class="note">3 verbes : <b>gérer</b> (onglet Lignes), <b>consolider</b> (onglet Consolidé), <b>partager</b> (onglet ci-contre). Cet onglet rend visible en amont ce qui se découvrait à J-3 du paiement.</div>`;
+}
+
+/* ===================== PARTAGE & EXPORT ===================== */
+function renderShare(){
+  const url = location.origin+location.pathname+'?view=shared';
+  document.getElementById('sc-share').innerHTML=`
+    <h1 class="h-pg">Partage &amp; export</h1>
+    <p class="lead">Diffuse une vue lecture seule, ou exporte vers Excel / les templates Task Force.</p>
+    <div class="row2">
+      <div class="card"><h3>🔗 Lien lecture seule</h3>
+        <p class="muted" style="font-size:13px;margin-bottom:10px">Génère un lien en lecture seule (pas d'édition possible). Idéal pour partager aux comités / Task Forces sans risque de modification.</p>
+        <div class="search" style="margin-bottom:10px"><input id="shareUrl" readonly value="${esc(url)}"></div>
+        <button class="btn primary" onclick="navigator.clipboard.writeText('${esc(url)}').then(()=>toast('Lien copié'))">Copier le lien</button>
+        <div class="note">MVP local : le lien ouvre la même donnée (localStorage du poste). Cible : lien serveur partagé (REST + MySQL, pattern NutriPlan) derrière SSO Entra ID.</div>
+      </div>
+      <div class="card"><h3>⤓ Exports</h3>
+        <p class="muted" style="font-size:13px;margin-bottom:12px">Une saisie → N formats. Fini la resaisie sous deadline d'une heure.</p>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn" onclick="exportCSV()">⤓ Export Excel / CSV (toutes lignes)</button>
+          <button class="btn" onclick="exportTF('CAPEX')">⤓ Template Task Force CAPEX</button>
+          <button class="btn" onclick="exportTF('OPEX')">⤓ Template Task Force OPEX</button>
+          <button class="btn" onclick="window.print()">🖨 Imprimer / PDF (vue courante)</button>
+        </div>
+      </div>
+    </div>
+    <div class="card"><h3>État de la donnée</h3>
+      <div class="bars">
+        <div class="barrow"><div class="lbl">Lignes complètes (OTP + PO)</div><div class="track"><div class="fill" style="width:${pctComplete()}%"></div></div><div class="amt">${pctComplete()}%</div></div>
+        <div class="barrow"><div class="lbl">Avec justification</div><div class="track"><div class="fill" style="width:${pctJustif()}%"></div></div><div class="amt">${pctJustif()}%</div></div>
+      </div>
+      <div class="note">Avant d'envoyer à une Task Force : viser 100% sur ces deux barres. Une ligne sans justification ou sans OTP est éjectée de la commission (cf. relances « impact d'arrêt non renseigné »).</div>
+    </div>`;
+}
+function pctComplete(){ if(!DATA.length)return 0; return Math.round(DATA.filter(l=>l.otp&&l.po).length/DATA.length*100); }
+function pctJustif(){ if(!DATA.length)return 0; return Math.round(DATA.filter(l=>l.justif&&l.justif.length>10).length/DATA.length*100); }
+
+/* ===================== EXPORTS ===================== */
+function dl(name,content,mime){ const b=new Blob([content],{type:mime}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); a.remove(); toast('Export '+name); }
+function csvQ(s){ return '"'+String(s==null?'':s).replace(/"/g,'""')+'"'; }
+function exportCSV(){
+  const head=['id','BU','costType','category','project','vendor','sponsor','spoc','amount','currency','amountMAD','otp','po','payStatus','payNote','progress','justification'];
+  const rows=DATA.map(l=>[l.id,l.bu,l.costType,l.cat,l.project,l.vendor,l.sponsor,l.spoc,l.amount,l.cur,Math.round(lineMAD(l)),l.otp,l.po,PAY_LABELS[l.pay],l.payNote,l.progress,l.justif].map(csvQ).join(','));
+  dl('nutribudget-'+stamp()+'.csv','﻿'+head.join(',')+'\n'+rows.join('\n'),'text/csv;charset=utf-8');
+}
+function exportTF(type){
+  const arr=DATA.filter(l=>l.costType===type);
+  const head=['Projet/volet','Fournisseur/prestataire','BU','Catégorie','Montant','Devise','Montant MAD','OTP','PO','Avancement %','Statut paiement','Justification du besoin'];
+  const rows=arr.map(l=>[l.project,l.vendor,l.bu,l.cat,l.amount,l.cur,Math.round(lineMAD(l)),l.otp,l.po,(l.progress||0)+'%',PAY_LABELS[l.pay],l.justif].map(csvQ).join(','));
+  dl('template-taskforce-'+type+'-'+stamp()+'.csv','﻿'+head.join(',')+'\n'+rows.join('\n'),'text/csv;charset=utf-8');
+}
+function stamp(){ return new Date().toISOString().slice(0,10); }
+
+/* ===================== ÉDITION ===================== */
+function editLine(id){
+  if(READONLY) return;
+  const l = id? DATA.find(x=>x.id===id) : {id:'', bu:BUS[0],costType:'CAPEX',cat:CATS[0],project:'',vendor:'',sponsor:'',spoc:'',amount:0,cur:'MAD',otp:'',po:'',pay:'draft',payNote:'',justif:'',progress:0};
+  const opt=(arr,v)=>arr.map(x=>`<option ${x===v?'selected':''}>${esc(x)}</option>`).join('');
+  document.getElementById('modalBox').innerHTML=`
+    <div class="modal-h"><h2>${id?'Éditer la ligne':'Nouvelle ligne d\'engagement'}</h2><button class="x" onclick="closeModal()">✕</button></div>
+    <div class="modal-b"><div class="grid2">
+      <div class="fld full"><label>Projet / volet *</label><input id="m_project" value="${esc(l.project)}" placeholder="Ex. Salesforce — CRM"></div>
+      <div class="fld"><label>Business Unit</label><select id="m_bu">${opt(BUS,l.bu)}</select></div>
+      <div class="fld"><label>Type</label><select id="m_costType"><option ${l.costType==='CAPEX'?'selected':''}>CAPEX</option><option ${l.costType==='OPEX'?'selected':''}>OPEX</option></select></div>
+      <div class="fld"><label>Catégorie de coût</label><select id="m_cat">${opt(CATS,l.cat)}</select></div>
+      <div class="fld"><label>Prestataire</label><input id="m_vendor" value="${esc(l.vendor)}" placeholder="Ex. Teal"></div>
+      <div class="fld"><label>Montant</label><input id="m_amount" type="number" value="${l.amount}"></div>
+      <div class="fld"><label>Devise</label><select id="m_cur">${opt(CURRENCIES,l.cur)}</select></div>
+      <div class="fld"><label>Sponsor</label><input id="m_sponsor" value="${esc(l.sponsor)}"></div>
+      <div class="fld"><label>SPOC</label><input id="m_spoc" value="${esc(l.spoc)}"></div>
+      <div class="fld"><label>OTP</label><input id="m_otp" value="${esc(l.otp)}"></div>
+      <div class="fld"><label>PO / Bon de commande</label><input id="m_po" value="${esc(l.po)}"></div>
+      <div class="fld"><label>Statut paiement</label><select id="m_pay">${Object.entries(PAY_LABELS).map(([k,v])=>`<option value="${k}" ${l.pay===k?'selected':''}>${v}</option>`).join('')}</select></div>
+      <div class="fld"><label>Avancement %</label><input id="m_progress" type="number" min="0" max="100" value="${l.progress||0}"></div>
+      <div class="fld full"><label>Note de blocage / paiement</label><input id="m_payNote" value="${esc(l.payNote)}" placeholder="Ex. Bloqué dans SAP (Procurement)"></div>
+      <div class="fld full"><label>Justification du besoin (défendable)</label><textarea id="m_justif" rows="3" placeholder="Objectif opérationnel · livrable concret · impact business · alternative interne">${esc(l.justif)}</textarea></div>
+    </div></div>
+    <div class="modal-f">${id?`<button class="btn" style="color:var(--bad);border-color:#f0c9c9" onclick="delLine('${id}')">Supprimer</button>`:''}<span class="sp"></span>
+      <button class="btn" onclick="closeModal()">Annuler</button><button class="btn primary" onclick="saveLine('${id}')">Enregistrer</button></div>`;
+  document.getElementById('modal').classList.add('on');
+  setTimeout(()=>document.getElementById('m_project').focus(),60);
+}
+function saveLine(id){
+  const g=k=>document.getElementById('m_'+k).value;
+  const project=g('project').trim(); if(!project){toast('Le projet est obligatoire');return;}
+  const rec={ id:id||('L-'+Date.now().toString(36)), bu:g('bu'),costType:g('costType'),cat:g('cat'),project,
+    vendor:g('vendor').trim(),sponsor:g('sponsor').trim(),spoc:g('spoc').trim(),
+    amount:parseFloat(g('amount'))||0,cur:g('cur'),otp:g('otp').trim(),po:g('po').trim(),
+    pay:g('pay'),payNote:g('payNote').trim(),justif:g('justif').trim(),progress:parseInt(g('progress'))||0 };
+  if(id){ const i=DATA.findIndex(x=>x.id===id); DATA[i]=rec; } else DATA.unshift(rec);
+  save(); closeModal(); toast(id?'Ligne mise à jour':'Ligne ajoutée'); go(UI.tab);
+}
+function delLine(id){ DATA=DATA.filter(x=>x.id!==id); save(); closeModal(); toast('Ligne supprimée'); go(UI.tab); }
+function closeModal(){ document.getElementById('modal').classList.remove('on'); }
+
+/* ===================== BOOT ===================== */
+function applyReadonly(){
+  const b=document.getElementById('roBanner');
+  if(READONLY){ b.innerHTML=`<div class="banner ro">👁 Vue lecture seule partagée — édition désactivée.</div>`;
+    document.getElementById('addBtn').style.display='none';
+    document.getElementById('roleNm').textContent='Invité';
+    document.getElementById('roleR').textContent='Lecture seule';
+    document.getElementById('roleAv').textContent='👁';
+  } else {
+    b.innerHTML=`<div class="banner">⏱ Outil tactique de consolidation — pont avant Anaplan (~2 ans). Données en cache local de ce poste (MVP). Cible : serveur partagé + SSO.</div>`;
+  }
+}
+document.getElementById('curSel').onchange=e=>{ CUR=e.target.value; go(UI.tab); };
+document.getElementById('addBtn').onclick=()=>editLine();
+document.getElementById('shareBtn').onclick=()=>go('share');
+document.addEventListener('keydown',e=>{ if(e.key==='Escape')closeModal(); });
+applyReadonly(); renderNav(); go('conso');
+</script>
+</body>
+</html>
