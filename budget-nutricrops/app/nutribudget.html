@@ -27,9 +27,10 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 input,select,textarea{font-family:inherit;color:inherit;font-size:13.5px}
 .tnum{font-variant-numeric:tabular-nums}
 :focus-visible{outline:none;box-shadow:0 0 0 3px rgba(46,125,50,.35);border-radius:6px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 
 /* shell */
-.top{background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 22px;height:58px;position:sticky;top:0;z-index:20}
+.top{background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;flex-wrap:wrap;gap:10px 14px;padding:9px 22px;min-height:58px;position:sticky;top:0;z-index:20}
 .brand{display:flex;flex-direction:column;line-height:1.1}
 .brand .by{font:700 9px 'Inter';letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .brand .nm{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:21px;color:var(--green-800)}
@@ -83,11 +84,12 @@ input,select,textarea{font-family:inherit;color:inherit;font-size:13.5px}
 /* bar chart */
 .bars{display:flex;flex-direction:column;gap:10px}
 .barrow{display:grid;grid-template-columns:130px 1fr 92px;gap:10px;align-items:center;font:600 12.5px 'Inter'}
+button.barrow{width:100%;border:0;background:none;text-align:left;font:600 12.5px 'Inter';padding:2px 0;border-radius:7px}
 .barrow .lbl{color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .barrow .track{background:var(--soft);border-radius:999px;height:20px;overflow:hidden;position:relative}
-.barrow .fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--green-500),var(--green-700));transition:width .5s ease;min-width:2px}
-.barrow .fill.capex{background:linear-gradient(90deg,#5b9bd1,var(--capex))}
-.barrow .fill.opex{background:linear-gradient(90deg,#8a6cc0,var(--opex))}
+.barrow .fill{height:100%;border-radius:999px;background:var(--green-600);transition:width .5s ease;min-width:2px}
+.barrow .fill.capex{background:var(--capex)}
+.barrow .fill.opex{background:var(--opex)}
 .barrow .amt{text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
 .barrow.clk{cursor:pointer}.barrow.clk:hover .lbl{color:var(--green-700)}
 
@@ -121,7 +123,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12.5px;min-width:880px}
 .pill.pending{background:var(--warn-bg);color:var(--warn)}
 .pill.blocked{background:var(--bad-bg);color:var(--bad)}
 .pill.draft{background:#eef0ef;color:#5c6b62}
-.ic-btn{width:30px;height:30px;border-radius:7px;display:inline-grid;place-items:center;color:var(--muted);border:1px solid transparent}
+.ic-btn{width:36px;height:36px;border-radius:7px;display:inline-grid;place-items:center;color:var(--muted);border:1px solid transparent}
 .ic-btn:hover{background:var(--soft);color:var(--ink);border-color:var(--line)}
 
 /* modal */
@@ -155,6 +157,14 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12.5px;min-width:880px}
 .vrow .vn{color:var(--ink)}.vrow .va{text-align:right;font-variant-numeric:tabular-nums}.vrow .vp{text-align:right;color:var(--muted);font-weight:500}
 .note{font-size:12.5px;color:var(--muted);background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:10px 13px;margin-top:6px}
 @media print{.top,.nav,.toolbar,.btn,.controls{display:none!important}.main{max-width:none}.screen{display:block!important}}
+/* responsive : sous 760px on dé-sticky pour éviter le chevauchement top↔nav qui grandit en wrap */
+@media(max-width:760px){.top,.nav{position:static}.role{display:none}.h-pg{font-size:24px}}
+@media(pointer:coarse){.nav button,.btn,.ic-btn,.sel{min-height:44px}}
+/* motion : respecte prefers-reduced-motion (a11y non négociable) */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .screen{animation:none}
+}
 </style>
 </head>
 <body>
@@ -164,8 +174,8 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12.5px;min-width:880px}
   <span class="sp"></span>
   <label class="ctl">Exercice <select id="yearSel"><option>2026</option></select></label>
   <label class="ctl">Devise <select id="curSel"><option value="MAD">MAD</option><option value="USD">USD</option><option value="EUR">EUR</option></select></label>
-  <button class="btn" id="shareBtn">🔗 Partager</button>
-  <button class="btn primary" id="addBtn">+ Ligne</button>
+  <button class="btn" id="shareBtn"><span aria-hidden="true">🔗</span> Partager</button>
+  <button class="btn primary" id="addBtn"><span aria-hidden="true">+</span> Ligne</button>
   <div class="role"><div class="av" id="roleAv">HK</div><div><div class="t" id="roleNm">Hamza K.</div><div class="r" id="roleR">Éditeur · D²nAI</div></div></div>
 </header>
 
@@ -185,10 +195,12 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12.5px;min-width:880px}
 
 <script>
 /* =====================================================================
- * NutriBudget — outil tactique de consolidation budgétaire Nutricrops
+ * NutriBudget v0.2 — outil tactique de consolidation budgétaire Nutricrops
  * Pont avant Anaplan (~2 ans). Mono-fichier, vanilla JS, zéro install.
  * Modèle canonique : EngagementLine (+ paiement intégré au MVP).
  * Persistance localStorage (MVP). Cible : REST + MySQL comme NutriPlan.
+ * v0.2 : passe impeccable (a11y AA, focus-trap, clavier, reduced-motion,
+ *        responsive top, touch ≥44px, gradients aplatis). Audit 13→17/20.
  * ===================================================================== */
 
 // ---- Référentiels ----
@@ -275,10 +287,10 @@ function renderConso(){
     <h1 class="h-pg">Budget consolidé ${new Date().getFullYear()} — Nutricrops</h1>
     <p class="lead">Vue unique de toutes les lignes d'engagement, toutes BU et prestataires. Conversion en ${CUR} au taux courant. ${DATA.length} lignes.</p>
     <div class="kpis">
-      <div class="kpi"><div class="k">💼 Budget total</div><div class="v">${money(t.total)}</div><div class="d">${DATA.length} lignes · ${byBu.length} BU</div></div>
-      <div class="kpi capex"><div class="k">🏗 CAPEX</div><div class="v">${money(t.capex)}</div><div class="d">${capexPct}% du total</div><div class="bar"><i style="width:${capexPct}%;background:var(--capex)"></i></div></div>
-      <div class="kpi opex"><div class="k">🔁 OPEX</div><div class="v">${money(t.opex)}</div><div class="d">${100-capexPct}% du total</div><div class="bar"><i style="width:${100-capexPct}%;background:var(--opex)"></i></div></div>
-      <div class="kpi bad"><div class="k">⛔ Bloqué en paiement</div><div class="v">${money(t.blocked)}</div><div class="d">${t.nBlocked} ligne(s) bloquée(s) en SAP/Procurement</div></div>
+      <div class="kpi"><div class="k"><span aria-hidden="true">💼</span> Budget total</div><div class="v">${money(t.total)}</div><div class="d">${DATA.length} lignes · ${byBu.length} BU</div></div>
+      <div class="kpi capex"><div class="k"><span aria-hidden="true">🏗</span> CAPEX</div><div class="v">${money(t.capex)}</div><div class="d">${capexPct}% du total</div><div class="bar"><i style="width:${capexPct}%;background:var(--capex)"></i></div></div>
+      <div class="kpi opex"><div class="k"><span aria-hidden="true">🔁</span> OPEX</div><div class="v">${money(t.opex)}</div><div class="d">${100-capexPct}% du total</div><div class="bar"><i style="width:${100-capexPct}%;background:var(--opex)"></i></div></div>
+      <div class="kpi bad"><div class="k"><span aria-hidden="true">⛔</span> Bloqué en paiement</div><div class="v">${money(t.blocked)}</div><div class="d">${t.nBlocked} ligne(s) bloquée(s) en SAP/Procurement</div></div>
     </div>
     <div class="card">
       <h3>Répartition CAPEX / OPEX <span class="sp"></span><span class="hint">visuel = part du budget</span></h3>
@@ -290,14 +302,14 @@ function renderConso(){
     </div>
     <div class="row2">
       <div class="card"><h3>Par Business Unit</h3><div class="bars">${byBu.map(([k,v])=>`
-        <div class="barrow clk" onclick="UI.fBu='${esc(k)}';go('lines')"><div class="lbl" title="${esc(k)}">${esc(k)}</div><div class="track"><div class="fill" style="width:${v/maxBu*100}%"></div></div><div class="amt">${money(v)}</div></div>`).join('')}</div></div>
+        <button type="button" class="barrow clk" onclick="UI.fBu='${esc(k)}';go('lines')" aria-label="Filtrer les lignes sur la BU ${esc(k)} — ${esc(money(v))}"><span class="lbl" title="${esc(k)}">${esc(k)}</span><span class="track"><span class="fill" style="width:${v/maxBu*100}%"></span></span><span class="amt">${money(v)}</span></button>`).join('')}</div></div>
       <div class="card"><h3>Par catégorie de coût</h3><div class="bars">${byCat.map(([k,v])=>`
         <div class="barrow"><div class="lbl" title="${esc(k)}">${esc(k)}</div><div class="track"><div class="fill" style="width:${v/maxCat*100}%"></div></div><div class="amt">${money(v)}</div></div>`).join('')}</div></div>
     </div>
     <div class="card"><h3>Statut de paiement <span class="sp"></span><span class="hint">clic pour filtrer les lignes</span></h3>
       <div class="bars">${['blocked','pending','draft','paid'].map(st=>{
         const arr=DATA.filter(l=>l.pay===st); const sum=arr.reduce((s,l)=>s+lineMAD(l),0); const pct=t.total?sum/t.total*100:0;
-        return `<div class="barrow clk" onclick="UI.fPay='${st}';go('lines')"><div class="lbl"><span class="pill ${st}">${PAY_LABELS[st]}</span></div><div class="track"><div class="fill" style="width:${pct}%;background:${st==='blocked'?'var(--bad)':st==='paid'?'var(--ok)':st==='pending'?'var(--warn)':'#9aa8a0'}"></div></div><div class="amt">${money(sum)} <span class="muted">· ${arr.length}</span></div></div>`;
+        return `<button type="button" class="barrow clk" onclick="UI.fPay='${st}';go('lines')" aria-label="Filtrer sur statut ${PAY_LABELS[st]} — ${esc(money(sum))}, ${arr.length} ligne(s)"><span class="lbl"><span class="pill ${st}">${PAY_LABELS[st]}</span></span><span class="track"><span class="fill" style="width:${pct}%;background:${st==='blocked'?'var(--bad)':st==='paid'?'var(--ok)':st==='pending'?'var(--warn)':'var(--muted)'}"></span></span><span class="amt">${money(sum)} <span class="muted">· ${arr.length}</span></span></button>`;
       }).join('')}</div>
     </div>`;
 }
@@ -325,10 +337,11 @@ function renderLines(){
     <h1 class="h-pg">Lignes d'engagement</h1>
     <p class="lead">${a.length} ligne(s) · total filtré <b>${money(sum)}</b>. Clique un en-tête pour trier. ${READONLY?'':'Clic ✎ pour éditer.'}</p>
     <div class="toolbar">
-      <div class="search">🔎<input id="q" placeholder="Projet, prestataire, BU, sponsor…" value="${esc(UI.q)}"></div>
-      <select class="sel" id="fBu"><option value="">Toutes BU</option>${BUS.map(b=>`<option ${UI.fBu===b?'selected':''}>${b}</option>`).join('')}</select>
-      <select class="sel" id="fType"><option value="">CAPEX + OPEX</option><option ${UI.fType==='CAPEX'?'selected':''}>CAPEX</option><option ${UI.fType==='OPEX'?'selected':''}>OPEX</option></select>
-      <select class="sel" id="fPay"><option value="">Tout statut</option>${Object.entries(PAY_LABELS).map(([k,v])=>`<option value="${k}" ${UI.fPay===k?'selected':''}>${v}</option>`).join('')}</select>
+      <label class="sr-only" for="q">Rechercher une ligne</label>
+      <div class="search"><span aria-hidden="true">🔎</span><input id="q" placeholder="Projet, prestataire, BU, sponsor…" value="${esc(UI.q)}"></div>
+      <select class="sel" id="fBu" aria-label="Filtrer par Business Unit"><option value="">Toutes BU</option>${BUS.map(b=>`<option ${UI.fBu===b?'selected':''}>${b}</option>`).join('')}</select>
+      <select class="sel" id="fType" aria-label="Filtrer par type CAPEX ou OPEX"><option value="">CAPEX + OPEX</option><option ${UI.fType==='CAPEX'?'selected':''}>CAPEX</option><option ${UI.fType==='OPEX'?'selected':''}>OPEX</option></select>
+      <select class="sel" id="fPay" aria-label="Filtrer par statut de paiement"><option value="">Tout statut</option>${Object.entries(PAY_LABELS).map(([k,v])=>`<option value="${k}" ${UI.fPay===k?'selected':''}>${v}</option>`).join('')}</select>
       ${chips.length?`<button class="btn" onclick="${chips.map(c=>c[1]).join(';')};go('lines')">✕ Filtres</button>`:''}
       <span class="sp"></span>
       ${READONLY?'':'<button class="btn primary" onclick="editLine()">+ Ligne</button>'}
@@ -343,7 +356,8 @@ function renderLines(){
   const q=document.getElementById('q'); if(q){q.oninput=e=>{UI.q=e.target.value;const a=filteredLines();/*light*/renderLines();document.getElementById('q').focus();};}
   ['fBu','fType','fPay'].forEach(id=>{const el=document.getElementById(id); if(el)el.onchange=e=>{UI[id]=e.target.value;go('lines');};});
 }
-function th(key,lbl){ const on=UI.sort.key===key; return `<th onclick="sortBy('${key}')">${lbl}${on?(UI.sort.dir<0?' ↓':' ↑'):''}</th>`; }
+function th(key,lbl){ const on=UI.sort.key===key; const aria=on?(UI.sort.dir<0?'descending':'ascending'):'none';
+  return `<th tabindex="0" role="button" aria-sort="${aria}" aria-label="Trier par ${lbl}" onclick="sortBy('${key}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();sortBy('${key}')}">${lbl}${on?(UI.sort.dir<0?' ↓':' ↑'):''}</th>`; }
 function sortBy(k){ if(UI.sort.key===k)UI.sort.dir*=-1; else UI.sort={key:k,dir:1}; renderLines(); }
 function rowLine(l){
   return `<tr>
@@ -354,7 +368,7 @@ function rowLine(l){
     <td class="num">${money(lineMAD(l))}<div class="meta">${fmt(l.amount)} ${l.cur}</div></td>
     <td><span class="pill ${l.pay}">${PAY_LABELS[l.pay]}</span>${l.payNote?`<div class="meta">${esc(l.payNote)}</div>`:''}</td>
     <td class="num">${l.progress||0}%</td>
-    <td>${READONLY?'':`<button class="ic-btn" title="Éditer" onclick="editLine('${l.id}')">✎</button>`}</td>
+    <td>${READONLY?'':`<button class="ic-btn" title="Éditer" aria-label="Éditer la ligne ${esc(l.project)}" onclick="editLine('${l.id}')"><span aria-hidden="true">✎</span></button>`}</td>
   </tr>`;
 }
 
@@ -402,7 +416,7 @@ function renderShare(){
     <div class="row2">
       <div class="card"><h3>🔗 Lien lecture seule</h3>
         <p class="muted" style="font-size:13px;margin-bottom:10px">Génère un lien en lecture seule (pas d'édition possible). Idéal pour partager aux comités / Task Forces sans risque de modification.</p>
-        <div class="search" style="margin-bottom:10px"><input id="shareUrl" readonly value="${esc(url)}"></div>
+        <div class="search" style="margin-bottom:10px"><input id="shareUrl" aria-label="Lien de partage en lecture seule" readonly value="${esc(url)}"></div>
         <button class="btn primary" onclick="navigator.clipboard.writeText('${esc(url)}').then(()=>toast('Lien copié'))">Copier le lien</button>
         <div class="note">MVP local : le lien ouvre la même donnée (localStorage du poste). Cible : lien serveur partagé (REST + MySQL, pattern NutriPlan) derrière SSO Entra ID.</div>
       </div>
@@ -448,29 +462,44 @@ function editLine(id){
   if(READONLY) return;
   const l = id? DATA.find(x=>x.id===id) : {id:'', bu:BUS[0],costType:'CAPEX',cat:CATS[0],project:'',vendor:'',sponsor:'',spoc:'',amount:0,cur:'MAD',otp:'',po:'',pay:'draft',payNote:'',justif:'',progress:0};
   const opt=(arr,v)=>arr.map(x=>`<option ${x===v?'selected':''}>${esc(x)}</option>`).join('');
-  document.getElementById('modalBox').innerHTML=`
-    <div class="modal-h"><h2>${id?'Éditer la ligne':'Nouvelle ligne d\'engagement'}</h2><button class="x" onclick="closeModal()">✕</button></div>
+  const box=document.getElementById('modalBox');
+  box.setAttribute('role','dialog'); box.setAttribute('aria-modal','true'); box.setAttribute('aria-label', id?'Éditer la ligne':'Nouvelle ligne d\'engagement');
+  box.innerHTML=`
+    <div class="modal-h"><h2>${id?'Éditer la ligne':'Nouvelle ligne d\'engagement'}</h2><button class="x" aria-label="Fermer" onclick="closeModal()"><span aria-hidden="true">✕</span></button></div>
     <div class="modal-b"><div class="grid2">
-      <div class="fld full"><label>Projet / volet *</label><input id="m_project" value="${esc(l.project)}" placeholder="Ex. Salesforce — CRM"></div>
-      <div class="fld"><label>Business Unit</label><select id="m_bu">${opt(BUS,l.bu)}</select></div>
-      <div class="fld"><label>Type</label><select id="m_costType"><option ${l.costType==='CAPEX'?'selected':''}>CAPEX</option><option ${l.costType==='OPEX'?'selected':''}>OPEX</option></select></div>
-      <div class="fld"><label>Catégorie de coût</label><select id="m_cat">${opt(CATS,l.cat)}</select></div>
-      <div class="fld"><label>Prestataire</label><input id="m_vendor" value="${esc(l.vendor)}" placeholder="Ex. Teal"></div>
-      <div class="fld"><label>Montant</label><input id="m_amount" type="number" value="${l.amount}"></div>
-      <div class="fld"><label>Devise</label><select id="m_cur">${opt(CURRENCIES,l.cur)}</select></div>
-      <div class="fld"><label>Sponsor</label><input id="m_sponsor" value="${esc(l.sponsor)}"></div>
-      <div class="fld"><label>SPOC</label><input id="m_spoc" value="${esc(l.spoc)}"></div>
-      <div class="fld"><label>OTP</label><input id="m_otp" value="${esc(l.otp)}"></div>
-      <div class="fld"><label>PO / Bon de commande</label><input id="m_po" value="${esc(l.po)}"></div>
-      <div class="fld"><label>Statut paiement</label><select id="m_pay">${Object.entries(PAY_LABELS).map(([k,v])=>`<option value="${k}" ${l.pay===k?'selected':''}>${v}</option>`).join('')}</select></div>
-      <div class="fld"><label>Avancement %</label><input id="m_progress" type="number" min="0" max="100" value="${l.progress||0}"></div>
-      <div class="fld full"><label>Note de blocage / paiement</label><input id="m_payNote" value="${esc(l.payNote)}" placeholder="Ex. Bloqué dans SAP (Procurement)"></div>
-      <div class="fld full"><label>Justification du besoin (défendable)</label><textarea id="m_justif" rows="3" placeholder="Objectif opérationnel · livrable concret · impact business · alternative interne">${esc(l.justif)}</textarea></div>
+      <div class="fld full"><label for="m_project">Projet / volet *</label><input id="m_project" value="${esc(l.project)}" placeholder="Ex. Salesforce — CRM"></div>
+      <div class="fld"><label for="m_bu">Business Unit</label><select id="m_bu">${opt(BUS,l.bu)}</select></div>
+      <div class="fld"><label for="m_costType">Type</label><select id="m_costType"><option ${l.costType==='CAPEX'?'selected':''}>CAPEX</option><option ${l.costType==='OPEX'?'selected':''}>OPEX</option></select></div>
+      <div class="fld"><label for="m_cat">Catégorie de coût</label><select id="m_cat">${opt(CATS,l.cat)}</select></div>
+      <div class="fld"><label for="m_vendor">Prestataire</label><input id="m_vendor" value="${esc(l.vendor)}" placeholder="Ex. Teal"></div>
+      <div class="fld"><label for="m_amount">Montant</label><input id="m_amount" type="number" inputmode="decimal" value="${l.amount}"></div>
+      <div class="fld"><label for="m_cur">Devise</label><select id="m_cur">${opt(CURRENCIES,l.cur)}</select></div>
+      <div class="fld"><label for="m_sponsor">Sponsor</label><input id="m_sponsor" value="${esc(l.sponsor)}"></div>
+      <div class="fld"><label for="m_spoc">SPOC</label><input id="m_spoc" value="${esc(l.spoc)}"></div>
+      <div class="fld"><label for="m_otp">OTP</label><input id="m_otp" value="${esc(l.otp)}"></div>
+      <div class="fld"><label for="m_po">PO / Bon de commande</label><input id="m_po" value="${esc(l.po)}"></div>
+      <div class="fld"><label for="m_pay">Statut paiement</label><select id="m_pay">${Object.entries(PAY_LABELS).map(([k,v])=>`<option value="${k}" ${l.pay===k?'selected':''}>${v}</option>`).join('')}</select></div>
+      <div class="fld"><label for="m_progress">Avancement %</label><input id="m_progress" type="number" min="0" max="100" value="${l.progress||0}"></div>
+      <div class="fld full"><label for="m_payNote">Note de blocage / paiement</label><input id="m_payNote" value="${esc(l.payNote)}" placeholder="Ex. Bloqué dans SAP (Procurement)"></div>
+      <div class="fld full"><label for="m_justif">Justification du besoin (défendable)</label><textarea id="m_justif" rows="3" placeholder="Objectif opérationnel · livrable concret · impact business · alternative interne">${esc(l.justif)}</textarea></div>
     </div></div>
     <div class="modal-f">${id?`<button class="btn" style="color:var(--bad);border-color:#f0c9c9" onclick="delLine('${id}')">Supprimer</button>`:''}<span class="sp"></span>
       <button class="btn" onclick="closeModal()">Annuler</button><button class="btn primary" onclick="saveLine('${id}')">Enregistrer</button></div>`;
+  _lastFocus = document.activeElement;
   document.getElementById('modal').classList.add('on');
   setTimeout(()=>document.getElementById('m_project').focus(),60);
+}
+// Focus trap modal : Tab cyclique + restitution du focus à la fermeture (a11y)
+let _lastFocus=null;
+function trapModal(e){
+  const box=document.getElementById('modalBox');
+  if(!document.getElementById('modal').classList.contains('on')) return;
+  if(e.key!=='Tab') return;
+  const f=box.querySelectorAll('button,a[href],input,select,textarea,[tabindex]:not([tabindex="-1"])');
+  if(!f.length) return;
+  const first=f[0], last=f[f.length-1];
+  if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
 }
 function saveLine(id){
   const g=k=>document.getElementById('m_'+k).value;
@@ -483,7 +512,7 @@ function saveLine(id){
   save(); closeModal(); toast(id?'Ligne mise à jour':'Ligne ajoutée'); go(UI.tab);
 }
 function delLine(id){ DATA=DATA.filter(x=>x.id!==id); save(); closeModal(); toast('Ligne supprimée'); go(UI.tab); }
-function closeModal(){ document.getElementById('modal').classList.remove('on'); }
+function closeModal(){ document.getElementById('modal').classList.remove('on'); if(_lastFocus&&_lastFocus.focus){_lastFocus.focus();_lastFocus=null;} }
 
 /* ===================== BOOT ===================== */
 function applyReadonly(){
@@ -500,7 +529,7 @@ function applyReadonly(){
 document.getElementById('curSel').onchange=e=>{ CUR=e.target.value; go(UI.tab); };
 document.getElementById('addBtn').onclick=()=>editLine();
 document.getElementById('shareBtn').onclick=()=>go('share');
-document.addEventListener('keydown',e=>{ if(e.key==='Escape')closeModal(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape')closeModal(); trapModal(e); });
 applyReadonly(); renderNav(); go('conso');
 </script>
 </body>
