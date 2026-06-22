@@ -3,3 +3,9 @@
 # Keep the synthesis markdown but do NOT commit raw mail extracts
 budget-nutricrops/extracts/
 budget-nutricrops/raw-eml/
+
+# NutriBudget React app — build artefacts (build locally, WP serves the dist single-file)
+budget-nutricrops/nutribudget-app/node_modules/
+budget-nutricrops/nutribudget-app/dist/
+
+budget-nutricrops/nutribudget-app/*.tsbuildinfo

@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+/* Geist fonts bundled locally via npm (CDN is blocked in the build env). */
+@import "@fontsource/geist-sans/400.css";
+@import "@fontsource/geist-sans/500.css";
+@import "@fontsource/geist-sans/600.css";
+@import "@fontsource/geist-sans/700.css";
+@import "@fontsource/geist-mono/400.css";
+@import "@fontsource/geist-mono/500.css";
+@import "@fontsource/geist-mono/600.css";
+
+@theme {
+  --font-sans: "Geist Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+
+  /* OCP green — desaturated emerald. Single accent throughout. */
+  --color-ocp-50: #ecf5ee;
+  --color-ocp-100: #d4e8d8;
+  --color-ocp-200: #aed3b6;
+  --color-ocp-300: #7fb88b;
+  --color-ocp-400: #54a064;
+  --color-ocp-500: #2e7d32;
+  --color-ocp-600: #28702c;
+  --color-ocp-700: #205a24;
+  --color-ocp-800: #1b4d1f;
+  --color-ocp-900: #143b18;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    background-color: var(--color-zinc-50);
+    color: var(--color-zinc-900);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  /* Tabular figures everywhere numbers appear via font-mono. */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+  *:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-zinc-50), 0 0 0 4px var(--color-ocp-500);
+    border-radius: 0.5rem;
+  }
+}
+
+/* Perpetual micro-motion — isolated, transform/opacity only. */
+@keyframes nb-breathe {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.55); opacity: 0.45; }
+}
+.nb-breathe {
+  animation: nb-breathe 1.8s ease-in-out infinite;
+}
+@keyframes nb-shimmer {
+  100% { transform: translateX(200%); }
+}
+.nb-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.45),
+    transparent
+  );
+  animation: nb-shimmer 2.4s ease-in-out infinite;
+}
+
+@media print {
+  .nb-no-print { display: none !important; }
+  body { background: #fff; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .nb-breathe,
+  .nb-shimmer::after { animation: none !important; }
+}
