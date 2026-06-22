@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pourquoi un outil de gestion du budget — Nutricrops · D²nAI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-900:#103d17;--green-800:#1B5E20;--green-700:#2E7D32;--green-500:#4CAF50;
+  --green-200:#A5D6A7;--green-100:#D6EADb;--green-50:#EAF4EC;
+  --ink:#10231a;--ink-2:#1f3a2a;--muted:#5f7269;--line:#e3ebe5;
+  --bad:#B91C1C;--warn:#B45309;--paper:#fbfdfb;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#e9efe9;color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.5}
+.serif{font-family:'Cormorant Garamond',serif;letter-spacing:-.01em}
+.deck{max-width:1120px;margin:0 auto;padding:28px 20px 60px}
+.slide{background:#fff;border:1px solid var(--line);border-radius:18px;padding:54px 60px;margin-bottom:26px;
+  min-height:640px;display:flex;flex-direction:column;box-shadow:0 18px 50px -28px rgba(16,35,26,.25);position:relative;overflow:hidden}
+.slide-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.kicker{font:700 11px 'Inter';letter-spacing:.14em;text-transform:uppercase;color:var(--green-700)}
+.kicker .n{color:var(--muted)}
+h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:54px;line-height:1.04;color:var(--ink);letter-spacing:-.02em;text-wrap:balance}
+h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:38px;line-height:1.08;color:var(--ink);letter-spacing:-.02em;margin-bottom:18px;text-wrap:balance}
+.lead{font-size:18px;color:var(--ink-2);max-width:70ch;margin-top:14px}
+.muted{color:var(--muted)}
+.tnum{font-variant-numeric:tabular-nums}
+.foot{margin-top:auto;padding-top:24px;display:flex;align-items:center;gap:10px;font:600 12px 'Inter';color:var(--muted)}
+.foot .dot{width:7px;height:7px;border-radius:50%;background:var(--green-500)}
+.brandmark{font-family:'Cormorant Garamond',serif;font-weight:700;color:var(--green-800)}
+.brandmark b{color:var(--green-500)}
+
+/* cover */
+.cover{background:linear-gradient(135deg,#0a1812,#103d17);color:#eaf4ec;border:0}
+.cover h1{color:#fff;font-size:60px}
+.cover .lead{color:#bcd4c2}
+.cover .kicker{color:#7cfc9a}
+.cover .kicker .n{color:#7fb98e}
+.cover .foot{color:#7fb98e}
+.cover .badge{display:inline-flex;align-items:center;gap:7px;font:600 12px 'Inter';color:#7cfc9a;background:rgba(124,252,154,.12);border:1px solid rgba(124,252,154,.3);border-radius:999px;padding:5px 12px;margin-top:24px;width:fit-content}
+
+/* stat grid */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+.stat .v{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:46px;color:var(--green-800);line-height:1;font-variant-numeric:tabular-nums}
+.stat .v small{font-family:'Inter';font-size:15px;font-weight:600;color:var(--muted)}
+.stat .l{font:500 13.5px 'Inter';color:var(--ink-2);margin-top:8px}
+.blind{margin-top:26px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.blind .b{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:#fff}
+.blind .b .t{font:700 14px 'Inter';color:var(--ink);margin-bottom:5px;display:flex;align-items:center;gap:7px}
+.blind .b .t .num{width:22px;height:22px;border-radius:6px;background:var(--green-50);color:var(--green-800);display:grid;place-items:center;font:800 11px 'Inter'}
+.blind .b p{font-size:13px;color:var(--muted);line-height:1.5}
+
+/* P0 needs */
+.needs{display:grid;grid-template-columns:1fr 1fr;gap:14px 22px;margin-top:6px}
+.need{display:flex;gap:14px;padding:16px 0;border-top:1px solid var(--line)}
+.need .ix{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:30px;color:var(--green-500);line-height:1;min-width:38px;font-variant-numeric:tabular-nums}
+.need .b .t{font:700 15px 'Inter';color:var(--ink);margin-bottom:3px}
+.need .b p{font-size:13px;color:var(--muted);line-height:1.5}
+
+/* data model */
+.entities{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:6px}
+.ent{border:1px solid var(--line);border-radius:12px;padding:16px 14px;background:var(--paper);position:relative}
+.ent.core{border-color:var(--green-500);background:var(--green-50)}
+.ent .h{font:700 13px 'Inter';color:var(--green-800);margin-bottom:8px}
+.ent ul{list-style:none;font-size:11.5px;color:var(--ink-2)}
+.ent li{padding:2px 0;border-bottom:1px dashed var(--line)}
+.ent li:last-child{border-bottom:0}
+.modelnote{margin-top:24px;background:var(--green-50);border:1px solid var(--green-200);border-radius:12px;padding:16px 20px;font-size:14px;color:var(--ink-2)}
+.modelnote b{color:var(--green-800)}
+
+/* roadmap */
+.phases{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.phase{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:start;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.phase .w{font:700 13px 'Inter';color:var(--green-700);text-transform:uppercase;letter-spacing:.04em}
+.phase .w small{display:block;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0;margin-top:2px;font-size:12px}
+.phase .d{font-size:14px;color:var(--ink-2)}
+.phase .d b{color:var(--ink)}
+.povline{margin-top:24px;display:flex;align-items:center;gap:14px;padding:16px 20px;border-radius:12px;background:linear-gradient(135deg,#0a1812,#103d17);color:#eaf4ec}
+.povline .tag{font:700 11px 'Inter';letter-spacing:.1em;text-transform:uppercase;color:#7cfc9a;white-space:nowrap}
+.povline p{font-size:13.5px;color:#cfe3d5}
+
+@media (max-width:760px){
+  .slide{padding:32px 26px;min-height:auto}
+  h1{font-size:38px}.cover h1{font-size:40px}h2{font-size:28px}
+  .stats,.blind,.needs,.entities{grid-template-columns:1fr}
+  .phase{grid-template-columns:1fr;gap:6px}
+}
+@media print{
+  @page{size:A4 landscape;margin:0}
+  html,body{background:#fff}
+  .deck{max-width:none;margin:0;padding:0}
+  .slide{border:0;border-radius:0;box-shadow:none;margin:0;min-height:100vh;page-break-after:always;padding:48px 60px}
+  .controls{display:none}
+}
+.controls{max-width:1120px;margin:0 auto 4px;padding:12px 20px 0;display:flex;align-items:center;gap:12px;color:var(--muted);font:500 12.5px 'Inter'}
+.controls .brandmark{font-size:18px}
+.controls .sp{flex:1}
+.controls button{font:600 12px 'Inter';color:var(--green-800);background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 13px;cursor:pointer}
+.controls button:hover{background:var(--green-50);border-color:var(--green-500)}
+</style>
+</head>
+<body>
+
+<div class="controls">
+  <span class="brandmark">OCP · Nutricrops <b>·</b> D²nAI</span>
+  <span class="sp"></span>
+  <span>Budget Nutricrops — note de cadrage</span>
+  <button onclick="window.print()">Imprimer / PDF →</button>
+</div>
+
+<div class="deck">
+
+  <!-- SLIDE 1 — COVER -->
+  <section class="slide cover">
+    <div class="slide-head"><span class="kicker">Note de cadrage <span class="n">· juin 2026</span></span></div>
+    <h1>Piloter le budget Nutricrops,<br>pas le ressaisir.</h1>
+    <p class="lead">Aujourd'hui, l'équipe Digital passe son temps à <b style="color:#fff">resaisir, relancer et justifier</b> les mêmes lignes budgétaires, sur des fichiers Excel différents, avec des délais d'une heure — pendant que les arbitrages se prennent sur des versions dont personne ne garantit la fraîcheur.</p>
+    <span class="badge">Synthèse de 79 mails · janvier → juin 2026</span>
+    <div class="foot"><span class="dot"></span> OCP Nutricrops · Data, Digital &amp; AI (D²nAI) · confidentiel interne</div>
+  </section>
+
+  <!-- SLIDE 2 — LE CONSTAT -->
+  <section class="slide">
+    <div class="slide-head"><span class="kicker">01 <span class="n">· Le constat</span></span></div>
+    <h2>Un travail de coordination devenu un travail de saisie</h2>
+    <div class="stats">
+      <div class="stat"><div class="v tnum">~15</div><div class="l">fichiers Excel « budget » en circulation, chacun « la dernière version »</div></div>
+      <div class="stat"><div class="v tnum">4-5</div><div class="l">Task Forces (CAPEX, OPEX, EPM, BBZ, Core IT) demandent la même donnée en parallèle</div></div>
+      <div class="stat"><div class="v tnum">3</div><div class="l">projets P0 bloqués en paiement (Salesforce, Slack, HR Connect) découverts tard</div></div>
+    </div>
+    <div class="blind">
+      <div class="b"><div class="t"><span class="num">1</span> Pas de source unique</div><p>La SharePoint « Digital CAPEX View » est censée faire foi, mais les Excel continuent de circuler en pièce jointe. Drift permanent.</p></div>
+      <div class="b"><div class="t"><span class="num">2</span> Pas de lien stable</div><p>Ressource → ligne → engagement → OTP/PO → facture → paiement : le savoir vit dans 2-3 têtes. Reconstruire = un appel.</p></div>
+      <div class="b"><div class="t"><span class="num">3</span> Exécution opaque</div><p>Les blocages SAP / Procurement / Legal se découvrent à J-3 du paiement, jamais en amont.</p></div>
+    </div>
+    <div class="foot"><span class="dot"></span> Verbatim : « Fill out and share within 1 hour » · « please send the last version » · « blocked in SAP »</div>
+  </section>
+
+  <!-- SLIDE 3 — LES 6 BESOINS P0 -->
+  <section class="slide">
+    <div class="slide-head"><span class="kicker">02 <span class="n">· La fondation</span></span></div>
+    <h2>Six besoins P0 débloquent l'essentiel</h2>
+    <div class="needs">
+      <div class="need"><div class="ix tnum">1</div><div class="b"><div class="t">Source de vérité unique</div><p>Un référentiel CAPEX + OPEX, Digital + Core IT, qui remplace les 15 Excel.</p></div></div>
+      <div class="need"><div class="ix tnum">2</div><div class="b"><div class="t">Modèle de donnée canonique</div><p>Une ligne typée dont tous les templates Task Force sont des projections.</p></div></div>
+      <div class="need"><div class="ix tnum">3</div><div class="b"><div class="t">Mapping ressource ↔ ligne</div><p>Qui est payé sur quelle ligne, à quel TJM, pour quel scope. Le savoir le plus fragile.</p></div></div>
+      <div class="need"><div class="ix tnum">4</div><div class="b"><div class="t">Chaîne PR → paiement</div><p>OTP, PO, SAP, facture, statut et raison de blocage — visibles en amont.</p></div></div>
+      <div class="need"><div class="ix tnum">5</div><div class="b"><div class="t">Justifications défendables</div><p>Format structuré : objectif, livrable, impact, alternative interne. Plus de rejet en comité.</p></div></div>
+      <div class="need"><div class="ix tnum">6</div><div class="b"><div class="t">Une saisie → N exports</div><p>Répondre une fois aux Task Forces. Fin de la resaisie sous deadline d'une heure.</p></div></div>
+    </div>
+    <div class="foot"><span class="dot"></span> 18 besoins identifiés au total · 6 épics · priorités P0 → P3 (détail en annexe)</div>
+  </section>
+
+  <!-- SLIDE 4 — LE MODELE CANONIQUE -->
+  <section class="slide">
+    <div class="slide-head"><span class="kicker">03 <span class="n">· La cible</span></span></div>
+    <h2>Une colonne vertébrale : cinq entités, une vérité</h2>
+    <div class="entities">
+      <div class="ent core"><div class="h">EngagementLine</div><ul><li>CAPEX / OPEX</li><li>projet · vendor</li><li>montant · devise</li><li>sponsor · SPOC</li><li>avancement %</li></ul></div>
+      <div class="ent"><div class="h">ResourceAssignment</div><ul><li>ressource</li><li>TJM · JH</li><li>scope</li><li>→ ligne</li><li>internalisation</li></ul></div>
+      <div class="ent"><div class="h">PaymentTracking</div><ul><li>DA · OTP · PO</li><li>facture</li><li>statut SAP</li><li>blocage + raison</li><li>réalisé</li></ul></div>
+      <div class="ent"><div class="h">Vendor</div><ul><li>nom + alias</li><li>contrats</li><li>avenants</li><li>SOW</li><li>entité groupe</li></ul></div>
+      <div class="ent"><div class="h">Justification</div><ul><li>objectif</li><li>livrable</li><li>impact</li><li>alternative</li><li>défendabilité</li></ul></div>
+    </div>
+    <div class="modelnote">Les 4-5 templates Excel des Task Forces sont tous des <b>projections de ces cinq entités</b>. On saisit une fois, on génère N exports. C'est ce qui met fin, structurellement, à la resaisie.</div>
+    <div class="foot"><span class="dot"></span> Aligné avec la spec du PoV « Agent Task Force CAPEX » (EngagementLine + ResourceAssignment déjà typés)</div>
+  </section>
+
+  <!-- SLIDE 5 — ROADMAP + POV -->
+  <section class="slide">
+    <div class="slide-head"><span class="kicker">04 <span class="n">· La marche</span></span></div>
+    <h2>Du PoV au pilotage, en quelques semaines</h2>
+    <div class="phases">
+      <div class="phase"><div class="w">Socle<small>sem. 1-2</small></div><div class="d"><b>Modèle canonique → référentiel unique → mapping ressources.</b> La fondation : importer les Excel existants dans une vérité typée.</div></div>
+      <div class="phase"><div class="w">Valeur visible<small>sem. 2-3</small></div><div class="d"><b>Justifications structurées + détection champs faibles + export multi-Task-Force.</b> Le gain « fini la resaisie » que l'équipe ressent tout de suite.</div></div>
+      <div class="phase"><div class="w">Exécution<small>sem. 3-5</small></div><div class="d"><b>Chaîne de paiement + réalisé vs engagé + alertes saturation.</b> La visibilité bout-en-bout sur les blocages.</div></div>
+    </div>
+    <div class="povline"><span class="tag">Premier pas →</span><p>Le <b style="color:#fff">PoV « Agent Task Force CAPEX »</b> (2 semaines, lecture seule, réponses citées) couvre déjà <b style="color:#fff">12 des 18 besoins</b>, dont les 4 fondations. Il dérisque le socle avant tout engagement sur l'écriture et le workflow.</p></div>
+    <div class="foot"><span class="dot"></span> Annexes : tableau des 18 besoins (v2) · mapping besoins ↔ PoV · base 79 mails</div>
+  </section>
+
+</div>
+</body>
+</html>
