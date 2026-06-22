@@ -25,7 +25,7 @@ export function CostPill({ type }: { type: CostType }) {
   const cls =
     type === "CAPEX"
       ? "bg-sky-50 text-sky-700 ring-sky-200"
-      : "bg-violet-50 text-violet-700 ring-violet-200";
+      : "bg-amber-50 text-amber-800 ring-amber-200";
   return (
     <span
       className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ring-1 ring-inset ${cls}`}

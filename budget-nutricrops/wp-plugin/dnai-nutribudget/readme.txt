@@ -4,7 +4,7 @@ Tags: budget, consolidation, capex, opex, ocp, nutricrops, dashboard
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 0.3.0
+Stable tag: 0.4.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -36,8 +36,23 @@ this plugin — no build server on WordPress.
 * Full-screen route: `/nutribudget` (fallback `/?dnai_nbudget_app=1`)
 * Shortcode: `[nutribudget]`
 
-Persistence is browser localStorage at this stage (MVP, per workstation). The target is a
-shared REST + MySQL backend behind SSO Entra ID, following the NutriPlan pattern.
+Persistence (v0.4): shared **REST + MySQL backend** (custom table `{prefix}dnai_nbudget_store`,
+namespace `dnai/nbudget/v1`) — engagement lines are now stored server-side and shared across
+all users, no longer per workstation. localStorage stays as offline cache / first paint. Auth
+is standard WordPress (logged-in to read, `edit_posts` to write) over a same-origin nonce —
+**SSO Entra ID is intentionally deferred to the final phase** and will plug into the REST
+`permission_callback`s. Read-only sharing via `?view=shared`.
+
+== Changelog ==
+
+= 0.4.0 =
+* Backend partagé REST + MySQL (multi-utilisateur). Endpoints collection (GET/PUT) + item
+  (POST upsert anti-clobber / DELETE). Front câblé via adaptateur REST/localStorage.
+* SANS SSO (volontaire au PoV) — auth WordPress + nonce same-origin ; SSO en phase finale.
+* OPEX recoloré violet → ambre (conformité taste-skill « no purple »).
+
+= 0.3.0 =
+* Migration React / TypeScript / Tailwind / Framer Motion, build single-file servi par WP.
 
 == Changelog ==
 

@@ -66,7 +66,7 @@ export function Conso({ data, cur, rates, onDrillBu, onDrillPay }: Props) {
           label="OPEX"
           value={m(t.opex)}
           sub={`${100 - capexPct}% du total`}
-          accent="violet"
+          accent="amber"
           barPct={100 - capexPct}
         />
         <KpiTile
@@ -100,7 +100,7 @@ export function Conso({ data, cur, rates, onDrillBu, onDrillPay }: Props) {
             {capexPct > 8 ? `CAPEX ${capexPct}%` : ""}
           </motion.div>
           <motion.div
-            className="flex items-center justify-center bg-violet-600 text-xs font-semibold text-white"
+            className="flex items-center justify-center bg-amber-700 text-xs font-semibold text-white"
             initial={{ width: 0 }}
             animate={{ width: `${100 - capexPct}%` }}
             transition={spring}
@@ -113,7 +113,7 @@ export function Conso({ data, cur, rates, onDrillBu, onDrillPay }: Props) {
             <span className="h-3 w-3 rounded-sm bg-sky-600" />CAPEX <span className="font-mono text-zinc-700">{m(t.capex)}</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-3 w-3 rounded-sm bg-violet-600" />OPEX <span className="font-mono text-zinc-700">{m(t.opex)}</span>
+            <span className="h-3 w-3 rounded-sm bg-amber-600" />OPEX <span className="font-mono text-zinc-700">{m(t.opex)}</span>
           </span>
         </div>
       </motion.section>
@@ -180,13 +180,13 @@ const PAY_FILL: Record<PayStatus, string> = {
 
 const ACCENT: Record<string, string> = {
   sky: "text-sky-700",
-  violet: "text-violet-700",
+  amber: "text-amber-800",
   rose: "text-rose-700",
   ocp: "text-ocp-700",
 };
 const ACCENT_BAR: Record<string, string> = {
   sky: "bg-sky-600",
-  violet: "bg-violet-600",
+  amber: "bg-amber-600",
   rose: "bg-rose-500",
   ocp: "bg-ocp-500",
 };

@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutriBudget
  * Description:       Tactical budget consolidation cockpit for OCP Nutricrops — a single source of truth for all engagement lines (CAPEX/OPEX, multi-BU, multi-currency MAD/USD/EUR), the OTP→PO→payment chain, vendor rollups and read-only / Task-Force exports. The bridge before Anaplan. React/Tailwind/Framer single-file build served full-screen by WordPress, no build server. Designed and operated by the D²nAI team.
- * Version:           0.3.0
+ * Version:           0.4.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutribudget
@@ -10,16 +10,19 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NBUDGET_VER', '0.3.0' );
+define( 'DNAI_NBUDGET_VER', '0.4.0' );
 define( 'DNAI_NBUDGET_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NBUDGET_DIR', plugin_dir_path( __FILE__ ) );
+
+// Backend partagé : REST + MySQL (PoV, SANS SSO). Persistance multi-utilisateur.
+require_once DNAI_NBUDGET_DIR . 'inc/rest-api.php';
 
 /* -------------------------------------------------------------------------
  * FULL-SCREEN route — pretty URL /nutribudget + fallback /?dnai_nbudget_app=1
  * Serves the self-contained React build (app/nutribudget.html) with NO theme
- * chrome. The app persists to localStorage (MVP); read-only sharing via
- * ?view=shared. No AI / DB backend at this stage (cf. NutriPlan for the
- * server-shared target pattern).
+ * chrome. Persistence: shared REST + MySQL backend (inc/rest-api.php), with
+ * localStorage as offline cache. Read-only sharing via ?view=shared.
+ * SSO Entra ID deferred to the final phase (plugs into REST permission_callbacks).
  * ---------------------------------------------------------------------- */
 function dnai_nbudget_add_rewrite() {
 	add_rewrite_rule( '^nutribudget/?$', 'index.php?dnai_nbudget_app=1', 'top' );
@@ -29,6 +32,7 @@ add_action( 'init', 'dnai_nbudget_add_rewrite' );
 add_filter( 'query_vars', function ( $vars ) { $vars[] = 'dnai_nbudget_app'; return $vars; } );
 
 register_activation_hook( __FILE__, function () {
+	dnai_nbudget_install();   // crée la table {prefix}dnai_nbudget_store
 	dnai_nbudget_add_rewrite();
 	flush_rewrite_rules();
 } );
@@ -44,11 +48,11 @@ add_action( 'template_redirect', function () {
 		nocache_headers();
 		// Inject a tiny config bridge so the SPA can discover the WP context
 		// (and stay forward-compatible with the future REST + SSO target).
-		$cfg = '<script>window.DNAI_NBUDGET=' . wp_json_encode( array(
+		$cfg = '<script>window.DNAI_NBUDGET=' . wp_json_encode( array_merge( array(
 			'home' => esc_url_raw( home_url( '/' ) ),
 			'user' => wp_get_current_user()->display_name ?: '',
 			'ver'  => DNAI_NBUDGET_VER,
-		) ) . ';</script>';
+		), dnai_nbudget_ctx() ) ) . ';</script>';
 		$html = file_get_contents( $path );
 		echo str_replace( '</head>', $cfg . "\n</head>", $html ); // phpcs:ignore
 	} else {
