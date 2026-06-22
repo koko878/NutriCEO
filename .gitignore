@@ -1,0 +1,5 @@
+
+# Budget Nutricrops project — extracted email data (PII, internal)
+# Keep the synthesis markdown but do NOT commit raw mail extracts
+budget-nutricrops/extracts/
+budget-nutricrops/raw-eml/
