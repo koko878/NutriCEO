@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutriView
  * Description:       Assistant DGSSI de classification des données pour OCP Nutricrops. Inventaire des données d'un projet, attribution des niveaux C/I/D (échelle décret 2-21-406), calcul déterministe de la classe (I-V) et du verdict cloud (résidence MA obligatoire pour les données sensibles loi 05-20). v0.4 : workflow signature SHA-256 + inbox propriétaire + notifications email (Phase 5). v0.3 : IA Databricks (proxy souverain, Sonnet 4.6 par défaut).
- * Version:           0.4.0
+ * Version:           0.4.1
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutriview
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NVIEW_VER', '0.4.0' );
+define( 'DNAI_NVIEW_VER', '0.4.1' );
 define( 'DNAI_NVIEW_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NVIEW_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -50,7 +50,17 @@ add_action( 'template_redirect', function () {
 	// Permet aux modules (IA, futur REST) d'enrichir le bridge : aiStatus, nonce, restNs…
 	$boot = apply_filters( 'dnai_nview_boot_config', $boot );
 	$cfg  = '<script>window.DNAI_NVIEW=' . wp_json_encode( $boot ) . ';</script>';
-	echo str_replace( '</head>', $cfg . '</head>', $html ); // phpcs:ignore WordPress.Security.EscapeOutput
+	// IMPORTANT : le bundle Vite (singlefile) inline du JS qui contient des
+	// littéraux "</head>" et "<body>" (ex : code XLSX qui parse du HTML).
+	// Un str_replace naïf injecterait notre <script> AU MILIEU du JS bundle,
+	// ce qui ferme prématurément la balise <script> côté navigateur et
+	// fait s'afficher le reste du bundle en TEXTE BRUT sur la page.
+	// On vise donc le DERNIER "</head>" du document (le vrai), via strrpos.
+	$pos = strrpos( $html, '</head>' );
+	if ( $pos !== false ) {
+		$html = substr_replace( $html, $cfg . '</head>', $pos, strlen( '</head>' ) );
+	}
+	echo $html; // phpcs:ignore WordPress.Security.EscapeOutput
 	exit;
 } );
 

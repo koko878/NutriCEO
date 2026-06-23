@@ -4,7 +4,7 @@ Tags: dgssi, classification, securite, data, ocp, nutricrops
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 0.4.0
+Stable tag: 0.4.1
 License: GPL-2.0-or-later
 
 Assistant DGSSI de classification des données pour OCP Nutricrops (équipe D²nAI). Sert l'application React mono-fichier en plein écran (`/nutriview`) ou via shortcode `[nutriview]`. v0.4 : workflow signature SHA-256 + inbox propriétaire + notifications email.
@@ -31,6 +31,10 @@ NutriView accompagne le chargé de projet sur le parcours complet de classificat
 6. (Optionnel — audit) Outils → NutriView Validations : journal des envois et signatures.
 
 == Changelog ==
+
+= 0.4.1 =
+HOTFIX rendu /nutriview :
+* le bundle Vite singlefile contient des littéraux JS "</head>" et "<body>" (code XLSX qui parse du HTML). Le str_replace('</head>', …) du template_redirect matchait la PREMIÈRE occurrence (dans le JS), injectant un <script></script> au milieu du bundle. Conséquence : le navigateur fermait la balise <script> prématurément, et le reste du bundle s'affichait en TEXTE BRUT sur la page (cf. capture utilisateur). Fix : strrpos pour cibler la DERNIÈRE </head> (la vraie). Smoke Playwright vs serveur PHP servant le HTML, ajouté pour ne plus passer à côté.
 
 = 0.4.0 =
 Phase 5 — workflow signature + inbox propriétaire :
