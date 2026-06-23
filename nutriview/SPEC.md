@@ -275,10 +275,10 @@ DoD d'une fonctionnalité : code + tests + gates + une entrée au jeu d'éval si
 | Q1 | Statut IIV exact de Nutricrops (loi 05-20) | Détermine si la conformité est obligatoire ou volontaire. N'impacte pas la mécanique, juste la communication. | Avant la démo |
 | Q2 | Endpoint Databricks workspace + nom du modèle disponible (Llama 3.1 70B ? DBRX Instruct ? autre ?) | Bloque la Phase 4 (branchement IA). L'archi peut continuer sans, mock-IA accepté en attendant. | Avant Phase 4 (J8) |
 | Q3 | Qui sont les **data domain owners** Nutricrops (liste, mail) ? Le CDO existe-t-il formellement, ou c'est Hamza qui porte ce rôle ad interim ? | Bloque le workflow signature (à qui on route ?). Mock pour le PoV, vrai mapping post-MVP. | Avant phase 5 (J10) |
-| Q4 | Cataloguer des projets multiples ou un seul à la fois ? | v1 = un projet par exercice (la spec actuelle). Multi-projets = phase 7. À confirmer. | Maintenant |
-| Q5 | Signature électronique : on reste sur "valide + horodate + hash" pour le PoV, ou tu veux brancher un service e-signature (DocuSign/CertEurope/Watiqa) ? | Phase 7 si on veut une vraie e-sign qualifiée. v1 = preuve technique suffisante pour un PoV interne. | Maintenant |
-| Q6 | NutriView doit-il aussi gérer la phase **Réévaluation périodique** (relance auto N mois après signature) ? | v1 = non (juste un champ "à réévaluer le …"). Job cron WP = phase 2. | Maintenant |
-| Q7 | Verdict cloud nuancé : juste binaire (éligible / non), ou catalogue par fournisseur (Azure FR Central ✓, AWS US ✗, GCP EU ✓ avec mesures, etc.) ? | v1 = binaire + une note "résidence MA obligatoire" si non éligible. Catalogue fournisseurs = phase 2. | Maintenant |
+| Q4 ✅ | **Multi-projets dès v1** (liste projets, nav, statut par projet). | Tranché. | — |
+| Q5 ✅ | **Signature = validation + horodatage + hash SHA-256** (preuve technique, pas e-sign qualifiée). | Tranché. | — |
+| Q6 ✅ | **Réévaluation périodique = oui**, relance auto par mail à date cible (WP cron + wp_mail). | Tranché. | — |
+| Q7 ✅ | **Verdict cloud binaire** (éligible OUI/NON) + note « résidence MA obligatoire » si sensible. Catalogue fournisseurs = phase 2. | Tranché. | — |
 
 ---
 
