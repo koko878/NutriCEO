@@ -21,6 +21,8 @@ export interface DataItem {
   )[];
   sourceRef?: { fileName: string; locator: string }; // d'où l'IA l'a tirée
   proposedByAI: boolean;
+  /** Data domain de rattachement (référentiel gouvernance, optionnel). */
+  dataDomainId?: string;
   status: "draft" | "ai_classified" | "owner_validated" | "signed";
   /** Validation owner ligne par ligne — set quand Validate confirme l'item. */
   validation?: {
@@ -68,8 +70,12 @@ export interface ClassificationEvent {
 export interface Project {
   id: string;
   title: string;
-  /** Business unit Nutricrops (optionnel, métadonnée). */
+  /** Business unit Nutricrops (libellé affiché — rétro-compat). */
   bu?: string;
+  /** Liens vers les référentiels de gouvernance (Phase 6, optionnels). */
+  entityId?: string;
+  buId?: string;
+  dataDomainId?: string;
   /** Description courte saisie à la création (optionnelle). */
   description?: string;
   owner: string; // chef de projet

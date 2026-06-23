@@ -26,6 +26,8 @@ import { Button } from "../components/Button";
 import { PageHero } from "../components/Card";
 import type { DataItem, Project } from "../lib/model";
 import { aiExtractCatalog, aiSource, type AiExtractedItem } from "../lib/ai";
+import { useGov } from "../lib/useGov";
+import { domainById } from "../lib/refs";
 
 interface Props {
   project: Project;
@@ -258,6 +260,8 @@ function ReadRow({
   onEdit: () => void;
   onDelete: () => void;
 }) {
+  const { state } = useGov();
+  const domain = domainById(state.refs, item.dataDomainId);
   return (
     <div className="flex items-start justify-between gap-6">
       <div className="min-w-0 flex-1">
@@ -275,6 +279,12 @@ function ReadRow({
             item.sourceRef ? source : undefined,
             item.sourceRef?.locator,
             item.proposedByAI
+          )}
+          {domain && (
+            <span className="inline-flex items-center gap-1 rounded-md bg-ocp-50 px-1.5 py-0.5 text-[10.5px] font-medium text-ocp-800 ring-1 ring-inset ring-ocp-200">
+              <Database size={11} weight="duotone" />
+              {domain.name}
+            </span>
           )}
         </div>
         {item.description && item.description !== item.name && (
@@ -331,6 +341,8 @@ function EditRow({
   onDone: () => void;
   onDelete: () => void;
 }) {
+  const { state } = useGov();
+  const domains = state.refs.dataDomains.filter((d) => d.active);
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-12">
@@ -368,6 +380,31 @@ function EditRow({
           />
         </div>
       </div>
+      {domains.length > 0 && (
+        <div className="sm:max-w-xs">
+          <label
+            htmlFor={`domain-${item.id}`}
+            className="mb-1 block text-[11.5px] font-medium text-zinc-500"
+          >
+            Data domain
+          </label>
+          <select
+            id={`domain-${item.id}`}
+            value={item.dataDomainId ?? ""}
+            onChange={(e) =>
+              onUpdate({ dataDomainId: e.target.value || undefined })
+            }
+            className="w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2 text-[14px] focus:border-ocp-500 focus:outline-none"
+          >
+            <option value="">— aucun —</option>
+            {domains.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <div>
         <span className="mb-1.5 block text-[11.5px] font-medium text-zinc-500">
           Cycle de vie

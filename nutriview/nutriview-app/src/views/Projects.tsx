@@ -26,6 +26,8 @@ interface Props {
   projects: Project[];
   onCreate: (p: Project) => void;
   onOpen: (p: Project) => void;
+  /** Capability create_project — masque les CTA de création si false. */
+  canCreate?: boolean;
 }
 
 type StatusFilter = "all" | Project["status"];
@@ -48,7 +50,7 @@ function projectHasSensible(p: Project): boolean {
   return false;
 }
 
-export function Projects({ projects, onCreate, onOpen }: Props) {
+export function Projects({ projects, onCreate, onOpen, canCreate = true }: Props) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<StatusFilter>("all");
@@ -83,14 +85,16 @@ export function Projects({ projects, onCreate, onOpen }: Props) {
         }
         lead="Chaque projet digital ou data Nutricrops démarre par un exercice de classification. NutriView vous accompagne de l'ingestion du brief jusqu'à la décision d'éligibilité cloud, citation Annexe II à l'appui."
         right={
-          <Button
-            variant="primary"
-            size="md"
-            icon={<Plus size={16} weight="bold" />}
-            onClick={() => setOpen(true)}
-          >
-            Nouveau projet
-          </Button>
+          canCreate ? (
+            <Button
+              variant="primary"
+              size="md"
+              icon={<Plus size={16} weight="bold" />}
+              onClick={() => setOpen(true)}
+            >
+              Nouveau projet
+            </Button>
+          ) : undefined
         }
       />
 
@@ -134,7 +138,7 @@ export function Projects({ projects, onCreate, onOpen }: Props) {
       )}
 
       {projects.length === 0 ? (
-        <EmptyState onCreate={() => setOpen(true)} />
+        <EmptyState onCreate={canCreate ? () => setOpen(true) : undefined} />
       ) : filtered.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-zinc-200 bg-white py-16 text-center">
           <p className="text-[14px] text-zinc-500">
@@ -258,7 +262,7 @@ function ProjectRow({
   );
 }
 
-function EmptyState({ onCreate }: { onCreate: () => void }) {
+function EmptyState({ onCreate }: { onCreate?: () => void }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -273,19 +277,21 @@ function EmptyState({ onCreate }: { onCreate: () => void }) {
         Aucune classification en cours.
       </h2>
       <p className="mx-auto mt-2 max-w-md text-[14px] text-zinc-500">
-        Démarrez en cataloguant un projet digital. NutriView vous propose
-        une classification draft en moins de cinq minutes, justifiée par
-        citations au guide DGSSI.
+        {onCreate
+          ? "Démarrez en cataloguant un projet digital. NutriView vous propose une classification draft en moins de cinq minutes, justifiée par citations au guide DGSSI."
+          : "Aucun projet ne vous est encore accessible. Contactez un chef de projet ou un administrateur."}
       </p>
-      <div className="mt-6 flex justify-center">
-        <Button
-          variant="primary"
-          icon={<Plus size={16} weight="bold" />}
-          onClick={onCreate}
-        >
-          Démarrer un projet
-        </Button>
-      </div>
+      {onCreate && (
+        <div className="mt-6 flex justify-center">
+          <Button
+            variant="primary"
+            icon={<Plus size={16} weight="bold" />}
+            onClick={onCreate}
+          >
+            Démarrer un projet
+          </Button>
+        </div>
+      )}
     </motion.div>
   );
 }

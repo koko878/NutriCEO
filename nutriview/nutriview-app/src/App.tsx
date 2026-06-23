@@ -11,10 +11,12 @@ import {
   ChartBar,
   CaretRight,
   Tray,
+  Gear,
 } from "@phosphor-icons/react";
 import { store, type AppState } from "./lib/store";
 import type { Project } from "./lib/model";
 import { inboxBadgeCount } from "./lib/inbox";
+import { useGov } from "./lib/useGov";
 import { Projects } from "./views/Projects";
 import { Ingest } from "./views/Ingest";
 import { Catalog } from "./views/Catalog";
@@ -22,6 +24,7 @@ import { Classify } from "./views/Classify";
 import { Synthesis } from "./views/Synthesis";
 import { Inbox } from "./views/Inbox";
 import { Validate } from "./views/Validate";
+import { Admin } from "./views/Admin";
 
 // Type unifié déclaré dans src/lib/ai.ts (source de vérité — inclut aiStatus, restNs, nonce).
 // Pas de re-déclaration ici pour éviter le conflit TS2717.
@@ -29,6 +32,7 @@ import { Validate } from "./views/Validate";
 type View =
   | { kind: "projects" }
   | { kind: "inbox" }
+  | { kind: "admin" }
   | { kind: "ingest"; projectId: string }
   | { kind: "catalog"; projectId: string }
   | { kind: "classify"; projectId: string; itemId?: string }
@@ -46,8 +50,15 @@ export default function App() {
     };
   }, []);
 
+  const { can } = useGov();
+
   const activeProject = useMemo<Project | null>(() => {
-    if (view.kind === "projects" || view.kind === "inbox") return null;
+    if (
+      view.kind === "projects" ||
+      view.kind === "inbox" ||
+      view.kind === "admin"
+    )
+      return null;
     return state.projects.find((p) => p.id === view.projectId) ?? null;
   }, [view, state.projects]);
 
@@ -56,6 +67,10 @@ export default function App() {
     () => inboxBadgeCount(state.projects, currentUser),
     [state.projects, currentUser]
   );
+
+  const canManage = can("manage");
+  const canValidate = can("validate");
+  const canCreate = can("create_project");
 
   const updateProject = useCallback((next: Project) => {
     store.update((prev) => ({
@@ -73,7 +88,7 @@ export default function App() {
   }, []);
 
   const ctxUser = currentUser;
-  const ver = window.DNAI_NVIEW?.ver ?? "0.4";
+  const ver = window.DNAI_NVIEW?.ver ?? "0.5";
 
   return (
     <div className="min-h-[100dvh] bg-zinc-50 text-zinc-900">
@@ -93,24 +108,41 @@ export default function App() {
             </span>
           </button>
           <div className="flex items-center gap-3 text-[12px] text-zinc-500">
-            <button
-              type="button"
-              onClick={() => setView({ kind: "inbox" })}
-              className={`relative inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[12.5px] font-medium transition-colors active:scale-[0.97] ${
-                view.kind === "inbox"
-                  ? "bg-ocp-50 text-ocp-900"
-                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
-              }`}
-              aria-label={`Inbox propriétaire — ${pendingCount} en attente`}
-            >
-              <Tray size={14} weight="duotone" />
-              Inbox
-              {pendingCount > 0 && (
-                <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-amber-vd-600 px-1 text-[10.5px] font-semibold tabular-nums text-white ring-1 ring-amber-vd-700/40">
-                  {pendingCount}
-                </span>
-              )}
-            </button>
+            {canValidate && (
+              <button
+                type="button"
+                onClick={() => setView({ kind: "inbox" })}
+                className={`relative inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[12.5px] font-medium transition-colors active:scale-[0.97] ${
+                  view.kind === "inbox"
+                    ? "bg-ocp-50 text-ocp-900"
+                    : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+                }`}
+                aria-label={`Inbox propriétaire — ${pendingCount} en attente`}
+              >
+                <Tray size={14} weight="duotone" />
+                Inbox
+                {pendingCount > 0 && (
+                  <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-amber-vd-600 px-1 text-[10.5px] font-semibold tabular-nums text-white ring-1 ring-amber-vd-700/40">
+                    {pendingCount}
+                  </span>
+                )}
+              </button>
+            )}
+            {canManage && (
+              <button
+                type="button"
+                onClick={() => setView({ kind: "admin" })}
+                className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[12.5px] font-medium transition-colors active:scale-[0.97] ${
+                  view.kind === "admin"
+                    ? "bg-ocp-50 text-ocp-900"
+                    : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+                }`}
+                aria-label="Administration"
+              >
+                <Gear size={14} weight="duotone" />
+                Admin
+              </button>
+            )}
             {ctxUser !== "anonyme" && (
               <span>
                 Connecté ·{" "}
@@ -180,6 +212,7 @@ export default function App() {
         {view.kind === "projects" && (
           <Projects
             projects={state.projects}
+            canCreate={canCreate}
             onCreate={(p) => {
               addProject(p);
               setView({ kind: "ingest", projectId: p.id });
@@ -205,6 +238,7 @@ export default function App() {
             onOpen={(pid) => setView({ kind: "validate", projectId: pid })}
           />
         )}
+        {view.kind === "admin" && <Admin />}
         {view.kind === "ingest" && activeProject && (
           <Ingest
             project={activeProject}

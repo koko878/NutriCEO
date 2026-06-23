@@ -4,7 +4,7 @@ Tags: dgssi, classification, securite, data, ocp, nutricrops
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 0.4.1
+Stable tag: 0.5.0
 License: GPL-2.0-or-later
 
 Assistant DGSSI de classification des données pour OCP Nutricrops (équipe D²nAI). Sert l'application React mono-fichier en plein écran (`/nutriview`) ou via shortcode `[nutriview]`. v0.4 : workflow signature SHA-256 + inbox propriétaire + notifications email.
@@ -31,6 +31,18 @@ NutriView accompagne le chargé de projet sur le parcours complet de classificat
 6. (Optionnel — audit) Outils → NutriView Validations : journal des envois et signatures.
 
 == Changelog ==
+
+= 0.5.0 =
+Phase 6 — Administration (gouvernance + accès) :
+* nouvel écran Admin in-app (5 onglets) : Entités, Functions/BU, Data Domains, Data Domain Owners, Accès ;
+* édition inline des 4 référentiels, persistés côté serveur (options dnai_nview_refs / dnai_nview_roles, autoload=no) ;
+* 4 rôles applicatifs (Administrateur, Chef de projet, Propriétaire des données, Lecteur) assignés par login (= futur UPN Azure AD) ;
+* amorçage first-run : tant qu'aucun administrateur n'est défini, tout utilisateur connecté a l'accès complet ; dès qu'un admin existe, les inconnus retombent en lecteur ;
+* gating UI : bouton « Nouveau projet » (chef de projet/admin), Inbox (propriétaire/admin), Admin (admin) ;
+* création de projet branchée sur les référentiels (selects Entité/BU/Data domain, owner auto-rempli depuis le domaine) ;
+* catalogue : data domain assignable par donnée (badge + select) ;
+* backend rest-api-refs.php : GET /admin/config, PUT /admin/refs, PUT /admin/roles ; bridge boot injecte refs/roles/govReady ;
+* note : un nouvel utilisateur dans l'onglet Accès n'a aucun rôle par défaut (évite que l'admin courant ne se verrouille en saisissant son propre login).
 
 = 0.4.1 =
 HOTFIX rendu /nutriview :
