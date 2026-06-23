@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutriView
  * Description:       Assistant DGSSI de classification des données pour OCP Nutricrops. Inventaire des données d'un projet, attribution des niveaux C/I/D (échelle décret 2-21-406), calcul déterministe de la classe (I-V) et du verdict cloud (résidence MA obligatoire pour les données sensibles loi 05-20). Phases 0-3 — sans IA, sans backend, persistance navigateur.
- * Version:           0.1.0
+ * Version:           0.2.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutriview
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NVIEW_VER', '0.1.0' );
+define( 'DNAI_NVIEW_VER', '0.2.0' );
 define( 'DNAI_NVIEW_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NVIEW_DIR', plugin_dir_path( __FILE__ ) );
 

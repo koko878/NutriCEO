@@ -1,10 +1,17 @@
 @import "tailwindcss";
 
+/* =========================================================================
+ * NutriView — design tokens (taste-skill v1, charte D²nAI)
+ * Cormorant Garamond titres · Inter corps · vert OCP accent unique
+ * Ambre profond pour donnée sensible (PAS rouge alarmiste, brief Verdict)
+ * Rouge réservé aux erreurs système réelles
+ * ========================================================================= */
+
 @theme {
   --font-display: "Cormorant Garamond", ui-serif, Georgia, serif;
   --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  /* OCP green — accent unique. Variation desaturée autour de #2E7D32. */
+  /* OCP green — accent unique, désaturé.  Variation autour de #2E7D32. */
   --color-ocp-50: #ecf5ee;
   --color-ocp-100: #d4e8d8;
   --color-ocp-200: #aed3b6;
@@ -15,17 +22,34 @@
   --color-ocp-700: #205a24;
   --color-ocp-800: #1b4d1f;
   --color-ocp-900: #143b18;
+
+  /* Ambre profond pour donnée sensible (cf. shape brief verdict).
+   * Non alarmiste, registre administratif. */
+  --color-amber-vd-50: #fbf7ed;
+  --color-amber-vd-100: #f5ecd1;
+  --color-amber-vd-200: #ead4a3;
+  --color-amber-vd-300: #dab768;
+  --color-amber-vd-400: #c69a3e;
+  --color-amber-vd-500: #a47b27;
+  --color-amber-vd-600: #82601e;
+  --color-amber-vd-700: #654a18;
+  --color-amber-vd-800: #4a3611;
+  --color-amber-vd-900: #2f220b;
 }
 
 @layer base {
   :root {
     color-scheme: light;
+    /* Évite que la sidebar ou les modales fassent sauter la mise en page. */
+    scrollbar-gutter: stable;
   }
+
   html,
   body,
   #root {
-    height: 100%;
+    min-height: 100dvh;
   }
+
   body {
     margin: 0;
     font-family: var(--font-body);
@@ -33,20 +57,45 @@
     color: var(--color-zinc-900);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    font-feature-settings: "ss01", "cv11";
   }
+
+  /* Titres en Cormorant — letter-spacing serré, text-wrap balance. */
   h1,
   h2,
   h3,
   .font-display {
     font-family: var(--font-display);
     font-weight: 600;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
   }
+
+  h1 {
+    letter-spacing: -0.035em;
+  }
+
+  /* Corps lisible : line-height confortable, prose équilibrée. */
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Tabular-nums systématique pour chiffres dans data tables / KPIs. */
+  .tabular-nums,
+  td,
+  th {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Focus visible — fil vert OCP, jamais coupé. */
   *:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px var(--color-zinc-50), 0 0 0 4px var(--color-ocp-500);
-    border-radius: 0.5rem;
+    box-shadow:
+      0 0 0 2px var(--color-zinc-50),
+      0 0 0 4px var(--color-ocp-500);
+    border-radius: 0.625rem;
   }
+
   /* Touch targets ≥ 44px sur pointeur grossier. */
   @media (pointer: coarse) {
     button,
@@ -56,9 +105,27 @@
       min-height: 44px;
     }
   }
+
+  /* Scrollbar discrète, cohérente avec la palette zinc. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-zinc-300);
+    border-radius: 9999px;
+    border: 2px solid var(--color-zinc-50);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-zinc-400);
+  }
 }
 
-/* Sliders — track + thumb cohérents Webkit/Firefox. */
+/* =========================================================================
+ * Slider C/I/D — input range natif stylisé, accessible clavier + SR.
+ * Track + 5 ticks (0..4) + thumb vert OCP.
+ * ========================================================================= */
+
 input[type="range"].nv-slider {
   -webkit-appearance: none;
   appearance: none;
@@ -67,6 +134,7 @@ input[type="range"].nv-slider {
   border-radius: 9999px;
   background: var(--color-zinc-200);
   outline: none;
+  cursor: pointer;
 }
 input[type="range"].nv-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -75,19 +143,30 @@ input[type="range"].nv-slider::-webkit-slider-thumb {
   height: 22px;
   border-radius: 9999px;
   background: var(--color-ocp-600);
-  border: 2px solid #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(20, 59, 24, 0.25);
   cursor: pointer;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+input[type="range"].nv-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.08);
+}
+input[type="range"].nv-slider::-webkit-slider-thumb:active {
+  transform: scale(0.94);
 }
 input[type="range"].nv-slider::-moz-range-thumb {
   width: 22px;
   height: 22px;
   border-radius: 9999px;
   background: var(--color-ocp-600);
-  border: 2px solid #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(20, 59, 24, 0.25);
   cursor: pointer;
 }
+
+/* =========================================================================
+ * Print — synthèse exportable PDF via window.print()
+ * ========================================================================= */
 
 @media print {
   .nv-no-print {
@@ -95,8 +174,16 @@ input[type="range"].nv-slider::-moz-range-thumb {
   }
   body {
     background: #fff;
+    color: var(--color-zinc-950);
+  }
+  .nv-print-break {
+    break-before: page;
   }
 }
+
+/* =========================================================================
+ * prefers-reduced-motion — non négociable
+ * ========================================================================= */
 
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -106,4 +193,27 @@ input[type="range"].nv-slider::-moz-range-thumb {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* =========================================================================
+ * Shimmer subtil pour skeletons (loaders d'extraction, etc.)
+ * ========================================================================= */
+
+@keyframes nv-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.nv-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-zinc-100) 0%,
+    var(--color-zinc-200) 50%,
+    var(--color-zinc-100) 100%
+  );
+  background-size: 200% 100%;
+  animation: nv-shimmer 1.6s linear infinite;
 }

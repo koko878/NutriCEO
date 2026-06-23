@@ -62,6 +62,10 @@ export interface ClassificationEvent {
 export interface Project {
   id: string;
   title: string;
+  /** Business unit Nutricrops (optionnel, métadonnée). */
+  bu?: string;
+  /** Description courte saisie à la création (optionnelle). */
+  description?: string;
   owner: string; // chef de projet
   dataOwner: string; // propriétaire des données (signataire)
   ingestion: {

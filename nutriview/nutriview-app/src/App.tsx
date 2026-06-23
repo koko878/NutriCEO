@@ -1,5 +1,16 @@
+// =====================================================================
+// App — shell NutriView : header + navigation par étape, routing local.
+// =====================================================================
+
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { House, ListChecks, UploadSimple, Sparkle, ChartBar } from "@phosphor-icons/react";
+import {
+  House,
+  ListChecks,
+  UploadSimple,
+  Sparkle,
+  ChartBar,
+  CaretRight,
+} from "@phosphor-icons/react";
 import { store, type AppState } from "./lib/store";
 import type { Project } from "./lib/model";
 import { Projects } from "./views/Projects";
@@ -29,7 +40,6 @@ export default function App() {
   const [state, setState] = useState<AppState>(() => store.load());
   const [view, setView] = useState<View>({ kind: "projects" });
 
-  // Subscribe au store global.
   useEffect(() => {
     const unsub = store.subscribe(setState);
     return () => {
@@ -42,15 +52,12 @@ export default function App() {
     return state.projects.find((p) => p.id === view.projectId) ?? null;
   }, [view, state.projects]);
 
-  const updateProject = useCallback(
-    (next: Project) => {
-      store.update((prev) => ({
-        ...prev,
-        projects: prev.projects.map((p) => (p.id === next.id ? next : p)),
-      }));
-    },
-    []
-  );
+  const updateProject = useCallback((next: Project) => {
+    store.update((prev) => ({
+      ...prev,
+      projects: prev.projects.map((p) => (p.id === next.id ? next : p)),
+    }));
+  }, []);
 
   const addProject = useCallback((p: Project) => {
     store.update((prev) => ({
@@ -61,83 +68,92 @@ export default function App() {
   }, []);
 
   const ctxUser = window.DNAI_NVIEW?.user ?? "anonyme";
+  const ver = window.DNAI_NVIEW?.ver ?? "0.2";
 
   return (
-    <div className="min-h-full bg-zinc-50 text-zinc-900">
-      <header className="border-b border-zinc-200 bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+    <div className="min-h-[100dvh] bg-zinc-50 text-zinc-900">
+      {/* Header global — wordmark gauche, user contexte droite */}
+      <header className="sticky top-0 z-30 border-b border-zinc-200/70 bg-zinc-50/85 backdrop-blur-md nv-no-print">
+        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-4 sm:px-10">
           <button
             type="button"
             onClick={() => setView({ kind: "projects" })}
-            className="flex items-baseline gap-3"
+            className="group flex items-baseline gap-3 transition-transform duration-150 active:scale-[0.98]"
           >
-            <span className="font-display text-2xl font-semibold tracking-tight text-ocp-700">
+            <span className="font-display text-[26px] font-semibold tracking-[-0.02em] text-ocp-800">
               NutriView
             </span>
-            <span className="text-[11px] uppercase tracking-[0.18em] text-zinc-400">
-              Classification DGSSI · D²nAI
+            <span className="hidden text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400 sm:inline">
+              D²nAI · OCP Nutricrops
             </span>
           </button>
-          <div className="text-xs text-zinc-500">
+          <div className="flex items-center gap-4 text-[12px] text-zinc-500">
             {ctxUser !== "anonyme" && (
-              <>
-                Connecté : <span className="font-medium">{ctxUser}</span>
-              </>
+              <span>
+                Connecté ·{" "}
+                <span className="font-medium text-zinc-700">{ctxUser}</span>
+              </span>
             )}
+            <span className="hidden font-mono text-[10.5px] tabular-nums text-zinc-400 sm:inline">
+              v{ver}
+            </span>
           </div>
         </div>
       </header>
 
+      {/* Breadcrumb / nav projet — visible quand un projet est ouvert */}
       {activeProject && (
-        <nav className="border-b border-zinc-200 bg-white">
-          <div className="mx-auto flex max-w-6xl items-center gap-1 px-6">
+        <nav className="border-b border-zinc-200/70 bg-white nv-no-print">
+          <div className="mx-auto flex max-w-[1400px] flex-wrap items-center gap-1 px-6 sm:px-10">
             <NavTab
-              active={view.kind === "projects"}
-              icon={<House size={14} />}
+              active={false}
+              icon={<House size={14} weight="duotone" />}
               onClick={() => setView({ kind: "projects" })}
               label="Projets"
             />
-            <span className="text-zinc-300">/</span>
-            <span className="px-3 py-3 text-sm font-medium text-zinc-700">
+            <CaretRight size={11} className="text-zinc-300" />
+            <span className="truncate px-3 py-3 text-[13px] font-medium text-zinc-900">
               {activeProject.title}
             </span>
-            <NavTab
-              active={view.kind === "ingest"}
-              icon={<UploadSimple size={14} />}
-              onClick={() =>
-                setView({ kind: "ingest", projectId: activeProject.id })
-              }
-              label="Ingestion"
-            />
-            <NavTab
-              active={view.kind === "catalog"}
-              icon={<ListChecks size={14} />}
-              onClick={() =>
-                setView({ kind: "catalog", projectId: activeProject.id })
-              }
-              label="Catalogue"
-            />
-            <NavTab
-              active={view.kind === "classify"}
-              icon={<Sparkle size={14} />}
-              onClick={() =>
-                setView({ kind: "classify", projectId: activeProject.id })
-              }
-              label="Classification"
-            />
-            <NavTab
-              active={view.kind === "synthesis"}
-              icon={<ChartBar size={14} />}
-              onClick={() =>
-                setView({ kind: "synthesis", projectId: activeProject.id })
-              }
-              label="Synthèse"
-            />
+            <div className="ml-auto flex items-center">
+              <NavTab
+                active={view.kind === "ingest"}
+                icon={<UploadSimple size={14} weight="duotone" />}
+                onClick={() =>
+                  setView({ kind: "ingest", projectId: activeProject.id })
+                }
+                label="Ingestion"
+              />
+              <NavTab
+                active={view.kind === "catalog"}
+                icon={<ListChecks size={14} weight="duotone" />}
+                onClick={() =>
+                  setView({ kind: "catalog", projectId: activeProject.id })
+                }
+                label="Catalogue"
+              />
+              <NavTab
+                active={view.kind === "classify"}
+                icon={<Sparkle size={14} weight="duotone" />}
+                onClick={() =>
+                  setView({ kind: "classify", projectId: activeProject.id })
+                }
+                label="Classification"
+              />
+              <NavTab
+                active={view.kind === "synthesis"}
+                icon={<ChartBar size={14} weight="duotone" />}
+                onClick={() =>
+                  setView({ kind: "synthesis", projectId: activeProject.id })
+                }
+                label="Synthèse"
+              />
+            </div>
           </div>
         </nav>
       )}
 
-      <main className="mx-auto max-w-6xl px-6 py-8">
+      <main className="mx-auto max-w-[1400px] px-6 py-10 sm:px-10 sm:py-14">
         {view.kind === "projects" && (
           <Projects
             projects={state.projects}
@@ -181,10 +197,18 @@ export default function App() {
         )}
       </main>
 
-      <footer className="mx-auto max-w-6xl px-6 py-8 text-xs text-zinc-400">
-        NutriView v0.1 · phases 0-3 (moteur déterministe + UI catalog +
-        ingestion multi-format) · OCP Nutricrops · D²nAI · sans IA, sans
-        backend dans cette version.
+      <footer className="mx-auto max-w-[1400px] px-6 py-10 text-[11.5px] leading-relaxed text-zinc-400 sm:px-10 nv-no-print">
+        <div className="border-t border-zinc-200/70 pt-6">
+          <p>
+            NutriView v{ver} · phases 0-3 (moteur déterministe · UI catalogue ·
+            ingestion multi-format). IA Databricks souverain en phase 4,
+            workflow signature en phase 5.
+          </p>
+          <p className="mt-1 text-zinc-400">
+            loi 05-20 sur la cybersécurité · décret 2-21-406 · Guide
+            DGSSI v1.0 (juillet 2025) — OCP Nutricrops · équipe D²nAI.
+          </p>
+        </div>
       </footer>
     </div>
   );
@@ -205,14 +229,20 @@ function NavTab({
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center gap-1.5 px-3 py-3 text-sm font-medium transition-colors ${
+      className={`relative flex items-center gap-1.5 px-3 py-3 text-[13px] font-medium transition-colors duration-150 ${
         active
-          ? "border-b-2 border-ocp-600 text-ocp-700"
+          ? "text-ocp-800"
           : "text-zinc-500 hover:text-zinc-900"
       }`}
     >
       {icon}
       {label}
+      {active && (
+        <span
+          aria-hidden
+          className="absolute inset-x-3 bottom-0 h-[2px] rounded-full bg-ocp-700"
+        />
+      )}
     </button>
   );
 }
