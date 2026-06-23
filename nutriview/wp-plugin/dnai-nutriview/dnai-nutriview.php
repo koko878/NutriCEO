@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name:       D²nAI NutriView
- * Description:       Assistant DGSSI de classification des données pour OCP Nutricrops. Inventaire des données d'un projet, attribution des niveaux C/I/D (échelle décret 2-21-406), calcul déterministe de la classe (I-V) et du verdict cloud (résidence MA obligatoire pour les données sensibles loi 05-20). Phases 0-3 — sans IA, sans backend, persistance navigateur.
- * Version:           0.2.0
+ * Description:       Assistant DGSSI de classification des données pour OCP Nutricrops. Inventaire des données d'un projet, attribution des niveaux C/I/D (échelle décret 2-21-406), calcul déterministe de la classe (I-V) et du verdict cloud (résidence MA obligatoire pour les données sensibles loi 05-20). v0.3 : IA Databricks (proxy souverain, Sonnet 4.6 par défaut).
+ * Version:           0.3.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutriview
@@ -10,13 +10,12 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NVIEW_VER', '0.2.0' );
+define( 'DNAI_NVIEW_VER', '0.3.0' );
 define( 'DNAI_NVIEW_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NVIEW_DIR', plugin_dir_path( __FILE__ ) );
 
-// TODO Phase 5 — backend REST + MySQL (collection projects, signatures,
-// inbox propriétaire). À brancher dans inc/rest-api.php que Hamza ajoutera.
-// require_once DNAI_NVIEW_DIR . 'inc/rest-api.php';
+// Phase 4 — backend IA (proxy REST vers Databricks Model Serving, souverain).
+require_once DNAI_NVIEW_DIR . 'inc/rest-api-ai.php';
 
 /* -------------------------------------------------------------------------
  * 1. Route plein écran  →  /nutriview
@@ -41,11 +40,14 @@ add_action( 'template_redirect', function () {
 	nocache_headers();
 	$html = file_get_contents( $path );
 	$user = wp_get_current_user();
-	$cfg  = '<script>window.DNAI_NVIEW=' . wp_json_encode( array(
+	$boot = array(
 		'home' => esc_url_raw( home_url( '/' ) ),
 		'user' => $user && $user->ID ? sanitize_user( $user->user_login ) : '',
 		'ver'  => DNAI_NVIEW_VER,
-	) ) . ';</script>';
+	);
+	// Permet aux modules (IA, futur REST) d'enrichir le bridge : aiStatus, nonce, restNs…
+	$boot = apply_filters( 'dnai_nview_boot_config', $boot );
+	$cfg  = '<script>window.DNAI_NVIEW=' . wp_json_encode( $boot ) . ';</script>';
 	echo str_replace( '</head>', $cfg . '</head>', $html ); // phpcs:ignore WordPress.Security.EscapeOutput
 	exit;
 } );

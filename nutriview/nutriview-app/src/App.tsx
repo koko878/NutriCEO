@@ -19,15 +19,8 @@ import { Catalog } from "./views/Catalog";
 import { Classify } from "./views/Classify";
 import { Synthesis } from "./views/Synthesis";
 
-declare global {
-  interface Window {
-    DNAI_NVIEW?: {
-      home?: string;
-      user?: string;
-      ver?: string;
-    };
-  }
-}
+// Type unifié déclaré dans src/lib/ai.ts (source de vérité — inclut aiStatus, restNs, nonce).
+// Pas de re-déclaration ici pour éviter le conflit TS2717.
 
 type View =
   | { kind: "projects" }

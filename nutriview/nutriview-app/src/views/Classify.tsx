@@ -14,6 +14,8 @@ import {
   ListChecks,
   Database,
   ArrowUUpLeft,
+  Warning,
+  Quotes,
 } from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "../components/Button";
@@ -21,6 +23,7 @@ import { PageHero } from "../components/Card";
 import { ClasseBadge, SensibleBadge } from "../components/Badge";
 import { Slider } from "../components/Slider";
 import { Verdict } from "../components/Verdict";
+import { aiClassify, aiSource, type AiClassifyCell } from "../lib/ai";
 import type {
   Classification,
   ClassificationCell,
@@ -314,19 +317,86 @@ export function Classify({
                 />
               </div>
 
-              {/* Placeholder justification IA — Phase 4 */}
-              <div className="mt-4 rounded-2xl border border-amber-vd-200 bg-amber-vd-50/40 px-5 py-4">
-                <div className="flex items-center gap-2 text-[11.5px] font-medium text-amber-vd-800">
-                  <Sparkle size={14} weight="duotone" />
-                  IA · à valider
+              {/* Suggestion IA (Phase 4) — Databricks proxy ou mock. */}
+              <AiSuggestion
+                key={current.id}
+                itemName={current.name || ""}
+                itemDescription={current.description || ""}
+                onApply={(cells) => {
+                  // Applique uniquement les cellules non rejetées (level ≥ 0).
+                  let next = cls;
+                  for (const c of cells) {
+                    if (c.level < 0) continue;
+                    next = recompute({
+                      ...next,
+                      cells: next.cells.map((x) =>
+                        x.dim === c.dim
+                          ? {
+                              ...x,
+                              level: c.level as Level,
+                              rationale: c.rationale,
+                              citations: c.citations.map((cit) => ({
+                                section: cit.section,
+                                quote: cit.quote,
+                              })),
+                              aiProposed: {
+                                level: c.level as Level,
+                                rationale: c.rationale,
+                              },
+                            }
+                          : x
+                      ),
+                    });
+                  }
+                  onChange({
+                    ...project,
+                    classifications: {
+                      ...project.classifications,
+                      [current!.id]: next,
+                    },
+                  });
+                }}
+              />
+
+              {/* Justifications IA visibles (lecture seule, par dimension) */}
+              {cls.cells.some((c) => c.rationale) && (
+                <div className="mt-4 rounded-3xl border border-zinc-200 bg-white p-6">
+                  <div className="mb-3 flex items-center gap-1.5 text-[11.5px] font-medium text-zinc-500">
+                    <Quotes size={14} weight="duotone" className="text-amber-vd-700" />
+                    Justifications &amp; citations (Annexe&nbsp;II)
+                  </div>
+                  <ul className="divide-y divide-zinc-100">
+                    {cls.cells
+                      .filter((c) => c.rationale)
+                      .map((c) => (
+                        <li key={c.dim} className="py-3 text-[13px] text-zinc-700">
+                          <div className="mb-1 flex items-center gap-2">
+                            <span className="rounded-md bg-zinc-100 px-1.5 py-0.5 font-mono text-[11px] tabular-nums text-zinc-700">
+                              {c.dim} = {c.level}
+                            </span>
+                            {c.aiProposed && (
+                              <span className="text-[10.5px] uppercase tracking-wide text-amber-vd-800">
+                                proposé par IA
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-zinc-800">{c.rationale}</p>
+                          {c.citations.map((cit, i) => (
+                            <p
+                              key={i}
+                              className="mt-1 border-l border-amber-vd-200 pl-3 text-[12px] italic text-zinc-600"
+                            >
+                              <span className="font-semibold text-amber-vd-800">
+                                {cit.section}
+                              </span>
+                              {cit.quote && <> — « {cit.quote} »</>}
+                            </p>
+                          ))}
+                        </li>
+                      ))}
+                  </ul>
                 </div>
-                <p className="mt-1 text-[13px] text-zinc-700">
-                  La justification automatique et la citation
-                  Annexe&nbsp;II seront générées par l'IA Databricks
-                  souverain en phase&nbsp;4. Pour l'instant, c'est vous
-                  qui menez l'évaluation.
-                </p>
-              </div>
+              )}
 
               {/* Mesures Annexe I */}
               {cls.suggestedMeasures.length > 0 && (
@@ -502,6 +572,94 @@ function EmptyClassify() {
           </Button>
         </div>
       </div>
+    </div>
+  );
+}
+
+// =====================================================================
+// AiSuggestion — bouton "Suggérer C/I/D" + état loading/error/done.
+// Appelle aiClassify (proxy WP Databricks, ou mock local en standalone).
+// Garde-fou citation déjà géré côté lib/ai.ts (cells.rejected si manquant).
+// =====================================================================
+function AiSuggestion({
+  itemName,
+  itemDescription,
+  onApply,
+}: {
+  itemName: string;
+  itemDescription: string;
+  onApply: (cells: AiClassifyCell[]) => void;
+}) {
+  const [state, setState] = useState<
+    | { kind: "idle" }
+    | { kind: "loading" }
+    | { kind: "error"; message: string }
+    | { kind: "done"; rejected: number; total: number; source: string; ms: number }
+  >({ kind: "idle" });
+
+  const run = async () => {
+    if (!itemName.trim()) {
+      setState({ kind: "error", message: "Nommez la donnée d'abord." });
+      return;
+    }
+    setState({ kind: "loading" });
+    const r = await aiClassify({ name: itemName, description: itemDescription });
+    if (!r.ok) {
+      setState({ kind: "error", message: r.message });
+      return;
+    }
+    onApply(r.data.cells);
+    setState({
+      kind: "done",
+      rejected: r.data.cells.filter((c) => c.level < 0).length,
+      total: r.data.cells.length,
+      source: r.source,
+      ms: r.durationMs,
+    });
+  };
+
+  return (
+    <div className="mt-4 rounded-3xl border border-amber-vd-200 bg-amber-vd-50/40 px-5 py-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-2 text-[11.5px] font-medium text-amber-vd-800">
+          <Sparkle size={14} weight="duotone" />
+          IA · suggestion (à valider)
+        </div>
+        <span className="text-[11px] text-zinc-500">
+          Source : <code className="rounded bg-white px-1.5 py-0.5 font-mono text-[10.5px] text-amber-vd-800 ring-1 ring-amber-vd-200">{aiSource()}</code>
+        </span>
+        <div className="ml-auto">
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<Sparkle size={14} weight="duotone" />}
+            onClick={run}
+            disabled={state.kind === "loading"}
+          >
+            {state.kind === "loading" ? "Analyse en cours…" : "Suggérer C/I/D"}
+          </Button>
+        </div>
+      </div>
+      {state.kind === "error" && (
+        <div className="mt-2 flex items-start gap-2 text-[12.5px] text-zinc-700">
+          <Warning size={14} weight="duotone" className="mt-0.5 text-amber-vd-700" />
+          <span>{state.message}</span>
+        </div>
+      )}
+      {state.kind === "done" && (
+        <div className="mt-2 text-[12.5px] text-zinc-700">
+          {state.total - state.rejected} dimension(s) appliquée(s) sur {state.total}
+          {state.rejected > 0 && (
+            <> · <span className="text-amber-vd-800">{state.rejected} rejetée(s)</span> (citation Annexe II manquante)</>
+          )}
+          <span className="ml-2 text-zinc-400">— {state.ms} ms</span>
+        </div>
+      )}
+      {state.kind === "idle" && (
+        <p className="mt-1 text-[12.5px] text-zinc-600">
+          Pré-remplit les 3 sliders C/I/D avec une justification citée de l'Annexe&nbsp;II. Vous gardez la décision finale.
+        </p>
+      )}
     </div>
   );
 }
