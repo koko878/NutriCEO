@@ -1,0 +1,17 @@
+# NutriView branch — autres projets vivent sur d'autres branches
+# (résidus de checkout depuis claude/budget-nutricrops, etc.)
+/budget-nutricrops/
+/nutrientos/
+
+# Sub-agent worktrees + OS noise
+.claude/
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Build artefacts / deps (au cas où l'agent oublie de les ignorer)
+node_modules/
+dist/
+*.tsbuildinfo
+.vite/
