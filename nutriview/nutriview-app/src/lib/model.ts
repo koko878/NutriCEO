@@ -22,6 +22,12 @@ export interface DataItem {
   sourceRef?: { fileName: string; locator: string }; // d'où l'IA l'a tirée
   proposedByAI: boolean;
   status: "draft" | "ai_classified" | "owner_validated" | "signed";
+  /** Validation owner ligne par ligne — set quand Validate confirme l'item. */
+  validation?: {
+    validatedAt: string; // ISO
+    validatedBy: string; // user_login
+    ownerNote?: string;
+  };
 }
 
 export interface ClassificationCell {
@@ -76,10 +82,21 @@ export interface Project {
   items: DataItem[];
   classifications: Record<string, Classification>;
   status: "drafting" | "in_review" | "signed" | "rejected";
+  /** Trace de l'envoi en validation (Phase 5). */
+  submission?: {
+    submittedAt: string; // ISO — passage drafting → in_review
+    submittedBy: string; // chef de projet qui a demandé la validation
+  };
   signature?: {
     signedBy: string;
     signedAt: string;
     contentHash: string; // SHA-256 du JSON canonique de la classif
+  };
+  /** Note du propriétaire en cas de rejet (Phase 5). */
+  rejection?: {
+    rejectedAt: string;
+    rejectedBy: string;
+    reason: string;
   };
 }
 

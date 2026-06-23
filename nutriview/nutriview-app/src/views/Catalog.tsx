@@ -47,7 +47,28 @@ function uid() {
     .slice(2, 8)}`;
 }
 
-function sourceBadge(source?: Project["ingestion"]["source"], locator?: string) {
+function sourceBadge(
+  source: Project["ingestion"]["source"] | undefined,
+  locator: string | undefined,
+  proposedByAI: boolean
+) {
+  // Item ajouté manuellement (aucun sourceRef, aucun flag IA) — pas de badge.
+  if (!source && !proposedByAI) return null;
+
+  // Priorité au flag IA — c'est lui qui décrit le mode réel d'apparition.
+  if (proposedByAI) {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-md bg-amber-vd-50 px-1.5 py-0.5 text-[10.5px] font-medium text-amber-vd-800 ring-1 ring-inset ring-amber-vd-200">
+        <Sparkle size={11} weight="duotone" className="text-amber-vd-700" />
+        IA · proposé
+        {locator && (
+          <span className="text-amber-vd-700/70 tabular-nums">· {locator}</span>
+        )}
+      </span>
+    );
+  }
+
+  // Sinon, badge selon la source du brief (ingestion file).
   const baseCls =
     "inline-flex items-center gap-1 rounded-md bg-zinc-50 px-1.5 py-0.5 text-[10.5px] font-medium text-zinc-600 ring-1 ring-inset ring-zinc-200";
   const tone = (icon: React.ReactNode, label: string) => (
@@ -252,7 +273,8 @@ function ReadRow({
           </button>
           {sourceBadge(
             item.sourceRef ? source : undefined,
-            item.sourceRef?.locator
+            item.sourceRef?.locator,
+            item.proposedByAI
           )}
         </div>
         {item.description && item.description !== item.name && (

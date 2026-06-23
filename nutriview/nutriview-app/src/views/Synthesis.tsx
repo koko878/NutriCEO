@@ -5,19 +5,30 @@
 // Liste données : divide-y, badge classe + verdict cloud par ligne.
 // =====================================================================
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   MapPinLine,
   ShieldCheck,
   Database,
   ChartBarHorizontal,
+  PaperPlaneTilt,
+  Tray,
+  PenNib,
+  Warning,
 } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
-import { ClasseBadge, SensibleBadge } from "../components/Badge";
+import { ClasseBadge, ProjectStatusBadge, SensibleBadge } from "../components/Badge";
 import { Verdict } from "../components/Verdict";
+import { Button } from "../components/Button";
 import type { Classe, Classification, Project } from "../lib/model";
 import { CLASSE_LABELS } from "../lib/model";
 import { graduatedMeasures } from "../lib/engine";
+import {
+  allItemsClassified,
+  computeProjectHash,
+  formatHashShort,
+} from "../lib/signature";
+import { notifySubmitForReview } from "../lib/validation";
 
 const CLASSES: Classe[] = ["I", "II", "III", "IV", "V"];
 
@@ -31,9 +42,13 @@ const BAR_BG: Record<Classe, string> = {
 
 interface Props {
   project: Project;
+  currentUser?: string;
+  /** Phase 5 — chef de projet envoie la classification en validation. */
+  onSubmitForReview?: (p: Project) => void;
 }
 
-export function Synthesis({ project }: Props) {
+export function Synthesis({ project, currentUser, onSubmitForReview }: Props) {
+  const [submitOpen, setSubmitOpen] = useState(false);
   const summary = useMemo(() => {
     const all = Object.values(project.classifications) as Classification[];
     const classified = all.length;
@@ -97,8 +112,9 @@ export function Synthesis({ project }: Props) {
       {/* Hero asymétrique : titre serif gauche · KPIs droite */}
       <header className="mb-10 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
         <div className="max-w-2xl">
-          <div className="mb-3 text-xs font-medium text-zinc-500">
-            Synthèse · {project.bu ?? "Nutricrops"} · classification DGSSI
+          <div className="mb-3 flex items-center gap-2 text-xs font-medium text-zinc-500">
+            <span>Synthèse · {project.bu ?? "Nutricrops"} · classification DGSSI</span>
+            <ProjectStatusBadge status={project.status} />
           </div>
           <h1 className="font-display text-[40px] font-semibold leading-[1.04] text-zinc-900 md:text-[48px]">
             {project.title || "(projet sans titre)"}
@@ -151,6 +167,102 @@ export function Synthesis({ project }: Props) {
             totalCount={summary.total}
             measures={projectMeasures}
           />
+        </section>
+      )}
+
+      {/* Workflow Phase 5 — envoi en validation OU rappel d'état OU signature affichée */}
+      {project.status === "drafting" && projectVerdict && (
+        <SubmitForReviewBlock
+          project={project}
+          allReady={allItemsClassified(project)}
+          opened={submitOpen}
+          onOpen={() => setSubmitOpen(true)}
+          onClose={() => setSubmitOpen(false)}
+          onConfirm={async () => {
+            setSubmitOpen(false);
+            const next: Project = {
+              ...project,
+              status: "in_review",
+              submission: {
+                submittedAt: new Date().toISOString(),
+                submittedBy: currentUser || project.owner || "anonyme",
+              },
+            };
+            onSubmitForReview?.(next);
+            // Best-effort notify backend (no-op silent en standalone).
+            try {
+              const hash = await computeProjectHash(next);
+              void notifySubmitForReview(next, hash);
+            } catch {
+              /* silencieux — la transition front a déjà eu lieu */
+            }
+          }}
+        />
+      )}
+
+      {project.status === "in_review" && (
+        <section className="mb-10 flex flex-col items-start gap-4 rounded-3xl border border-ocp-200 bg-ocp-50/40 px-7 py-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-start gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-ocp-100 text-ocp-700">
+              <Tray size={22} weight="duotone" />
+            </div>
+            <div>
+              <h3 className="font-display text-[22px] font-semibold leading-tight text-ocp-900">
+                En attente de validation propriétaire.
+              </h3>
+              <p className="mt-0.5 text-[13px] text-zinc-700">
+                Envoyé à{" "}
+                <span className="font-medium">{project.dataOwner || "—"}</span>
+                {project.submission?.submittedAt && (
+                  <>
+                    {" "}le{" "}
+                    {new Date(project.submission.submittedAt).toLocaleString(
+                      "fr-FR",
+                      { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }
+                    )}
+                  </>
+                )}
+                . Vous serez notifié à la signature.
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {project.status === "signed" && project.signature && (
+        <section className="mb-10 rounded-3xl border border-ocp-200 bg-ocp-50/40 px-7 py-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-ocp-100 text-ocp-700">
+                <ShieldCheck size={22} weight="duotone" />
+              </div>
+              <div>
+                <h3 className="font-display text-[22px] font-semibold leading-tight text-ocp-900">
+                  Classification signée.
+                </h3>
+                <p className="mt-0.5 text-[13px] text-zinc-700">
+                  Par{" "}
+                  <span className="font-medium">{project.signature.signedBy}</span>{" "}
+                  · le{" "}
+                  {new Date(project.signature.signedAt).toLocaleString("fr-FR", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col items-start md:items-end">
+              <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-zinc-500">
+                Hash SHA-256
+              </span>
+              <code className="mt-1 rounded-lg bg-white px-3 py-1.5 font-mono text-[12px] text-zinc-800 ring-1 ring-zinc-200">
+                {formatHashShort(project.signature.contentHash)}
+              </code>
+            </div>
+          </div>
         </section>
       )}
 
@@ -344,5 +456,128 @@ function DimChip({ label, value }: { label: string; value: number }) {
       <span className="font-display font-semibold">{label}</span>
       <span>{value}</span>
     </span>
+  );
+}
+
+// ---------------------------------------------------------------------
+// SubmitForReviewBlock — CTA "Envoyer en validation" + confirmation inline.
+// Bloque si toutes les données ne sont pas encore classifiées.
+// ---------------------------------------------------------------------
+function SubmitForReviewBlock({
+  project,
+  allReady,
+  opened,
+  onOpen,
+  onClose,
+  onConfirm,
+}: {
+  project: Project;
+  allReady: boolean;
+  opened: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  const dataOwner = project.dataOwner || "(propriétaire à renseigner)";
+  const total = project.items.length;
+  const classified = Object.keys(project.classifications).length;
+  return (
+    <section className="mb-10 overflow-hidden rounded-3xl border border-zinc-200 bg-white">
+      {!opened ? (
+        <div className="flex flex-col items-start gap-4 px-7 py-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-start gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-vd-50 text-amber-vd-700">
+              <PenNib size={22} weight="duotone" />
+            </div>
+            <div>
+              <h3 className="font-display text-[22px] font-semibold leading-tight text-zinc-900">
+                Prêt à envoyer pour signature.
+              </h3>
+              <p className="mt-0.5 text-[13.5px] text-zinc-600">
+                {allReady ? (
+                  <>
+                    Le propriétaire des données{" "}
+                    <span className="font-medium text-zinc-900">{dataOwner}</span>{" "}
+                    sera notifié pour valider ligne par ligne, puis signer.
+                  </>
+                ) : (
+                  <>
+                    Classifiez les{" "}
+                    <span className="tabular-nums font-medium text-amber-vd-800">
+                      {total - classified}
+                    </span>{" "}
+                    donnée(s) restante(s) avant de pouvoir envoyer en validation.
+                  </>
+                )}
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="primary"
+            icon={<PaperPlaneTilt size={16} weight="duotone" />}
+            onClick={onOpen}
+            disabled={!allReady}
+            title={
+              allReady
+                ? "Envoyer la classification au propriétaire"
+                : "Toutes les données doivent être classifiées"
+            }
+          >
+            Envoyer en validation
+          </Button>
+        </div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 180, damping: 22 }}
+          className="px-7 py-6"
+        >
+          <div className="flex items-start gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-vd-50 text-amber-vd-700">
+              <Warning size={18} weight="duotone" />
+            </div>
+            <div className="flex-1">
+              <h4 className="font-display text-[18px] font-semibold text-zinc-900">
+                Confirmer l'envoi en validation
+              </h4>
+              <p className="mt-1 text-[13px] text-zinc-600">
+                Le projet passera en statut <strong>En revue</strong>. Vous
+                pourrez encore consulter la classification mais plus la
+                modifier tant que le propriétaire n'a pas tranché (validation
+                ou retour en brouillon).
+              </p>
+              <ul className="mt-3 space-y-1.5 text-[12.5px] text-zinc-600">
+                <li className="flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-ocp-500" />
+                  Destinataire :{" "}
+                  <span className="font-medium text-zinc-900">{dataOwner}</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-ocp-500" />
+                  Données classifiées :{" "}
+                  <span className="tabular-nums font-medium text-zinc-900">
+                    {classified} / {total}
+                  </span>
+                </li>
+              </ul>
+              <div className="mt-4 flex items-center gap-2">
+                <Button variant="ghost" size="sm" onClick={onClose}>
+                  Annuler
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  icon={<PaperPlaneTilt size={14} weight="duotone" />}
+                  onClick={onConfirm}
+                >
+                  Confirmer l'envoi
+                </Button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </section>
   );
 }

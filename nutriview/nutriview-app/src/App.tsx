@@ -10,24 +10,30 @@ import {
   Sparkle,
   ChartBar,
   CaretRight,
+  Tray,
 } from "@phosphor-icons/react";
 import { store, type AppState } from "./lib/store";
 import type { Project } from "./lib/model";
+import { inboxBadgeCount } from "./lib/inbox";
 import { Projects } from "./views/Projects";
 import { Ingest } from "./views/Ingest";
 import { Catalog } from "./views/Catalog";
 import { Classify } from "./views/Classify";
 import { Synthesis } from "./views/Synthesis";
+import { Inbox } from "./views/Inbox";
+import { Validate } from "./views/Validate";
 
 // Type unifié déclaré dans src/lib/ai.ts (source de vérité — inclut aiStatus, restNs, nonce).
 // Pas de re-déclaration ici pour éviter le conflit TS2717.
 
 type View =
   | { kind: "projects" }
+  | { kind: "inbox" }
   | { kind: "ingest"; projectId: string }
   | { kind: "catalog"; projectId: string }
   | { kind: "classify"; projectId: string; itemId?: string }
-  | { kind: "synthesis"; projectId: string };
+  | { kind: "synthesis"; projectId: string }
+  | { kind: "validate"; projectId: string };
 
 export default function App() {
   const [state, setState] = useState<AppState>(() => store.load());
@@ -41,9 +47,15 @@ export default function App() {
   }, []);
 
   const activeProject = useMemo<Project | null>(() => {
-    if (view.kind === "projects") return null;
+    if (view.kind === "projects" || view.kind === "inbox") return null;
     return state.projects.find((p) => p.id === view.projectId) ?? null;
   }, [view, state.projects]);
+
+  const currentUser = window.DNAI_NVIEW?.user || "anonyme";
+  const pendingCount = useMemo(
+    () => inboxBadgeCount(state.projects, currentUser),
+    [state.projects, currentUser]
+  );
 
   const updateProject = useCallback((next: Project) => {
     store.update((prev) => ({
@@ -60,8 +72,8 @@ export default function App() {
     }));
   }, []);
 
-  const ctxUser = window.DNAI_NVIEW?.user ?? "anonyme";
-  const ver = window.DNAI_NVIEW?.ver ?? "0.2";
+  const ctxUser = currentUser;
+  const ver = window.DNAI_NVIEW?.ver ?? "0.4";
 
   return (
     <div className="min-h-[100dvh] bg-zinc-50 text-zinc-900">
@@ -80,7 +92,25 @@ export default function App() {
               D²nAI · OCP Nutricrops
             </span>
           </button>
-          <div className="flex items-center gap-4 text-[12px] text-zinc-500">
+          <div className="flex items-center gap-3 text-[12px] text-zinc-500">
+            <button
+              type="button"
+              onClick={() => setView({ kind: "inbox" })}
+              className={`relative inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[12.5px] font-medium transition-colors active:scale-[0.97] ${
+                view.kind === "inbox"
+                  ? "bg-ocp-50 text-ocp-900"
+                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+              }`}
+              aria-label={`Inbox propriétaire — ${pendingCount} en attente`}
+            >
+              <Tray size={14} weight="duotone" />
+              Inbox
+              {pendingCount > 0 && (
+                <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-amber-vd-600 px-1 text-[10.5px] font-semibold tabular-nums text-white ring-1 ring-amber-vd-700/40">
+                  {pendingCount}
+                </span>
+              )}
+            </button>
             {ctxUser !== "anonyme" && (
               <span>
                 Connecté ·{" "}
@@ -154,7 +184,25 @@ export default function App() {
               addProject(p);
               setView({ kind: "ingest", projectId: p.id });
             }}
-            onOpen={(p) => setView({ kind: "catalog", projectId: p.id })}
+            onOpen={(p) => {
+              // Quand le propriétaire ouvre un projet à valider depuis Projets,
+              // on l'envoie directement sur Validate.
+              if (
+                p.status === "in_review" &&
+                p.dataOwner.trim().toLowerCase() === ctxUser.trim().toLowerCase()
+              ) {
+                setView({ kind: "validate", projectId: p.id });
+              } else {
+                setView({ kind: "catalog", projectId: p.id });
+              }
+            }}
+          />
+        )}
+        {view.kind === "inbox" && (
+          <Inbox
+            projects={state.projects}
+            currentUser={ctxUser}
+            onOpen={(pid) => setView({ kind: "validate", projectId: pid })}
           />
         )}
         {view.kind === "ingest" && activeProject && (
@@ -186,16 +234,31 @@ export default function App() {
           />
         )}
         {view.kind === "synthesis" && activeProject && (
-          <Synthesis project={activeProject} />
+          <Synthesis
+            project={activeProject}
+            currentUser={ctxUser}
+            onSubmitForReview={(next) => {
+              updateProject(next);
+              // On reste sur la synthèse pour que le chef de projet voie le
+              // bandeau "en attente de validation".
+            }}
+          />
+        )}
+        {view.kind === "validate" && activeProject && (
+          <Validate
+            project={activeProject}
+            currentUser={ctxUser}
+            onChange={updateProject}
+            onBackToInbox={() => setView({ kind: "inbox" })}
+          />
         )}
       </main>
 
       <footer className="mx-auto max-w-[1400px] px-6 py-10 text-[11.5px] leading-relaxed text-zinc-400 sm:px-10 nv-no-print">
         <div className="border-t border-zinc-200/70 pt-6">
           <p>
-            NutriView v{ver} · phases 0-3 (moteur déterministe · UI catalogue ·
-            ingestion multi-format). IA Databricks souverain en phase 4,
-            workflow signature en phase 5.
+            NutriView v{ver} · moteur déterministe · ingestion multi-format ·
+            IA Databricks souverain · workflow signature SHA-256.
           </p>
           <p className="mt-1 text-zinc-400">
             loi 05-20 sur la cybersécurité · décret 2-21-406 · Guide
