@@ -1,0 +1,36 @@
+{
+  "name": "nutriview-app",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "NutriView — assistant de classification DGSSI (OCP Nutricrops · D²nAI). Phases 0-3 : moteur déterministe + UI catalog + ingestion multi-format. Sans IA, sans backend.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@fontsource/cormorant-garamond": "^5.2.5",
+    "@fontsource/inter": "^5.2.5",
+    "@phosphor-icons/react": "^2.1.7",
+    "framer-motion": "^12.4.7",
+    "mammoth": "^1.9.0",
+    "pdfjs-dist": "^4.10.38",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.9",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.9",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.1",
+    "vite-plugin-singlefile": "^2.1.0",
+    "vitest": "^3.0.5"
+  }
+}
