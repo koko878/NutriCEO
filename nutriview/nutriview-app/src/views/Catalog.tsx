@@ -17,11 +17,15 @@ import {
   FilePdf,
   FileDoc,
   TextAlignLeft,
+  Sparkle,
+  Warning,
+  CaretDown,
 } from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "../components/Button";
 import { PageHero } from "../components/Card";
 import type { DataItem, Project } from "../lib/model";
+import { aiExtractCatalog, aiSource, type AiExtractedItem } from "../lib/ai";
 
 interface Props {
   project: Project;
@@ -72,6 +76,7 @@ function sourceBadge(source?: Project["ingestion"]["source"], locator?: string) 
 export function Catalog({ project, onChange, onClassify }: Props) {
   const [items, setItems] = useState<DataItem[]>(project.items);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [aiPanelOpen, setAiPanelOpen] = useState(false);
 
   function persist(next: DataItem[]) {
     setItems(next);
@@ -129,6 +134,14 @@ export function Catalog({ project, onChange, onClassify }: Props) {
         right={
           <>
             <Button
+              variant="ghost"
+              icon={<Sparkle size={16} weight="duotone" />}
+              onClick={() => setAiPanelOpen((o) => !o)}
+              aria-expanded={aiPanelOpen}
+            >
+              Extraire avec IA
+            </Button>
+            <Button
               variant="secondary"
               icon={<Plus size={16} weight="bold" />}
               onClick={addRow}
@@ -151,6 +164,19 @@ export function Catalog({ project, onChange, onClassify }: Props) {
           </>
         }
       />
+
+      <AnimatePresence initial={false}>
+        {aiPanelOpen && (
+          <AiExtractPanel
+            existingNames={items.map((it) => it.name.toLowerCase().trim())}
+            onImport={(newItems) => {
+              persist([...newItems, ...items]);
+              setAiPanelOpen(false);
+            }}
+            onClose={() => setAiPanelOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
       <div className="mb-4 flex items-center gap-2 text-[12.5px] text-zinc-500">
         <Database size={14} weight="duotone" className="text-ocp-700" />
@@ -406,5 +432,268 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
         </Button>
       </div>
     </div>
+  );
+}
+
+// =====================================================================
+// AiExtractPanel — colle un brief texte, IA extrait les DataItem[] candidats,
+// utilisateur sélectionne ce qu'il importe.
+// Appelle aiExtractCatalog (proxy WP Databricks ou mock standalone).
+// =====================================================================
+function AiExtractPanel({
+  existingNames,
+  onImport,
+  onClose,
+}: {
+  existingNames: string[];
+  onImport: (items: DataItem[]) => void;
+  onClose: () => void;
+}) {
+  const [text, setText] = useState("");
+  const [state, setState] = useState<
+    | { kind: "idle" }
+    | { kind: "loading" }
+    | { kind: "error"; message: string }
+    | {
+        kind: "ready";
+        items: AiExtractedItem[];
+        selected: Set<number>;
+        source: string;
+        ms: number;
+      }
+  >({ kind: "idle" });
+
+  const minText = 40;
+
+  async function run() {
+    const trimmed = text.trim();
+    if (trimmed.length < minText) {
+      setState({
+        kind: "error",
+        message: `Collez un brief plus consistant (≥ ${minText} caractères).`,
+      });
+      return;
+    }
+    setState({ kind: "loading" });
+    const r = await aiExtractCatalog({ text: trimmed, maxItems: 20 });
+    if (!r.ok) {
+      setState({ kind: "error", message: r.message });
+      return;
+    }
+    if (!r.data.items || r.data.items.length === 0) {
+      setState({
+        kind: "error",
+        message:
+          "Aucune donnée détectée dans ce brief. Reformulez ou ajoutez manuellement.",
+      });
+      return;
+    }
+    setState({
+      kind: "ready",
+      items: r.data.items,
+      selected: new Set(r.data.items.map((_, i) => i)),
+      source: r.source,
+      ms: r.durationMs,
+    });
+  }
+
+  function toggleSelected(idx: number) {
+    if (state.kind !== "ready") return;
+    const next = new Set(state.selected);
+    if (next.has(idx)) {
+      next.delete(idx);
+    } else {
+      next.add(idx);
+    }
+    setState({ ...state, selected: next });
+  }
+
+  function importNow() {
+    if (state.kind !== "ready") return;
+    const picked: DataItem[] = state.items
+      .map((it, i) => ({ it, i }))
+      .filter(({ i }) => state.selected.has(i))
+      .filter(
+        ({ it }) =>
+          !existingNames.includes(it.name.toLowerCase().trim())
+      )
+      .map(({ it }) => ({
+        id: `item_${Date.now().toString(36)}_${Math.random()
+          .toString(36)
+          .slice(2, 6)}`,
+        name: it.name,
+        description: it.description,
+        cycleLifeStates: [],
+        sourceRef: it.locator
+          ? { fileName: "(brief IA)", locator: it.locator }
+          : undefined,
+        proposedByAI: true,
+        status: "draft",
+      }));
+    onImport(picked);
+  }
+
+  return (
+    <motion.section
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: 0 }}
+      transition={{ type: "spring", stiffness: 150, damping: 22 }}
+      className="mb-6 overflow-hidden rounded-3xl border border-amber-vd-200 bg-amber-vd-50/40"
+    >
+      <div className="px-6 py-5">
+        <div className="mb-3 flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 text-[11.5px] font-medium text-amber-vd-800">
+            <Sparkle size={14} weight="duotone" />
+            Extraction IA · à valider
+          </div>
+          <span className="text-[11px] text-zinc-500">
+            Source :{" "}
+            <code className="rounded bg-white px-1.5 py-0.5 font-mono text-[10.5px] text-amber-vd-800 ring-1 ring-amber-vd-200">
+              {aiSource()}
+            </code>
+          </span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            icon={<X size={14} weight="bold" />}
+            aria-label="Fermer le panneau d'extraction IA"
+            className="ml-auto"
+          />
+        </div>
+
+        {state.kind !== "ready" && (
+          <>
+            <label
+              htmlFor="ai-extract-text"
+              className="mb-1 block text-[11.5px] font-medium text-zinc-500"
+            >
+              Collez le brief projet (Word, PDF, slide deck, mail…)
+            </label>
+            <textarea
+              id="ai-extract-text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              rows={6}
+              placeholder="Ex. Le projet COO Cockpit consolide les données financières mensuelles, les indicateurs de production, la liste des contrats fournisseurs et la base des clients institutionnels…"
+              className="w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-[13.5px] focus:border-amber-vd-500 focus:outline-none"
+            />
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <span className="text-[11.5px] text-zinc-500 tabular-nums">
+                {text.trim().length} / {minText} caractères minimum
+              </span>
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={<Sparkle size={14} weight="duotone" />}
+                onClick={run}
+                disabled={state.kind === "loading"}
+              >
+                {state.kind === "loading"
+                  ? "Analyse en cours…"
+                  : "Analyser le brief"}
+              </Button>
+            </div>
+            {state.kind === "error" && (
+              <div className="mt-3 flex items-start gap-2 text-[12.5px] text-amber-vd-900">
+                <Warning
+                  size={14}
+                  weight="duotone"
+                  className="mt-0.5 text-amber-vd-700"
+                />
+                <span>{state.message}</span>
+              </div>
+            )}
+          </>
+        )}
+
+        {state.kind === "ready" && (
+          <div>
+            <div className="mb-3 flex items-center justify-between gap-3 text-[12.5px]">
+              <span className="text-zinc-700">
+                <span className="tabular-nums font-medium">
+                  {state.items.length}
+                </span>{" "}
+                donnée(s) détectée(s) ·{" "}
+                <span className="tabular-nums font-medium">
+                  {state.selected.size}
+                </span>{" "}
+                sélectionnée(s)
+              </span>
+              <span className="text-[11px] text-zinc-400 tabular-nums">
+                {state.ms} ms
+              </span>
+            </div>
+            <ul className="divide-y divide-amber-vd-100 overflow-hidden rounded-2xl border border-amber-vd-100 bg-white">
+              {state.items.map((it, idx) => {
+                const dup = existingNames.includes(
+                  it.name.toLowerCase().trim()
+                );
+                const checked = state.selected.has(idx);
+                return (
+                  <li key={idx} className="px-4 py-3">
+                    <label className="flex cursor-pointer items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={checked && !dup}
+                        disabled={dup}
+                        onChange={() => toggleSelected(idx)}
+                        className="mt-1 h-4 w-4 accent-ocp-600"
+                        aria-label={`Importer ${it.name}`}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-medium text-zinc-900">
+                            {it.name}
+                          </span>
+                          {it.locator && (
+                            <span className="text-[10.5px] text-zinc-400 tabular-nums">
+                              {it.locator}
+                            </span>
+                          )}
+                          {dup && (
+                            <span className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium text-zinc-500">
+                              déjà présent
+                            </span>
+                          )}
+                        </div>
+                        {it.description && (
+                          <p className="mt-1 text-[12.5px] text-zinc-600">
+                            {it.description}
+                          </p>
+                        )}
+                      </div>
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+            <div className="mt-3 flex items-center justify-end gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                icon={<CaretDown size={14} weight="bold" />}
+                onClick={() =>
+                  setState({ kind: "idle" })
+                }
+              >
+                Modifier le brief
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                icon={<Plus size={14} weight="bold" />}
+                onClick={importNow}
+                disabled={state.selected.size === 0}
+              >
+                Importer {state.selected.size} donnée
+                {state.selected.size > 1 ? "s" : ""}
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </motion.section>
   );
 }
