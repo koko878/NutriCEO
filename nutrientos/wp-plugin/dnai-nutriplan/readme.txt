@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.21.0
+Stable tag: 0.21.1
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,56 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.21.1 — Coach D²nAI refondu en guided tour Intercom-style =
+* REFONTE COMPLÈTE du coach : remplacement des hints contextuels passifs
+  par un vrai tour guidé pas-à-pas style Intercom Product Tours / Pendo /
+  Driver.js :
+  - Overlay fixed plein-écran avec backdrop semi-transparent rgba(8,16,
+    12,.62) et SVG mask qui découpe un trou (spotlight) animé autour de
+    l'élément cible (transition 320ms ease-out-quart sur x/y/width/
+    height — le trou « glisse » d'une étape à l'autre).
+  - Popover positionné automatiquement (top/bottom/left/right/center)
+    autour de la cible avec flèche, clampé au viewport. Animation
+    d'entrée spring cubic-bezier(.34,1.56,.64,1) sur scale+translateY.
+  - Header : eyebrow « Coach D²nAI » avec dot pulse, bouton ×.
+  - Titre en Cormorant Garamond serif (charte D²nAI), body en Inter.
+  - Footer : barre de progression dégradée vert + compteur « 3 / 8 »,
+    boutons ghost « ← Précédent » / « Ignorer » et primary « Suivant → »
+    (ou « Terminer ✓ » sur la dernière étape).
+  - ResizeObserver qui repositionne le popover et le spotlight en
+    temps réel quand la fenêtre ou la cible change de taille.
+  - Auto-scroll smooth de la cible vers le centre du viewport avant
+    affichage.
+  - Raccourcis clavier : ESC = skip, ← = précédent, → / Enter = suivant.
+  - 3 TOURS définis :
+    * welcome (8 étapes, ~3 min) : auto-déclenché à la 1ère visite —
+      navigation, cockpit, impersonate, soumission, bot D²nAI, toggle
+      coach.
+    * portfolio (3 étapes) : CXTAB projets↔trials, filtres, détail.
+    * intake (4 étapes) : ID auto, projet parent, budget USD, brouillon
+      vs soumission.
+* FIX BOUTON TOGGLE qui ne marchait pas en v0.21.0 :
+  - Le bouton 💡 lance directement le tour (clic gauche) au lieu d'ouvrir
+    un menu vide.
+  - Clic droit ouvre le menu déroulant avec :
+    * ▶ Relancer le tour guidé (8 étapes)
+    * 📊 Tour Portefeuille (3 étapes)
+    * 📝 Tour Soumission (4 étapes)
+    * 🔕 Désactiver / 🔔 Activer le coach
+  - CSS .tb-coach-menu corrigée (opacity+transform+pointer-events).
+* Checklist sidebar : ajout du bouton « ▶ Relancer le tour guidé »
+  en tête du panneau.
+* Persistance étendue : PREFS.coach = { enabled, tourSeen[id],
+  dismissedTour }. Un tour vu ne se relance pas tout seul ; l'utilisateur
+  doit cliquer explicitement sur 💡 ou « Relancer ».
+* Respect prefers-reduced-motion (transitions désactivées).
+* Responsive mobile : popover plein-largeur (12px de gouttière), titre
+  réduit.
+* i18n : 60+ nouvelles clés FR/EN/PT pour les 3 tours.
+* Smoke E2E np-smoke-v21-tour.mjs : EXIT=0, 13 checks (auto-launch,
+  step navigation, prev/next/skip, toggle click → relance tour,
+  contextmenu → menu, disable/enable, multi-tour portfolio).
 
 = 0.21.0 — Coach D²nAI guide intelligent + Gouvernance paramétrable + B6-B9 fixes =
 * COACH D²nAI (4 piliers, guide intelligent pour utilisateurs novices) :

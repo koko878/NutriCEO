@@ -1408,6 +1408,133 @@ body::after{
   animation:coachSpot 1.6s var(--ease-out-quart) infinite;
 }
 
+/* ============================================================
+ * v0.21.1 — GUIDED TOUR : overlay backdrop avec spotlight cutout
+ * (SVG mask) + popover positionné + animation spring
+ * ============================================================ */
+.coach-tour-ov{
+  position:fixed;inset:0;z-index:10000;pointer-events:none;
+  opacity:0;transition:opacity 260ms var(--ease-out-quart);
+}
+.coach-tour-ov.on{opacity:1;pointer-events:auto}
+.coach-tour-mask{position:absolute;inset:0;width:100%;height:100%;display:block}
+.coach-tour-bg{fill:rgba(8,16,12,.62)}
+
+@keyframes coachHoleBreathe{
+  0%,100%{filter:drop-shadow(0 0 0 rgba(124,252,154,0))}
+  50%{filter:drop-shadow(0 0 24px rgba(124,252,154,.35))}
+}
+#coachSpotHole{
+  transition:x 320ms var(--ease-out-quart), y 320ms var(--ease-out-quart),
+             width 320ms var(--ease-out-quart), height 320ms var(--ease-out-quart);
+}
+
+.coach-tour-pop{
+  position:fixed;background:#fff;border-radius:16px;
+  box-shadow:0 24px 72px -16px rgba(8,30,16,.32), 0 0 0 1px rgba(46,125,50,.06);
+  padding:20px 22px 18px;width:380px;max-width:calc(100vw - 24px);
+  opacity:0;transform:scale(.94) translateY(8px);
+  transition:opacity 280ms var(--ease-out-quart), transform 280ms cubic-bezier(.34,1.56,.64,1);
+  z-index:10001;pointer-events:auto;
+}
+.coach-tour-pop.in{opacity:1;transform:scale(1) translateY(0)}
+.coach-tour-pop.coach-tour-pop--center{
+  background:linear-gradient(180deg,#fff 0%, #f9fef9 100%);
+  padding:32px 32px 26px;width:440px;
+  box-shadow:0 32px 88px -20px rgba(8,30,16,.42), 0 0 0 1px rgba(46,125,50,.08);
+}
+.coach-tour-pop-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.coach-tour-eyebrow{
+  display:inline-flex;align-items:center;gap:6px;
+  font:700 10px/1 'Inter';color:var(--green-700);
+  text-transform:uppercase;letter-spacing:.1em;
+}
+.coach-tour-dot{
+  width:7px;height:7px;border-radius:50%;background:var(--green-500);
+  box-shadow:0 0 0 0 rgba(76,175,80,.6);
+  animation:pulseDot 2s var(--ease-out-quart) infinite;
+}
+.coach-tour-x{
+  background:#f3f6f3;border:0;cursor:pointer;
+  width:26px;height:26px;border-radius:50%;
+  display:grid;place-items:center;font:600 16px 'Inter';color:var(--muted);line-height:1;
+  transition:.18s;
+}
+.coach-tour-x:hover{background:#fde7e7;color:var(--bad)}
+.coach-tour-title{
+  font:700 19px/1.25 'Cormorant Garamond', Georgia, serif;
+  color:var(--green-900);margin:0 0 8px;letter-spacing:-.01em;
+}
+.coach-tour-pop--center .coach-tour-title{font-size:24px}
+.coach-tour-body{
+  font:500 14px/1.55 'Inter';color:var(--ink-2);margin:0 0 18px;
+}
+.coach-tour-pop--center .coach-tour-body{font-size:14.5px}
+.coach-tour-foot{display:flex;flex-direction:column;gap:12px}
+.coach-tour-prog{display:flex;align-items:center;gap:10px}
+.coach-tour-prog-bar{
+  flex:1;height:5px;background:rgba(46,125,50,.10);border-radius:999px;overflow:hidden;
+}
+.coach-tour-prog-fill{
+  height:100%;background:linear-gradient(90deg,var(--green-600),var(--green-500));
+  border-radius:999px;transition:width 320ms var(--ease-out-quart);
+}
+.coach-tour-step{
+  font:700 11px/1 'JetBrains Mono', ui-monospace, monospace;
+  color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+}
+.coach-tour-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.coach-tour-btn{
+  font:600 13px/1 'Inter';padding:9px 14px;border-radius:9px;cursor:pointer;
+  border:1px solid transparent;transition:.18s;
+}
+.coach-tour-btn.ghost{background:transparent;color:var(--muted);border-color:transparent}
+.coach-tour-btn.ghost:hover{background:var(--green-50);color:var(--green-800)}
+.coach-tour-btn.primary{
+  background:var(--green-700);color:#fff;
+  box-shadow:0 4px 12px -2px rgba(46,125,50,.32);
+}
+.coach-tour-btn.primary:hover{background:var(--green-800);transform:translateY(-1px);box-shadow:0 6px 16px -2px rgba(46,125,50,.42)}
+.coach-tour-btn.primary:active{transform:translateY(0)}
+
+/* Petite flèche pointant vers la cible (pseudo, optionnelle) */
+.coach-tour-arrow{
+  position:absolute;width:14px;height:14px;background:#fff;
+  transform:rotate(45deg);box-shadow:0 0 0 1px rgba(46,125,50,.06);
+}
+.coach-tour-arrow--bottom{top:-7px;left:24px}
+.coach-tour-arrow--top{bottom:-7px;left:24px}
+.coach-tour-arrow--right{left:-7px;top:24px}
+.coach-tour-arrow--left{right:-7px;top:24px}
+.coach-tour-pop--center .coach-tour-arrow,
+.coach-tour-pop[data-placement="center"] .coach-tour-arrow{display:none}
+
+/* Bouton replay en haut de la checklist */
+.coach-cl-replay{
+  display:block;width:calc(100% - 28px);margin:6px 14px 12px;
+  background:linear-gradient(135deg,var(--green-700),var(--green-800));
+  color:#fff;border:0;border-radius:8px;padding:9px 12px;cursor:pointer;
+  font:600 12px 'Inter';text-align:left;
+  box-shadow:0 4px 12px -2px rgba(46,125,50,.4);
+  transition:.18s;
+}
+.coach-cl-replay:hover{transform:translateY(-1px);box-shadow:0 6px 16px -2px rgba(46,125,50,.5)}
+
+/* Séparateur dans le menu coach */
+.tb-coach-sep{height:1px;background:var(--line);margin:6px 4px}
+
+@media(max-width:760px){
+  .coach-tour-pop{width:calc(100vw - 24px)!important;left:12px!important;right:12px}
+  .coach-tour-pop--center{width:calc(100vw - 24px)!important;padding:24px 20px 20px}
+  .coach-tour-title{font-size:18px}
+  .coach-tour-pop--center .coach-tour-title{font-size:21px}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .coach-tour-ov,.coach-tour-pop,#coachSpotHole{transition:none!important}
+  .coach-tour-dot,.tb-coach.on::after{animation:none!important}
+}
+
 /* Mobile : checklist masquée, coach bar compacte */
 @media(max-width:760px){
   .coach-bar{grid-template-columns:32px 1fr auto;padding:10px 12px;gap:10px}
@@ -1707,15 +1834,21 @@ body.imp-on[data-imp-role="ceo_approver"] .sb-item[data-v="admin"]{
       Vue
       <select id="impSel" onchange="setImpersonate(this.value)" aria-label="Se faire passer pour un rôle"></select>
     </label>
-    <!-- v0.21 — Coach D²nAI toggle (guide intelligent on/off) -->
-    <button id="coachToggle" class="tb-coach" type="button" onclick="document.getElementById('coachMenu').classList.toggle('on')" aria-haspopup="menu" aria-label="Coach D²nAI">
+    <!-- v0.21.1 — Coach D²nAI : 💡 = lance le tour guidé / clic-droit = menu -->
+    <button id="coachToggle" class="tb-coach" type="button"
+            onclick="if(COACH.isOn()) COACH.startTour('welcome'); else { COACH.enable(); COACH.startTour('welcome'); }"
+            oncontextmenu="event.preventDefault();document.getElementById('coachMenu').classList.toggle('on')"
+            aria-haspopup="menu" aria-label="Coach D²nAI · cliquer pour lancer le tour">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2a7 7 0 00-4 12.7V17a2 2 0 002 2h4a2 2 0 002-2v-2.3A7 7 0 0012 2z"/><path d="M9 22h6"/></svg>
     </button>
     <div id="coachMenu" class="tb-coach-menu" role="menu" onclick="event.stopPropagation()">
       <div class="tb-coach-h">Coach D²nAI</div>
-      <button role="menuitem" onclick="COACH.toggle('novice');document.getElementById('coachMenu').classList.remove('on')">Novice <span>guide complet</span></button>
-      <button role="menuitem" onclick="COACH.toggle('inter');document.getElementById('coachMenu').classList.remove('on')">Intermédiaire <span>hints discrets</span></button>
-      <button role="menuitem" onclick="COACH.toggle('off');document.getElementById('coachMenu').classList.remove('on')">Désactivé <span>plus aucun hint</span></button>
+      <button role="menuitem" type="button" onclick="document.getElementById('coachMenu').classList.remove('on');COACH.startTour('welcome')">▶ Relancer le tour guidé <span>8 étapes · ~3 min</span></button>
+      <button role="menuitem" type="button" onclick="document.getElementById('coachMenu').classList.remove('on');COACH.startTour('portfolio')">📊 Tour Portefeuille <span>3 étapes</span></button>
+      <button role="menuitem" type="button" onclick="document.getElementById('coachMenu').classList.remove('on');COACH.startTour('intake')">📝 Tour Soumission <span>4 étapes</span></button>
+      <div class="tb-coach-sep"></div>
+      <button role="menuitem" type="button" onclick="document.getElementById('coachMenu').classList.remove('on');COACH.disable()">🔕 Désactiver le coach</button>
+      <button role="menuitem" type="button" onclick="document.getElementById('coachMenu').classList.remove('on');COACH.enable()">🔔 Activer le coach</button>
     </div>
     <button class="tb-btn primary" onclick="goView('intake')" id="btnTopIntake">+ New Use Case</button>
     <button class="tb-btn ai" onclick="toggleChat()"><span class="dot"></span> D²nAI bot</button>
@@ -2115,6 +2248,45 @@ fr:{
  'adm.ps.h':'🤝 Partner Setup Types','adm.ps.sub':'— 3 modes contractuels',
  'adm.mp.h':'🧭 Macro-phases du cycle','adm.mp.sub':'— 4 phases officielles',
  'adm.fw.h':'📜 Trial Management Framework v1.0','adm.fw.body':'Document validé et signé par le CEO. 10 sections · 22 contrôles internes · 4 KPIs · 6 objectifs stratégiques · 4 classes × types · 3 setups partenaire · 4 macro-phases. NutriPlan opérationnalise ce document ligne par ligne.',
+ // v0.21.1 — Guided tour (Intercom-style step-by-step)
+ 'tour.eyebrow':'Coach D²nAI','tour.next':'Suivant','tour.prev':'Précédent','tour.skip':'Ignorer le tour','tour.finish':'Terminer le tour',
+ 'tour.done':'Tour terminé. Tu peux le relancer depuis le bouton 💡 en haut.',
+ 'tour.skipped':'Tour ignoré. Tu peux le relancer depuis le bouton 💡 en haut.',
+ 'tour.disabled':'Coach désactivé. Active-le depuis le menu 💡 (clic droit).',
+ 'tour.enabled':'Coach activé. Le bouton 💡 lance le tour guidé.',
+ 'tour.toggle.on.tt':'Coach actif · clic pour lancer le tour · clic droit pour le menu',
+ 'tour.toggle.off.tt':'Coach désactivé · clic pour activer + lancer le tour',
+ 'tour.replay':'Relancer le tour guidé',
+ 'tour.cl.title':'Première semaine sur NutriPlan',
+ 'tour.cl.cockpit':'Consulte le cockpit','tour.cl.portfolio':'Découvre le portefeuille',
+ 'tour.cl.openUc':'Ouvre le détail d\'un trial','tour.cl.createUc':'Crée ton 1er Use Case',
+ 'tour.cl.askBot':'Pose une question au bot D²nAI','tour.cl.gov':'Consulte la gouvernance & comités','tour.cl.admin':'Découvre la matrice RBAC (Admin)',
+ // Welcome tour — 8 étapes
+ 'tour.welcome.t1':'Bienvenue dans NutriPlan',
+ 'tour.welcome.b1':'Le cockpit qui couvre tout le cycle amont de gestion des trials : intake, gouvernance, monitoring, clôture. Laisse-toi guider en 8 étapes, ça prend 3 minutes. Tu peux skipper quand tu veux.',
+ 'tour.welcome.t2':'La navigation principale',
+ 'tour.welcome.b2':'6 entrées épurées : Cockpit, Portefeuille, Soumettre, Gouvernance, Knowledge Base, Admin. Les onglets contextuels (CXTAB) en haut de chaque écran te donnent les sous-vues (analytique, projets, calendrier, contrôles).',
+ 'tour.welcome.t3':'Vue d\'orientation au cockpit',
+ 'tour.welcome.b3':'KPIs portefeuille, alertes, activité récente, heatmap par BU et culture. C\'est ta vue de pilotage quotidienne.',
+ 'tour.welcome.t4':'Démo RBAC en attendant le SSO',
+ 'tour.welcome.b4':'Tu peux te faire passer pour un autre rôle (lecteur, contributeur, CEO…) pour voir ce qu\'il verrait. En lecture seule, ça ne touche pas les données. Sera remplacé par Entra ID Sept 2026.',
+ 'tour.welcome.t5':'Soumettre un nouveau trial',
+ 'tour.welcome.b5':'Le bouton principal pour démarrer une soumission. Formulaire en 5 étapes : objectifs → périmètre → MDS → budget → protocole. ID auto, budget en USD, seuils CEO et Fast Track paramétrables.',
+ 'tour.welcome.t6':'D²nAI bot, ton co-pilote',
+ 'tour.welcome.b6':'Chat avec tes données trials : portefeuille, MDS, gates, comités. Pose une question en langage naturel, il te répond en s\'appuyant sur la BDD réelle.',
+ 'tour.welcome.t7':'Relancer ce tour quand tu veux',
+ 'tour.welcome.b7':'Ce bouton 💡 lance le tour guidé. Clic-droit pour accéder à 3 tours spécialisés (Portefeuille, Soumission) ou désactiver le coach.',
+ 'tour.welcome.t8':'Prêt à explorer',
+ 'tour.welcome.b8':'Tu as les bases. La checklist en bas-gauche te suit dans tes premières actions. Bonne navigation — et n\'hésite pas à laisser du feedback en clic-droit n\'importe où.',
+ // Portfolio tour
+ 'tour.pf.t1':'Bascule projets ↔ trials','tour.pf.b1':'Le portefeuille a 2 niveaux : projets (Call for Proposal) et trials (les vrais essais). L\'onglet CXTAB en haut bascule entre les deux.',
+ 'tour.pf.t2':'Filtres rapides','tour.pf.b2':'Filtre par BU, statut, recherche libre. Tout est combinable. Click sur une ligne ouvre le détail trial avec MDS, KPIs, risques, gates.',
+ 'tour.pf.t3':'Le détail trial','tour.pf.b3':'Click sur n\'importe quelle ligne pour ouvrir la fiche complète : objectifs, KPIs, MDS, partenaire, gates de gouvernance, risques.',
+ // Intake tour
+ 'tour.in.t1':'L\'identifiant auto-généré','tour.in.b1':'Format UC-AAAA-NNN attribué à la soumission. Visible ici à titre indicatif pour que tu ne sois pas surpris.',
+ 'tour.in.t2':'Projet de rattachement','tour.in.b2':'Un trial appartient à un projet (Call for Proposal). Sélectionner d\'abord le projet : entité, pays, culture, partenaire sont hérités automatiquement.',
+ 'tour.in.t3':'Budget en USD','tour.in.b3':'Tous les budgets sont consolidés en USD pour comparaison cross-BU. Au-delà du seuil paramétré (Admin > Gouvernance), décision CEO obligatoire.',
+ 'tour.in.t4':'Brouillon ou soumettre','tour.in.b4':'Brouillon : sauvegarde sans envoi en revue. Soumettre : envoie au Steering Committee. Le protocole Word est obligatoire pour la soumission.',
  'adm.t.ref':'Référentiels','adm.t.frame':'Cadre v1.0','adm.t.gov':'Gouvernance','adm.t.access':'Accès & rôles','adm.t.integr':'Intégrations',
  'adm.gov.lead':'Paramètres de gouvernance : matrice RACI, seuils déclenchant la décision CEO, éligibilité Fast Track, SLA par étape. Toute modification est propagée immédiatement.',
  'adm.gov.raci.h':'Matrice RACI éditable','adm.gov.raci.sub':'(11 étapes × 5 rôles)','adm.gov.raci.help':'Pour chaque étape, choisis qui Réalise (R), est Accountable (A), est Consulté (C) ou Informé (I).',
@@ -2407,6 +2579,42 @@ en:{
  'adm.ps.h':'🤝 Partner Setup Types','adm.ps.sub':'— 3 contractual modes',
  'adm.mp.h':'🧭 Cycle macro-phases','adm.mp.sub':'— 4 official phases',
  'adm.fw.h':'📜 Trial Management Framework v1.0','adm.fw.body':'Validated document signed by the CEO. 10 sections · 22 internal controls · 4 KPIs · 6 strategic objectives · 4 classes × types · 3 partner setups · 4 macro-phases. NutriPlan operationalises this document line by line.',
+ // v0.21.1 — Guided tour
+ 'tour.eyebrow':'D²nAI Coach','tour.next':'Next','tour.prev':'Back','tour.skip':'Skip tour','tour.finish':'Finish tour',
+ 'tour.done':'Tour completed. You can replay it anytime via the 💡 button at the top.',
+ 'tour.skipped':'Tour skipped. You can replay it via the 💡 button at the top.',
+ 'tour.disabled':'Coach disabled. Re-enable from the 💡 menu (right-click).',
+ 'tour.enabled':'Coach enabled. The 💡 button launches the guided tour.',
+ 'tour.toggle.on.tt':'Coach on · click to launch tour · right-click for menu',
+ 'tour.toggle.off.tt':'Coach off · click to enable + launch tour',
+ 'tour.replay':'Replay guided tour',
+ 'tour.cl.title':'Your first week on NutriPlan',
+ 'tour.cl.cockpit':'Visit the cockpit','tour.cl.portfolio':'Explore the portfolio',
+ 'tour.cl.openUc':'Open a trial detail','tour.cl.createUc':'Create your first Use Case',
+ 'tour.cl.askBot':'Ask the D²nAI bot a question','tour.cl.gov':'Check governance & committees','tour.cl.admin':'Explore the RBAC matrix (Admin)',
+ 'tour.welcome.t1':'Welcome to NutriPlan',
+ 'tour.welcome.b1':'The cockpit covering the full upstream trial lifecycle: intake, governance, monitoring, closure. Let us walk you through in 8 steps — takes 3 minutes. Skip anytime.',
+ 'tour.welcome.t2':'Main navigation',
+ 'tour.welcome.b2':'6 streamlined entries: Cockpit, Portfolio, Submit, Governance, Knowledge Base, Admin. Contextual tabs (CXTAB) on each screen give you the sub-views.',
+ 'tour.welcome.t3':'Orientation view',
+ 'tour.welcome.b3':'Portfolio KPIs, alerts, recent activity, heatmap by BU & crop. Your daily pilot view.',
+ 'tour.welcome.t4':'RBAC demo until SSO',
+ 'tour.welcome.b4':'You can impersonate another role (reader, contributor, CEO…) to see what they\'d see. Read-only mode, no data side effects. Will be replaced by Entra ID Sept 2026.',
+ 'tour.welcome.t5':'Submit a new trial',
+ 'tour.welcome.b5':'The main button to start a submission. 5-step form: objectives → scope → MDS → budget → protocol. Auto ID, USD budget, configurable CEO & Fast Track thresholds.',
+ 'tour.welcome.t6':'D²nAI bot, your co-pilot',
+ 'tour.welcome.b6':'Chat with your trial data: portfolio, MDS, gates, committees. Ask a question in plain language, it answers from the real DB.',
+ 'tour.welcome.t7':'Replay this tour anytime',
+ 'tour.welcome.b7':'This 💡 button launches the guided tour. Right-click for 3 specialized tours (Portfolio, Submit) or to disable the coach.',
+ 'tour.welcome.t8':'Ready to explore',
+ 'tour.welcome.b8':'You have the basics. The checklist bottom-left follows your first actions. Happy navigating — feel free to right-click anywhere to leave feedback.',
+ 'tour.pf.t1':'Toggle projects ↔ trials','tour.pf.b1':'The portfolio has 2 levels: projects (Call for Proposal) and trials (real experiments). The CXTAB at the top toggles between the two.',
+ 'tour.pf.t2':'Quick filters','tour.pf.b2':'Filter by BU, status, free search. All combinable. Click a row to open the trial detail with MDS, KPIs, risks, gates.',
+ 'tour.pf.t3':'Trial detail','tour.pf.b3':'Click any row to open the full record: objectives, KPIs, MDS, partner, governance gates, risks.',
+ 'tour.in.t1':'Auto-generated identifier','tour.in.b1':'Format UC-YYYY-NNN assigned on submission. Shown here for reference so you\'re not surprised.',
+ 'tour.in.t2':'Parent project','tour.in.b2':'A trial belongs to a project (Call for Proposal). Pick the project first: entity, country, crop, partner are auto-inherited.',
+ 'tour.in.t3':'Budget in USD','tour.in.b3':'All budgets consolidated in USD for cross-BU comparison. Above the configured threshold (Admin > Governance), CEO decision is mandatory.',
+ 'tour.in.t4':'Draft or submit','tour.in.b4':'Draft: save without review submission. Submit: send to Steering Committee. The Word protocol is mandatory for submission.',
  'adm.t.ref':'Reference data','adm.t.frame':'Framework v1.0','adm.t.gov':'Governance','adm.t.access':'Access & roles','adm.t.integr':'Integrations',
  'adm.gov.lead':'Governance settings: RACI matrix, CEO decision thresholds, Fast Track eligibility, per-step SLAs. Changes propagate immediately.',
  'adm.gov.raci.h':'Editable RACI matrix','adm.gov.raci.sub':'(11 steps × 5 roles)','adm.gov.raci.help':'For each step, choose who is Responsible (R), Accountable (A), Consulted (C) or Informed (I).',
@@ -2698,6 +2906,42 @@ pt:{
  'adm.ps.h':'🤝 Partner Setup Types','adm.ps.sub':'— 3 modos contratuais',
  'adm.mp.h':'🧭 Macro-fases do ciclo','adm.mp.sub':'— 4 fases oficiais',
  'adm.fw.h':'📜 Trial Management Framework v1.0','adm.fw.body':'Documento validado e assinado pelo CEO. 10 seções · 22 controles internos · 4 KPIs · 6 objetivos estratégicos · 4 classes × types · 3 setups de parceiro · 4 macro-fases. NutriPlan operacionaliza esse documento linha a linha.',
+ // v0.21.1 — Tour guiado (PT-BR)
+ 'tour.eyebrow':'Coach D²nAI','tour.next':'Próximo','tour.prev':'Anterior','tour.skip':'Pular tour','tour.finish':'Concluir tour',
+ 'tour.done':'Tour concluído. Você pode reiniciá-lo pelo botão 💡 no topo.',
+ 'tour.skipped':'Tour pulado. Você pode reiniciá-lo pelo botão 💡 no topo.',
+ 'tour.disabled':'Coach desativado. Reative no menu 💡 (clique direito).',
+ 'tour.enabled':'Coach ativado. O botão 💡 abre o tour guiado.',
+ 'tour.toggle.on.tt':'Coach ativo · clique para iniciar tour · clique direito para o menu',
+ 'tour.toggle.off.tt':'Coach desativado · clique para ativar + iniciar tour',
+ 'tour.replay':'Reiniciar tour guiado',
+ 'tour.cl.title':'Sua primeira semana no NutriPlan',
+ 'tour.cl.cockpit':'Visite o cockpit','tour.cl.portfolio':'Explore o portfólio',
+ 'tour.cl.openUc':'Abra o detalhe de um trial','tour.cl.createUc':'Crie seu 1º Use Case',
+ 'tour.cl.askBot':'Faça uma pergunta ao bot D²nAI','tour.cl.gov':'Consulte governança & comitês','tour.cl.admin':'Explore a matriz RBAC (Admin)',
+ 'tour.welcome.t1':'Bem-vindo ao NutriPlan',
+ 'tour.welcome.b1':'O cockpit que cobre todo o ciclo upstream de gestão de trials: intake, governança, monitoramento, fechamento. Deixe-nos guiá-lo em 8 etapas — leva 3 minutos. Pule quando quiser.',
+ 'tour.welcome.t2':'Navegação principal',
+ 'tour.welcome.b2':'6 entradas simplificadas: Cockpit, Portfólio, Submeter, Governança, KB, Admin. Abas contextuais (CXTAB) em cada tela dão as sub-visões.',
+ 'tour.welcome.t3':'Visão de orientação',
+ 'tour.welcome.b3':'KPIs do portfólio, alertas, atividade recente, heatmap por BU e cultura. Sua visão diária de pilotagem.',
+ 'tour.welcome.t4':'Demo RBAC até o SSO',
+ 'tour.welcome.b4':'Você pode se passar por outro papel (leitor, contribuinte, CEO…) para ver o que ele veria. Modo leitura, sem efeitos colaterais. Será substituído por Entra ID Set 2026.',
+ 'tour.welcome.t5':'Submeter um novo trial',
+ 'tour.welcome.b5':'Botão principal para iniciar uma submissão. Formulário em 5 etapas: objetivos → escopo → MDS → orçamento → protocolo. ID auto, orçamento em USD, limites CEO e Fast Track parametrizáveis.',
+ 'tour.welcome.t6':'D²nAI bot, seu copiloto',
+ 'tour.welcome.b6':'Chat com seus dados de trials: portfólio, MDS, gates, comitês. Pergunte em linguagem natural, ele responde com base no BD real.',
+ 'tour.welcome.t7':'Reinicie este tour quando quiser',
+ 'tour.welcome.b7':'Este botão 💡 inicia o tour guiado. Clique direito para acessar 3 tours especializados (Portfólio, Submissão) ou desativar o coach.',
+ 'tour.welcome.t8':'Pronto para explorar',
+ 'tour.welcome.b8':'Você tem o básico. A checklist no canto inferior esquerdo segue suas primeiras ações. Boa navegação — clique direito em qualquer lugar para deixar feedback.',
+ 'tour.pf.t1':'Alterne projetos ↔ trials','tour.pf.b1':'O portfólio tem 2 níveis: projetos (Call for Proposal) e trials (experimentos reais). O CXTAB no topo alterna entre eles.',
+ 'tour.pf.t2':'Filtros rápidos','tour.pf.b2':'Filtre por BU, status, busca livre. Tudo combinável. Clique em uma linha para abrir o detalhe do trial com MDS, KPIs, riscos, gates.',
+ 'tour.pf.t3':'Detalhe do trial','tour.pf.b3':'Clique em qualquer linha para abrir o registro completo: objetivos, KPIs, MDS, parceiro, gates de governança, riscos.',
+ 'tour.in.t1':'Identificador auto-gerado','tour.in.b1':'Formato UC-AAAA-NNN atribuído na submissão. Mostrado aqui para referência.',
+ 'tour.in.t2':'Projeto pai','tour.in.b2':'Um trial pertence a um projeto (Call for Proposal). Selecione o projeto primeiro: entidade, país, cultura, parceiro são herdados automaticamente.',
+ 'tour.in.t3':'Orçamento em USD','tour.in.b3':'Todos os orçamentos consolidados em USD para comparação cross-BU. Acima do limite configurado (Admin > Governança), decisão CEO obrigatória.',
+ 'tour.in.t4':'Rascunho ou submeter','tour.in.b4':'Rascunho: salva sem envio para revisão. Submeter: envia ao Steering Committee. O protocolo Word é obrigatório para submissão.',
  'adm.t.ref':'Catálogos','adm.t.frame':'Framework v1.0','adm.t.gov':'Governança','adm.t.access':'Acessos & papéis','adm.t.integr':'Integrações',
  'adm.gov.lead':'Configurações de governança: matriz RACI, limites de decisão CEO, elegibilidade Fast Track, SLAs por etapa. Alterações são propagadas imediatamente.',
  'adm.gov.raci.h':'Matriz RACI editável','adm.gov.raci.sub':'(11 etapas × 5 papéis)','adm.gov.raci.help':'Para cada etapa, escolha quem é Responsável (R), Accountable (A), Consultado (C) ou Informado (I).',
@@ -3442,128 +3686,124 @@ function applyImpersonateUI(){
 }
 
 /* =================================================================
- * v0.21 — COACH D²nAI : guide intelligent pour utilisateurs novices.
- * 4 piliers : checklist d'onboarding, coach contextuel par écran,
- * spotlight progressif, toggle on/off (niveau novice/intermédiaire/off).
- * Persisté dans PREFS.coach + serveur via collection 'prefs_user'.
+ * v0.21.1 — COACH D²nAI : guided tour pas-à-pas (style Intercom Product
+ * Tours / Pendo / Driver.js). 3 piliers :
+ *   1) GUIDED TOUR : tour pas-à-pas avec spotlight (cutout dans le
+ *      backdrop SVG mask), popover positionné sur la cible, animations
+ *      spring (scale+fade+slide), Précédent / Suivant / Skip, compteur
+ *      étape N/M. Auto-déclenché à la 1ère visite, replayable depuis
+ *      le menu.
+ *   2) CHECKLIST onboarding (panneau collapsible bas-sidebar) avec
+ *      bouton « Relancer le tour ».
+ *   3) TOGGLE topbar (💡) : Lance le tour / Désactive le coach.
+ * Persisté localStorage + PREFS.coach + REST collection 'prefs_user'.
  * ================================================================= */
 const COACH = (function(){
   const _flags = new Set();
   const _visited = new Set();
-  let _idleTimer = null;
-  let _currentHint = null;
+  let _tourState = null;  // { tourId, idx, steps }
+  let _ro = null;          // ResizeObserver pour repositionner
 
-  // ---- Checklist : 7 actions concrètes premier mois ----
   const CHECKLIST = [
-    { id:'visit-cockpit',  lbl:'Consulte le cockpit',                 check: () => _visited.has('cockpit') },
-    { id:'visit-portfolio',lbl:'Découvre le portefeuille',            check: () => _visited.has('portfolio') },
-    { id:'open-uc-detail', lbl:'Ouvre le détail d\'un trial',         check: () => _flags.has('uc-opened') },
-    { id:'create-uc',      lbl:'Crée ton 1er Use Case',               check: () => typeof DATA!=='undefined' && DATA.some(u => _flags.has('uc:'+u.id+':mine')) || _flags.has('uc-created') },
-    { id:'ask-bot',        lbl:'Pose une question au bot D²nAI',      check: () => _flags.has('chat-asked') || (typeof CHAT_HIST!=='undefined' && CHAT_HIST.filter(m=>m.role==='user').length>0) },
-    { id:'visit-gov',      lbl:'Consulte la gouvernance & comités',   check: () => _visited.has('governance') },
-    { id:'visit-admin',    lbl:'Découvre la matrice RBAC (Admin)',    check: () => _visited.has('admin') },
+    { id:'visit-cockpit',  lbl:'tour.cl.cockpit',  check: () => _visited.has('cockpit') },
+    { id:'visit-portfolio',lbl:'tour.cl.portfolio',check: () => _visited.has('portfolio') },
+    { id:'open-uc-detail', lbl:'tour.cl.openUc',   check: () => _flags.has('uc-opened') },
+    { id:'create-uc',      lbl:'tour.cl.createUc', check: () => _flags.has('uc-created') },
+    { id:'ask-bot',        lbl:'tour.cl.askBot',   check: () => _flags.has('chat-asked') || (typeof CHAT_HIST!=='undefined' && CHAT_HIST.filter(m=>m.role==='user').length>0) },
+    { id:'visit-gov',      lbl:'tour.cl.gov',      check: () => _visited.has('governance') },
+    { id:'visit-admin',    lbl:'tour.cl.admin',    check: () => _visited.has('admin') },
   ];
 
-  // ---- Hints contextuels : viewId → règles ordonnées (1ère qui matche s'affiche) ----
-  const HINTS = {
-    cockpit: [
-      { when: () => !DATA || DATA.length===0,
-        msg: 'Aucun Use Case pour l\'instant. Démarre ton premier trial — la barre de soumission est dans « Soumettre ».',
-        action: ['Nouveau Use Case', () => goView('intake')] },
-      { when: () => DATA && DATA.filter(u=>u.status==='draft').length >= 3,
-        msg: () => DATA.filter(u=>u.status==='draft').length + ' brouillons stagnent. Relance leur revue avant le prochain Steering.',
-        action: ['Voir les brouillons', () => { PREFS.filters={status:'draft'}; savePrefs(); goView('portfolio'); }] },
-      { when: () => true,
-        msg: 'Le cockpit donne la vue d\'orientation. Pour le détail par BU/région : onglet « Vue analytique » en haut.',
-        action: ['Voir l\'analytique', () => goView('dashboards')] },
+  // TOURS : chaque étape = { selector, view?, titleK, bodyK, placement?, finish? }
+  const TOURS = {
+    welcome: [
+      { selector: null, placement: 'center', titleK: 'tour.welcome.t1', bodyK: 'tour.welcome.b1' },
+      { selector: '.sidebar .sb-nav',                view:'cockpit', placement: 'right',  titleK: 'tour.welcome.t2', bodyK: 'tour.welcome.b2' },
+      { selector: '#sc-cockpit .kpi-grid, #sc-cockpit .ck-hero', view:'cockpit', placement: 'bottom', titleK: 'tour.welcome.t3', bodyK: 'tour.welcome.b3' },
+      { selector: '.tb-imp',                         view:'cockpit', placement: 'bottom', titleK: 'tour.welcome.t4', bodyK: 'tour.welcome.b4' },
+      { selector: '#btnTopIntake',                   view:'cockpit', placement: 'bottom', titleK: 'tour.welcome.t5', bodyK: 'tour.welcome.b5' },
+      { selector: '#botFab',                                            placement: 'left',   titleK: 'tour.welcome.t6', bodyK: 'tour.welcome.b6' },
+      { selector: '#coachToggle',                    view:'cockpit', placement: 'bottom', titleK: 'tour.welcome.t7', bodyK: 'tour.welcome.b7' },
+      { selector: null, placement: 'center', titleK: 'tour.welcome.t8', bodyK: 'tour.welcome.b8', finish: true },
     ],
     portfolio: [
-      { when: () => true,
-        msg: 'Filtre par BU, statut ou recherche. Click sur une ligne ouvre le détail trial. Toggle « Projets » pour voir le niveau parent.',
-        action: ['Voir les projets', () => goView('projects')] },
+      { selector: '#sc-portfolio .cxtab',                            view:'portfolio', placement: 'bottom', titleK: 'tour.pf.t1', bodyK: 'tour.pf.b1' },
+      { selector: '#sc-portfolio .tool-bar, #sc-portfolio .pf-toolbar', view:'portfolio', placement: 'bottom', titleK: 'tour.pf.t2', bodyK: 'tour.pf.b2' },
+      { selector: '#sc-portfolio .tbl-wrap, #sc-portfolio .tbl',      view:'portfolio', placement: 'top',    titleK: 'tour.pf.t3', bodyK: 'tour.pf.b3', finish:true },
     ],
     intake: [
-      { when: () => true,
-        msg: 'Renseigne d\'abord le projet parent, puis le trial. Les champs avec 🔒 sont hérités automatiquement.',
-        action: null },
-    ],
-    governance: [
-      { when: () => true,
-        msg: 'Calendrier des sessions, composition des comités et matrice RACI. Les onglets en haut t\'amènent vers Calendrier ou Contrôles internes.',
-        action: ['Voir le calendrier', () => goView('calendar')] },
-    ],
-    admin: [
-      { when: () => true,
-        msg: 'Onglet « Accès & rôles » pour gérer les permissions. La matrice RBAC est ta source de vérité.',
-        action: ['Ouvrir Accès', () => { PREFS.adminTab='access'; savePrefs(); renderAdmin(); }] },
-    ],
-    kb: [
-      { when: () => true,
-        msg: 'Toutes les closures du cycle précédent — méthodologies validées, lectures à reprendre. Indexé pour le cycle en cours.',
-        action: null },
+      { selector: '.intake-idbar', view:'intake', placement: 'bottom', titleK: 'tour.in.t1', bodyK: 'tour.in.b1' },
+      { selector: '#if_project',   view:'intake', placement: 'bottom', titleK: 'tour.in.t2', bodyK: 'tour.in.b2' },
+      { selector: '#if_budget',    view:'intake', placement: 'bottom', titleK: 'tour.in.t3', bodyK: 'tour.in.b3' },
+      { selector: '.tool-bar',     view:'intake', placement: 'top',    titleK: 'tour.in.t4', bodyK: 'tour.in.b4', finish:true },
     ],
   };
 
-  // ---- API publique ----
   return {
     init() {
-      if (!PREFS.coach) PREFS.coach = { enabled:true, level:'novice', dismissedHints:[], checkedTasks:[], spotlightOn:true };
+      if (!PREFS.coach) PREFS.coach = { enabled:true, tourSeen:{}, dismissedTour:false };
+      if (!PREFS.coach.tourSeen) PREFS.coach.tourSeen = {};
       _restoreFlags();
       renderTopbarToggle();
       renderChecklistPanel();
-    },
-    isOn() { return PREFS.coach && PREFS.coach.enabled; },
-    level() { return PREFS.coach ? PREFS.coach.level : 'off'; },
-    visit(viewId) {
-      _visited.add(viewId);
-      _persistFlags();
-      renderChecklistPanel();
-    },
-    flag(key) {
-      _flags.add(key);
-      _persistFlags();
-      renderChecklistPanel();
-    },
-    applyHint(viewId) {
-      _hideHint();
-      this.visit(viewId);
-      if (!this.isOn()) return;
-      const rules = HINTS[viewId];
-      if (!rules) return;
-      const dismissed = (PREFS.coach.dismissedHints || []);
-      for (const r of rules) {
-        const key = viewId + '::' + (typeof r.msg==='function' ? r.msg.toString().slice(0,40) : r.msg.slice(0,40));
-        if (dismissed.includes(key)) continue;
-        try { if (r.when()) { _showHint(viewId, r, key); return; } } catch(e){}
+      if (PREFS.coach.enabled && !PREFS.coach.tourSeen.welcome && !PREFS.coach.dismissedTour) {
+        setTimeout(() => COACH.startTour('welcome'), 900);
       }
     },
-    toggle(state) {
-      if (state === 'off') PREFS.coach.enabled = false;
-      else { PREFS.coach.enabled = true; PREFS.coach.level = state; }
-      savePrefs();
-      renderTopbarToggle();
-      renderChecklistPanel();
-      _hideHint();
-      if (this.isOn() && PREFS.view) this.applyHint(PREFS.view);
-      toast(this.isOn() ? 'Coach D²nAI activé · niveau '+state : 'Coach D²nAI désactivé', 'ok');
+    isOn() { return PREFS.coach && PREFS.coach.enabled; },
+    visit(viewId) { _visited.add(viewId); _persistFlags(); renderChecklistPanel(); },
+    flag(key) { _flags.add(key); _persistFlags(); renderChecklistPanel(); },
+    applyHint(viewId) { this.visit(viewId); },
+    startTour(tourId) {
+      const steps = TOURS[tourId];
+      if (!steps || !steps.length) return;
+      _hideTour();
+      _tourState = { tourId, idx: 0, steps };
+      _showStep();
     },
-    dismissCurrent() {
-      if (!_currentHint) return;
-      const d = PREFS.coach.dismissedHints || (PREFS.coach.dismissedHints = []);
-      if (!d.includes(_currentHint.key)) d.push(_currentHint.key);
-      savePrefs();
-      _hideHint();
+    nextStep() {
+      if (!_tourState) return;
+      const cur = _tourState.steps[_tourState.idx];
+      if (cur && cur.finish) { _finishTour(); return; }
+      if (_tourState.idx >= _tourState.steps.length - 1) { _finishTour(); return; }
+      _tourState.idx++;
+      _showStep();
     },
-    spotlight(selector) {
-      if (!PREFS.coach || !PREFS.coach.spotlightOn) return;
-      const el = typeof selector === 'string' ? document.querySelector(selector) : selector;
-      if (!el) return;
-      el.classList.add('coach-spot');
-      setTimeout(() => el.classList.remove('coach-spot'), 3200);
+    prevStep() {
+      if (!_tourState || _tourState.idx === 0) return;
+      _tourState.idx--;
+      _showStep();
+    },
+    skipTour() {
+      if (!_tourState) return;
+      const id = _tourState.tourId;
+      _hideTour();
+      PREFS.coach.tourSeen[id] = true;
+      savePrefs();
+      toast(tr('tour.skipped'), 'ok');
+    },
+    disable() {
+      _hideTour();
+      PREFS.coach.enabled = false;
+      PREFS.coach.dismissedTour = true;
+      savePrefs();
+      renderTopbarToggle(); renderChecklistPanel();
+      toast(tr('tour.disabled'), 'ok');
+    },
+    enable() {
+      PREFS.coach.enabled = true;
+      PREFS.coach.dismissedTour = false;
+      savePrefs();
+      renderTopbarToggle(); renderChecklistPanel();
+      toast(tr('tour.enabled'), 'ok');
     },
     checklistOpen() {
       const p = document.getElementById('coachChecklist');
       if (p) p.classList.toggle('open');
+    },
+    progress() {
+      const done = CHECKLIST.filter(t => { try { return t.check(); } catch(e) { return false; } }).length;
+      return { done, total: CHECKLIST.length };
     },
   };
 
@@ -3582,37 +3822,186 @@ const COACH = (function(){
     } catch(e){}
   }
 
-  function _showHint(viewId, rule, key) {
-    if (!COACH.isOn()) return;
-    const sc = document.getElementById('sc-'+viewId);
-    if (!sc) return;
-    _hideHint();
-    const msg = typeof rule.msg === 'function' ? rule.msg() : rule.msg;
-    const wrap = document.createElement('div');
-    wrap.className = 'coach-bar';
-    wrap.innerHTML = `
-      <span class="coach-bar-ico" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 00-4 12.7V17a2 2 0 002 2h4a2 2 0 002-2v-2.3A7 7 0 0012 2z"/><path d="M9 22h6"/></svg>
-      </span>
-      <div class="coach-bar-msg">
-        <strong>Coach D²nAI · ${tr('nav.'+viewId,viewId)}</strong>
-        <span>${escapeHtml(msg)}</span>
-      </div>
-      ${rule.action ? `<button class="coach-bar-act" data-act>${escapeHtml(rule.action[0])} →</button>` : ''}
-      <button class="coach-bar-x" data-dismiss aria-label="Masquer ce coach">×</button>
-    `;
-    if (rule.action) wrap.querySelector('[data-act]').onclick = () => { try { rule.action[1](); } catch(e){} };
-    wrap.querySelector('[data-dismiss]').onclick = () => COACH.dismissCurrent();
-    // Insert juste après le .cxtab (s'il existe) sinon en premier
-    const cxtab = sc.querySelector('.cxtab');
-    if (cxtab && cxtab.nextSibling) sc.insertBefore(wrap, cxtab.nextSibling);
-    else if (cxtab) sc.appendChild(wrap);
-    else sc.insertBefore(wrap, sc.firstChild);
-    _currentHint = { node: wrap, key };
+  function _showStep() {
+    if (!_tourState) return;
+    const step = _tourState.steps[_tourState.idx];
+    if (!step) { _finishTour(); return; }
+    if (step.view && PREFS.view !== step.view) {
+      goView(step.view);
+      setTimeout(() => _renderStep(step), 380);
+    } else {
+      _renderStep(step);
+    }
   }
-  function _hideHint() {
-    if (_currentHint && _currentHint.node) _currentHint.node.remove();
-    _currentHint = null;
+
+  function _renderStep(step) {
+    if (!_tourState) return;
+    const target = step.selector ? _firstVisible(step.selector) : null;
+    const placement = (target ? (step.placement || 'bottom') : 'center');
+    _ensureOverlay();
+    _positionSpotlight(target);
+    _positionPopover(target, placement, step);
+    if (_ro) { try { _ro.disconnect(); } catch(e){} _ro = null; }
+    if (target && typeof ResizeObserver !== 'undefined') {
+      _ro = new ResizeObserver(() => { _positionSpotlight(target); _positionPopover(target, placement, step); });
+      try { _ro.observe(target); _ro.observe(document.body); } catch(e){}
+    }
+    if (target) {
+      try { target.scrollIntoView({behavior:'smooth', block:'center', inline:'center'}); } catch(e){}
+    }
+  }
+
+  function _firstVisible(selectorList) {
+    const sels = String(selectorList).split(',').map(s=>s.trim()).filter(Boolean);
+    for (const s of sels) {
+      try {
+        const els = document.querySelectorAll(s);
+        for (const el of els) {
+          if (el.offsetParent || el.getBoundingClientRect().width > 0) return el;
+        }
+      } catch(e){}
+    }
+    return null;
+  }
+
+  function _ensureOverlay() {
+    let ov = document.getElementById('coachTourOverlay');
+    if (ov) return ov;
+    ov = document.createElement('div');
+    ov.id = 'coachTourOverlay';
+    ov.className = 'coach-tour-ov';
+    ov.innerHTML = `
+      <svg class="coach-tour-mask" aria-hidden="true">
+        <defs>
+          <mask id="coachSpotMask">
+            <rect width="100%" height="100%" fill="white"/>
+            <rect id="coachSpotHole" x="0" y="0" width="0" height="0" rx="12" ry="12" fill="black"/>
+          </mask>
+        </defs>
+        <rect class="coach-tour-bg" width="100%" height="100%" mask="url(#coachSpotMask)"/>
+      </svg>
+      <div id="coachTourPop" class="coach-tour-pop" role="dialog" aria-modal="true" aria-labelledby="coachTourTitle"></div>
+    `;
+    document.body.appendChild(ov);
+    requestAnimationFrame(()=>ov.classList.add('on'));
+    document.addEventListener('keydown', _onKey, true);
+    window.addEventListener('resize', _onResize);
+    return ov;
+  }
+
+  function _onKey(e) {
+    if (!_tourState) return;
+    if (e.key === 'Escape') { e.preventDefault(); COACH.skipTour(); }
+    else if (e.key === 'ArrowRight' || e.key === 'Enter') { e.preventDefault(); COACH.nextStep(); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); COACH.prevStep(); }
+  }
+  function _onResize() {
+    if (!_tourState) return;
+    const step = _tourState.steps[_tourState.idx];
+    const target = step.selector ? _firstVisible(step.selector) : null;
+    const placement = target ? (step.placement || 'bottom') : 'center';
+    _positionSpotlight(target);
+    _positionPopover(target, placement, step);
+  }
+
+  function _positionSpotlight(target) {
+    const hole = document.getElementById('coachSpotHole');
+    if (!hole) return;
+    if (!target) {
+      hole.setAttribute('x', '0'); hole.setAttribute('y', '0');
+      hole.setAttribute('width', '0'); hole.setAttribute('height', '0');
+      return;
+    }
+    const r = target.getBoundingClientRect();
+    const pad = 8;
+    hole.setAttribute('x', Math.max(0, r.left - pad));
+    hole.setAttribute('y', Math.max(0, r.top - pad));
+    hole.setAttribute('width', r.width + pad*2);
+    hole.setAttribute('height', r.height + pad*2);
+    hole.setAttribute('rx', 12); hole.setAttribute('ry', 12);
+  }
+
+  function _positionPopover(target, placement, step) {
+    const pop = document.getElementById('coachTourPop');
+    if (!pop) return;
+    const total = _tourState.steps.length;
+    const idx = _tourState.idx;
+    const isFirst = idx === 0;
+    const isLast = !!step.finish || idx === total - 1;
+    const title = tr(step.titleK);
+    const body  = tr(step.bodyK);
+    pop.innerHTML = `
+      <div class="coach-tour-pop-h">
+        <span class="coach-tour-eyebrow"><span class="coach-tour-dot"></span> ${tr('tour.eyebrow')}</span>
+        <button class="coach-tour-x" type="button" onclick="COACH.skipTour()" aria-label="${tr('tour.skip')}">×</button>
+      </div>
+      <h3 id="coachTourTitle" class="coach-tour-title">${escapeHtml(title)}</h3>
+      <p class="coach-tour-body">${escapeHtml(body)}</p>
+      <div class="coach-tour-foot">
+        <div class="coach-tour-prog">
+          <div class="coach-tour-prog-bar"><div class="coach-tour-prog-fill" style="width:${Math.round((idx+1)/total*100)}%"></div></div>
+          <span class="coach-tour-step">${idx+1} / ${total}</span>
+        </div>
+        <div class="coach-tour-actions">
+          ${isFirst ? '' : `<button class="coach-tour-btn ghost" type="button" onclick="COACH.prevStep()">← ${tr('tour.prev')}</button>`}
+          ${!isLast ? `<button class="coach-tour-btn ghost" type="button" onclick="COACH.skipTour()">${tr('tour.skip')}</button>` : ''}
+          <button class="coach-tour-btn primary" type="button" onclick="COACH.nextStep()">
+            ${isLast ? tr('tour.finish') + ' ✓' : tr('tour.next') + ' →'}
+          </button>
+        </div>
+      </div>
+      <span class="coach-tour-arrow coach-tour-arrow--${placement}"></span>
+    `;
+    const margin = 14;
+    const popW = 380, popH = pop.offsetHeight || 240;
+    let top, left;
+    if (placement === 'center' || !target) {
+      top = (window.innerHeight - popH) / 2;
+      left = (window.innerWidth - popW) / 2;
+      pop.classList.add('coach-tour-pop--center');
+    } else {
+      pop.classList.remove('coach-tour-pop--center');
+      const r = target.getBoundingClientRect();
+      switch (placement) {
+        case 'top':    top = r.top - popH - margin;            left = r.left + r.width/2 - popW/2; break;
+        case 'bottom': top = r.bottom + margin;                left = r.left + r.width/2 - popW/2; break;
+        case 'left':   top = r.top + r.height/2 - popH/2;      left = r.left - popW - margin; break;
+        case 'right':  top = r.top + r.height/2 - popH/2;      left = r.right + margin; break;
+        default:       top = r.bottom + margin;                left = r.left + r.width/2 - popW/2;
+      }
+      const vw = window.innerWidth, vh = window.innerHeight;
+      left = Math.max(12, Math.min(vw - popW - 12, left));
+      top  = Math.max(12, Math.min(vh - popH - 12, top));
+    }
+    pop.style.top = top + 'px';
+    pop.style.left = left + 'px';
+    pop.style.width = popW + 'px';
+    pop.setAttribute('data-placement', placement);
+    pop.classList.remove('in');
+    void pop.offsetWidth;
+    requestAnimationFrame(()=>pop.classList.add('in'));
+  }
+
+  function _hideTour() {
+    const ov = document.getElementById('coachTourOverlay');
+    if (ov) {
+      ov.classList.remove('on');
+      setTimeout(()=>{ try { ov.remove(); } catch(e){} }, 260);
+    }
+    if (_ro) { try { _ro.disconnect(); } catch(e){} _ro = null; }
+    document.removeEventListener('keydown', _onKey, true);
+    window.removeEventListener('resize', _onResize);
+    _tourState = null;
+  }
+
+  function _finishTour() {
+    if (!_tourState) return;
+    const id = _tourState.tourId;
+    _hideTour();
+    PREFS.coach.tourSeen[id] = true;
+    savePrefs();
+    toast(tr('tour.done'), 'ok');
+    renderChecklistPanel();
   }
 
   function renderTopbarToggle() {
@@ -3621,17 +4010,16 @@ const COACH = (function(){
     const on = COACH.isOn();
     btn.classList.toggle('on', on);
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    btn.title = on ? 'Coach D²nAI · niveau '+COACH.level() : 'Coach D²nAI désactivé';
+    btn.title = on ? tr('tour.toggle.on.tt') : tr('tour.toggle.off.tt');
   }
   function renderChecklistPanel() {
     const host = document.getElementById('coachChecklist');
     if (!host) return;
     if (!COACH.isOn()) { host.style.display = 'none'; return; }
-    const done = CHECKLIST.filter(t => { try { return t.check(); } catch(e) { return false; } }).length;
-    const total = CHECKLIST.length;
-    if (done >= total) { host.style.display = 'none'; return; }
+    const p = COACH.progress();
+    if (p.done >= p.total) { host.style.display = 'none'; return; }
     host.style.display = '';
-    const pct = Math.round(done/total*100);
+    const pct = Math.round(p.done/p.total*100);
     host.innerHTML = `
       <button class="coach-cl-h" onclick="COACH.checklistOpen()" aria-expanded="${host.classList.contains('open')}">
         <span class="coach-cl-prog">
@@ -3639,16 +4027,17 @@ const COACH = (function(){
             <circle cx="18" cy="18" r="15" fill="none" stroke="rgba(124,252,154,.18)" stroke-width="3"/>
             <circle cx="18" cy="18" r="15" fill="none" stroke="#7cfc9a" stroke-width="3" stroke-dasharray="${pct*0.942} 100" stroke-dashoffset="0" transform="rotate(-90 18 18)" stroke-linecap="round"/>
           </svg>
-          <span class="coach-cl-pct">${done}/${total}</span>
+          <span class="coach-cl-pct">${p.done}/${p.total}</span>
         </span>
-        <span class="coach-cl-t">Première semaine sur NutriPlan</span>
+        <span class="coach-cl-t">${tr('tour.cl.title')}</span>
         <svg class="coach-cl-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="coach-cl-list">
+        <button class="coach-cl-replay" onclick="COACH.startTour('welcome')">▶ ${tr('tour.replay')}</button>
         ${CHECKLIST.map(t => { const d = (()=>{try{return t.check();}catch(e){return false;}})(); return `
           <div class="coach-cl-it ${d?'done':''}">
             <span class="coach-cl-cb" aria-hidden="true">${d ? '✓' : ''}</span>
-            <span class="coach-cl-lbl">${escapeHtml(t.lbl)}</span>
+            <span class="coach-cl-lbl">${escapeHtml(tr(t.lbl))}</span>
           </div>`; }).join('')}
       </div>
     `;
