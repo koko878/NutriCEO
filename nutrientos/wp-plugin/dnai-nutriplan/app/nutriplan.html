@@ -1522,6 +1522,9 @@ body::after{
 
 /* Séparateur dans le menu coach */
 .tb-coach-sep{height:1px;background:var(--line);margin:6px 4px}
+.tb-coach-menu button .cur-page{
+  display:block;font:500 11px 'Inter';color:var(--green-700);margin-top:2px;font-weight:600;
+}
 
 @media(max-width:760px){
   .coach-tour-pop{width:calc(100vw - 24px)!important;left:12px!important;right:12px}
@@ -1843,10 +1846,10 @@ body.imp-on[data-imp-role="ceo_approver"] .sb-item[data-v="admin"]{
     </button>
     <div id="coachMenu" class="tb-coach-menu" role="menu" onclick="event.stopPropagation()">
       <div class="tb-coach-h">Coach D²nAI</div>
-      <button role="menuitem" type="button" onclick="document.getElementById('coachMenu').classList.remove('on');COACH.startTour('welcome')">▶ Relancer le tour guidé <span>8 étapes · ~3 min</span></button>
-      <button role="menuitem" type="button" onclick="document.getElementById('coachMenu').classList.remove('on');COACH.startTour('portfolio')">📊 Tour Portefeuille <span>3 étapes</span></button>
-      <button role="menuitem" type="button" onclick="document.getElementById('coachMenu').classList.remove('on');COACH.startTour('intake')">📝 Tour Soumission <span>4 étapes</span></button>
+      <button role="menuitem" type="button" onclick="document.getElementById('coachMenu').classList.remove('on');COACH.startTour(PREFS.view||'cockpit')">🎯 Tour de cette page <span class="cur-page" id="coachMenuCurPage"></span></button>
+      <button role="menuitem" type="button" onclick="document.getElementById('coachMenu').classList.remove('on');COACH.startTour('welcome')">▶ Tour d'accueil complet <span>8 étapes · ~3 min</span></button>
       <div class="tb-coach-sep"></div>
+      <button role="menuitem" type="button" onclick="document.getElementById('coachMenu').classList.remove('on');COACH.resetAllTours()">🔄 Re-déclencher tous les tours</button>
       <button role="menuitem" type="button" onclick="document.getElementById('coachMenu').classList.remove('on');COACH.disable()">🔕 Désactiver le coach</button>
       <button role="menuitem" type="button" onclick="document.getElementById('coachMenu').classList.remove('on');COACH.enable()">🔔 Activer le coach</button>
     </div>
@@ -2277,16 +2280,48 @@ fr:{
  'tour.welcome.t7':'Relancer ce tour quand tu veux',
  'tour.welcome.b7':'Ce bouton 💡 lance le tour guidé. Clic-droit pour accéder à 3 tours spécialisés (Portefeuille, Soumission) ou désactiver le coach.',
  'tour.welcome.t8':'Prêt à explorer',
- 'tour.welcome.b8':'Tu as les bases. La checklist en bas-gauche te suit dans tes premières actions. Bonne navigation — et n\'hésite pas à laisser du feedback en clic-droit n\'importe où.',
+ 'tour.welcome.b8':'Tu as les bases. La checklist en bas-gauche te suit dans tes premières actions. À chaque fois que tu changes de page, je te ferai un petit tour pour t\'orienter — tu peux toujours skipper avec Échap. Bonne navigation.',
  // Portfolio tour
  'tour.pf.t1':'Bascule projets ↔ trials','tour.pf.b1':'Le portefeuille a 2 niveaux : projets (Call for Proposal) et trials (les vrais essais). L\'onglet CXTAB en haut bascule entre les deux.',
  'tour.pf.t2':'Filtres rapides','tour.pf.b2':'Filtre par BU, statut, recherche libre. Tout est combinable. Click sur une ligne ouvre le détail trial avec MDS, KPIs, risques, gates.',
  'tour.pf.t3':'Le détail trial','tour.pf.b3':'Click sur n\'importe quelle ligne pour ouvrir la fiche complète : objectifs, KPIs, MDS, partenaire, gates de gouvernance, risques.',
  // Intake tour
  'tour.in.t1':'L\'identifiant auto-généré','tour.in.b1':'Format UC-AAAA-NNN attribué à la soumission. Visible ici à titre indicatif pour que tu ne sois pas surpris.',
+ 'tour.in.t1b':'Les 5 étapes du formulaire','tour.in.b1b':'1) Objectifs & rationale, 2) Périmètre & site, 3) KPIs & MDS, 4) Budget & partenaire, 5) Documents. Pas besoin de tout remplir en une fois : le brouillon te sauvegarde l\'état.',
  'tour.in.t2':'Projet de rattachement','tour.in.b2':'Un trial appartient à un projet (Call for Proposal). Sélectionner d\'abord le projet : entité, pays, culture, partenaire sont hérités automatiquement.',
  'tour.in.t3':'Budget en USD','tour.in.b3':'Tous les budgets sont consolidés en USD pour comparaison cross-BU. Au-delà du seuil paramétré (Admin > Gouvernance), décision CEO obligatoire.',
  'tour.in.t4':'Brouillon ou soumettre','tour.in.b4':'Brouillon : sauvegarde sans envoi en revue. Soumettre : envoie au Steering Committee. Le protocole Word est obligatoire pour la soumission.',
+ // Mini-tours par vue (auto-déclenchés à la 1ère visite de chaque page)
+ 'tour.v.cockpit.t1':'Bienvenue sur le Cockpit','tour.v.cockpit.b1':'Ton tableau de bord quotidien. Vue agrégée de tout le portefeuille : nombre de trials actifs, en revue, clos. Ce que tu dois regarder en premier le matin.',
+ 'tour.v.cockpit.t2':'Les KPIs portefeuille','tour.v.cockpit.b2':'4 indicateurs clés : actifs, dans le pipeline (en revue Steering/CEO), taux de GO en clôture, total cumulé. Click sur un KPI pour filtrer le portefeuille sur ce statut.',
+ 'tour.v.cockpit.t3':'Alertes & activité récente','tour.v.cockpit.b3':'Brouillons stagnants, gates en retard, comités à venir. Si tu vois une alerte rouge, c\'est qu\'une action est attendue de toi ou de ta BU. Click pour aller direct sur le problème.',
+ 'tour.v.dash.t1':'Vue analytique','tour.v.dash.b1':'Pour aller plus loin que le cockpit : heatmap par BU × culture, répartition budget, taux de succès historiques. C\'est ici que tu prépares tes comités.',
+ 'tour.v.dash.t2':'KPIs détaillés','tour.v.dash.b2':'Drill-down par BU, région, produit, type de trial. Les chiffres remontent depuis ton portefeuille — pas de saisie manuelle, tout est consolidé.',
+ 'tour.v.dash.t3':'Bascule vue / cockpit','tour.v.dash.b3':'Onglet CXTAB en haut pour revenir au cockpit synthétique. Cockpit = orientation, Vue analytique = pilotage.',
+ 'tour.v.prj.t1':'Les Projets','tour.v.prj.b1':'Niveau parent : un Projet est un Call for Proposal qui regroupe N trials sur un même thème (ex: « Résilience climatique blé Maroc 2026 »). Un trial appartient toujours à un projet.',
+ 'tour.v.prj.t2':'KPIs Projets','tour.v.prj.b2':'Nombre de projets actifs, leur budget total cumulé, trials rattachés. Permet de voir l\'effort total par grande initiative.',
+ 'tour.v.prj.t3':'Créer un nouveau projet','tour.v.prj.b3':'Tu démarres un nouveau Call for Proposal ? Bouton « + Nouveau projet ». Ensuite les trials se rattacheront à ce projet via le sélecteur d\'intake.',
+ 'tour.v.cal.t1':'Calendrier annuel du cycle','tour.v.cal.b1':'Vue Gantt sur 16 mois (Sep N-1 → Dec N). Tu vois en un coup d\'œil les 4 macro-phases du cycle, les 4 gates de gouvernance et les 3 fenêtres QBR.',
+ 'tour.v.cal.t2':'Les barres','tour.v.cal.b2':'Code couleur par macro-phase : Launch (vert), Readiness, Execution, Decision. Les gates ponctuels sont en orange, le Fast Track lane en rouge (toujours ouvert).',
+ 'tour.v.cal.t3':'« Aujourd\'hui » + QBR','tour.v.cal.b3':'La colonne en surbrillance = mois courant. Les marqueurs QBR indiquent les 3 fenêtres d\'intake en cours de cycle (Mars, Juin, Septembre).',
+ 'tour.v.ft.t1':'Fast Track Lane','tour.v.ft.b1':'Voie d\'urgence hors cycle pour les Use Cases critiques (réponse client, fenêtre agronomique, opportunité commerciale). Workflow allégé 5 étapes au lieu de 11.',
+ 'tour.v.ft.t2':'KPIs Fast Track','tour.v.ft.b2':'Nombre de FT actifs, temps moyen de décision (cible : 12 jours vs 90 standard), budget total et taux de GO. Doit rester rare — sinon le cycle standard est cassé.',
+ 'tour.v.ft.t3':'Workflow Fast Track','tour.v.ft.b3':'1) Identification urgence → 2) Chief/EVP validation → 3) Monitoring Committee ack → 4) Protocol & readiness → 5) Execution → Decision. Limite éligibilité : budget et durée plafonnés (Admin > Gouvernance).',
+ 'tour.v.gov.t1':'SLA actifs en bandeau','tour.v.gov.b1':'Les délais cibles par étape (SAI Review, Steering, CEO, Fast Track, Monitoring). Tous paramétrables — click sur « Configurer » à droite pour les ajuster.',
+ 'tour.v.gov.t2':'Steering & CEO','tour.v.gov.b2':'Les 2 comités principaux : Steering valide la pertinence, CEO décide les ressources. Tu vois ici les UCs en attente de chacun avec date du prochain comité.',
+ 'tour.v.gov.t3':'Matrice RACI','tour.v.gov.b3':'Qui Réalise / Approuve / est Consulté / Informé pour chacune des 11 étapes du cycle. Éditable dans Admin > Gouvernance — utile en cas de changement d\'org.',
+ 'tour.v.gov.t4':'Configurer SLA & seuils','tour.v.gov.b4':'Click ici pour aller à Admin > Gouvernance et ajuster les SLAs par étape, les seuils CEO (budget > X, durée > N), et l\'éligibilité Fast Track. Persistance temps réel.',
+ 'tour.v.kb.t1':'Knowledge Base','tour.v.kb.b1':'Toutes les fiches de clôture du cycle précédent : apprentissages, méthodologies validées, lectures à reprendre. C\'est la mémoire institutionnelle — consulte avant de reproposer un trial similaire.',
+ 'tour.v.kb.t2':'Filtres par verdict','tour.v.kb.b2':'GO / HOLD / KILL. Un KILL n\'est pas un échec : c\'est de l\'info validée (hypothèse infirmée). Filtre pour identifier les protocoles à NE PAS répliquer en l\'état.',
+ 'tour.v.kb.t3':'Éditer ou exporter PDF','tour.v.kb.b3':'Sur chaque card : « ✏ Éditer » pour rédiger ta synthèse + recommandation, « 🖨 PDF » pour générer un brief imprimable que tu partages en comité.',
+ 'tour.v.ic.t1':'Contrôles internes','tour.v.ic.b1':'22 points de contrôle répartis sur 5 domaines (planning, governance, exécution, ressources, capitalisation). C\'est ton backbone audit/compliance — vérifie régulièrement.',
+ 'tour.v.ic.t2':'KPIs conformité','tour.v.ic.b2':'Score global de conformité, points en alerte, points résolus. Cible : 100% sur les points HIGH severity, ≥80% sur l\'ensemble.',
+ 'tour.v.ic.t3':'Détail par point','tour.v.ic.b3':'Click sur un point pour voir les UCs concernés. Si un point est rouge, traite-le avant le prochain Steering — sinon il remontera en alerte de gouvernance.',
+ 'tour.v.adm.t1':'Admin : 5 sous-onglets','tour.v.adm.b1':'📚 Référentiels (BUs, cultures, MDS…), 🧭 Cadre v1.0 (taxonomie), ⚖ Gouvernance (RACI, seuils, SLA), 👥 Accès & rôles, 🔗 Intégrations. Chacun éditable.',
+ 'tour.v.adm.t2':'Action du jour','tour.v.adm.b2':'Selon l\'onglet : éditer un référentiel (double-clic sur une chip pour renommer), ajuster un seuil CEO, assigner un rôle à un utilisateur. Tout persisté serveur en temps réel.',
+ 'tour.v.adm.t3':'Ajouter / configurer','tour.v.adm.b3':'Toolbar en bas : exporter le référentiel en JSON, réinitialiser aux valeurs par défaut, ou ajouter une nouvelle entrée via le formulaire inline.',
+ // Menu coach
+ 'tour.seen':'déjà vu','tour.new':'nouveau','tour.reset':'Tous les tours sont réinitialisés. Le tour de cette page va se relancer.',
  'adm.t.ref':'Référentiels','adm.t.frame':'Cadre v1.0','adm.t.gov':'Gouvernance','adm.t.access':'Accès & rôles','adm.t.integr':'Intégrations',
  'adm.gov.lead':'Paramètres de gouvernance : matrice RACI, seuils déclenchant la décision CEO, éligibilité Fast Track, SLA par étape. Toute modification est propagée immédiatement.',
  'adm.gov.raci.h':'Matrice RACI éditable','adm.gov.raci.sub':'(11 étapes × 5 rôles)','adm.gov.raci.help':'Pour chaque étape, choisis qui Réalise (R), est Accountable (A), est Consulté (C) ou Informé (I).',
@@ -2607,14 +2642,45 @@ en:{
  'tour.welcome.t7':'Replay this tour anytime',
  'tour.welcome.b7':'This 💡 button launches the guided tour. Right-click for 3 specialized tours (Portfolio, Submit) or to disable the coach.',
  'tour.welcome.t8':'Ready to explore',
- 'tour.welcome.b8':'You have the basics. The checklist bottom-left follows your first actions. Happy navigating — feel free to right-click anywhere to leave feedback.',
+ 'tour.welcome.b8':'You have the basics. The checklist bottom-left follows your first actions. Each time you switch page, I will run a quick tour to orient you — you can always skip with Esc. Happy navigating.',
  'tour.pf.t1':'Toggle projects ↔ trials','tour.pf.b1':'The portfolio has 2 levels: projects (Call for Proposal) and trials (real experiments). The CXTAB at the top toggles between the two.',
  'tour.pf.t2':'Quick filters','tour.pf.b2':'Filter by BU, status, free search. All combinable. Click a row to open the trial detail with MDS, KPIs, risks, gates.',
  'tour.pf.t3':'Trial detail','tour.pf.b3':'Click any row to open the full record: objectives, KPIs, MDS, partner, governance gates, risks.',
  'tour.in.t1':'Auto-generated identifier','tour.in.b1':'Format UC-YYYY-NNN assigned on submission. Shown here for reference so you\'re not surprised.',
+ 'tour.in.t1b':'The 5 form steps','tour.in.b1b':'1) Objectives & rationale, 2) Scope & site, 3) KPIs & MDS, 4) Budget & partner, 5) Documents. No need to fill everything at once: draft saves your state.',
  'tour.in.t2':'Parent project','tour.in.b2':'A trial belongs to a project (Call for Proposal). Pick the project first: entity, country, crop, partner are auto-inherited.',
  'tour.in.t3':'Budget in USD','tour.in.b3':'All budgets consolidated in USD for cross-BU comparison. Above the configured threshold (Admin > Governance), CEO decision is mandatory.',
  'tour.in.t4':'Draft or submit','tour.in.b4':'Draft: save without review submission. Submit: send to Steering Committee. The Word protocol is mandatory for submission.',
+ // Per-view mini-tours
+ 'tour.v.cockpit.t1':'Welcome to the Cockpit','tour.v.cockpit.b1':'Your daily dashboard. Aggregated view of the whole portfolio: active trials, in review, closed. What to look at first thing in the morning.',
+ 'tour.v.cockpit.t2':'Portfolio KPIs','tour.v.cockpit.b2':'4 key indicators: active, in pipeline (Steering/CEO review), GO closure rate, cumulative total. Click a KPI to filter the portfolio on that status.',
+ 'tour.v.cockpit.t3':'Alerts & recent activity','tour.v.cockpit.b3':'Stalled drafts, overdue gates, upcoming committees. A red alert means an action is expected from you or your BU. Click to jump straight to the issue.',
+ 'tour.v.dash.t1':'Analytics view','tour.v.dash.b1':'Beyond the cockpit: heatmap by BU × crop, budget distribution, historical success rates. This is where you prepare your committees.',
+ 'tour.v.dash.t2':'Detailed KPIs','tour.v.dash.b2':'Drill-down by BU, region, product, trial type. Numbers flow from your portfolio — no manual entry, everything consolidated.',
+ 'tour.v.dash.t3':'Toggle view ↔ cockpit','tour.v.dash.b3':'CXTAB at the top to return to the synthetic cockpit. Cockpit = orientation, Analytics view = piloting.',
+ 'tour.v.prj.t1':'Projects','tour.v.prj.b1':'Parent level: a Project is a Call for Proposal that groups N trials around a common theme (e.g. "Wheat climate resilience Morocco 2026"). A trial always belongs to a project.',
+ 'tour.v.prj.t2':'Projects KPIs','tour.v.prj.b2':'Number of active projects, their cumulative total budget, attached trials. Lets you see total effort per major initiative.',
+ 'tour.v.prj.t3':'Create a new project','tour.v.prj.b3':'Starting a new Call for Proposal? "+ New project" button. Trials will then attach to this project via the intake selector.',
+ 'tour.v.cal.t1':'Annual cycle calendar','tour.v.cal.b1':'Gantt view over 16 months (Sep N-1 → Dec N). You see at a glance the 4 cycle macro-phases, the 4 governance gates and the 3 QBR windows.',
+ 'tour.v.cal.t2':'The bars','tour.v.cal.b2':'Color-coded by macro-phase: Launch (green), Readiness, Execution, Decision. Point-in-time gates in orange, Fast Track lane in red (always open).',
+ 'tour.v.cal.t3':'"Today" + QBR','tour.v.cal.b3':'The highlighted column = current month. QBR markers indicate the 3 in-year intake windows (Mar, Jun, Sep).',
+ 'tour.v.ft.t1':'Fast Track Lane','tour.v.ft.b1':'Out-of-cycle emergency lane for critical Use Cases (customer response, agronomic window, commercial opportunity). Lightweight 5-step workflow instead of 11.',
+ 'tour.v.ft.t2':'Fast Track KPIs','tour.v.ft.b2':'Number of active FTs, average decision time (target: 12 days vs standard 90), total budget and GO rate. Must remain rare — otherwise the standard cycle is broken.',
+ 'tour.v.ft.t3':'Fast Track workflow','tour.v.ft.b3':'1) Urgency ID → 2) Chief/EVP validation → 3) Monitoring Committee ack → 4) Protocol & readiness → 5) Execution → Decision. Eligibility cap: budget and duration ceilings (Admin > Governance).',
+ 'tour.v.gov.t1':'Active SLAs banner','tour.v.gov.b1':'Target lead times per stage (SAI Review, Steering, CEO, Fast Track, Monitoring). All configurable — click "Configure" on the right to adjust.',
+ 'tour.v.gov.t2':'Steering & CEO','tour.v.gov.b2':'The 2 main committees: Steering validates relevance, CEO decides resources. You see here UCs pending each with date of next committee.',
+ 'tour.v.gov.t3':'RACI matrix','tour.v.gov.b3':'Who is Responsible / Accountable / Consulted / Informed for each of the 11 cycle steps. Editable in Admin > Governance — useful when org changes.',
+ 'tour.v.gov.t4':'Configure SLAs & thresholds','tour.v.gov.b4':'Click here to go to Admin > Governance and adjust SLAs per stage, CEO thresholds (budget > X, duration > N), and Fast Track eligibility. Real-time persistence.',
+ 'tour.v.kb.t1':'Knowledge Base','tour.v.kb.b1':'All closure records from the previous cycle: lessons learned, validated methodologies, reads to revisit. This is institutional memory — consult before re-proposing a similar trial.',
+ 'tour.v.kb.t2':'Verdict filters','tour.v.kb.b2':'GO / HOLD / KILL. A KILL is not a failure: it\'s validated info (hypothesis refuted). Filter to identify protocols NOT to replicate as-is.',
+ 'tour.v.kb.t3':'Edit or export PDF','tour.v.kb.b3':'On each card: "✏ Edit" to write your summary + recommendation, "🖨 PDF" to generate a printable brief you can share in committee.',
+ 'tour.v.ic.t1':'Internal Controls','tour.v.ic.b1':'22 control points across 5 domains (planning, governance, execution, resources, capitalization). Your audit/compliance backbone — check regularly.',
+ 'tour.v.ic.t2':'Compliance KPIs','tour.v.ic.b2':'Overall compliance score, points in alert, resolved points. Target: 100% on HIGH severity points, ≥80% overall.',
+ 'tour.v.ic.t3':'Detail per point','tour.v.ic.b3':'Click a point to see the UCs concerned. If a point is red, address it before the next Steering — otherwise it will surface as a governance alert.',
+ 'tour.v.adm.t1':'Admin: 5 sub-tabs','tour.v.adm.b1':'📚 Reference data (BUs, crops, MDS…), 🧭 Framework v1.0 (taxonomy), ⚖ Governance (RACI, thresholds, SLAs), 👥 Access & roles, 🔗 Integrations. Each editable.',
+ 'tour.v.adm.t2':'Today\'s action','tour.v.adm.b2':'Depending on the tab: edit a reference (double-click a chip to rename), adjust a CEO threshold, assign a role to a user. All persisted server-side in real time.',
+ 'tour.v.adm.t3':'Add / configure','tour.v.adm.b3':'Toolbar at the bottom: export reference as JSON, reset to defaults, or add a new entry via the inline form.',
+ 'tour.seen':'already seen','tour.new':'new','tour.reset':'All tours reset. The tour for this page will run again.',
  'adm.t.ref':'Reference data','adm.t.frame':'Framework v1.0','adm.t.gov':'Governance','adm.t.access':'Access & roles','adm.t.integr':'Integrations',
  'adm.gov.lead':'Governance settings: RACI matrix, CEO decision thresholds, Fast Track eligibility, per-step SLAs. Changes propagate immediately.',
  'adm.gov.raci.h':'Editable RACI matrix','adm.gov.raci.sub':'(11 steps × 5 roles)','adm.gov.raci.help':'For each step, choose who is Responsible (R), Accountable (A), Consulted (C) or Informed (I).',
@@ -2934,14 +3000,45 @@ pt:{
  'tour.welcome.t7':'Reinicie este tour quando quiser',
  'tour.welcome.b7':'Este botão 💡 inicia o tour guiado. Clique direito para acessar 3 tours especializados (Portfólio, Submissão) ou desativar o coach.',
  'tour.welcome.t8':'Pronto para explorar',
- 'tour.welcome.b8':'Você tem o básico. A checklist no canto inferior esquerdo segue suas primeiras ações. Boa navegação — clique direito em qualquer lugar para deixar feedback.',
+ 'tour.welcome.b8':'Você tem o básico. A checklist no canto inferior esquerdo segue suas primeiras ações. A cada mudança de página, vou rodar um tour rápido para orientá-lo — pode pular com Esc. Boa navegação.',
  'tour.pf.t1':'Alterne projetos ↔ trials','tour.pf.b1':'O portfólio tem 2 níveis: projetos (Call for Proposal) e trials (experimentos reais). O CXTAB no topo alterna entre eles.',
  'tour.pf.t2':'Filtros rápidos','tour.pf.b2':'Filtre por BU, status, busca livre. Tudo combinável. Clique em uma linha para abrir o detalhe do trial com MDS, KPIs, riscos, gates.',
  'tour.pf.t3':'Detalhe do trial','tour.pf.b3':'Clique em qualquer linha para abrir o registro completo: objetivos, KPIs, MDS, parceiro, gates de governança, riscos.',
  'tour.in.t1':'Identificador auto-gerado','tour.in.b1':'Formato UC-AAAA-NNN atribuído na submissão. Mostrado aqui para referência.',
+ 'tour.in.t1b':'As 5 etapas do formulário','tour.in.b1b':'1) Objetivos, 2) Escopo, 3) KPIs & MDS, 4) Orçamento, 5) Documentos. Sem necessidade de preencher tudo de uma vez: o rascunho salva o estado.',
  'tour.in.t2':'Projeto pai','tour.in.b2':'Um trial pertence a um projeto (Call for Proposal). Selecione o projeto primeiro: entidade, país, cultura, parceiro são herdados automaticamente.',
  'tour.in.t3':'Orçamento em USD','tour.in.b3':'Todos os orçamentos consolidados em USD para comparação cross-BU. Acima do limite configurado (Admin > Governança), decisão CEO obrigatória.',
  'tour.in.t4':'Rascunho ou submeter','tour.in.b4':'Rascunho: salva sem envio para revisão. Submeter: envia ao Steering Committee. O protocolo Word é obrigatório para submissão.',
+ // Mini-tours por tela (auto-disparados na 1ª visita)
+ 'tour.v.cockpit.t1':'Bem-vindo ao Cockpit','tour.v.cockpit.b1':'Seu painel diário. Visão agregada de todo o portfólio: trials ativos, em revisão, fechados. O que olhar primeiro de manhã.',
+ 'tour.v.cockpit.t2':'KPIs do portfólio','tour.v.cockpit.b2':'4 indicadores-chave: ativos, no pipeline (revisão Steering/CEO), taxa de GO no fechamento, total acumulado. Clique para filtrar o portfólio.',
+ 'tour.v.cockpit.t3':'Alertas & atividade recente','tour.v.cockpit.b3':'Rascunhos parados, gates atrasados, comitês próximos. Alerta vermelho = ação esperada de você ou da sua BU.',
+ 'tour.v.dash.t1':'Visão analítica','tour.v.dash.b1':'Além do cockpit: heatmap por BU × cultura, distribuição de orçamento, taxas históricas. É aqui que você prepara seus comitês.',
+ 'tour.v.dash.t2':'KPIs detalhados','tour.v.dash.b2':'Drill-down por BU, região, produto, tipo de trial. Números vêm do portfólio — nada de entrada manual.',
+ 'tour.v.dash.t3':'Alternar visão ↔ cockpit','tour.v.dash.b3':'CXTAB no topo para voltar ao cockpit sintético. Cockpit = orientação, Analítica = pilotagem.',
+ 'tour.v.prj.t1':'Projetos','tour.v.prj.b1':'Nível pai: um Projeto é um Call for Proposal que agrupa N trials sobre um tema comum. Um trial sempre pertence a um projeto.',
+ 'tour.v.prj.t2':'KPIs Projetos','tour.v.prj.b2':'Número de projetos ativos, orçamento total cumulativo, trials anexados. Permite ver o esforço por iniciativa.',
+ 'tour.v.prj.t3':'Criar novo projeto','tour.v.prj.b3':'Iniciando um novo Call for Proposal? Botão « + Novo projeto ». Os trials se anexam via o seletor de intake.',
+ 'tour.v.cal.t1':'Calendário anual do ciclo','tour.v.cal.b1':'Visão Gantt em 16 meses (Set N-1 → Dez N). Veja de relance as 4 macro-fases, 4 gates de governança e 3 janelas QBR.',
+ 'tour.v.cal.t2':'As barras','tour.v.cal.b2':'Código de cor por macro-fase: Launch (verde), Readiness, Execution, Decision. Gates pontuais em laranja, Fast Track lane em vermelho (sempre aberto).',
+ 'tour.v.cal.t3':'« Hoje » + QBR','tour.v.cal.b3':'A coluna destacada = mês atual. Marcadores QBR indicam as 3 janelas de intake no ano (Mar, Jun, Set).',
+ 'tour.v.ft.t1':'Fast Track Lane','tour.v.ft.b1':'Via de emergência fora do ciclo para Use Cases críticos (resposta cliente, janela agronômica, oportunidade comercial). Workflow leve de 5 etapas.',
+ 'tour.v.ft.t2':'KPIs Fast Track','tour.v.ft.b2':'Número de FTs ativos, tempo médio de decisão (alvo: 12 dias vs 90 padrão), orçamento total e taxa de GO. Deve permanecer raro.',
+ 'tour.v.ft.t3':'Workflow Fast Track','tour.v.ft.b3':'1) Identificação urgência → 2) Validação Chief/EVP → 3) Monitoring Committee ack → 4) Protocolo → 5) Execução → Decisão. Limites em Admin > Governança.',
+ 'tour.v.gov.t1':'SLAs ativos no banner','tour.v.gov.b1':'Prazos-alvo por etapa (SAI Review, Steering, CEO, Fast Track, Monitoring). Todos configuráveis — clique « Configurar » à direita.',
+ 'tour.v.gov.t2':'Steering & CEO','tour.v.gov.b2':'Os 2 comitês principais: Steering valida relevância, CEO decide recursos. UCs pendentes para cada um aqui.',
+ 'tour.v.gov.t3':'Matriz RACI','tour.v.gov.b3':'Quem é Responsável / Accountable / Consultado / Informado para cada uma das 11 etapas. Editável em Admin > Governança.',
+ 'tour.v.gov.t4':'Configurar SLAs & limites','tour.v.gov.b4':'Clique para ir a Admin > Governança e ajustar SLAs, limites CEO (orçamento > X, duração > N), e elegibilidade Fast Track.',
+ 'tour.v.kb.t1':'Knowledge Base','tour.v.kb.b1':'Todas as fichas de fechamento do ciclo anterior: aprendizagens, metodologias validadas. Memória institucional — consulte antes de repropor um trial similar.',
+ 'tour.v.kb.t2':'Filtros por veredicto','tour.v.kb.b2':'GO / HOLD / KILL. Um KILL não é falha: é info validada (hipótese refutada). Filtre para identificar protocolos a NÃO replicar como estão.',
+ 'tour.v.kb.t3':'Editar ou exportar PDF','tour.v.kb.b3':'Em cada card: « ✏ Editar » para escrever sua síntese + recomendação, « 🖨 PDF » para gerar um brief imprimível para o comitê.',
+ 'tour.v.ic.t1':'Controles internos','tour.v.ic.b1':'22 pontos de controle em 5 domínios (planning, governance, execução, recursos, capitalização). Seu backbone de auditoria/compliance.',
+ 'tour.v.ic.t2':'KPIs de conformidade','tour.v.ic.b2':'Score global, pontos em alerta, pontos resolvidos. Alvo: 100% nos pontos HIGH, ≥80% no geral.',
+ 'tour.v.ic.t3':'Detalhe por ponto','tour.v.ic.b3':'Clique em um ponto para ver os UCs. Se um ponto está vermelho, resolva antes do próximo Steering.',
+ 'tour.v.adm.t1':'Admin: 5 sub-abas','tour.v.adm.b1':'📚 Catálogos, 🧭 Framework v1.0, ⚖ Governança, 👥 Acessos & papéis, 🔗 Integrações. Cada uma editável.',
+ 'tour.v.adm.t2':'Ação do dia','tour.v.adm.b2':'Conforme a aba: editar um catálogo (duplo-clique numa chip para renomear), ajustar um limite CEO, atribuir um papel. Tudo persistido no servidor.',
+ 'tour.v.adm.t3':'Adicionar / configurar','tour.v.adm.b3':'Toolbar embaixo: exportar catálogo como JSON, restaurar padrões, ou adicionar entrada via formulário inline.',
+ 'tour.seen':'já visto','tour.new':'novo','tour.reset':'Todos os tours reiniciados. O tour desta página será reexecutado.',
  'adm.t.ref':'Catálogos','adm.t.frame':'Framework v1.0','adm.t.gov':'Governança','adm.t.access':'Acessos & papéis','adm.t.integr':'Integrações',
  'adm.gov.lead':'Configurações de governança: matriz RACI, limites de decisão CEO, elegibilidade Fast Track, SLAs por etapa. Alterações são propagadas imediatamente.',
  'adm.gov.raci.h':'Matriz RACI editável','adm.gov.raci.sub':'(11 etapas × 5 papéis)','adm.gov.raci.help':'Para cada etapa, escolha quem é Responsável (R), Accountable (A), Consultado (C) ou Informado (I).',
@@ -3726,16 +3823,64 @@ const COACH = (function(){
       { selector: '#coachToggle',                    view:'cockpit', placement: 'bottom', titleK: 'tour.welcome.t7', bodyK: 'tour.welcome.b7' },
       { selector: null, placement: 'center', titleK: 'tour.welcome.t8', bodyK: 'tour.welcome.b8', finish: true },
     ],
+    // ---- 1 mini-tour par vue, auto-déclenché la 1ère fois que l'utilisateur arrive ----
+    cockpit: [
+      { selector: '#sc-cockpit .ck-hero, #sc-cockpit .h-pg',   view:'cockpit', placement: 'bottom', titleK: 'tour.v.cockpit.t1', bodyK: 'tour.v.cockpit.b1' },
+      { selector: '#sc-cockpit .kpi-grid',                      view:'cockpit', placement: 'top',    titleK: 'tour.v.cockpit.t2', bodyK: 'tour.v.cockpit.b2' },
+      { selector: '#sc-cockpit .alert, #sc-cockpit .card:nth-of-type(2)', view:'cockpit', placement: 'top', titleK: 'tour.v.cockpit.t3', bodyK: 'tour.v.cockpit.b3', finish:true },
+    ],
+    dashboards: [
+      { selector: '#sc-dashboards .h-pg',           view:'dashboards', placement: 'bottom', titleK: 'tour.v.dash.t1', bodyK: 'tour.v.dash.b1' },
+      { selector: '#sc-dashboards .kpi-grid, #sc-dashboards .card',    view:'dashboards', placement: 'top',    titleK: 'tour.v.dash.t2', bodyK: 'tour.v.dash.b2' },
+      { selector: '#sc-dashboards .cxtab',          view:'dashboards', placement: 'bottom', titleK: 'tour.v.dash.t3', bodyK: 'tour.v.dash.b3', finish:true },
+    ],
+    projects: [
+      { selector: '#sc-projects .h-pg',             view:'projects', placement: 'bottom', titleK: 'tour.v.prj.t1', bodyK: 'tour.v.prj.b1' },
+      { selector: '#sc-projects .kpi-grid',         view:'projects', placement: 'top',    titleK: 'tour.v.prj.t2', bodyK: 'tour.v.prj.b2' },
+      { selector: '#sc-projects .tool-bar .btn.primary, #sc-projects button[onclick*="newProject"]', view:'projects', placement: 'top', titleK: 'tour.v.prj.t3', bodyK: 'tour.v.prj.b3', finish:true },
+    ],
     portfolio: [
       { selector: '#sc-portfolio .cxtab',                            view:'portfolio', placement: 'bottom', titleK: 'tour.pf.t1', bodyK: 'tour.pf.b1' },
       { selector: '#sc-portfolio .tool-bar, #sc-portfolio .pf-toolbar', view:'portfolio', placement: 'bottom', titleK: 'tour.pf.t2', bodyK: 'tour.pf.b2' },
       { selector: '#sc-portfolio .tbl-wrap, #sc-portfolio .tbl',      view:'portfolio', placement: 'top',    titleK: 'tour.pf.t3', bodyK: 'tour.pf.b3', finish:true },
     ],
     intake: [
-      { selector: '.intake-idbar', view:'intake', placement: 'bottom', titleK: 'tour.in.t1', bodyK: 'tour.in.b1' },
-      { selector: '#if_project',   view:'intake', placement: 'bottom', titleK: 'tour.in.t2', bodyK: 'tour.in.b2' },
-      { selector: '#if_budget',    view:'intake', placement: 'bottom', titleK: 'tour.in.t3', bodyK: 'tour.in.b3' },
-      { selector: '.tool-bar',     view:'intake', placement: 'top',    titleK: 'tour.in.t4', bodyK: 'tour.in.b4', finish:true },
+      { selector: '.intake-idbar',      view:'intake', placement: 'bottom', titleK: 'tour.in.t1', bodyK: 'tour.in.b1' },
+      { selector: '.steps-bar',         view:'intake', placement: 'bottom', titleK: 'tour.in.t1b', bodyK: 'tour.in.b1b' },
+      { selector: '#if_project',        view:'intake', placement: 'bottom', titleK: 'tour.in.t2', bodyK: 'tour.in.b2' },
+      { selector: '#if_budget',         view:'intake', placement: 'bottom', titleK: 'tour.in.t3', bodyK: 'tour.in.b3' },
+      { selector: '#sc-intake .tool-bar', view:'intake', placement: 'top',    titleK: 'tour.in.t4', bodyK: 'tour.in.b4', finish:true },
+    ],
+    calendar: [
+      { selector: '#sc-calendar .h-pg',         view:'calendar', placement: 'bottom', titleK: 'tour.v.cal.t1', bodyK: 'tour.v.cal.b1' },
+      { selector: '#sc-calendar .card, #sc-calendar .cal-grid', view:'calendar', placement: 'top', titleK: 'tour.v.cal.t2', bodyK: 'tour.v.cal.b2' },
+      { selector: '#sc-calendar .qbr-dot, #sc-calendar .cal-h.today', view:'calendar', placement: 'bottom', titleK: 'tour.v.cal.t3', bodyK: 'tour.v.cal.b3', finish:true },
+    ],
+    fasttrack: [
+      { selector: '#sc-fasttrack .h-pg',     view:'fasttrack', placement: 'bottom', titleK: 'tour.v.ft.t1', bodyK: 'tour.v.ft.b1' },
+      { selector: '#sc-fasttrack .kpi-grid', view:'fasttrack', placement: 'top',    titleK: 'tour.v.ft.t2', bodyK: 'tour.v.ft.b2' },
+      { selector: '#sc-fasttrack .card:nth-of-type(2)', view:'fasttrack', placement: 'top', titleK: 'tour.v.ft.t3', bodyK: 'tour.v.ft.b3', finish:true },
+    ],
+    governance: [
+      { selector: '#sc-governance .gov-sla-bar',        view:'governance', placement: 'bottom', titleK: 'tour.v.gov.t1', bodyK: 'tour.v.gov.b1' },
+      { selector: '#sc-governance .row-2c .card:first-child', view:'governance', placement: 'top', titleK: 'tour.v.gov.t2', bodyK: 'tour.v.gov.b2' },
+      { selector: '#sc-governance .tbl.raci',           view:'governance', placement: 'top', titleK: 'tour.v.gov.t3', bodyK: 'tour.v.gov.b3' },
+      { selector: '#sc-governance .gov-sla-cfg',        view:'governance', placement: 'left', titleK: 'tour.v.gov.t4', bodyK: 'tour.v.gov.b4', finish:true },
+    ],
+    kb: [
+      { selector: '#sc-kb .h-pg',               view:'kb', placement: 'bottom', titleK: 'tour.v.kb.t1', bodyK: 'tour.v.kb.b1' },
+      { selector: '#sc-kb .tool-bar .chip',     view:'kb', placement: 'bottom', titleK: 'tour.v.kb.t2', bodyK: 'tour.v.kb.b2' },
+      { selector: '#sc-kb .kb-card .kb-acts',   view:'kb', placement: 'top', titleK: 'tour.v.kb.t3', bodyK: 'tour.v.kb.b3', finish:true },
+    ],
+    controls: [
+      { selector: '#sc-controls .h-pg',       view:'controls', placement: 'bottom', titleK: 'tour.v.ic.t1', bodyK: 'tour.v.ic.b1' },
+      { selector: '#sc-controls .kpi-grid',   view:'controls', placement: 'top',    titleK: 'tour.v.ic.t2', bodyK: 'tour.v.ic.b2' },
+      { selector: '#sc-controls .tbl-wrap, #sc-controls .ic-card', view:'controls', placement: 'top', titleK: 'tour.v.ic.t3', bodyK: 'tour.v.ic.b3', finish:true },
+    ],
+    admin: [
+      { selector: '#sc-admin .subnav, #sc-admin .adm-subnav', view:'admin', placement: 'bottom', titleK: 'tour.v.adm.t1', bodyK: 'tour.v.adm.b1' },
+      { selector: '#sc-admin .ref-grid, #sc-admin .ref-card, #sc-admin .ax-users, #sc-admin .row-2c', view:'admin', placement: 'top', titleK: 'tour.v.adm.t2', bodyK: 'tour.v.adm.b2' },
+      { selector: '#sc-admin .tool-bar button, #sc-admin .ref-add input', view:'admin', placement: 'top', titleK: 'tour.v.adm.t3', bodyK: 'tour.v.adm.b3', finish:true },
     ],
   };
 
@@ -3753,7 +3898,27 @@ const COACH = (function(){
     isOn() { return PREFS.coach && PREFS.coach.enabled; },
     visit(viewId) { _visited.add(viewId); _persistFlags(); renderChecklistPanel(); },
     flag(key) { _flags.add(key); _persistFlags(); renderChecklistPanel(); },
-    applyHint(viewId) { this.visit(viewId); },
+    // applyHint(viewId) : appelée à chaque goView(). Auto-déclenche le mini-tour
+    // de la vue si l'utilisateur ne l'a pas encore vu, et qu'aucun autre tour
+    // n'est en cours. Le welcome a priorité tant qu'il n'est pas terminé.
+    applyHint(viewId) {
+      this.visit(viewId);
+      renderTopbarToggle();  // refresh « Tour de cette page · <nom> » dans le menu
+      if (!this.isOn()) return;
+      // Pas de mini-tour si le welcome est en cours / pas encore terminé
+      if (_tourState) return;
+      if (!PREFS.coach.tourSeen.welcome && !PREFS.coach.dismissedTour) return;
+      // Cooldown : si l'utilisateur vient de skipper un tour il y a <30s, on attend
+      if (PREFS.coach.lastSkipAt && (Date.now() - PREFS.coach.lastSkipAt) < 30000) return;
+      // Lance le mini-tour de la vue s'il existe et n'a pas été vu
+      if (TOURS[viewId] && viewId !== 'welcome' && !PREFS.coach.tourSeen[viewId]) {
+        setTimeout(() => {
+          // Re-check au tir : vue toujours active, pas d'autre tour, coach toujours on
+          if (_tourState || !COACH.isOn() || PREFS.view !== viewId) return;
+          COACH.startTour(viewId);
+        }, 700);
+      }
+    },
     startTour(tourId) {
       const steps = TOURS[tourId];
       if (!steps || !steps.length) return;
@@ -3779,6 +3944,7 @@ const COACH = (function(){
       const id = _tourState.tourId;
       _hideTour();
       PREFS.coach.tourSeen[id] = true;
+      PREFS.coach.lastSkipAt = Date.now();
       savePrefs();
       toast(tr('tour.skipped'), 'ok');
     },
@@ -3796,6 +3962,20 @@ const COACH = (function(){
       savePrefs();
       renderTopbarToggle(); renderChecklistPanel();
       toast(tr('tour.enabled'), 'ok');
+    },
+    // Reset : tous les tours redeviennent inconnus → le tour de la vue courante
+    // se relance automatiquement.
+    resetAllTours() {
+      PREFS.coach.tourSeen = {};
+      PREFS.coach.dismissedTour = false;
+      PREFS.coach.lastSkipAt = 0;
+      savePrefs();
+      toast(tr('tour.reset'), 'ok');
+      if (PREFS.view && PREFS.view !== 'welcome' && TOURS[PREFS.view]) {
+        setTimeout(()=>COACH.startTour(PREFS.view), 400);
+      } else {
+        setTimeout(()=>COACH.startTour('welcome'), 400);
+      }
     },
     checklistOpen() {
       const p = document.getElementById('coachChecklist');
@@ -4011,6 +4191,15 @@ const COACH = (function(){
     btn.classList.toggle('on', on);
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
     btn.title = on ? tr('tour.toggle.on.tt') : tr('tour.toggle.off.tt');
+    // Met à jour le label « Tour de cette page · <nom> » dans le menu
+    const cur = document.getElementById('coachMenuCurPage');
+    if (cur) {
+      const view = (PREFS && PREFS.view) || 'cockpit';
+      const navItem = (typeof NAV !== 'undefined') ? NAV.find(n => n.id === view) : null;
+      const lbl = navItem ? tr(navItem.lblK || navItem.crumbK || ('nav.'+view), view) : view;
+      const seen = PREFS.coach && PREFS.coach.tourSeen && PREFS.coach.tourSeen[view];
+      cur.textContent = lbl + (seen ? ' · ' + tr('tour.seen') : ' · ' + tr('tour.new'));
+    }
   }
   function renderChecklistPanel() {
     const host = document.getElementById('coachChecklist');

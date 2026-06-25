@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.21.1
+Stable tag: 0.21.2
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,44 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.21.2 — Coach étendu : mini-tour auto-déclenché sur chaque page =
+* EXTENSION COACH à toutes les vues : à chaque fois que l'utilisateur
+  arrive sur un écran pour la 1ère fois, le coach lance automatiquement
+  un mini-tour de 3-5 étapes qui explique ce qu'il peut/doit faire ici.
+* 11 mini-tours définis (1 par vue) en plus du tour welcome global :
+  - cockpit (3 étapes) : KPIs portefeuille, alertes, navigation
+  - dashboards (3 étapes) : vue analytique, drill-down, bascule
+  - projects (3 étapes) : niveau parent CFP, KPIs, créer projet
+  - portfolio (3 étapes) : CXTAB, filtres, détail trial
+  - intake (5 étapes) : ID auto, 5 étapes formulaire, projet, budget, draft/submit
+  - calendar (3 étapes) : Gantt 16 mois, barres macro-phases, QBR
+  - fasttrack (3 étapes) : lane d'urgence, KPIs, workflow 5 étapes
+  - governance (4 étapes) : SLA bandeau, Steering/CEO, RACI, config
+  - kb (3 étapes) : closures, filtres verdict, éditer/PDF
+  - controls (3 étapes) : 22 points, KPIs conformité, drill par point
+  - admin (3 étapes) : 5 sous-onglets, action du jour, ajouter
+* Logique d'auto-déclenchement intelligente :
+  - Lance seulement si la vue n'a pas encore été vue (PREFS.coach.tourSeen)
+  - Lance seulement si le tour welcome est terminé (priorité)
+  - Cooldown 30s après skip pour éviter de spammer (pas de mini-tour
+    juste après que l'utilisateur ait skippé un tour précédent)
+  - Re-check au tir : si la vue a changé entre-temps, on annule
+  - Délai 700ms après navigation pour laisser le DOM se peupler
+* Nouveau menu coach (clic droit sur 💡) :
+  - 🎯 « Tour de cette page · <nom de la page> · nouveau/déjà vu »
+    (label dynamique, mis à jour à chaque changement de vue)
+  - ▶ Tour d'accueil complet (8 étapes)
+  - 🔄 « Re-déclencher tous les tours » : reset complet + relance auto
+    du tour de la vue courante
+  - 🔕 Désactiver / 🔔 Activer le coach
+* Persistance : PREFS.coach.tourSeen est un objet keyé par tourId, le
+  cooldown stocké dans PREFS.coach.lastSkipAt. Persisté serveur via la
+  collection 'prefs_user'.
+* i18n : 80+ nouvelles clés FR/EN/PT pour les 11 mini-tours.
+* Smoke E2E np-smoke-v21-perview.mjs : EXIT=0 (11 vues testées, chaque
+  vue auto-lance son tour avec bon titre et step counter ; revisite ne
+  relance pas ; resetAllTours redéclenche ; menu affiche le bon label).
 
 = 0.21.1 — Coach D²nAI refondu en guided tour Intercom-style =
 * REFONTE COMPLÈTE du coach : remplacement des hints contextuels passifs
