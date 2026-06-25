@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.16.0
+Stable tag: 0.21.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,196 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.21.0 — Coach D²nAI guide intelligent + Gouvernance paramétrable + B6-B9 fixes =
+* COACH D²nAI (4 piliers, guide intelligent pour utilisateurs novices) :
+  - Checklist d'onboarding (7 actions concrètes, panneau collapsible bas-
+    sidebar avec progress ring SVG animé) qui se masque automatiquement
+    quand tout est coché.
+  - Hints contextuels par écran (cockpit/portfolio/intake/governance/admin/
+    kb) avec règles intelligentes (msg + action call-to-action). 1 hint
+    par écran, jamais intrusif, dismissable. Mémoire des hints fermés
+    persistée dans PREFS.coach.dismissedHints.
+  - Spotlight CSS (box-shadow pulse 1.6s) pour attirer l'œil sur un
+    élément à activer.
+  - Toggle 3 niveaux dans le topbar (💡 Novice / Intermédiaire / Off) avec
+    dot pulse animée quand actif. Click ailleurs ferme le menu.
+  - Visited views et flags (uc-opened, uc-created, chat-asked) persistés
+    localStorage. Auto-cochage de la checklist sans intervention manuelle.
+  - Respecte prefers-reduced-motion (animations désactivées proprement).
+  - Mobile : checklist masquée, coach bar adaptée 2 lignes.
+* GOUVERNANCE PARAMÉTRABLE (nouveau tab Admin > Gouvernance) :
+  - Matrice RACI 11 étapes × 5 rôles entièrement éditable (selects R/A/C/I
+    avec code couleur ambre/rouge/bleu/gris). Source de vérité de la vue
+    Governance côté membres.
+  - Seuils CEO (budget min, durée min) : déclenche le flag ceo_required
+    automatique sur soumission UC dépassant l'un des seuils.
+  - Éligibilité Fast Track (budget max, durée max) : un FT au-delà est
+    refusé silencieusement à la soumission (toast + cycle standard).
+  - SLA paramétrables par étape (SAI Review, Steering, CEO, Fast Track,
+    Monitoring) en jours. Affichés en bandeau au-dessus de la page
+    Governance avec lien direct vers la config.
+  - Persistance temps réel : localStorage immédiat + apiPush serveur
+    (collection 'governance' whitelistée).
+  - Action « Restaurer les valeurs par défaut » pour annuler tout custom.
+* RÉFÉRENTIEL CRUD ÉDITABLE :
+  - Renommage inline des items strings (BUs, cultures, produits, MDS,
+    statuses) via double-clic → input → Enter/blur pour valider, Escape
+    pour annuler. Vérification anti-doublon, propagation cascade dans
+    DATA (champ scalaire OU array mds_covered).
+  - Badge usage par item (compteur de trials utilisant cette valeur)
+    visible au survol pour aide à la décision de suppression.
+  - Guard suppression étendu à MDS (en plus de BUs/crops/products/
+    partners) : toast d'erreur si N trials utilisent l'item, suppression
+    bloquée.
+* B6 — Intake : ID auto-généré (UC-2026-NNN) affiché en bandeau pro-max
+  avant le formulaire (badge vert OCP, code monospace JetBrains). Budget
+  passé en input monétaire premium (préfixe $ vert, suffixe USD, helper
+  live avec formatage thousand-separator on input). Helper i18n FR/EN/PT.
+* B7 — Closure éditable : nouveau bouton « ✏ Éditer » par card KB qui
+  ouvre une modale UI.prompt avec textarea synthèse + recommandation,
+  persistance par UC dans le champ closure (override des lessons
+  computées). Badge « éditée » visible sur les cards modifiées. Block
+  recommendation visible inline en vert pâle.
+* B8 — Export PDF Closure : nouveau bouton « 🖨 PDF » par card KB qui
+  génère un layout d'impression dédié (.kb-print-only, isolé via
+  body.kb-printing → display:none sur tout le reste) avec entête D²nAI,
+  méta UC, verdict coloré (vert/ambre/rouge selon GO/HOLD/KILL), synthèse,
+  recommandation, KPIs, footer attribution. window.print() déclenché
+  automatiquement, l'utilisateur choisit « Enregistrer en PDF ».
+* B9 — Refresh automatique des vues amont sur mutation données : nouvelle
+  fonction dataChanged() appelée depuis saveData() + submitUc() qui
+  re-render la sidebar (badges) + l'écran courant si concerné
+  (governance/calendar/cockpit/dashboards/controls/fasttrack/kb/portfolio/
+  projects). Plus de vues périmées après création d'un Use Case.
+* PHP backend : version bumpée 0.20→0.21, collection 'governance' et
+  'prefs_user' ajoutées à la whitelist REST. Schéma DB inchangé
+  (rétrocompatible).
+* i18n : 60+ nouvelles clés FR/EN/PT couvrant coach, intake B6, closure
+  B7/B8, références CRUD, gouvernance config, SLA badges, FT refusal.
+
+= 0.20.0 — Bot D²nAI repensé : FAB rond + Sheet flottant (option B) =
+* REMPLACEMENT DU PANNEAU CHAT slide-in droit (qui prenait 460px de
+  largeur en permanence et faisait doublon avec l'AI command bar du
+  cockpit) par un pattern FAB + Sheet à la Intercom/Crisp :
+  - FAB rond en bas-droite, 56×56px, gradient vert OCP, halo pulse
+    discret (ping vert clair toutes 2.6s, animation respectée par
+    prefers-reduced-motion).
+  - Au clic : FAB tourne 45° et se transforme en croix (×), sheet
+    apparaît en bas-droite avec spring physics (scale+slide).
+  - Sheet 400×min(620, 100dvh-130) flottant, fond vert OCP sombre
+    (gradient #07140c→#0c1f12), border vert clair subtle, ombre
+    profonde polish.
+  - Scrim léger (rgba 18% + blur 2px) qui dismiss au clic.
+  - L'ancien bouton "D²nAI bot" en topbar est masqué (display:none).
+* MOBILE : sheet en bottom-sheet plein écran 88dvh (radius 18 18 0 0),
+  slide depuis le bas, scrim plus opaque 50% + blur 4px. Pastille
+  feedback commentaire repoussée à bottom:88px pour ne pas chevaucher
+  le FAB.
+* TOGGLE CHAT : refactor toggleChat() pour ne plus utiliser .app.chat-open
+  (l'ancien grid 200/1fr/460 est supprimé du flow), le sheet flotte
+  par-dessus tout. Préserve les IDs internes (#chatBody, #chatSugs,
+  #chatInput, #chatSendBtn) → chatSend/chatAsk/chatGreet/openChatWith
+  continuent de fonctionner sans modification.
+* A11Y : aria-label sur FAB, role=dialog sur sheet, Esc ferme (déjà
+  câblé par toggleChat), tabindex à conserver, focus auto sur chatInput
+  à l'ouverture (220ms après transition).
+* Vérifié bout-en-bout via PHP serve + Playwright sur desktop (1440px)
+  et mobile (412px) : FAB visible, sheet ouvre/ferme proprement,
+  bot répond (3 messages dans le thread après envoi), Admin > Accès
+  toujours OK (9 utilisateurs), 0 erreur JS console.
+
+= 0.19.0 — Nav épurée 11→6, impersonate démo, persistence rôles, mobile fix =
+* NAV ÉPURÉE 11 → 6 entrées : Cockpit · Portefeuille · Gouvernance ·
+  Soumettre (Intake) · KB · Admin. Les 5 écrans cachés (dashboards,
+  projects, calendar, controls, fasttrack) restent accessibles via
+  des sous-tabs contextuels (CXTAB) injectés en haut des écrans
+  pivots : Cockpit ⇄ Vue analytique, Portefeuille ⇄ Projets, Gouvernance
+  ⇄ Calendrier ⇄ Contrôles internes, Soumettre ⇄ Fast Track.
+* IMPERSONATE : sélecteur "Vue" en topbar pour démos RBAC avant SSO.
+  8 rôles simulés (Admin, Entity Manager, Trial Owner, SAI Reviewer,
+  Steering, CEO Approver, Reader). Bandeau warn animé en haut + masquage
+  des actions selon rôle (ex. "+ New Use Case" disparaît pour reader).
+* PERSISTENCE RÔLES : collection 'roles' whitelistée côté PHP (table
+  custom dnai_nplan_store). axLoadRolesFromServer() au render de
+  Admin > Accès, axSaveRolesToServer() au save modal. Multi-utilisateur
+  partagé (en attendant que SSO Entra ID prenne le relais).
+* FIX MOBILE PORTRAIT (<760px) : ck-hero passe en padding 18px, h1 26px,
+  ck-hs en colonne 1fr ; h-pg 26px, kpi-grid en 1fr avec borders propres,
+  topbar gap réduit, search masquée, impersonate masqué. Le hero qui
+  débordait sur 412px est rentré (cf retour user 25/06).
+* AUDIT BUGS BRIEF V07 (B1-B9) — état réel :
+  - B1 Use Case créé invisible : ✅ fixé (saveData()→apiPush usecases)
+  - B2 Search KO : ✅ fixé (globalSearch oninput→PREFS.filters.q)
+  - B3 Upload doc : ✅ fixé (if_attach + attachments dans uc)
+  - B4 KPIs/MDS saisie : ✅ branchée (mds-row, classes CSS présentes)
+  - B5 Contrôle date fin vs début : ✅ fixé (ifDateCheck() ligne 4166)
+  - B6 ID budget : ⚠ à valider en démo
+  - B7 Bouton Éditer Closure inactif : ⚠ à valider, pas de fix trouvé
+  - B8 Export PDF Closure : ⚠ à valider, pas de fix trouvé
+  - B9 Comités update auto : ⚠ partiellement (re-render goView)
+  → B6-B9 à traiter en v0.20 ciblée après validation en démo réelle.
+
+= 0.18.0 — Polish global propagé aux 11 écrans =
+* PASSE DE SURCHARGE CSS PURE (zéro modif DOM/JS, zéro risque fonctionnel) :
+  élévation systémique de tous les composants partagés (.h-pg, .kpi, .card,
+  .tbl, .pill, .chip, .btn.primary, .ck-hero, .ck-hs, .sb-item, .topbar,
+  .subnav) — propagé sur cockpit, dashboards, projects, portfolio, intake,
+  calendar, fasttrack, governance, kb, controls, admin.
+* TYPO MONUMENTALE : .h-pg passe 30px → 40px Cormorant serré, balance text,
+  pattern italic h-pg em pour titres asymétriques.
+* KPI éditorial : strip border-top/bottom (vs cards séparées), value
+  Cormorant 42px (vs 36 Inter), stagger reveal animation 4 cards.
+* CK-HERO dramatique : gradient 3 stops, h1 42px + em italic vert clair,
+  radial highlight subtile, ck-hs.v en Cormorant serif 38px.
+* TABLE row stagger : tbody tr fade-in séquentiel + hover gradient vert
+  + barre verticale verte au hover (cohérent avec Admin > Accès).
+* MICRO INTERACTIONS : pill hover lift, chip border-hover vert OCP,
+  btn.primary shimmer hover (gradient blanc qui balaie en 600ms),
+  sb-item slide-right hover, sidebar active glow vert.
+* AMBIENT BACKGROUND : double radial vert OCP très subtil + noise grain
+  léger fixe-positionné, donne de la matière sans casser le contenu.
+* TOPBAR backdrop-blur + saturate 140% (Mac-style frosted glass).
+* SUBNAV (onglets admin) modernisée : padding 4px, hover vert clair,
+  active vert OCP 900.
+* REDUCED-MOTION respecté : toutes les nouvelles anim désactivées si
+  prefers-reduced-motion:reduce (rowIn, kpiIn, shimmer, ambient).
+* Vérifié bout-en-bout via PHP serve + Playwright sur 6 écrans (cockpit,
+  dashboards, portfolio, admin, governance, kb) : 0 erreur JS, 11
+  screens disponibles, anti-régression confirmée.
+
+= 0.17.0 — Admin > Accès "pro max" + hotfix injection </head> =
+* REFONTE ADMIN > ACCÈS : hero éditorial Cormorant 46px italique, KPI strip
+  avec 4 sparklines animées (utilisateurs actifs, rôles, sans MFA, entités),
+  number counters animés au reveal, tableau utilisateurs riche avec
+  avatars dégradés, badges rôles (admin/comités/lecteur), pills MFA
+  Activée/Manquante (Manquante avec halo pulse), tooltips data-tip, hover
+  row avec gradient + barre verticale verte, scroll-reveal stagger sur les
+  lignes, batch action bar (sélection multi → assigner rôle, forcer MFA,
+  désactiver), tri sortable avec aria-sort, mini matrice RBAC en référence
+  (6 rôles × 5 actions essentielles), modale d'édition utilisateur avec
+  scale+fade depuis le trigger (transform-origin dynamique), sections
+  rôles applicatifs cochables (4 rôles principaux + 7 autres en details),
+  périmètre d'entité radio + sélecteur, note synchronisation Entra ID
+  (groupe AD), action destructive séparée du primaire, toast confirmation
+  avec progress bar.
+* MOCKDATA RÉEL : 9 utilisateurs avec les noms réels de l'équipe OCP
+  Nutricrops (Halima, Abdellah, Abdelali, Saâd, Mounia, Youssef, Robson,
+  Mostapha, Lina) — cohérent avec la matrice RBAC consolidée v2 du
+  24 juin 2026.
+* HOTFIX DÉFENSIF : injection du config bridge passe maintenant par
+  strrpos+substr_replace (cible la dernière </head>) au lieu de
+  str_replace naïf. Évite le bug latent identifié sur les apps soeurs
+  (NutriBudget v0.4.0, NutriView v0.4.0) où une lib bundlée contenant un
+  littéral "</head>" cassait le <script> module et affichait du JS brut.
+* PHP : harmonisation version header / constante DNAI_NPLAN_VER (était
+  désynchronisé 0.16.0 / 0.14.0 — maintenant 0.17.0 partout).
+* A11Y : focus-visible sur tous les nouveaux composants, aria-sort sur
+  colonnes triables, aria-live="polite" sur batch bar et toast, gestion
+  Escape pour fermer la modale, restauration focus à la fermeture.
+* Vérifié bout-en-bout via PHP CLI serve + Playwright (chaîne WP réelle,
+  pas file://). 0 erreur JS console, 9 utilisateurs rendus, 4 sparklines
+  animées, modale fonctionnelle avec édition des 11 rôles applicatifs.
 
 = 0.16.0 — Fix critiques : drill-down visible, chat débordant + croix masquée =
 * DRILL-DOWN ENFIN VISIBLE (bug majeur) — cliquer un KPI cockpit

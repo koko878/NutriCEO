@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutriPlan — Trial Management Cockpit
  * Description:       Sister-app of NutriTrials covering the full upstream Trial Management cycle (annual planning, Use Case intake, Steering / CEO / Monitoring gates, internal controls, Fast Track lane, closure & knowledge base). Includes a chat-with-data AI co-pilot designed and operated by the D²nAI team.
- * Version:           0.16.0
+ * Version:           0.21.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutriplan
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NPLAN_VER', '0.14.0' );
+define( 'DNAI_NPLAN_VER', '0.21.0' );
 define( 'DNAI_NPLAN_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NPLAN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DNAI_NPLAN_DB_VER', '1' );
@@ -49,7 +49,10 @@ add_action( 'plugins_loaded', function () {
 
 function dnai_nplan_collections() {
 	// Whitelist — évite l'écriture de collections arbitraires.
-	return array( 'usecases', 'projects', 'reference', 'feedback' );
+	// v0.19 : ajout de "roles" (Admin > Accès).
+	// v0.21 : ajout de "governance" (RACI/seuils/SLA paramétrables) + "prefs_user"
+	// (préférences personnelles utilisateur, ex: coach on/off, niveau, hints fermés).
+	return array( 'usecases', 'projects', 'reference', 'feedback', 'roles', 'governance', 'prefs_user' );
 }
 function dnai_nplan_store_get( $collection ) {
 	global $wpdb;
@@ -127,7 +130,16 @@ add_action( 'template_redirect', function () {
 			'user'   => wp_get_current_user()->display_name ?: '',
 			'ver'    => DNAI_NPLAN_VER,
 		) ) . ';</script>';
-		echo str_replace( '</head>', $cfg . "\n</head>", $html );
+		// IMPORTANT (v0.17 hotfix défensif) : str_replace remplace TOUTES les
+		// occurrences. Si le bundle inline contient un littéral "</head>"
+		// (toute lib parsant du HTML, ex: XLSX), l'injection casserait le
+		// <script> bundle (fermeture prématurée) et la page afficherait du JS
+		// brut. On cible la DERNIÈRE </head> (vraie balise) via strrpos.
+		$pos = strrpos( $html, '</head>' );
+		if ( $pos !== false ) {
+			$html = substr_replace( $html, $cfg . "\n</head>", $pos, strlen( '</head>' ) );
+		}
+		echo $html;
 		exit;
 	}
 } );

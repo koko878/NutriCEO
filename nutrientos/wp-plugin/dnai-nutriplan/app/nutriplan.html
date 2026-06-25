@@ -580,9 +580,13 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .ref-count{font:700 11px 'Inter';color:var(--green-800);background:var(--green-50);border:1px solid var(--green-100);border-radius:999px;padding:1px 9px}
 .ref-prov{font:700 9.5px 'Inter';letter-spacing:.05em;text-transform:uppercase;color:var(--muted-2);background:#f4f6f3;border:1px solid var(--line);border-radius:6px;padding:2px 7px}
 .ref-chips{display:flex;flex-wrap:wrap;gap:6px;min-height:8px}
-.ref-chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;background:#fff;border:1px solid var(--line-2);border-radius:999px;padding:6px 8px 6px 14px;font-size:12.5px}
-.ref-chip button{border:0;background:#eef0ec;color:var(--muted);width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:13px;line-height:1;transition:.15s}
-.ref-chip button:hover{background:var(--bad-bg);color:var(--bad)}
+.ref-chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;background:#fff;border:1px solid var(--line-2);border-radius:999px;padding:6px 8px 6px 14px;font-size:12.5px;cursor:pointer;transition:.15s}
+.ref-chip:hover{border-color:var(--green-400);background:#fafffa}
+.ref-chip .ref-chip-lbl{display:inline-flex;align-items:center;min-height:22px}
+.ref-chip-inp{border:1px solid var(--green-700);border-radius:6px;padding:2px 6px;font:500 12.5px 'Inter';background:#fff;outline:none;box-shadow:0 0 0 2px rgba(46,125,50,.12);min-width:90px}
+.ref-used{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;font:700 10.5px 'Inter';color:var(--green-800);background:var(--green-50);border:1px solid var(--green-200);border-radius:999px}
+.ref-chip-x,.ref-chip button{border:0;background:#eef0ec;color:var(--muted);width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:13px;line-height:1;transition:.15s}
+.ref-chip-x:hover,.ref-chip button:hover{background:var(--bad-bg);color:var(--bad)}
 .ref-add{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:2px}
 .ref-add input{flex:1;min-width:90px;border:1px solid var(--line-2);border-radius:8px;padding:7px 10px;font:500 12.5px 'Inter';background:#fafbf9;transition:.15s}
 .ref-add input:focus{outline:none;border-color:var(--green-700);box-shadow:0 0 0 3px rgba(46,125,50,.12);background:#fff}
@@ -793,6 +797,861 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
   .sb-foot .dot, .tb-btn.ai .dot{animation:none;box-shadow:none}
 }
+
+/* ==========================================================================
+ * v0.17 — ADMIN ACCESS PRO MAX (Users & Roles refonte)
+ * Cible : refonte ciblée de l'onglet Admin > Accès, sans toucher aux 11
+ * autres écrans. Tous les sélecteurs préfixés .ax-* pour isolation totale.
+ * ========================================================================== */
+@keyframes ax-drawLine{to{stroke-dasharray:none;stroke-dashoffset:0}}
+@keyframes ax-fadeIn{to{opacity:.18}}
+@keyframes ax-pulse{0%{transform:scale(1);opacity:.55}100%{transform:scale(1.6);opacity:0}}
+@keyframes ax-slideIn{from{transform:translateY(-6px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes ax-toastIn{to{transform:translateY(0);opacity:1}}
+@keyframes ax-rowIn{to{opacity:1;transform:translateY(0)}}
+
+/* Hero éditorial */
+.ax-eyebrow{display:inline-flex;align-items:center;gap:9px;font:700 11px 'Inter';letter-spacing:.12em;text-transform:uppercase;color:var(--green-700);margin-bottom:12px}
+.ax-eyebrow::before{content:'';width:24px;height:1px;background:var(--green-500)}
+.ax-h{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:46px;line-height:1;margin:0 0 14px;color:var(--green-900);letter-spacing:-.025em}
+.ax-h em{font-style:italic;color:var(--green-700);font-weight:500;display:block}
+.ax-lead{max-width:54ch;color:var(--muted);font-size:15px;line-height:1.6;margin:0 0 18px}
+.ax-sig{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;margin-top:14px}
+.ax-sig::before{content:'';width:24px;height:1px;background:var(--muted)}
+
+/* KPI strip avec sparklines */
+.ax-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:0 0 22px;background:linear-gradient(180deg,transparent,var(--soft))}
+.ax-kpi{padding:18px 22px 18px 0;border-right:1px solid var(--line);position:relative}
+.ax-kpi:first-child{padding-left:0}
+.ax-kpi:last-child{padding-right:0;border-right:0}
+.ax-kpi-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.ax-kpi-lbl{font:700 10.5px 'Inter';letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.ax-kpi-trend{margin-left:auto;font:600 11px 'Inter';padding:1px 7px;border-radius:999px}
+.ax-kpi-trend.up{background:var(--green-50);color:var(--green-700)}
+.ax-kpi-trend.down{background:var(--warn-bg);color:var(--warn)}
+.ax-kpi-trend.flat{background:#eef0ef;color:var(--muted)}
+.ax-kpi-val{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:42px;line-height:.95;color:var(--green-900);font-variant-numeric:tabular-nums;letter-spacing:-.02em;display:flex;align-items:baseline;gap:6px}
+.ax-kpi-val .u{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--muted);letter-spacing:0}
+.ax-kpi-sub{font-size:12px;color:var(--muted);margin-top:4px;min-height:18px}
+.ax-kpi-sub strong{font-weight:600;color:var(--ink-2)}
+.ax-kpi-sub a{color:var(--warn);font-weight:600;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.ax-kpi.warn .ax-kpi-val{color:var(--warn)}
+.ax-spark{display:block;width:100%;height:32px;margin-top:10px}
+.ax-spark path.line{fill:none;stroke:var(--green-700);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
+.ax-spark path.area{fill:url(#ax-spark-grad);opacity:0}
+.ax-spark.warn path.line{stroke:var(--warn)}
+.ax-spark.warn path.area{fill:url(#ax-spark-grad-warn)}
+.ax-spark.revealed path.line{animation:ax-drawLine 1.3s var(--ease-out-quart) forwards}
+.ax-spark.revealed path.area{animation:ax-fadeIn .8s .4s var(--ease-out-quart) forwards}
+
+/* Filters & search */
+.ax-filters{display:flex;align-items:center;gap:14px;margin:0 0 12px;flex-wrap:wrap}
+.ax-search{position:relative;flex:0 0 320px}
+.ax-search input{width:100%;padding:9px 14px 9px 36px;border-radius:10px;border:1px solid var(--line-2);background:#fff;font:500 13.5px 'Inter';color:var(--ink);min-height:38px;transition:border-color .18s,box-shadow .18s}
+.ax-search input::placeholder{color:var(--muted)}
+.ax-search input:focus-visible{border-color:var(--green-500);box-shadow:var(--ring-focus);outline:none}
+.ax-search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted);pointer-events:none}
+.ax-chips{display:flex;gap:4px;flex-wrap:wrap}
+.ax-chip{padding:6px 12px;border-radius:999px;font:500 12.5px 'Inter';color:var(--ink-2);background:transparent;border:1px solid transparent;cursor:pointer;min-height:32px;transition:background .18s,color .18s}
+.ax-chip:hover{background:var(--green-50);color:var(--green-900)}
+.ax-chip.on{background:var(--green-900);color:#fff}
+.ax-chip .c{font-variant-numeric:tabular-nums;opacity:.7;margin-left:5px}
+.ax-count{font-size:12.5px;color:var(--muted);margin:4px 0 10px;display:flex;align-items:center;gap:8px}
+.ax-count strong{color:var(--ink-2);font-weight:600}
+
+/* Batch bar */
+.ax-batch{position:sticky;top:60px;z-index:6;background:var(--green-900);color:#fff;border-radius:12px;padding:10px 18px;margin-bottom:8px;display:none;align-items:center;gap:14px;box-shadow:var(--shadow-green-md);animation:ax-slideIn 240ms var(--ease-spring)}
+.ax-batch.on{display:flex}
+.ax-batch .n{font:600 13px 'Inter';display:inline-flex;align-items:center;gap:8px}
+.ax-batch .sp{flex:1}
+.ax-batch .b{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:7px;border:1px solid rgba(255,255,255,.22);background:transparent;color:#fff;font:600 12.5px 'Inter';cursor:pointer;transition:background .18s,border-color .18s}
+.ax-batch .b:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.4)}
+.ax-batch .x{background:transparent;border:0;color:#fff;width:30px;height:30px;border-radius:7px;display:grid;place-items:center;cursor:pointer;transition:background .18s}
+.ax-batch .x:hover{background:rgba(255,255,255,.1)}
+
+/* Table users */
+.ax-users{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-md);margin-bottom:32px}
+.ax-users table{width:100%;border-collapse:separate;border-spacing:0;font-size:14px}
+.ax-users thead{background:#fbfdfb;position:sticky;top:60px;z-index:3}
+.ax-users th{text-align:left;padding:12px 18px;font:700 10.5px 'Inter';letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);white-space:nowrap;user-select:none}
+.ax-users th.s{cursor:pointer;transition:color .18s}
+.ax-users th.s:hover{color:var(--ink)}
+.ax-users th .sx{display:inline-flex;align-items:center;gap:5px}
+.ax-users th .sx svg{width:11px;height:11px;color:var(--muted);transition:opacity .18s;opacity:.4}
+.ax-users th[aria-sort]:not([aria-sort="none"]){color:var(--ink)}
+.ax-users th[aria-sort]:not([aria-sort="none"]) .sx svg{opacity:1;color:var(--green-700)}
+.ax-users th[aria-sort="descending"] .sx svg{transform:rotate(180deg)}
+.ax-users th.cb{width:40px;padding-left:18px;padding-right:0}
+.ax-users td{padding:14px 18px;vertical-align:middle;border-bottom:1px solid var(--line);position:relative}
+.ax-users tbody tr{opacity:0;transform:translateY(6px);animation:ax-rowIn 420ms var(--ease-out-quart) forwards;transition:background 120ms var(--ease-out-quart)}
+.ax-users tbody tr:nth-child(1){animation-delay:.04s}.ax-users tbody tr:nth-child(2){animation-delay:.08s}
+.ax-users tbody tr:nth-child(3){animation-delay:.12s}.ax-users tbody tr:nth-child(4){animation-delay:.16s}
+.ax-users tbody tr:nth-child(5){animation-delay:.20s}.ax-users tbody tr:nth-child(6){animation-delay:.24s}
+.ax-users tbody tr:nth-child(7){animation-delay:.28s}.ax-users tbody tr:nth-child(8){animation-delay:.32s}
+.ax-users tbody tr:nth-child(9){animation-delay:.36s}
+.ax-users tbody tr:hover{background:linear-gradient(90deg,var(--green-50),var(--soft))}
+.ax-users tbody tr:hover td:first-child::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green-500);border-radius:0 2px 2px 0}
+.ax-users tbody tr.sel{background:var(--green-50)}
+.ax-users tbody tr:last-child td{border-bottom:0}
+
+.ax-cb{appearance:none;-webkit-appearance:none;width:18px;height:18px;border:1.5px solid var(--line-2);border-radius:5px;background:#fff;cursor:pointer;display:grid;place-items:center;transition:background .18s,border-color .18s;vertical-align:middle}
+.ax-cb:hover{border-color:var(--green-500)}
+.ax-cb:checked{background:var(--green-700);border-color:var(--green-700)}
+.ax-cb:checked::after{content:'';width:11px;height:11px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>");background-size:contain;background-repeat:no-repeat}
+.ax-cb:focus-visible{outline:none;box-shadow:var(--ring-focus)}
+.ax-cb:indeterminate{background:var(--green-700);border-color:var(--green-700)}
+.ax-cb:indeterminate::after{content:'';width:10px;height:2px;background:#fff;border-radius:1px;background-image:none}
+
+.ax-user{display:flex;align-items:center;gap:11px;min-width:0}
+.ax-av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font:700 11.5px 'Inter';flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.4);background:linear-gradient(135deg,var(--green-100),var(--green-200));color:var(--green-900)}
+.ax-av.a1{background:linear-gradient(135deg,#ece4d0,#d8c896);color:#6a5520}
+.ax-av.a2{background:linear-gradient(135deg,#d6e3da,#98c1ad);color:#1f5439}
+.ax-av.a3{background:linear-gradient(135deg,#e2dde8,#b9a8d0);color:#46365e}
+.ax-av.a4{background:linear-gradient(135deg,#d8e8f0,#a3c7d9);color:#1f4e62}
+.ax-uname{font:600 13.5px 'Inter';line-height:1.2;color:var(--ink)}
+.ax-uupn{font:500 11.5px 'Inter';color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums}
+
+.ax-roles{display:flex;flex-wrap:wrap;gap:4px}
+.ax-role{display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;font:600 11px 'Inter';line-height:1.3;background:var(--green-50);color:var(--green-900);border:1px solid var(--green-100);white-space:nowrap}
+.ax-role.adm{background:var(--green-900);color:#fff;border-color:var(--green-900)}
+.ax-role.com{background:var(--warn-bg);color:var(--warn);border-color:#f0d68a}
+.ax-role.read{background:#eef0ef;color:var(--muted);border-color:var(--line)}
+
+.ax-scope{font:500 12.5px 'Inter';color:var(--ink-2);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+
+.ax-mfa{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font:600 11px 'Inter'}
+.ax-mfa.on{background:var(--green-50);color:var(--green-700);border:1px solid rgba(46,125,50,.25)}
+.ax-mfa.off{background:var(--warn-bg);color:var(--warn);border:1px solid #f0d68a;position:relative}
+.ax-mfa.off::after{content:'';position:absolute;inset:-3px;border-radius:999px;background:#f0d68a;z-index:-1;animation:ax-pulse 2.4s var(--ease-out-quart) infinite;opacity:.4}
+.ax-mfa svg{width:12px;height:12px}
+
+.ax-last{font:500 12.5px 'Inter';color:var(--ink-2)}
+.ax-last small{display:block;color:var(--muted);font-size:11px;margin-top:1px;font-variant-numeric:tabular-nums}
+
+.ax-rowact{display:flex;gap:2px;justify-content:flex-end;opacity:0;transition:opacity .18s var(--ease-out-quart)}
+.ax-users tbody tr:hover .ax-rowact,
+.ax-users tbody tr:focus-within .ax-rowact{opacity:1}
+.ax-icob{background:transparent;border:0;cursor:pointer;width:32px;height:32px;border-radius:7px;display:grid;place-items:center;color:var(--muted);transition:background .18s,color .18s,transform .12s;font-family:inherit}
+.ax-icob:hover{background:var(--green-50);color:var(--green-900)}
+.ax-icob:active{transform:scale(.92)}
+.ax-icob svg{width:16px;height:16px}
+
+/* RBAC mini-matrix */
+.ax-rbac-head{display:flex;align-items:end;justify-content:space-between;margin:32px 0 14px;gap:14px}
+.ax-rbac-head .ax-eyebrow{margin-bottom:6px}
+.ax-rbac-head h3{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:26px;margin:0;color:var(--green-900);letter-spacing:-.015em}
+.ax-rbac-head h3 em{font-style:italic;color:var(--muted);font-weight:500}
+.ax-rbac{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;font-size:12.5px;box-shadow:var(--shadow-sm);margin-bottom:24px}
+.ax-rbac table{width:100%;border-collapse:separate;border-spacing:0}
+.ax-rbac th,.ax-rbac td{padding:12px 18px;text-align:center;border-bottom:1px solid var(--line)}
+.ax-rbac th{background:#fbfdfb;font:700 10.5px 'Inter';text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.ax-rbac th.rc,.ax-rbac td.rc{text-align:left;width:220px}
+.ax-rbac td.rc{font-weight:600;color:var(--green-900)}
+.ax-rbac td.rc span{display:block;font-weight:400;color:var(--muted);font-size:11px;margin-top:2px}
+.ax-rbac tbody tr:hover{background:var(--soft)}
+.ax-rbac tbody tr:last-child td{border-bottom:0}
+.ax-perm{display:inline-flex;align-items:center;justify-content:center;width:28px;height:22px;border-radius:5px;font:700 11px 'Inter';transition:transform .14s var(--ease-spring)}
+.ax-perm:hover{transform:scale(1.15)}
+.ax-perm.y{background:var(--green-100);color:var(--green-900)}
+.ax-perm.r{background:var(--warn-bg);color:var(--warn)}
+.ax-perm.n{background:#eef0ef;color:var(--muted)}
+.ax-rbac-foot{padding:11px 18px;font:500 11.5px 'Inter';color:var(--muted);border-top:1px solid var(--line);background:var(--soft);display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.ax-rbac-foot .lk{display:inline-flex;align-items:center;gap:6px}
+.ax-rbac-foot .lk .ax-perm{width:22px;height:18px;font-size:10px}
+
+/* Modal édition */
+.ax-scrim{position:fixed;inset:0;background:rgba(13,37,16,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:120;opacity:0;pointer-events:none;transition:opacity .22s var(--ease-out-quart)}
+.ax-scrim.on{opacity:1;pointer-events:auto}
+.ax-scrim .ax-mw{position:fixed;inset:0;display:grid;place-items:center;padding:24px;pointer-events:none}
+.ax-scrim.on .ax-mw{pointer-events:auto}
+.ax-modal{background:#fff;border-radius:20px;width:780px;max-width:100%;max-height:92dvh;overflow:hidden;box-shadow:var(--shadow-lg);display:grid;grid-template-rows:auto 1fr auto;transform:scale(.94) translateY(12px);opacity:0;transition:transform .34s var(--ease-spring),opacity .22s var(--ease-out-quart);border:1px solid var(--line)}
+.ax-scrim.on .ax-modal{transform:scale(1) translateY(0);opacity:1}
+.ax-mh{padding:22px 30px 18px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:18px}
+.ax-mh .av-lg{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;font:700 19px 'Inter';background:linear-gradient(135deg,var(--green-200),var(--green-100));color:var(--green-900);flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+.ax-mh h3{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:28px;margin:0 0 2px;color:var(--green-900);letter-spacing:-.015em;line-height:1.1}
+.ax-mh .upn{font:500 13px 'Inter';color:var(--muted);margin-top:4px}
+.ax-mh .x{margin-left:auto;background:transparent;border:0;cursor:pointer;width:34px;height:34px;border-radius:8px;display:grid;place-items:center;color:var(--muted);transition:background .18s,color .18s}
+.ax-mh .x:hover{background:var(--green-50);color:var(--green-900)}
+.ax-mh .x svg{width:18px;height:18px}
+.ax-mb{padding:22px 30px;overflow:auto}
+.ax-mf{padding:14px 30px;border-top:1px solid var(--line);background:var(--soft);display:flex;gap:10px;justify-content:space-between;align-items:center}
+.ax-fs{margin-bottom:22px}
+.ax-fs h4{font:700 10.5px 'Inter';letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.ax-info{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 24px}
+.ax-info .it{font:500 13.5px 'Inter'}
+.ax-info .it span{display:block;color:var(--muted);font-size:11.5px;margin-bottom:2px}
+.ax-info .it strong{font-weight:600;color:var(--ink)}
+.ax-src{display:inline-flex;align-items:center;gap:5px;font:700 10px 'Inter';padding:2px 8px;border-radius:999px;background:var(--green-50);color:var(--green-900);border:1px solid var(--green-100);text-transform:uppercase;letter-spacing:.06em;margin-left:8px}
+.ax-rp{display:grid;gap:8px}
+.ax-rr{display:grid;grid-template-columns:22px 1fr auto;gap:14px;padding:11px 14px;border:1px solid var(--line);border-radius:11px;align-items:start;cursor:pointer;transition:border-color .18s,background .18s}
+.ax-rr:hover{border-color:var(--green-300)}
+.ax-rr.on{border-color:var(--green-500);background:var(--green-50)}
+.ax-rr input{margin-top:3px;accent-color:var(--green-700);width:16px;height:16px;cursor:pointer}
+.ax-rri .nm{font:600 13.5px 'Inter';color:var(--green-900)}
+.ax-rri .ds{font:500 12px 'Inter';color:var(--ink-2);margin-top:3px;line-height:1.45}
+.ax-rst{font:700 10.5px 'Inter';color:var(--muted);align-self:center;text-transform:uppercase;letter-spacing:.06em}
+.ax-sp{display:flex;flex-direction:column;gap:8px}
+.ax-sr{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--line);border-radius:11px;cursor:pointer;transition:border-color .18s,background .18s}
+.ax-sr:hover{border-color:var(--green-300)}
+.ax-sr.on{border-color:var(--green-500);background:var(--green-50)}
+.ax-sr input{accent-color:var(--green-700);width:16px;height:16px;cursor:pointer}
+.ax-sr .lb{font:600 13.5px 'Inter'}
+.ax-sr .sb{font:500 12px 'Inter';color:var(--muted);margin-left:6px}
+.ax-sr select{margin-left:auto;padding:6px 11px;border:1px solid var(--line-2);border-radius:7px;font:inherit;font-size:12.5px;background:#fff;color:var(--ink);min-height:32px}
+.ax-sn{font:500 12px 'Inter';color:var(--muted);line-height:1.55}
+.ax-sn code{background:var(--green-50);padding:1.5px 7px;border-radius:4px;font-size:11.5px;color:var(--green-900);font-family:var(--mono)}
+.ax-db{background:transparent;border:0;color:var(--bad);font:600 13px 'Inter';cursor:pointer;padding:7px 11px;border-radius:7px;transition:background .18s}
+.ax-db:hover{background:var(--bad-bg)}
+
+/* Toast */
+.ax-tray{position:fixed;bottom:24px;right:24px;z-index:140;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.ax-toast{background:var(--bg-deep);color:#fff;padding:13px 18px;border-radius:12px;font:500 13px 'Inter';display:flex;align-items:center;gap:11px;box-shadow:var(--shadow-lg);transform:translateY(8px);opacity:0;animation:ax-toastIn .34s var(--ease-spring) forwards;max-width:380px;border:1px solid rgba(124,252,154,.3)}
+.ax-toast svg{width:17px;height:17px;color:var(--green-300);flex-shrink:0}
+
+/* Tooltip réutilisable */
+[data-tip]{position:relative}
+[data-tip]::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%) translateY(3px);background:var(--bg-deep);color:#fff;padding:5px 9px;border-radius:6px;font:500 11px 'Inter';white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .18s var(--ease-out-quart),transform .18s var(--ease-out-quart);z-index:50;letter-spacing:0;text-transform:none}
+[data-tip]:hover::after,[data-tip]:focus-visible::after{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:980px){
+  .ax-h{font-size:32px}
+  .ax-kpis{grid-template-columns:repeat(2,1fr)}
+  .ax-kpi{border-right:0;border-bottom:1px solid var(--line)}
+  .ax-search{flex:1 1 100%}
+}
+@media (prefers-reduced-motion: reduce){
+  .ax-spark path.line,.ax-spark path.area,
+  .ax-users tbody tr,.ax-mfa.off::after,
+  .ax-toast,.ax-batch,.ax-modal{animation:none!important;transition:none!important;opacity:1!important;transform:none!important}
+}
+
+/* ==========================================================================
+ * v0.18 — POLISH GLOBAL : élévation systémique des composants existants
+ * sur les 11 écrans (cockpit, dashboards, projects, portfolio, intake,
+ * calendar, fasttrack, governance, kb, controls, admin). Pur CSS de
+ * surcharge, zéro modification DOM/JS — donc zéro risque de régression
+ * fonctionnelle. La cascade fait le travail : ces règles l'emportent
+ * sur les définitions originales.
+ * ========================================================================== */
+
+/* Background ambient — radial subtle vert OCP + grain léger */
+body{position:relative;background:var(--soft)}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(900px 600px at 78% -10%, rgba(46,125,50,.06), transparent 60%),
+    radial-gradient(600px 420px at 5% 110%, rgba(46,125,50,.04), transparent 70%);
+}
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.06  0 0 0 0 0.07  0 0 0 0 0.05  0 0 0 0.07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+.app, .sidebar, .topbar, .main, .chat{position:relative;z-index:1}
+
+/* Page heading plus monumental */
+.h-pg{
+  font-family:'Cormorant Garamond',serif;font-weight:600;
+  font-size:40px;letter-spacing:-.025em;line-height:1.02;
+  color:var(--green-900);margin:0 0 10px;
+  text-wrap:balance;
+}
+.h-pg em{font-style:italic;color:var(--green-700);font-weight:500}
+.lead{font-size:15px;color:var(--muted);max-width:62ch;line-height:1.6;margin:0 0 24px}
+
+/* KPI cards — Cormorant value + hover lift plus marqué + reveal anim */
+@keyframes pgKpiIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.kpi-grid{gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(180deg,transparent,var(--soft))}
+.kpi{
+  background:transparent;border:0;border-right:1px solid var(--line);border-radius:0;
+  padding:20px 22px 20px 22px;
+  animation:pgKpiIn .42s var(--ease-out-quart) both;
+}
+.kpi:first-child{padding-left:0}
+.kpi:last-child{border-right:0;padding-right:0}
+.kpi:nth-child(1){animation-delay:.04s}.kpi:nth-child(2){animation-delay:.08s}
+.kpi:nth-child(3){animation-delay:.12s}.kpi:nth-child(4){animation-delay:.16s}
+.kpi:hover{transform:translateY(-1px);box-shadow:none;border-color:var(--line)}
+.kpi:hover .v{color:var(--green-900)}
+.kpi .v{font-size:42px;font-weight:600;letter-spacing:-.025em;transition:color .18s var(--ease-out-quart)}
+.kpi .v small{font-size:14px;font-weight:500}
+.kpi .k{font:700 10.5px 'Inter';letter-spacing:.1em}
+
+/* Card polish — shadow + hover lift subtle */
+.card{
+  background:#fff;border:1px solid var(--line);border-radius:16px;
+  box-shadow:var(--shadow-green-sm);
+  transition:border-color .18s var(--ease-out-quart), box-shadow .24s var(--ease-out-quart), transform .24s var(--ease-out-quart);
+}
+.card:hover{border-color:color-mix(in oklab, var(--green-500) 35%, var(--line))}
+.card h3{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:21px;letter-spacing:-.015em;color:var(--green-900)}
+.card h3 .sub{font:500 12px 'Inter';color:var(--muted);font-style:italic;text-transform:none;letter-spacing:0;margin-left:6px}
+
+/* Ck-hero plus dramatique (Cockpit) */
+.ck-hero{
+  background:linear-gradient(135deg,#07140c 0%,#0d2e16 50%,#103d17 100%);
+  border-radius:20px;padding:32px 36px;margin-bottom:28px;
+  box-shadow:0 24px 60px -24px rgba(7,20,12,.4), inset 0 1px 0 rgba(124,252,154,.08);
+  position:relative;overflow:hidden;
+}
+.ck-hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(500px 280px at 90% 0%, rgba(124,252,154,.10), transparent 60%);
+  pointer-events:none;
+}
+.ck-hero h1{
+  font-family:'Cormorant Garamond',serif;font-weight:600;
+  font-size:42px;letter-spacing:-.025em;line-height:1.03;
+  text-wrap:balance;margin:8px 0 8px;
+}
+.ck-hero h1 em{font-style:italic;color:#7cfc9a;font-weight:500}
+.ck-hero p{font-size:14.5px;color:#bcd4c2;max-width:65ch;line-height:1.55}
+.ck-hero-stats{margin-top:24px;gap:32px}
+.ck-hs .v{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:38px;line-height:.95;letter-spacing:-.02em}
+.ck-hs .v small{font-family:'Inter',sans-serif;font-size:14px;font-weight:500}
+.ck-hs .l{font:700 10.5px 'Inter';letter-spacing:.1em}
+
+/* Tables — row stagger reveal + hover gradient propre */
+@keyframes pgRowIn{to{opacity:1;transform:translateY(0)}}
+.tbl tbody tr{opacity:0;transform:translateY(4px);animation:pgRowIn .42s var(--ease-out-quart) forwards}
+.tbl tbody tr:nth-child(1){animation-delay:.02s}.tbl tbody tr:nth-child(2){animation-delay:.05s}
+.tbl tbody tr:nth-child(3){animation-delay:.08s}.tbl tbody tr:nth-child(4){animation-delay:.11s}
+.tbl tbody tr:nth-child(5){animation-delay:.14s}.tbl tbody tr:nth-child(6){animation-delay:.17s}
+.tbl tbody tr:nth-child(7){animation-delay:.20s}.tbl tbody tr:nth-child(8){animation-delay:.23s}
+.tbl tbody tr:nth-child(n+9){animation-delay:.26s}
+.tbl tbody tr{position:relative;transition:background .14s var(--ease-out-quart)}
+.tbl tbody tr:hover td{background:linear-gradient(90deg, var(--green-50), var(--soft))}
+.tbl tbody tr:hover td:first-child::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--green-500);border-radius:0 2px 2px 0;
+}
+
+/* Pills + chips — micro polish (hover scale, shadow subtil) */
+.pill{transition:transform .14s var(--ease-spring), box-shadow .18s var(--ease-out-quart)}
+.pill:hover{transform:translateY(-0.5px);box-shadow:var(--shadow-sm)}
+.chip{transition:border-color .18s var(--ease-out-quart), background .18s var(--ease-out-quart), color .18s var(--ease-out-quart)}
+.chip:hover{border-color:var(--green-300);background:var(--green-50);color:var(--green-900)}
+
+/* Buttons primaires : shimmer hover sur primary */
+.btn.primary, .tb-btn.primary{position:relative;overflow:hidden}
+.btn.primary::before, .tb-btn.primary::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(120deg, transparent 30%, rgba(255,255,255,.18) 50%, transparent 70%);
+  transform:translateX(-100%);transition:transform .6s var(--ease-out-quart);pointer-events:none;
+}
+.btn.primary:hover::before, .tb-btn.primary:hover::before{transform:translateX(100%)}
+.btn.primary > *, .tb-btn.primary > *{position:relative;z-index:1}
+
+/* Sidebar : active-item glow accent */
+.sb-item.on::before{
+  content:'';position:absolute;left:-9px;top:50%;transform:translateY(-50%);
+  width:3px;height:22px;background:#7cfc9a;border-radius:0 3px 3px 0;
+  box-shadow:0 0 10px rgba(124,252,154,.5);
+}
+.sb-item{position:relative;transition:background .18s var(--ease-out-quart), color .18s var(--ease-out-quart), transform .14s var(--ease-out-quart)}
+.sb-item:hover{transform:translateX(2px)}
+
+/* Topbar plus polish + sticky shadow */
+.topbar{
+  background:color-mix(in oklab, #fff 92%, transparent);
+  backdrop-filter:blur(10px) saturate(140%);-webkit-backdrop-filter:blur(10px) saturate(140%);
+}
+
+/* subnav (admin onglets) plus moderne */
+.subnav{
+  padding:4px;background:#fff;border:1px solid var(--line);border-radius:11px;
+  box-shadow:var(--shadow-sm);
+}
+.subnav button{
+  padding:8px 14px;border-radius:8px;font:600 13px 'Inter';color:var(--muted);
+  transition:background .18s var(--ease-out-quart), color .18s var(--ease-out-quart);
+}
+.subnav button:hover{color:var(--ink);background:var(--green-50)}
+.subnav button.on{background:var(--green-900);color:#fff}
+.subnav button.on:hover{background:var(--green-800);color:#fff}
+
+/* Reduced motion : kill toutes les anim ajoutées */
+@media (prefers-reduced-motion: reduce){
+  .kpi, .tbl tbody tr{animation:none!important;opacity:1!important;transform:none!important}
+  .btn.primary::before, .tb-btn.primary::before{display:none}
+  body::before, body::after{display:none}
+}
+
+/* ==========================================================================
+ * v0.20 — FAB + SHEET pour D²nAI bot (option B validée)
+ * Remplace le panneau slide-in droit (.chat .app.chat-open) par un
+ * bouton flottant rond + sheet flottant en bas-droite. Mobile : sheet
+ * en bottom-sheet plein écran.
+ * ========================================================================== */
+.bot-fab{
+  position:fixed;right:22px;bottom:22px;width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--green-700),var(--green-900));
+  border:0;color:#fff;cursor:pointer;z-index:90;
+  display:grid;place-items:center;
+  box-shadow:0 14px 32px -8px rgba(20,77,31,.55), inset 0 1px 0 rgba(255,255,255,.18);
+  transition:transform var(--dur-base,.18s) var(--ease-out-quart), box-shadow var(--dur-base,.18s) var(--ease-out-quart);
+}
+.bot-fab:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 18px 40px -8px rgba(20,77,31,.65), inset 0 1px 0 rgba(255,255,255,.2)}
+.bot-fab:active{transform:scale(.96)}
+.bot-fab:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(124,252,154,.4), 0 14px 32px -8px rgba(20,77,31,.55)}
+.bot-fab.on{background:var(--green-900);transform:rotate(45deg)}
+.bot-fab.on .bot-fab-ico svg{transform:rotate(-45deg)}
+.bot-fab-ico{display:grid;place-items:center;width:100%;height:100%;transition:transform var(--dur-base) var(--ease-out-quart)}
+.bot-fab-ico svg{width:24px;height:24px;transition:transform var(--dur-base) var(--ease-out-quart)}
+.bot-fab.on .bot-fab-ico svg{content:''}
+.bot-fab-pulse{
+  position:absolute;inset:-3px;border-radius:50%;border:2px solid var(--green-300);
+  opacity:0;animation:botFabPing 2.6s var(--ease-out-quart) infinite;pointer-events:none;
+}
+.bot-fab.on .bot-fab-pulse{display:none}
+@keyframes botFabPing{0%{transform:scale(1);opacity:.55}80%,100%{transform:scale(1.45);opacity:0}}
+
+/* Close icon when open : on remplace l'icône via CSS pseudo */
+.bot-fab.on .bot-fab-ico svg{display:none}
+.bot-fab.on .bot-fab-ico::before{
+  content:'×';font:300 30px 'Inter';line-height:1;color:#fff;
+}
+
+/* Scrim léger pour focus + dismiss au clic */
+.bot-scrim{
+  position:fixed;inset:0;background:rgba(13,37,16,.18);backdrop-filter:blur(2px);
+  -webkit-backdrop-filter:blur(2px);z-index:85;
+  opacity:0;pointer-events:none;transition:opacity var(--dur-base,.22s) var(--ease-out-quart);
+}
+.bot-scrim.on{opacity:1;pointer-events:auto}
+
+/* Sheet flottant en bas-droite */
+.bot-sheet{
+  position:fixed;right:22px;bottom:92px;
+  width:400px;max-width:calc(100vw - 32px);height:min(620px, calc(100dvh - 130px));
+  background:linear-gradient(180deg,#07140c 0%,#0c1f12 100%);color:#dff0e3;
+  border:1px solid rgba(124,252,154,.18);border-radius:18px;
+  box-shadow:0 32px 80px -20px rgba(7,20,12,.55), 0 0 0 1px rgba(0,0,0,.04);
+  z-index:95;overflow:hidden;
+  display:flex!important;flex-direction:column;
+  transform:translateY(12px) scale(.96);opacity:0;pointer-events:none;
+  transform-origin:bottom right;
+  transition:transform var(--dur-slow,.34s) var(--ease-spring), opacity var(--dur-base,.22s) var(--ease-out-quart);
+}
+.bot-sheet.on{transform:translateY(0) scale(1);opacity:1;pointer-events:auto}
+.bot-sheet[style*="display:none"]{display:none!important}
+
+.bot-sheet-h{
+  padding:14px 18px;border-bottom:1px solid rgba(124,252,154,.1);
+  display:flex;align-items:center;gap:11px;flex-shrink:0;
+  background:linear-gradient(180deg, rgba(124,252,154,.04), transparent);
+}
+.bot-av{
+  width:34px;height:34px;border-radius:9px;
+  background:linear-gradient(135deg,var(--green-500),var(--green-700));
+  color:#fff;display:grid;place-items:center;
+  font:700 13px 'Cormorant Garamond',serif;letter-spacing:-.01em;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
+  flex-shrink:0;
+}
+.bot-sheet-h .nm-wrap{flex:1;min-width:0}
+.bot-sheet-h .nm{font:600 14px 'Inter';color:#fff;line-height:1.15}
+.bot-sheet-h .sub{font:500 11.5px 'Inter';color:#7fb98e;margin-top:1px}
+.bot-sheet-x{
+  background:transparent;border:0;cursor:pointer;
+  width:32px;height:32px;border-radius:8px;display:grid;place-items:center;
+  color:#7fb98e;transition:background var(--dur-base) var(--ease-out-quart),color var(--dur-base) var(--ease-out-quart);
+}
+.bot-sheet-x:hover{background:rgba(255,255,255,.06);color:#fff}
+.bot-sheet-x svg{width:16px;height:16px}
+
+/* Body + input héritent les classes .chat-body / .chat-input existantes
+   (cohérence visuelle, on ne réinvente pas ce qui marche). */
+.bot-sheet .chat-body{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
+.bot-sheet .chat-sugs{padding:0 14px 6px;display:flex;flex-wrap:wrap;gap:6px;flex-shrink:0}
+.bot-sheet .chat-input-wrap{padding:10px 14px 12px;border-top:1px solid rgba(124,252,154,.1);background:#04100a;flex-shrink:0}
+
+/* Cache l'ancien bouton "D²nAI bot" en topbar : remplacé par le FAB */
+.tb-btn.ai{display:none!important}
+
+/* Mobile portrait : sheet en bottom-sheet plein écran */
+@media(max-width:760px){
+  .bot-fab{right:14px;bottom:14px;width:52px;height:52px}
+  .bot-sheet{
+    right:0;left:0;bottom:0;top:auto;
+    width:100%;max-width:100%;height:88dvh;
+    border-radius:18px 18px 0 0;
+    transform:translateY(100%);
+    transform-origin:bottom center;
+  }
+  .bot-sheet.on{transform:translateY(0)}
+  .bot-scrim{background:rgba(13,37,16,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+  /* Pastille commentaire en bas-droite ne doit pas chevaucher le FAB */
+  .fb-pellet, .feedback-pellet, [id*="ommentaire"]{bottom:88px!important}
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .bot-fab-pulse{animation:none;display:none}
+  .bot-sheet,.bot-scrim,.bot-fab{transition:none!important;animation:none!important}
+}
+
+/* ==========================================================================
+ * v0.21 — COACH D²nAI (guide intelligent)
+ * ========================================================================== */
+/* Coach bar (hint contextuel par écran) */
+.coach-bar{
+  display:grid;grid-template-columns:36px 1fr auto auto;gap:14px;align-items:center;
+  background:linear-gradient(135deg, var(--green-50), #fff);
+  border:1px solid var(--green-200);border-left:3px solid var(--green-500);
+  border-radius:12px;padding:12px 16px;margin:0 0 18px;
+  box-shadow:0 4px 12px -4px rgba(46,125,50,.15);
+  animation:coachIn .42s var(--ease-out-quart);
+}
+@keyframes coachIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.coach-bar-ico{
+  width:36px;height:36px;border-radius:9px;
+  background:linear-gradient(135deg, var(--green-500), var(--green-700));
+  color:#fff;display:grid;place-items:center;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2);
+}
+.coach-bar-ico svg{width:18px;height:18px}
+.coach-bar-msg{font-size:13px;color:var(--ink2);line-height:1.45}
+.coach-bar-msg strong{display:block;font:700 11px 'Inter';color:var(--green-800);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
+.coach-bar-act{
+  background:var(--green-900);color:#fff;border:0;padding:7px 13px;border-radius:8px;
+  font:600 12px 'Inter';cursor:pointer;white-space:nowrap;
+  transition:background var(--dur-base) var(--ease-out-quart), transform var(--dur-fast) var(--ease-out-quart);
+}
+.coach-bar-act:hover{background:var(--green-800)}
+.coach-bar-act:active{transform:scale(.96)}
+.coach-bar-x{
+  background:transparent;border:0;color:var(--muted);cursor:pointer;
+  width:28px;height:28px;border-radius:6px;font:300 20px 'Inter';line-height:1;
+  display:grid;place-items:center;
+  transition:background var(--dur-base) var(--ease-out-quart),color var(--dur-base) var(--ease-out-quart);
+}
+.coach-bar-x:hover{background:var(--green-50);color:var(--ink)}
+
+/* Topbar toggle (💡) + menu déroulant */
+.tb-coach{
+  background:transparent;border:0;cursor:pointer;width:34px;height:34px;border-radius:8px;
+  display:grid;place-items:center;color:var(--muted);margin:0 6px;
+  transition:background var(--dur-base) var(--ease-out-quart),color var(--dur-base) var(--ease-out-quart);
+  position:relative;
+}
+.tb-coach:hover{background:var(--green-50);color:var(--green-900)}
+.tb-coach svg{width:17px;height:17px}
+.tb-coach.on{color:var(--green-700)}
+.tb-coach.on::after{
+  content:'';position:absolute;top:5px;right:5px;width:7px;height:7px;
+  background:var(--green-500);border-radius:50%;
+  box-shadow:0 0 0 0 rgba(46,125,50,.6);animation:pulseDot 1.8s var(--ease-out-quart) infinite;
+}
+.tb-coach-menu{
+  position:absolute;top:54px;right:120px;
+  background:#fff;border:1px solid var(--line);border-radius:11px;
+  box-shadow:0 16px 40px -8px rgba(20,30,22,.18);
+  padding:6px;width:240px;z-index:90;
+  opacity:0;transform:translateY(-4px);pointer-events:none;
+  transition:opacity var(--dur-base) var(--ease-out-quart), transform var(--dur-base) var(--ease-out-quart);
+}
+.tb-coach-menu.on{opacity:1;transform:translateY(0);pointer-events:auto}
+.tb-coach-h{font:700 10px 'Inter';letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:8px 12px 4px}
+.tb-coach-menu button{
+  display:block;width:100%;text-align:left;padding:9px 12px;border-radius:7px;
+  background:transparent;border:0;cursor:pointer;font:600 13px 'Inter';color:var(--ink);
+  transition:background var(--dur-base) var(--ease-out-quart);
+}
+.tb-coach-menu button:hover{background:var(--green-50);color:var(--green-900)}
+.tb-coach-menu button span{display:block;font:500 11px 'Inter';color:var(--muted);margin-top:2px;font-weight:400}
+
+/* Checklist d'onboarding (bas-gauche, collapsible) */
+.coach-cl{
+  border-top:1px solid rgba(255,255,255,.06);
+  background:rgba(124,252,154,.04);
+  font:600 12px 'Inter';color:#dff0e3;
+}
+.coach-cl-h{
+  width:100%;background:transparent;border:0;cursor:pointer;
+  display:flex;align-items:center;gap:9px;padding:10px 14px;color:#dff0e3;font:inherit;
+  transition:background var(--dur-base) var(--ease-out-quart);
+}
+.coach-cl-h:hover{background:rgba(124,252,154,.08)}
+.coach-cl-prog{position:relative;width:32px;height:32px;flex-shrink:0}
+.coach-cl-prog svg{width:32px;height:32px;display:block}
+.coach-cl-pct{
+  position:absolute;inset:0;display:grid;place-items:center;
+  font:700 10px 'Inter';color:#7cfc9a;font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+}
+.coach-cl-t{flex:1;min-width:0;font:600 12px 'Inter';color:#fff;line-height:1.2}
+.coach-cl-chev{width:13px;height:13px;color:#7fb98e;transition:transform var(--dur-base) var(--ease-out-quart);flex-shrink:0}
+.coach-cl.open .coach-cl-chev{transform:rotate(180deg)}
+.coach-cl-list{
+  display:none;padding:4px 0 12px;
+  border-top:1px solid rgba(124,252,154,.08);
+}
+.coach-cl.open .coach-cl-list{display:block}
+.coach-cl-it{
+  display:flex;align-items:center;gap:9px;padding:7px 14px;
+  font:500 12px 'Inter';color:#bcd4c2;line-height:1.3;
+}
+.coach-cl-it.done{color:#7fb98e;text-decoration:line-through;text-decoration-color:rgba(127,185,142,.5)}
+.coach-cl-cb{
+  width:16px;height:16px;border-radius:4px;border:1.5px solid rgba(124,252,154,.25);
+  display:grid;place-items:center;font:700 11px 'Inter';color:#7cfc9a;flex-shrink:0;
+}
+.coach-cl-it.done .coach-cl-cb{background:#7cfc9a;color:var(--bg-deep);border-color:#7cfc9a}
+.coach-cl-lbl{flex:1;min-width:0}
+
+/* Spotlight progressif sur élément cible */
+@keyframes coachSpot{
+  0%,100%{box-shadow:0 0 0 0 rgba(46,125,50,.0), 0 0 0 0 rgba(46,125,50,0)}
+  50%{box-shadow:0 0 0 4px rgba(46,125,50,.45), 0 0 0 12px rgba(46,125,50,.15)}
+}
+.coach-spot{
+  position:relative;z-index:1;border-radius:10px;
+  animation:coachSpot 1.6s var(--ease-out-quart) infinite;
+}
+
+/* Mobile : checklist masquée, coach bar compacte */
+@media(max-width:760px){
+  .coach-bar{grid-template-columns:32px 1fr auto;padding:10px 12px;gap:10px}
+  .coach-bar-x{grid-column:3;grid-row:1}
+  .coach-bar-act{grid-column:1 / -1;grid-row:2;justify-self:start;margin-top:6px}
+  .coach-bar-msg{font-size:12.5px}
+  .coach-cl{display:none!important}
+  .tb-coach-menu{right:14px}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .coach-bar,.coach-spot,.tb-coach.on::after{animation:none!important}
+}
+
+/* ==========================================================================
+ * v0.21 — Intake : ID auto-généré + input monétaire premium (fix B6).
+ * ========================================================================== */
+.intake-idbar{
+  display:inline-flex;align-items:center;gap:12px;
+  margin:14px 0 22px;padding:10px 16px;
+  background:linear-gradient(135deg, rgba(46,125,50,.06) 0%, rgba(76,175,80,.04) 100%);
+  border:1px solid var(--green-200);border-radius:14px;
+  box-shadow:0 1px 0 rgba(0,0,0,.02);
+}
+.intake-idbar .lbl{font:600 11.5px/1 'Inter';color:var(--green-800);text-transform:uppercase;letter-spacing:.06em}
+.intake-idbar .val{
+  font:700 16px/1 'JetBrains Mono', ui-monospace, monospace;
+  color:var(--green-900);
+  background:#fff;padding:6px 12px;border:1px solid var(--green-300);border-radius:10px;
+}
+.intake-idbar .hint{font:500 12px/1.3 'Inter';color:var(--ink-2)}
+.fld-money{
+  display:flex;align-items:stretch;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  background:#fff;transition:border-color var(--dur-base) var(--ease-out-quart), box-shadow var(--dur-base) var(--ease-out-quart);
+}
+.fld-money:focus-within{border-color:var(--green-700);box-shadow:0 0 0 3px rgba(46,125,50,.12)}
+.fld-money .cur{
+  display:flex;align-items:center;padding:0 12px;
+  font:700 16px/1 'JetBrains Mono', monospace;color:var(--green-800);
+  background:linear-gradient(180deg, #f5fbf5 0%, #eaf5ea 100%);
+  border-right:1px solid var(--green-200);
+}
+.fld-money .cur-suf{
+  display:flex;align-items:center;padding:0 12px;
+  font:600 11.5px/1 'Inter';color:var(--muted);
+  border-left:1px solid var(--line);background:#fafafa;letter-spacing:.04em;
+}
+.fld-money input{flex:1;border:0!important;border-radius:0!important;outline:none!important;background:transparent!important;padding:10px 12px;font:600 15px/1.2 'Inter', sans-serif;color:var(--ink)}
+.fld-money input:focus{box-shadow:none!important}
+@media(max-width:760px){
+  .intake-idbar{flex-wrap:wrap;gap:8px;padding:10px 12px}
+  .intake-idbar .val{font-size:14px;padding:5px 10px}
+  .intake-idbar .hint{font-size:11px;width:100%}
+  .fld-money .cur-suf{display:none}
+}
+
+/* ==========================================================================
+ * v0.21 — KB Closure : actions card + recommandation + print PDF (B7+B8).
+ * ========================================================================== */
+.kb-edited{
+  display:inline-flex;align-items:center;gap:4px;
+  font:600 10.5px/1 'Inter';color:var(--green-800);
+  background:rgba(46,125,50,.10);border:1px solid var(--green-200);
+  padding:3px 8px;border-radius:999px;letter-spacing:.04em;
+}
+.ll-rec{
+  margin-top:8px;padding:8px 10px;
+  background:rgba(46,125,50,.04);border-left:3px solid var(--green-600);
+  border-radius:0 6px 6px 0;font:500 12.5px/1.5 'Inter';color:var(--ink-2);
+}
+.ll-rec b{color:var(--green-800);font-weight:700}
+.kb-acts{
+  margin-top:14px;display:flex;gap:8px;
+  padding-top:10px;border-top:1px dashed var(--line);
+}
+.kb-acts .btn{font-size:11.5px;padding:5px 10px}
+
+/* ==========================================================================
+ * v0.21 — Gouvernance paramétrable : SLA bar + RACI éditable + seuils.
+ * ========================================================================== */
+.gov-sla-bar{
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+  margin:14px 0 18px;padding:10px 14px;
+  background:linear-gradient(135deg, rgba(46,125,50,.06), rgba(76,175,80,.03));
+  border:1px solid var(--green-200);border-radius:12px;
+}
+.gov-sla-h{font:700 11px/1 'Inter';color:var(--green-800);text-transform:uppercase;letter-spacing:.06em;margin-right:4px}
+.gov-sla-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:5px 10px;background:#fff;border:1px solid var(--green-200);border-radius:999px;
+  font:500 11.5px/1 'Inter';color:var(--ink-2);
+}
+.gov-sla-pill b{color:var(--green-800);font-weight:700}
+.gov-sla-cfg{
+  margin-left:auto;display:inline-flex;align-items:center;gap:4px;
+  padding:5px 10px;background:var(--green-700);color:#fff;border-radius:8px;
+  font:600 11.5px/1 'Inter';cursor:pointer;transition:.15s;
+}
+.gov-sla-cfg:hover{background:var(--green-800);transform:translateY(-1px)}
+
+.gov-cfg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.gov-cfg-fld{display:flex;flex-direction:column;gap:6px}
+.gov-cfg-fld > label{font:600 12px/1.2 'Inter';color:var(--ink);}
+.gov-cfg-fld .hint{font:500 11.5px/1.4 'Inter';color:var(--muted)}
+.gov-raci-sel{
+  width:60px;padding:5px 6px;border:1px solid var(--line-2);border-radius:6px;
+  font:700 11.5px/1 'Inter';text-align:center;cursor:pointer;
+  background:#fff;color:var(--ink);transition:.15s;
+}
+.gov-raci-sel:hover{border-color:var(--green-700)}
+.gov-raci-sel:focus{outline:none;border-color:var(--green-700);box-shadow:0 0 0 2px rgba(46,125,50,.12)}
+.gov-raci-r{background:#fff7ed;color:#7c2d12;border-color:#fed7aa}
+.gov-raci-a{background:#fee2e2;color:#7f1d1d;border-color:#fecaca}
+.gov-raci-c{background:#dbeafe;color:#1e3a8a;border-color:#bfdbfe}
+.gov-raci-i{background:#e5e7eb;color:#374151;border-color:#d1d5db}
+@media(max-width:760px){
+  .gov-cfg-grid{grid-template-columns:1fr}
+  .gov-sla-bar{padding:10px;gap:6px}
+  .gov-sla-cfg{margin-left:0;width:100%;justify-content:center}
+}
+
+/* --- KB Print Layout (caché en écran, visible en print uniquement) --- */
+.kb-print-only{display:none}
+@media print{
+  body.kb-printing > *{display:none!important}
+  body.kb-printing #kbPrintHost{display:block!important}
+  .kb-print-only{display:block!important;padding:0;background:#fff;color:#0d2b15;font:14px/1.55 Georgia, 'Times New Roman', serif}
+  .kb-print{max-width:780px;margin:0 auto;padding:30px 40px}
+  .kb-print header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #2e7d32;padding-bottom:14px;margin-bottom:24px}
+  .kb-by{font:600 11px/1 'Inter', sans-serif;color:#2e7d32;letter-spacing:.06em;text-transform:uppercase}
+  .kb-nm{font:700 18px/1.2 Georgia, serif;color:#1b5e20;margin-top:4px}
+  .kb-id{text-align:right}
+  .kb-uid{font:700 16px/1 'JetBrains Mono', monospace;color:#1b5e20}
+  .kb-uci{font:500 11px/1 'Inter', sans-serif;color:#6b7280;margin-top:4px;letter-spacing:.04em}
+  .kb-print h1{font:700 26px/1.2 Georgia, serif;color:#0d2b15;margin:0 0 14px}
+  .kb-meta{display:grid;grid-template-columns:repeat(2,1fr);gap:6px 22px;font:14px/1.4 Georgia, serif;color:#374151;margin-bottom:22px;padding:14px 18px;background:#f9fafb;border-radius:6px}
+  .kb-meta .m b{display:inline-block;width:90px;font-weight:600;color:#1b5e20}
+  .kb-verdict{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-radius:6px;margin-bottom:22px;font-family:'Inter', sans-serif}
+  .kb-verdict.v-go{background:#dcfce7;border:1px solid #16a34a;color:#14532d}
+  .kb-verdict.v-hold{background:#fef3c7;border:1px solid #d97706;color:#78350f}
+  .kb-verdict.v-kill{background:#fee2e2;border:1px solid #dc2626;color:#7f1d1d}
+  .verdict-lbl{font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+  .verdict-val{font-weight:700;font-size:14px}
+  .kb-print section{margin-bottom:20px;page-break-inside:avoid}
+  .kb-print h2{font:700 14px/1 'Inter', sans-serif;color:#1b5e20;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #d1d5db;padding-bottom:6px;margin:0 0 10px}
+  .kb-print p{margin:0;color:#1f2937}
+  .kb-print ul{margin:0;padding-left:20px;color:#1f2937}
+  .kb-print ul li{margin-bottom:6px}
+  .kb-print footer{margin-top:32px;padding-top:14px;border-top:1px solid #d1d5db;display:flex;justify-content:space-between;font:500 11px/1.4 'Inter', sans-serif;color:#6b7280}
+  @page{margin:14mm 12mm}
+}
+
+/* v0.19 — Fix mobile portrait (le hero/topbar/kpi débordaient en <760px) */
+@media(max-width:760px){
+  .ck-hero{padding:20px 18px;border-radius:16px}
+  .ck-hero h1{font-size:26px;line-height:1.1}
+  .ck-hero p{font-size:13px}
+  .ck-hero-stats{grid-template-columns:1fr;gap:14px;margin-top:14px}
+  .ck-hs .v{font-size:28px}
+  .h-pg{font-size:26px;line-height:1.1}
+  .kpi-grid{grid-template-columns:1fr;border:0;background:none}
+  .kpi{border:1px solid var(--line);border-radius:12px;padding:14px;border-right:1px solid var(--line)!important;border-bottom:1px solid var(--line)}
+  .kpi:first-child,.kpi:last-child{padding:14px}
+  .kpi .v{font-size:32px}
+  .tb-imp{display:none}    /* selector impersonate masqué en mobile (place réservée admins desktop) */
+  .topbar{padding:0 12px;gap:8px;overflow-x:auto}
+  .tb-btn{padding:8px 12px;font-size:12.5px;white-space:nowrap}
+  .tb-search{display:none}
+  main{padding:16px 14px}
+  .ax-kpis{grid-template-columns:repeat(2,1fr);gap:8px}
+  .ax-kpi{border-right:0;border-bottom:1px solid var(--line);padding:14px}
+  .ax-kpi:nth-child(2n){border-right:0}
+  .ax-h{font-size:30px}
+  .cxtab{width:100%;overflow-x:auto}
+  .cxtab-btn{white-space:nowrap}
+}
+
+/* ==========================================================================
+ * v0.19 — CXTAB (sous-tabs contextuels) + IMPERSONATE selector
+ * ========================================================================== */
+.cxtab{
+  display:flex;gap:4px;background:#fff;border:1px solid var(--line);
+  border-radius:11px;padding:4px;margin:0 0 22px;width:fit-content;
+  box-shadow:var(--shadow-sm);
+}
+.cxtab-btn{
+  padding:8px 16px;border-radius:8px;font:600 13px 'Inter';
+  color:var(--muted);background:transparent;border:0;cursor:pointer;
+  transition:background .18s var(--ease-out-quart), color .18s var(--ease-out-quart);
+  min-height:34px;
+}
+.cxtab-btn:hover{color:var(--ink);background:var(--green-50)}
+.cxtab-btn.on{background:var(--green-900);color:#fff}
+.cxtab-btn.on:hover{background:var(--green-800);color:#fff}
+
+/* Impersonate selector */
+.tb-imp{
+  display:inline-flex;align-items:center;gap:6px;margin:0 8px;
+  font:600 11px 'Inter';color:var(--muted);text-transform:uppercase;letter-spacing:.08em;
+}
+.tb-imp select{
+  padding:5px 10px;border:1px solid var(--line-2);border-radius:7px;
+  background:#fff;font:600 12.5px 'Inter';color:var(--ink);min-height:30px;
+  text-transform:none;letter-spacing:0;cursor:pointer;
+  transition:border-color .18s var(--ease-out-quart);
+}
+.tb-imp select:hover{border-color:var(--green-500)}
+.tb-imp select:focus-visible{outline:none;box-shadow:var(--ring-focus)}
+
+/* Impersonate banner — visible quand un rôle est simulé */
+body.imp-on::before{
+  content:'';position:fixed;top:0;left:0;right:0;height:3px;z-index:200;
+  background:linear-gradient(90deg,var(--warn),var(--green-500),var(--warn));
+  background-size:200% 100%;animation:impFlow 3s linear infinite;
+}
+@keyframes impFlow{from{background-position:0 0}to{background-position:200% 0}}
+body.imp-on .topbar::after{
+  content:'Démo · Vous voyez l\'app comme un '
+    attr(data-imp-role) '. Vue lecture seule.';
+  position:absolute;top:60px;left:0;right:0;
+  background:var(--warn-bg);color:var(--warn);
+  padding:6px 22px;font:600 12px 'Inter';
+  border-bottom:1px solid var(--warn-border);
+  pointer-events:none;text-align:center;
+  z-index:5;
+}
+
+/* Masquages selon rôle impersonné (effet visuel, non sécurité) */
+body.imp-on[data-imp-role="reader"] .tb-btn.primary,
+body.imp-on[data-imp-role="reader"] .btn.primary,
+body.imp-on[data-imp-role="ceo_approver"] .tb-btn.primary,
+body.imp-on[data-imp-role="sai_reviewer"] .tb-btn.primary,
+body.imp-on[data-imp-role="steering_member"] .tb-btn.primary{
+  display:none!important;
+}
+body.imp-on[data-imp-role="reader"] .sb-item[data-v="admin"],
+body.imp-on[data-imp-role="entity_manager"] .sb-item[data-v="admin"],
+body.imp-on[data-imp-role="entity_trial_owner"] .sb-item[data-v="admin"],
+body.imp-on[data-imp-role="sai_reviewer"] .sb-item[data-v="admin"],
+body.imp-on[data-imp-role="steering_member"] .sb-item[data-v="admin"],
+body.imp-on[data-imp-role="ceo_approver"] .sb-item[data-v="admin"]{
+  display:none!important;
+}
+
 </style>
 </head>
 <body>
@@ -824,6 +1683,8 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
       <span class="tag" id="sbBrandTag">Plan &amp; Govern · ↗ NutriTrials</span>
     </div>
     <nav class="sb-nav" id="sbNav"></nav>
+    <!-- v0.21 — Checklist d'onboarding (panneau collapsible bas-gauche) -->
+    <div class="coach-cl" id="coachChecklist" style="display:none"></div>
     <div class="sb-foot"><span class="dot"></span><span id="sbFoot"><b style="color:#fff;margin:0 4px">Cycle 2026</b> · synced with NutriTrials</span></div>
   </aside>
 
@@ -840,6 +1701,21 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
       <button data-l="fr" title="Français" aria-label="Français">🇫🇷</button>
       <button data-l="en" title="English" aria-label="English">🇬🇧</button>
       <button data-l="pt" title="Português (Brasil)" aria-label="Português (Brasil)">🇧🇷</button>
+    </div>
+    <!-- v0.19 — Impersonate selector (démo RBAC, avant SSO) -->
+    <label class="tb-imp" title="Se faire passer pour un rôle (démo, lecture seule)">
+      Vue
+      <select id="impSel" onchange="setImpersonate(this.value)" aria-label="Se faire passer pour un rôle"></select>
+    </label>
+    <!-- v0.21 — Coach D²nAI toggle (guide intelligent on/off) -->
+    <button id="coachToggle" class="tb-coach" type="button" onclick="document.getElementById('coachMenu').classList.toggle('on')" aria-haspopup="menu" aria-label="Coach D²nAI">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2a7 7 0 00-4 12.7V17a2 2 0 002 2h4a2 2 0 002-2v-2.3A7 7 0 0012 2z"/><path d="M9 22h6"/></svg>
+    </button>
+    <div id="coachMenu" class="tb-coach-menu" role="menu" onclick="event.stopPropagation()">
+      <div class="tb-coach-h">Coach D²nAI</div>
+      <button role="menuitem" onclick="COACH.toggle('novice');document.getElementById('coachMenu').classList.remove('on')">Novice <span>guide complet</span></button>
+      <button role="menuitem" onclick="COACH.toggle('inter');document.getElementById('coachMenu').classList.remove('on')">Intermédiaire <span>hints discrets</span></button>
+      <button role="menuitem" onclick="COACH.toggle('off');document.getElementById('coachMenu').classList.remove('on')">Désactivé <span>plus aucun hint</span></button>
     </div>
     <button class="tb-btn primary" onclick="goView('intake')" id="btnTopIntake">+ New Use Case</button>
     <button class="tb-btn ai" onclick="toggleChat()"><span class="dot"></span> D²nAI bot</button>
@@ -884,26 +1760,45 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
   </main>
 
   <!-- ====== AI CHAT PANEL ====== -->
-  <aside class="chat" id="chatPanel" style="display:none">
-    <div class="chat-h">
-      <div class="ai-av">⚡</div>
-      <div class="nm-wrap">
-        <div class="nm">D²nAI bot</div>
-        <div class="sub">Chat with your Trial data</div>
-      </div>
-      <button class="x" onclick="toggleChat()" title="Fermer (Esc)" aria-label="Fermer le panneau D²nAI bot">✕</button>
-    </div>
-    <div class="chat-body" id="chatBody"></div>
-    <div class="chat-sugs" id="chatSugs"></div>
-    <div class="chat-input-wrap">
-      <div class="chat-input">
-        <textarea id="chatInput" rows="1" placeholder="Demande en langage naturel — ex : « Quels demos NPK en Afrique sont à risque ? »" onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();chatSend();}"></textarea>
-        <button class="send" onclick="chatSend()" id="chatSendBtn">↑</button>
-      </div>
-      <div class="chat-meta">D²nAI bot · répond sur les données du portefeuille de trials</div>
-    </div>
-  </aside>
 </div>
+
+<!-- ============================================================
+ * v0.20 — D²nAI bot : pattern FAB + Sheet (option B validée).
+ * Le sheet flotte au-dessus de tout (z>app), n'occupe plus la grille
+ * principale. Le FAB rond avec halo est l'unique trigger global.
+ * Les IDs internes (chatBody/chatSugs/chatInput/chatSendBtn) sont
+ * préservés → chatSend/chatAsk/chatGreet continuent de fonctionner.
+ * ============================================================ -->
+<button class="bot-fab" id="botFab" type="button" onclick="toggleChat()" aria-label="Ouvrir le co-pilote D²nAI bot" data-tip="Demander à D²nAI · ⌘K">
+  <span class="bot-fab-ico" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.4 8.4 0 01-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.4 8.4 0 013.8-.9h.5a8.5 8.5 0 018 8z"/></svg>
+  </span>
+  <span class="bot-fab-pulse" aria-hidden="true"></span>
+</button>
+
+<div class="bot-scrim" id="botScrim" onclick="if(event.target===this)toggleChat(false)" aria-hidden="true"></div>
+
+<aside class="bot-sheet" id="chatPanel" role="dialog" aria-modal="false" aria-label="D²nAI bot · Chat avec les données trials" style="display:none">
+  <div class="bot-sheet-h">
+    <div class="bot-av" aria-hidden="true">D²</div>
+    <div class="nm-wrap">
+      <div class="nm">D²nAI bot</div>
+      <div class="sub" id="botSheetSub">Chat with your Trial data</div>
+    </div>
+    <button class="bot-sheet-x" onclick="toggleChat(false)" title="Fermer (Esc)" aria-label="Fermer le panneau D²nAI bot">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="chat-body" id="chatBody"></div>
+  <div class="chat-sugs" id="chatSugs"></div>
+  <div class="chat-input-wrap">
+    <div class="chat-input">
+      <textarea id="chatInput" rows="1" placeholder="Demande en langage naturel — ex : « Quels demos NPK en Afrique sont à risque ? »" onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();chatSend();}"></textarea>
+      <button class="send" onclick="chatSend()" id="chatSendBtn" aria-label="Envoyer">↑</button>
+    </div>
+    <div class="chat-meta">D²nAI bot · répond sur les données du portefeuille de trials</div>
+  </div>
+</aside>
 
 <!-- ====== MODAL — Use Case detail ====== -->
 <div class="modal-bg" id="ucModal" onclick="if(event.target===this)closeUc()">
@@ -922,18 +1817,18 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 /* -----------------------------------------------------------------
  * 1. NAVIGATION CONFIG (i18n via tr())
  * --------------------------------------------------------------- */
+// v0.19 — NAV épurée : 11 entrées → 6 + admin. Les 5 écrans cachés
+// (dashboards, projects, calendar, controls, fasttrack) restent
+// accessibles via deep-links contextuels ET la cmd-K, mais ne
+// polluent plus la sidebar. Cf. CXTAB[] ci-dessous qui injecte les
+// onglets contextuels en haut de chaque écran pivot.
 const NAV = [
   { sec:'nav.sec.pilot' },
   { id:'cockpit',    svg:'ic-cockpit',   lblK:'nav.cockpit',    crumbK:'nav.cockpit.cr' },
-  { id:'dashboards', svg:'ic-dash',      lblK:'nav.dash',       crumbK:'nav.dash.cr' },
-  { id:'projects',   svg:'ic-projects',  lblK:'nav.projects',   crumbK:'nav.projects.cr' },
   { id:'portfolio',  svg:'ic-portfolio', lblK:'nav.portfolio',  crumbK:'nav.portfolio.cr' },
-  { id:'calendar',   svg:'ic-calendar',  lblK:'nav.calendar',   crumbK:'nav.calendar.cr' },
   { id:'governance', svg:'ic-gov',       lblK:'nav.gov',        crumbK:'nav.gov.cr' },
-  { id:'controls',   svg:'ic-ic',        lblK:'nav.ic',         crumbK:'nav.ic.cr' },
   { sec:'nav.sec.work' },
   { id:'intake',     svg:'ic-intake',    lblK:'nav.intake',     crumbK:'nav.intake.cr' },
-  { id:'fasttrack',  svg:'ic-ft',        lblK:'nav.ft',         crumbK:'nav.ft.cr' },
   { sec:'nav.sec.cap' },
   { id:'kb',         svg:'ic-kb',        lblK:'nav.kb',         crumbK:'nav.kb.cr' },
   { id:'admin',      svg:'ic-adm',       lblK:'nav.adm',        crumbK:'nav.adm.cr' }
@@ -1136,8 +2031,10 @@ fr:{
  'in.f.treat':'Nb traitements','in.f.rep':'Nb répétitions','in.f.start':'Date de lancement','in.f.end':'Date de clôture estimée',
  'in.s3.h':'3 · KPIs & Minimum Data Set','in.s3.sub':'Le MDS est obligatoire — 12 items pour garantir la comparabilité cross-cycles.',
  'in.s3.help':'À mesure que tu remplis les sections, les items MDS basculent en vert ✓.',
+ 'in.idbar.lbl':'Identifiant attribué','in.idbar.hint':'généré à la soumission · format UC-AAAA-NNN',
+ 'in.idbar.help':'L\'identifiant définitif est attribué à la soumission. Visible ici à titre indicatif.',
  'in.s4.h':'4 · Budget & partenaire',
- 'in.f.budget':'Budget prévisionnel ($)','in.f.budget.ph':'180000',
+ 'in.f.budget':'Budget prévisionnel','in.f.budget.ph':'180000','in.f.budget.help':'Saisis le montant en USD. Tous les budgets sont consolidés en USD à des fins de comparaison cross-BU.',
  'in.f.prio':'Priorité business','in.f.partner':'Partenaire pressenti',
  'in.f.ft':'Mode Fast Track','in.f.std':'Cycle standard','in.f.urgent':'Fast Track — urgent',
  'in.f.sai':'SA&I lead','in.f.sai.ph':'Anaïs M., Karim T., …',
@@ -1195,6 +2092,16 @@ fr:{
  'kb.l.hold':'Effet de site marqué — variance entre sites > 20 %. À reprendre avec design en blocs équilibrés.',
  'kb.l.kill':'Hypothèse non confirmée. Inputs : variabilité météo + non-respect protocole partenaire. À ne PAS répliquer en l\'état.',
  'kb.empty':'Pas encore de clôtures sur ce cycle.',
+ 'kb.edit':'Éditer','kb.edit.tt':'Éditer la fiche de clôture','kb.pdf':'PDF','kb.pdf.tt':'Exporter en PDF (impression navigateur)',
+ 'kb.rec':'Recommandation :','kb.edited':'éditée','kb.edited.tt':'Cette fiche a été modifiée manuellement.',
+ 'kb.edit.title':'Éditer la clôture','kb.edit.summary':'Synthèse des apprentissages','kb.edit.summary.hint':'2-4 phrases sur ce que le trial a confirmé/infirmé et les conditions de succès.',
+ 'kb.edit.rec':'Recommandation','kb.edit.rec.hint':'Optionnel — proposition d\'action concrète (déploiement, itération, abandon).',
+ 'kb.edit.ok':'Enregistrer la clôture','kb.edit.saved':'✓ Clôture mise à jour.',
+ 'kb.print.cycle':'Cycle','kb.print.verdict':'Verdict du Steering Committee',
+ 'kb.print.summary':'Synthèse des apprentissages','kb.print.rec':'Recommandation','kb.print.obj':'Objectif primaire','kb.print.kpi':'KPIs primaires',
+ 'kb.print.footer':'OCP Nutricrops · D²nAI · NutriPlan — Closure Brief',
+ 'kb.print.editedBy':'Édité par','kb.print.computed':'Synthèse générée automatiquement (non éditée).',
+ 'btn.cancel':'Annuler',
  // admin
  'adm.eye':'Référentiels','adm.h':'Admin · Référentiels',
  'adm.lead':'Bases de référence partagées : BUs, régions, cultures, produits, partenaires, MDS, statuses, types de trial. Source de vérité pour tout le système.',
@@ -1208,9 +2115,22 @@ fr:{
  'adm.ps.h':'🤝 Partner Setup Types','adm.ps.sub':'— 3 modes contractuels',
  'adm.mp.h':'🧭 Macro-phases du cycle','adm.mp.sub':'— 4 phases officielles',
  'adm.fw.h':'📜 Trial Management Framework v1.0','adm.fw.body':'Document validé et signé par le CEO. 10 sections · 22 contrôles internes · 4 KPIs · 6 objectifs stratégiques · 4 classes × types · 3 setups partenaire · 4 macro-phases. NutriPlan opérationnalise ce document ligne par ligne.',
- 'adm.t.ref':'Référentiels','adm.t.frame':'Cadre v1.0','adm.t.access':'Accès & rôles','adm.t.integr':'Intégrations',
+ 'adm.t.ref':'Référentiels','adm.t.frame':'Cadre v1.0','adm.t.gov':'Gouvernance','adm.t.access':'Accès & rôles','adm.t.integr':'Intégrations',
+ 'adm.gov.lead':'Paramètres de gouvernance : matrice RACI, seuils déclenchant la décision CEO, éligibilité Fast Track, SLA par étape. Toute modification est propagée immédiatement.',
+ 'adm.gov.raci.h':'Matrice RACI éditable','adm.gov.raci.sub':'(11 étapes × 5 rôles)','adm.gov.raci.help':'Pour chaque étape, choisis qui Réalise (R), est Accountable (A), est Consulté (C) ou Informé (I).',
+ 'adm.gov.thr.h':'Seuils décision CEO','adm.gov.thr.sub':'— déclenche la revue CEO obligatoire','adm.gov.thr.help':'Si le budget OU la durée dépasse ces seuils, le Use Case est automatiquement flaggué pour décision CEO.',
+ 'adm.gov.thr.ceoBudget':'Budget min pour CEO','adm.gov.thr.ceoBudget.hint':'Au-delà de ce montant, décision CEO obligatoire.',
+ 'adm.gov.thr.ceoDur':'Durée min pour CEO','adm.gov.thr.ceoDur.hint':'Au-delà de cette durée, décision CEO obligatoire.',
+ 'adm.gov.thr.ftBudget':'Budget max Fast Track','adm.gov.thr.ftBudget.hint':'Un FT au-delà de ce budget est refusé automatiquement.',
+ 'adm.gov.thr.ftDur':'Durée max Fast Track','adm.gov.thr.ftDur.hint':'Un FT au-delà de cette durée est refusé automatiquement.',
+ 'adm.gov.sla.h':'SLA par étape','adm.gov.sla.sub':'— délais cibles en jours','adm.gov.sla.help':'Temps maximal entre la soumission et la décision pour chaque étape de gouvernance.',
+ 'adm.gov.reset':'Restaurer les valeurs par défaut','adm.gov.persisted':'Persistance temps réel · serveur + cache local.',
+ 'gov.sla.h':'SLA actifs ·','gov.sla.sai':'SAI Review','gov.sla.steering':'Steering','gov.sla.ceo':'CEO','gov.sla.ft':'Fast Track','gov.sla.mon':'Monitoring','gov.sla.days':'jours','gov.sla.cfg':'Configurer','gov.sla.cfg.tt':'Aller à Admin > Gouvernance pour ajuster les SLA et seuils',
+ 'gov.cfg.reset.ok':'Configuration de gouvernance restaurée aux valeurs par défaut.',
+ 'in.err.ftIneligible':'Fast Track désactivé : budget > {b} USD ou durée > {d} j (seuils Gouvernance). Soumission en cycle standard.',
  'adm.ref.lead':'Toutes les listes de valeurs de l\'app, éditables et persistées en base partagée. Une suppression est bloquée si la valeur est utilisée par un trial.',
  'adm.add':'Ajouter','adm.addPh':'Nouvelle valeur…','adm.del':'Supprimer','adm.empty':'(vide)','adm.dup':'Cette valeur existe déjà.',
+ 'adm.chip.tt':'Double-clic pour renommer','adm.usedByN':'{n} trial(s) utilisent cette valeur','adm.renamed':'« {old} » → « {n} » (renommé et propagé).',
  'adm.export':'Exporter (JSON)','adm.reset':'Réinitialiser par défaut','adm.prov.core':'Cœur','adm.prov.excel':'Excel SAI',
  'adm.usedBy':'Suppression bloquée : {n} trial(s) utilisent cette valeur.','adm.confirmDel':'Supprimer « {v} » ?','adm.confirmReset':'Réinitialiser tous les référentiels aux valeurs par défaut ? Les ajouts seront perdus.',
  'adm.r.bus':'🏢 Business Units','adm.r.crops':'🌾 Cultures','adm.r.products':'🧴 Produits OCP','adm.r.partners':'🤝 Partenaires / Vendors','adm.r.mds':'📋 Minimum Data Set','adm.r.pstatus':'📁 Statut projet','adm.r.cstatus':'📝 Statut contrat','adm.r.tstatus':'🔬 Statut trial','adm.r.turgency':'⚡ Urgence trial','adm.r.slines':'🎯 Lignes stratégiques','adm.r.presp':'🗂️ Types de projet (Project Response)',
@@ -1408,8 +2328,10 @@ en:{
  'in.f.treat':'Number of treatments','in.f.rep':'Number of replications','in.f.start':'Start date','in.f.end':'Estimated end date',
  'in.s3.h':'3 · KPIs & Minimum Data Set','in.s3.sub':'The MDS is mandatory — 12 items to guarantee cross-cycle comparability.',
  'in.s3.help':'As you fill in the sections, MDS items will turn green ✓.',
+ 'in.idbar.lbl':'Assigned identifier','in.idbar.hint':'generated on submission · format UC-YYYY-NNN',
+ 'in.idbar.help':'The final identifier is assigned on submission. Shown here for reference only.',
  'in.s4.h':'4 · Budget & partner',
- 'in.f.budget':'Planned budget ($)','in.f.budget.ph':'180000',
+ 'in.f.budget':'Planned budget','in.f.budget.ph':'180000','in.f.budget.help':'Enter the amount in USD. All budgets are consolidated in USD for cross-BU comparison.',
  'in.f.prio':'Business priority','in.f.partner':'Expected partner',
  'in.f.ft':'Fast Track mode','in.f.std':'Standard cycle','in.f.urgent':'Fast Track — urgent',
  'in.f.sai':'SA&I lead','in.f.sai.ph':'Anaïs M., Karim T., …',
@@ -1463,6 +2385,16 @@ en:{
  'kb.l.hold':'Strong site effect — between-site variance > 20%. To resume with balanced block design.',
  'kb.l.kill':'Hypothesis not confirmed. Inputs: weather variability + partner protocol non-compliance. Do NOT replicate as-is.',
  'kb.empty':'No closures on this cycle yet.',
+ 'kb.edit':'Edit','kb.edit.tt':'Edit closure record','kb.pdf':'PDF','kb.pdf.tt':'Export PDF (browser print)',
+ 'kb.rec':'Recommendation:','kb.edited':'edited','kb.edited.tt':'This record has been manually edited.',
+ 'kb.edit.title':'Edit closure','kb.edit.summary':'Lessons learned summary','kb.edit.summary.hint':'2-4 sentences on what the trial confirmed/refuted and the conditions of success.',
+ 'kb.edit.rec':'Recommendation','kb.edit.rec.hint':'Optional — proposed concrete action (rollout, iterate, abandon).',
+ 'kb.edit.ok':'Save closure','kb.edit.saved':'✓ Closure updated.',
+ 'kb.print.cycle':'Cycle','kb.print.verdict':'Steering Committee verdict',
+ 'kb.print.summary':'Lessons learned summary','kb.print.rec':'Recommendation','kb.print.obj':'Primary objective','kb.print.kpi':'Primary KPIs',
+ 'kb.print.footer':'OCP Nutricrops · D²nAI · NutriPlan — Closure Brief',
+ 'kb.print.editedBy':'Edited by','kb.print.computed':'Summary generated automatically (not edited).',
+ 'btn.cancel':'Cancel',
  'adm.eye':'Reference data','adm.h':'Admin · Reference data',
  'adm.lead':'Shared reference data: BUs, regions, crops, products, partners, MDS, statuses, trial types. Source of truth for the whole system.',
  'adm.bu.h':'🏢 Business Units ({n})','adm.bu.code':'Code','adm.bu.name':'Name','adm.bu.regions':'Regions',
@@ -1475,9 +2407,22 @@ en:{
  'adm.ps.h':'🤝 Partner Setup Types','adm.ps.sub':'— 3 contractual modes',
  'adm.mp.h':'🧭 Cycle macro-phases','adm.mp.sub':'— 4 official phases',
  'adm.fw.h':'📜 Trial Management Framework v1.0','adm.fw.body':'Validated document signed by the CEO. 10 sections · 22 internal controls · 4 KPIs · 6 strategic objectives · 4 classes × types · 3 partner setups · 4 macro-phases. NutriPlan operationalises this document line by line.',
- 'adm.t.ref':'Reference data','adm.t.frame':'Framework v1.0','adm.t.access':'Access & roles','adm.t.integr':'Integrations',
+ 'adm.t.ref':'Reference data','adm.t.frame':'Framework v1.0','adm.t.gov':'Governance','adm.t.access':'Access & roles','adm.t.integr':'Integrations',
+ 'adm.gov.lead':'Governance settings: RACI matrix, CEO decision thresholds, Fast Track eligibility, per-step SLAs. Changes propagate immediately.',
+ 'adm.gov.raci.h':'Editable RACI matrix','adm.gov.raci.sub':'(11 steps × 5 roles)','adm.gov.raci.help':'For each step, choose who is Responsible (R), Accountable (A), Consulted (C) or Informed (I).',
+ 'adm.gov.thr.h':'CEO decision thresholds','adm.gov.thr.sub':'— triggers mandatory CEO review','adm.gov.thr.help':'If budget OR duration exceeds these thresholds, the Use Case is automatically flagged for CEO decision.',
+ 'adm.gov.thr.ceoBudget':'Min budget for CEO','adm.gov.thr.ceoBudget.hint':'Above this amount, CEO decision is mandatory.',
+ 'adm.gov.thr.ceoDur':'Min duration for CEO','adm.gov.thr.ceoDur.hint':'Above this duration, CEO decision is mandatory.',
+ 'adm.gov.thr.ftBudget':'Max Fast Track budget','adm.gov.thr.ftBudget.hint':'A FT request above this budget is auto-rejected.',
+ 'adm.gov.thr.ftDur':'Max Fast Track duration','adm.gov.thr.ftDur.hint':'A FT request above this duration is auto-rejected.',
+ 'adm.gov.sla.h':'Per-step SLAs','adm.gov.sla.sub':'— target lead times in days','adm.gov.sla.help':'Maximum time between submission and decision for each governance step.',
+ 'adm.gov.reset':'Reset to defaults','adm.gov.persisted':'Live persistence · server + local cache.',
+ 'gov.sla.h':'Active SLAs ·','gov.sla.sai':'SAI Review','gov.sla.steering':'Steering','gov.sla.ceo':'CEO','gov.sla.ft':'Fast Track','gov.sla.mon':'Monitoring','gov.sla.days':'days','gov.sla.cfg':'Configure','gov.sla.cfg.tt':'Go to Admin > Governance to adjust SLAs and thresholds',
+ 'gov.cfg.reset.ok':'Governance configuration reset to defaults.',
+ 'in.err.ftIneligible':'Fast Track disabled: budget > {b} USD or duration > {d} d (Governance thresholds). Submitted to standard cycle.',
  'adm.ref.lead':'Every value list in the app, editable and persisted to the shared database. Deletion is blocked if a trial uses the value.',
  'adm.add':'Add','adm.addPh':'New value…','adm.del':'Delete','adm.empty':'(empty)','adm.dup':'This value already exists.',
+ 'adm.chip.tt':'Double-click to rename','adm.usedByN':'{n} trial(s) use this value','adm.renamed':'"{old}" → "{n}" (renamed and propagated).',
  'adm.export':'Export (JSON)','adm.reset':'Reset to defaults','adm.prov.core':'Core','adm.prov.excel':'SAI Excel',
  'adm.usedBy':'Deletion blocked: {n} trial(s) use this value.','adm.confirmDel':'Delete "{v}"?','adm.confirmReset':'Reset all reference data to defaults? Your additions will be lost.',
  'adm.r.bus':'🏢 Business Units','adm.r.crops':'🌾 Crops','adm.r.products':'🧴 OCP products','adm.r.partners':'🤝 Partners / Vendors','adm.r.mds':'📋 Minimum Data Set','adm.r.pstatus':'📁 Project status','adm.r.cstatus':'📝 Contract status','adm.r.tstatus':'🔬 Trial status','adm.r.turgency':'⚡ Trial urgency','adm.r.slines':'🎯 Strategic lines','adm.r.presp':'🗂️ Project types (Project Response)',
@@ -1674,8 +2619,10 @@ pt:{
  'in.f.treat':'Nº de tratamentos','in.f.rep':'Nº de repetições','in.f.start':'Data de início','in.f.end':'Data estimada de fechamento',
  'in.s3.h':'3 · KPIs & Minimum Data Set','in.s3.sub':'O MDS é obrigatório — 12 itens para garantir comparabilidade entre ciclos.',
  'in.s3.help':'À medida que você preenche, os itens MDS ficam verdes ✓.',
+ 'in.idbar.lbl':'Identificador atribuído','in.idbar.hint':'gerado na submissão · formato UC-AAAA-NNN',
+ 'in.idbar.help':'O identificador definitivo é atribuído na submissão. Visível aqui apenas a título indicativo.',
  'in.s4.h':'4 · Orçamento & parceiro',
- 'in.f.budget':'Orçamento previsto ($)','in.f.budget.ph':'180000',
+ 'in.f.budget':'Orçamento previsto','in.f.budget.ph':'180000','in.f.budget.help':'Insira o valor em USD. Todos os orçamentos são consolidados em USD para comparação cross-BU.',
  'in.f.prio':'Prioridade business','in.f.partner':'Parceiro previsto',
  'in.f.ft':'Modo Fast Track','in.f.std':'Ciclo padrão','in.f.urgent':'Fast Track — urgente',
  'in.f.sai':'SA&I lead','in.f.sai.ph':'Anaïs M., Karim T., …',
@@ -1729,6 +2676,16 @@ pt:{
  'kb.l.hold':'Efeito de site marcado — variância entre sites > 20%. Retomar com design em blocos balanceados.',
  'kb.l.kill':'Hipótese não confirmada. Inputs: variabilidade meteorológica + não conformidade do parceiro. NÃO replicar como está.',
  'kb.empty':'Sem fechamentos neste ciclo ainda.',
+ 'kb.edit':'Editar','kb.edit.tt':'Editar fechamento','kb.pdf':'PDF','kb.pdf.tt':'Exportar PDF (impressão navegador)',
+ 'kb.rec':'Recomendação:','kb.edited':'editado','kb.edited.tt':'Este registro foi editado manualmente.',
+ 'kb.edit.title':'Editar fechamento','kb.edit.summary':'Resumo das aprendizagens','kb.edit.summary.hint':'2-4 frases sobre o que o trial confirmou/refutou e as condições de sucesso.',
+ 'kb.edit.rec':'Recomendação','kb.edit.rec.hint':'Opcional — ação concreta proposta (rollout, iterar, abandonar).',
+ 'kb.edit.ok':'Salvar fechamento','kb.edit.saved':'✓ Fechamento atualizado.',
+ 'kb.print.cycle':'Ciclo','kb.print.verdict':'Veredicto do Steering Committee',
+ 'kb.print.summary':'Resumo das aprendizagens','kb.print.rec':'Recomendação','kb.print.obj':'Objetivo primário','kb.print.kpi':'KPIs primários',
+ 'kb.print.footer':'OCP Nutricrops · D²nAI · NutriPlan — Closure Brief',
+ 'kb.print.editedBy':'Editado por','kb.print.computed':'Resumo gerado automaticamente (não editado).',
+ 'btn.cancel':'Cancelar',
  'adm.eye':'Catálogos','adm.h':'Admin · Catálogos',
  'adm.lead':'Catálogos de referência compartilhados: BUs, regiões, culturas, produtos, parceiros, MDS, statuses, tipos de trial. Source of truth para todo o sistema.',
  'adm.bu.h':'🏢 Business Units ({n})','adm.bu.code':'Código','adm.bu.name':'Nome','adm.bu.regions':'Regiões',
@@ -1741,9 +2698,22 @@ pt:{
  'adm.ps.h':'🤝 Partner Setup Types','adm.ps.sub':'— 3 modos contratuais',
  'adm.mp.h':'🧭 Macro-fases do ciclo','adm.mp.sub':'— 4 fases oficiais',
  'adm.fw.h':'📜 Trial Management Framework v1.0','adm.fw.body':'Documento validado e assinado pelo CEO. 10 seções · 22 controles internos · 4 KPIs · 6 objetivos estratégicos · 4 classes × types · 3 setups de parceiro · 4 macro-fases. NutriPlan operacionaliza esse documento linha a linha.',
- 'adm.t.ref':'Catálogos','adm.t.frame':'Framework v1.0','adm.t.access':'Acessos & papéis','adm.t.integr':'Integrações',
+ 'adm.t.ref':'Catálogos','adm.t.frame':'Framework v1.0','adm.t.gov':'Governança','adm.t.access':'Acessos & papéis','adm.t.integr':'Integrações',
+ 'adm.gov.lead':'Configurações de governança: matriz RACI, limites de decisão CEO, elegibilidade Fast Track, SLAs por etapa. Alterações são propagadas imediatamente.',
+ 'adm.gov.raci.h':'Matriz RACI editável','adm.gov.raci.sub':'(11 etapas × 5 papéis)','adm.gov.raci.help':'Para cada etapa, escolha quem é Responsável (R), Accountable (A), Consultado (C) ou Informado (I).',
+ 'adm.gov.thr.h':'Limites de decisão CEO','adm.gov.thr.sub':'— aciona revisão CEO obrigatória','adm.gov.thr.help':'Se orçamento OU duração exceder esses limites, o Use Case é automaticamente sinalizado para decisão CEO.',
+ 'adm.gov.thr.ceoBudget':'Orçamento mín. para CEO','adm.gov.thr.ceoBudget.hint':'Acima desse valor, decisão CEO é obrigatória.',
+ 'adm.gov.thr.ceoDur':'Duração mín. para CEO','adm.gov.thr.ceoDur.hint':'Acima dessa duração, decisão CEO é obrigatória.',
+ 'adm.gov.thr.ftBudget':'Orçamento máx. Fast Track','adm.gov.thr.ftBudget.hint':'Um FT acima desse orçamento é rejeitado automaticamente.',
+ 'adm.gov.thr.ftDur':'Duração máx. Fast Track','adm.gov.thr.ftDur.hint':'Um FT acima dessa duração é rejeitado automaticamente.',
+ 'adm.gov.sla.h':'SLAs por etapa','adm.gov.sla.sub':'— prazos-alvo em dias','adm.gov.sla.help':'Tempo máximo entre submissão e decisão para cada etapa de governança.',
+ 'adm.gov.reset':'Restaurar padrões','adm.gov.persisted':'Persistência em tempo real · servidor + cache local.',
+ 'gov.sla.h':'SLAs ativos ·','gov.sla.sai':'SAI Review','gov.sla.steering':'Steering','gov.sla.ceo':'CEO','gov.sla.ft':'Fast Track','gov.sla.mon':'Monitoring','gov.sla.days':'dias','gov.sla.cfg':'Configurar','gov.sla.cfg.tt':'Ir para Admin > Governança para ajustar SLAs e limites',
+ 'gov.cfg.reset.ok':'Configuração de governança restaurada aos padrões.',
+ 'in.err.ftIneligible':'Fast Track desativado: orçamento > {b} USD ou duração > {d} d (limites de Governança). Submetido ao ciclo padrão.',
  'adm.ref.lead':'Todas as listas de valores do app, editáveis e persistidas no banco compartilhado. A exclusão é bloqueada se um trial usar o valor.',
  'adm.add':'Adicionar','adm.addPh':'Novo valor…','adm.del':'Excluir','adm.empty':'(vazio)','adm.dup':'Esse valor já existe.',
+ 'adm.chip.tt':'Duplo clique para renomear','adm.usedByN':'{n} trial(s) usam esse valor','adm.renamed':'"{old}" → "{n}" (renomeado e propagado).',
  'adm.export':'Exportar (JSON)','adm.reset':'Restaurar padrões','adm.prov.core':'Núcleo','adm.prov.excel':'Excel SAI',
  'adm.usedBy':'Exclusão bloqueada: {n} trial(s) usam esse valor.','adm.confirmDel':'Excluir "{v}"?','adm.confirmReset':'Restaurar todos os catálogos aos padrões? Suas adições serão perdidas.',
  'adm.r.bus':'🏢 Business Units','adm.r.crops':'🌾 Culturas','adm.r.products':'🧴 Produtos OCP','adm.r.partners':'🤝 Parceiros / Vendors','adm.r.mds':'📋 Minimum Data Set','adm.r.pstatus':'📁 Status projeto','adm.r.cstatus':'📝 Status contrato','adm.r.tstatus':'🔬 Status trial','adm.r.turgency':'⚡ Urgência trial','adm.r.slines':'🎯 Linhas estratégicas','adm.r.presp':'🗂️ Tipos de projeto (Project Response)',
@@ -1968,6 +2938,76 @@ function applyRefFromServer(data){
 function persistRef(){
   try{ localStorage.setItem('nplan_reference_v1', JSON.stringify(snapshotRef())); }catch(e){}
   apiPush('reference', snapshotRef());
+}
+
+/* =================================================================
+ * v0.21 — GOVERNANCE config (RACI + seuils CEO + SLA + Fast Track).
+ * Persisté localStorage + collection 'governance' serveur. Source de
+ * vérité pour renderGovernance + soumission UC + éligibilité FT.
+ * ================================================================= */
+const GOV_DEFAULTS = {
+  raci: {
+    'gov.step.1':  {sai:'r', bu:'',  sf:'',  gv:'',  ceo:''},
+    'gov.step.2':  {sai:'c', bu:'r', sf:'',  gv:'',  ceo:''},
+    'gov.step.3':  {sai:'r', bu:'c', sf:'',  gv:'',  ceo:''},
+    'gov.step.4':  {sai:'c', bu:'c', sf:'',  gv:'r', ceo:''},
+    'gov.step.5':  {sai:'',  bu:'',  sf:'',  gv:'',  ceo:'a'},
+    'gov.step.6':  {sai:'c', bu:'c', sf:'r', gv:'',  ceo:''},
+    'gov.step.7':  {sai:'c', bu:'r', sf:'',  gv:'',  ceo:''},
+    'gov.step.8':  {sai:'r', bu:'c', sf:'',  gv:'',  ceo:''},
+    'gov.step.9':  {sai:'c', bu:'c', sf:'',  gv:'r', ceo:''},
+    'gov.step.10': {sai:'',  bu:'',  sf:'',  gv:'',  ceo:'a'},
+    'gov.step.11': {sai:'r', bu:'c', sf:'',  gv:'',  ceo:''}
+  },
+  // Seuils CEO : budget USD > N OU durée jours > N → décision CEO obligatoire
+  thresholds: {
+    ceoMinBudget: 500000,
+    ceoMinDurationDays: 365,
+    ftMaxBudget: 250000,    // FT bloqué au-delà
+    ftMaxDurationDays: 180   // FT bloqué au-delà
+  },
+  // SLA : délais cibles par étape (jours)
+  sla: {
+    sai_review: 7,
+    steering: 14,
+    ceo: 7,
+    fast_track: 5,
+    monitoring: 30
+  }
+};
+let GOV = JSON.parse(JSON.stringify(GOV_DEFAULTS));
+function applyGovFromServer(data){
+  if(!data || typeof data!=='object') return;
+  if(data.raci) Object.assign(GOV.raci, data.raci);
+  if(data.thresholds) Object.assign(GOV.thresholds, data.thresholds);
+  if(data.sla) Object.assign(GOV.sla, data.sla);
+  if(PREFS && PREFS.view==='governance' && typeof renderGovernance==='function') renderGovernance();
+  if(PREFS && PREFS.view==='admin' && typeof renderAdmin==='function') renderAdmin();
+}
+function persistGov(){
+  try{ localStorage.setItem('nplan_governance_v1', JSON.stringify(GOV)); }catch(e){}
+  apiPush('governance', GOV);
+}
+function govSnapshot(){ return JSON.parse(JSON.stringify(GOV)); }
+function govResetDefaults(){
+  GOV = JSON.parse(JSON.stringify(GOV_DEFAULTS));
+  persistGov(); renderAdmin();
+  toast(tr('gov.cfg.reset.ok')||'Configuration restaurée', 'ok');
+}
+// Helpers métier exposés pour submitUc + fast track check
+function govCeoRequired(uc){
+  if(!uc) return false;
+  const b = Number(uc.budget||0);
+  const dur = (uc.start_date && uc.end_date) ? Math.round((new Date(uc.end_date)-new Date(uc.start_date))/(1000*60*60*24)) : 0;
+  return (b >= (GOV.thresholds.ceoMinBudget||0)) || (dur >= (GOV.thresholds.ceoMinDurationDays||0));
+}
+function govFtEligible(uc){
+  if(!uc) return true;
+  const b = Number(uc.budget||0);
+  const dur = (uc.start_date && uc.end_date) ? Math.round((new Date(uc.end_date)-new Date(uc.start_date))/(1000*60*60*24)) : 0;
+  const max = GOV.thresholds.ftMaxBudget||Infinity;
+  const dmax = GOV.thresholds.ftMaxDurationDays||Infinity;
+  return (b <= max) && (dur <= dmax);
 }
 
 // 22 Internal Control Points across 5 domains — the audit/compliance backbone.
@@ -2224,6 +3264,31 @@ function trialsOfProject(pid){ return DATA.filter(u=>u.project_id===pid); }
 function saveData(){
   try{ localStorage.setItem(LS_DATA, JSON.stringify(DATA)); }catch(e){}  // cache offline
   apiPush('usecases', DATA);  // persistance serveur (BDD réelle, partagée)
+  if (typeof dataChanged === 'function') dataChanged();
+}
+
+/* v0.21 B9 : déclencheur central de mutation données → re-render des vues
+ * impactées (sidebar pour les badges, plus écran courant). Évite les vues
+ * périmées (Gouvernance, Calendrier, Cockpit, Dashboards, FT, Controls).
+ * --------------------------------------------------------------- */
+function dataChanged(){
+  try { renderSidebar(); } catch(e) {}
+  // Re-render de l'écran courant uniquement (les autres se re-render à goView)
+  const v = PREFS && PREFS.view;
+  if (!v) return;
+  const map = {
+    cockpit: typeof renderCockpit==='function' ? renderCockpit : null,
+    dashboards: typeof renderDashboards==='function' ? renderDashboards : null,
+    projects: typeof renderProjects==='function' ? renderProjects : null,
+    portfolio: typeof renderPortfolio==='function' ? renderPortfolio : null,
+    calendar: typeof renderCalendar==='function' ? renderCalendar : null,
+    fasttrack: typeof renderFastTrack==='function' ? renderFastTrack : null,
+    governance: typeof renderGovernance==='function' ? renderGovernance : null,
+    controls: typeof renderControls==='function' ? renderControls : null,
+    kb: typeof renderKB==='function' ? renderKB : null
+  };
+  const fn = map[v];
+  if (fn) { try { fn(); } catch(e) {} }
 }
 
 /* -----------------------------------------------------------------
@@ -2291,6 +3356,11 @@ function syncFromServer(){
         .then(r=>r.ok?r.json():null)
         .then(rr=>{ if(rr && rr.data && typeof applyRefFromServer==='function') applyRefFromServer(rr.data); })
         .catch(()=>{});
+      // v0.21 : Gouvernance — adopter la config serveur si elle existe.
+      fetch(c.api+'/collection/governance', { headers:{'X-WP-Nonce':c.nonce||''}, credentials:'same-origin' })
+        .then(r=>r.ok?r.json():null)
+        .then(gg=>{ if(gg && gg.data && typeof applyGovFromServer==='function') applyGovFromServer(gg.data); })
+        .catch(()=>{});
       // Projets : adopter ceux du serveur, sinon amorcer
       fetch(c.api+'/collection/projects', { headers:{'X-WP-Nonce':c.nonce||''}, credentials:'same-origin' })
         .then(r=>r.ok?r.json():null)
@@ -2303,9 +3373,287 @@ function syncFromServer(){
 }
 function loadPrefs(){
   try{ const v=JSON.parse(localStorage.getItem(LS_PREFS)); if(v) return v; }catch(e){}
-  return { view:'cockpit', portfolioView:'kanban', filters:{}, chatOpen:false };
+  return { view:'cockpit', portfolioView:'kanban', filters:{}, chatOpen:false, impersonate:null };
 }
 function savePrefs(){ try{ localStorage.setItem(LS_PREFS, JSON.stringify(PREFS)); }catch(e){} }
+
+/* =================================================================
+ * v0.19 — CXTAB : sous-tabs contextuels injectés en haut de chaque
+ * écran "pivot" pour donner accès aux écrans qui ont quitté la sidebar.
+ * Cockpit ↔ Vue analytique (dashboards)
+ * Portefeuille ↔ Projets (Call for Proposal parent)
+ * Gouvernance ↔ Calendrier ↔ Contrôles
+ * Intake ↔ Fast Track
+ * ================================================================= */
+const CXTAB_GROUPS = {
+  cockpit:    [['cockpit','Cockpit'],     ['dashboards','Vue analytique']],
+  dashboards: [['cockpit','Cockpit'],     ['dashboards','Vue analytique']],
+  portfolio:  [['portfolio','Trials'],    ['projects','Projets']],
+  projects:   [['portfolio','Trials'],    ['projects','Projets']],
+  governance: [['governance','Comités'],  ['calendar','Calendrier'], ['controls','Contrôles internes']],
+  calendar:   [['governance','Comités'],  ['calendar','Calendrier'], ['controls','Contrôles internes']],
+  controls:   [['governance','Comités'],  ['calendar','Calendrier'], ['controls','Contrôles internes']],
+  intake:     [['intake','Standard'],     ['fasttrack','Fast Track']],
+  fasttrack:  [['intake','Standard'],     ['fasttrack','Fast Track']],
+};
+function injectCxTab(viewId){
+  const g = CXTAB_GROUPS[viewId];
+  if(!g) return;
+  const sc = document.getElementById('sc-'+viewId);
+  if(!sc) return;
+  const old = sc.querySelector('.cxtab');
+  if(old) old.remove();
+  const wrap = document.createElement('div');
+  wrap.className = 'cxtab';
+  wrap.innerHTML = g.map(([id,lbl])=>`<button class="cxtab-btn${id===viewId?' on':''}" onclick="goView('${id}')">${escapeHtml(lbl)}</button>`).join('');
+  sc.insertBefore(wrap, sc.firstChild);
+}
+
+/* =================================================================
+ * v0.19 — Impersonate : sélecteur "Se faire passer pour" en topbar
+ * pour démos. Stocké dans PREFS.impersonate = {role, scope}.
+ * En lecture seule, ne modifie pas les permissions backend.
+ * ================================================================= */
+const IMPERSONATE_ROLES = [
+  ['',                     'Vue normale'],
+  ['admin',                'Admin'],
+  ['entity_manager',       'Entity Manager (sponsor BU)'],
+  ['entity_trial_owner',   'Trial Owner'],
+  ['sai_reviewer',         'SAI Reviewer'],
+  ['steering_member',      'Membre Steering'],
+  ['ceo_approver',         'CEO Approver'],
+  ['reader',               'Lecteur seul'],
+];
+function getImpersonate(){ return (PREFS.impersonate && PREFS.impersonate.role) || ''; }
+function setImpersonate(role){
+  PREFS.impersonate = role ? {role} : null;
+  savePrefs();
+  applyImpersonateUI();
+  toast(role ? 'Démo · vous voyez NutriPlan comme un '+role : 'Vue normale rétablie', 'ok');
+}
+function applyImpersonateUI(){
+  const role = getImpersonate();
+  document.body.classList.toggle('imp-on', !!role);
+  document.body.setAttribute('data-imp-role', role);
+  // Re-render la sidebar pour cacher/montrer Admin selon rôle simulé
+  if(typeof renderSidebar==='function') renderSidebar();
+  // Re-render l'écran courant pour appliquer les masquages
+  if(typeof goView==='function' && PREFS.view) goView(PREFS.view);
+}
+
+/* =================================================================
+ * v0.21 — COACH D²nAI : guide intelligent pour utilisateurs novices.
+ * 4 piliers : checklist d'onboarding, coach contextuel par écran,
+ * spotlight progressif, toggle on/off (niveau novice/intermédiaire/off).
+ * Persisté dans PREFS.coach + serveur via collection 'prefs_user'.
+ * ================================================================= */
+const COACH = (function(){
+  const _flags = new Set();
+  const _visited = new Set();
+  let _idleTimer = null;
+  let _currentHint = null;
+
+  // ---- Checklist : 7 actions concrètes premier mois ----
+  const CHECKLIST = [
+    { id:'visit-cockpit',  lbl:'Consulte le cockpit',                 check: () => _visited.has('cockpit') },
+    { id:'visit-portfolio',lbl:'Découvre le portefeuille',            check: () => _visited.has('portfolio') },
+    { id:'open-uc-detail', lbl:'Ouvre le détail d\'un trial',         check: () => _flags.has('uc-opened') },
+    { id:'create-uc',      lbl:'Crée ton 1er Use Case',               check: () => typeof DATA!=='undefined' && DATA.some(u => _flags.has('uc:'+u.id+':mine')) || _flags.has('uc-created') },
+    { id:'ask-bot',        lbl:'Pose une question au bot D²nAI',      check: () => _flags.has('chat-asked') || (typeof CHAT_HIST!=='undefined' && CHAT_HIST.filter(m=>m.role==='user').length>0) },
+    { id:'visit-gov',      lbl:'Consulte la gouvernance & comités',   check: () => _visited.has('governance') },
+    { id:'visit-admin',    lbl:'Découvre la matrice RBAC (Admin)',    check: () => _visited.has('admin') },
+  ];
+
+  // ---- Hints contextuels : viewId → règles ordonnées (1ère qui matche s'affiche) ----
+  const HINTS = {
+    cockpit: [
+      { when: () => !DATA || DATA.length===0,
+        msg: 'Aucun Use Case pour l\'instant. Démarre ton premier trial — la barre de soumission est dans « Soumettre ».',
+        action: ['Nouveau Use Case', () => goView('intake')] },
+      { when: () => DATA && DATA.filter(u=>u.status==='draft').length >= 3,
+        msg: () => DATA.filter(u=>u.status==='draft').length + ' brouillons stagnent. Relance leur revue avant le prochain Steering.',
+        action: ['Voir les brouillons', () => { PREFS.filters={status:'draft'}; savePrefs(); goView('portfolio'); }] },
+      { when: () => true,
+        msg: 'Le cockpit donne la vue d\'orientation. Pour le détail par BU/région : onglet « Vue analytique » en haut.',
+        action: ['Voir l\'analytique', () => goView('dashboards')] },
+    ],
+    portfolio: [
+      { when: () => true,
+        msg: 'Filtre par BU, statut ou recherche. Click sur une ligne ouvre le détail trial. Toggle « Projets » pour voir le niveau parent.',
+        action: ['Voir les projets', () => goView('projects')] },
+    ],
+    intake: [
+      { when: () => true,
+        msg: 'Renseigne d\'abord le projet parent, puis le trial. Les champs avec 🔒 sont hérités automatiquement.',
+        action: null },
+    ],
+    governance: [
+      { when: () => true,
+        msg: 'Calendrier des sessions, composition des comités et matrice RACI. Les onglets en haut t\'amènent vers Calendrier ou Contrôles internes.',
+        action: ['Voir le calendrier', () => goView('calendar')] },
+    ],
+    admin: [
+      { when: () => true,
+        msg: 'Onglet « Accès & rôles » pour gérer les permissions. La matrice RBAC est ta source de vérité.',
+        action: ['Ouvrir Accès', () => { PREFS.adminTab='access'; savePrefs(); renderAdmin(); }] },
+    ],
+    kb: [
+      { when: () => true,
+        msg: 'Toutes les closures du cycle précédent — méthodologies validées, lectures à reprendre. Indexé pour le cycle en cours.',
+        action: null },
+    ],
+  };
+
+  // ---- API publique ----
+  return {
+    init() {
+      if (!PREFS.coach) PREFS.coach = { enabled:true, level:'novice', dismissedHints:[], checkedTasks:[], spotlightOn:true };
+      _restoreFlags();
+      renderTopbarToggle();
+      renderChecklistPanel();
+    },
+    isOn() { return PREFS.coach && PREFS.coach.enabled; },
+    level() { return PREFS.coach ? PREFS.coach.level : 'off'; },
+    visit(viewId) {
+      _visited.add(viewId);
+      _persistFlags();
+      renderChecklistPanel();
+    },
+    flag(key) {
+      _flags.add(key);
+      _persistFlags();
+      renderChecklistPanel();
+    },
+    applyHint(viewId) {
+      _hideHint();
+      this.visit(viewId);
+      if (!this.isOn()) return;
+      const rules = HINTS[viewId];
+      if (!rules) return;
+      const dismissed = (PREFS.coach.dismissedHints || []);
+      for (const r of rules) {
+        const key = viewId + '::' + (typeof r.msg==='function' ? r.msg.toString().slice(0,40) : r.msg.slice(0,40));
+        if (dismissed.includes(key)) continue;
+        try { if (r.when()) { _showHint(viewId, r, key); return; } } catch(e){}
+      }
+    },
+    toggle(state) {
+      if (state === 'off') PREFS.coach.enabled = false;
+      else { PREFS.coach.enabled = true; PREFS.coach.level = state; }
+      savePrefs();
+      renderTopbarToggle();
+      renderChecklistPanel();
+      _hideHint();
+      if (this.isOn() && PREFS.view) this.applyHint(PREFS.view);
+      toast(this.isOn() ? 'Coach D²nAI activé · niveau '+state : 'Coach D²nAI désactivé', 'ok');
+    },
+    dismissCurrent() {
+      if (!_currentHint) return;
+      const d = PREFS.coach.dismissedHints || (PREFS.coach.dismissedHints = []);
+      if (!d.includes(_currentHint.key)) d.push(_currentHint.key);
+      savePrefs();
+      _hideHint();
+    },
+    spotlight(selector) {
+      if (!PREFS.coach || !PREFS.coach.spotlightOn) return;
+      const el = typeof selector === 'string' ? document.querySelector(selector) : selector;
+      if (!el) return;
+      el.classList.add('coach-spot');
+      setTimeout(() => el.classList.remove('coach-spot'), 3200);
+    },
+    checklistOpen() {
+      const p = document.getElementById('coachChecklist');
+      if (p) p.classList.toggle('open');
+    },
+  };
+
+  function _persistFlags() {
+    try {
+      localStorage.setItem('nplan_coach_flags', JSON.stringify({
+        visited: [..._visited], flags: [..._flags]
+      }));
+    } catch(e){}
+  }
+  function _restoreFlags() {
+    try {
+      const v = JSON.parse(localStorage.getItem('nplan_coach_flags') || '{}');
+      (v.visited||[]).forEach(x => _visited.add(x));
+      (v.flags||[]).forEach(x => _flags.add(x));
+    } catch(e){}
+  }
+
+  function _showHint(viewId, rule, key) {
+    if (!COACH.isOn()) return;
+    const sc = document.getElementById('sc-'+viewId);
+    if (!sc) return;
+    _hideHint();
+    const msg = typeof rule.msg === 'function' ? rule.msg() : rule.msg;
+    const wrap = document.createElement('div');
+    wrap.className = 'coach-bar';
+    wrap.innerHTML = `
+      <span class="coach-bar-ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 00-4 12.7V17a2 2 0 002 2h4a2 2 0 002-2v-2.3A7 7 0 0012 2z"/><path d="M9 22h6"/></svg>
+      </span>
+      <div class="coach-bar-msg">
+        <strong>Coach D²nAI · ${tr('nav.'+viewId,viewId)}</strong>
+        <span>${escapeHtml(msg)}</span>
+      </div>
+      ${rule.action ? `<button class="coach-bar-act" data-act>${escapeHtml(rule.action[0])} →</button>` : ''}
+      <button class="coach-bar-x" data-dismiss aria-label="Masquer ce coach">×</button>
+    `;
+    if (rule.action) wrap.querySelector('[data-act]').onclick = () => { try { rule.action[1](); } catch(e){} };
+    wrap.querySelector('[data-dismiss]').onclick = () => COACH.dismissCurrent();
+    // Insert juste après le .cxtab (s'il existe) sinon en premier
+    const cxtab = sc.querySelector('.cxtab');
+    if (cxtab && cxtab.nextSibling) sc.insertBefore(wrap, cxtab.nextSibling);
+    else if (cxtab) sc.appendChild(wrap);
+    else sc.insertBefore(wrap, sc.firstChild);
+    _currentHint = { node: wrap, key };
+  }
+  function _hideHint() {
+    if (_currentHint && _currentHint.node) _currentHint.node.remove();
+    _currentHint = null;
+  }
+
+  function renderTopbarToggle() {
+    const btn = document.getElementById('coachToggle');
+    if (!btn) return;
+    const on = COACH.isOn();
+    btn.classList.toggle('on', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.title = on ? 'Coach D²nAI · niveau '+COACH.level() : 'Coach D²nAI désactivé';
+  }
+  function renderChecklistPanel() {
+    const host = document.getElementById('coachChecklist');
+    if (!host) return;
+    if (!COACH.isOn()) { host.style.display = 'none'; return; }
+    const done = CHECKLIST.filter(t => { try { return t.check(); } catch(e) { return false; } }).length;
+    const total = CHECKLIST.length;
+    if (done >= total) { host.style.display = 'none'; return; }
+    host.style.display = '';
+    const pct = Math.round(done/total*100);
+    host.innerHTML = `
+      <button class="coach-cl-h" onclick="COACH.checklistOpen()" aria-expanded="${host.classList.contains('open')}">
+        <span class="coach-cl-prog">
+          <svg viewBox="0 0 36 36" aria-hidden="true">
+            <circle cx="18" cy="18" r="15" fill="none" stroke="rgba(124,252,154,.18)" stroke-width="3"/>
+            <circle cx="18" cy="18" r="15" fill="none" stroke="#7cfc9a" stroke-width="3" stroke-dasharray="${pct*0.942} 100" stroke-dashoffset="0" transform="rotate(-90 18 18)" stroke-linecap="round"/>
+          </svg>
+          <span class="coach-cl-pct">${done}/${total}</span>
+        </span>
+        <span class="coach-cl-t">Première semaine sur NutriPlan</span>
+        <svg class="coach-cl-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="coach-cl-list">
+        ${CHECKLIST.map(t => { const d = (()=>{try{return t.check();}catch(e){return false;}})(); return `
+          <div class="coach-cl-it ${d?'done':''}">
+            <span class="coach-cl-cb" aria-hidden="true">${d ? '✓' : ''}</span>
+            <span class="coach-cl-lbl">${escapeHtml(t.lbl)}</span>
+          </div>`; }).join('')}
+      </div>
+    `;
+  }
+})();
 
 function ucById(id){ return DATA.find(u=>u.id===id); }
 function statusOf(id){ return STATUSES.find(s=>s.id===id) || STATUSES[0]; }
@@ -2459,6 +3807,10 @@ function goView(id){
   if(id==='fasttrack')  renderFastTrack();
   if(id==='kb')         renderKB();
   if(id==='admin')      renderAdmin();
+  // v0.19 : inject sub-tabs contextuels en haut des écrans groupés
+  injectCxTab(id);
+  // v0.21 : coach contextuel (1 hint par écran selon règles)
+  if (typeof COACH !== 'undefined') COACH.applyHint(id);
   document.getElementById('main').scrollTo({top:0,behavior:'instant'});
 }
 
@@ -3238,6 +4590,7 @@ function renderTable(list){
  * --------------------------------------------------------------- */
 function openUc(id){
   const u = ucById(id); if(!u) return;
+  if (typeof COACH !== 'undefined') COACH.flag('uc-opened');
   const st = statusOf(u.status), ty = typeOf(u.type), pr = prioOf(u.priority), bu = buOf(u.bu);
   const mdsList = MDS_ITEMS.map(m=>{
     const ok = u.mds_covered && u.mds_covered.includes(m);
@@ -3356,13 +4709,24 @@ function closeUc(){
  *    can answer real questions on the portfolio without RAG.
  * --------------------------------------------------------------- */
 function toggleChat(forceOpen){
+  // v0.20 — FAB + Sheet : on n'utilise plus le grid .app.chat-open, le sheet
+  // flotte par-dessus tout. Scrim conservé pour le mobile / dismiss au clic.
   PREFS.chatOpen = (typeof forceOpen === 'boolean') ? forceOpen : !PREFS.chatOpen; savePrefs();
-  document.getElementById('app').classList.toggle('chat-open', PREFS.chatOpen);
-  document.getElementById('chatPanel').style.display = PREFS.chatOpen?'flex':'none';
-  if(PREFS.chatOpen){
+  const panel = document.getElementById('chatPanel');
+  const scrim = document.getElementById('botScrim');
+  const fab   = document.getElementById('botFab');
+  if (panel) panel.style.display = PREFS.chatOpen ? 'flex' : 'none';
+  if (panel) panel.classList.toggle('on', PREFS.chatOpen);
+  if (scrim) scrim.classList.toggle('on', PREFS.chatOpen);
+  if (fab)   fab.classList.toggle('on', PREFS.chatOpen);
+  document.body.classList.toggle('bot-open', PREFS.chatOpen);
+  // Legacy : on garde l'absence de classe chat-open sur .app pour ne pas
+  // déclencher l'ancien grid 200/1fr/460. Mais on retire si présent.
+  document.getElementById('app').classList.remove('chat-open');
+  if (PREFS.chatOpen){
     if(CHAT_HIST.length===0) chatGreet();
     renderChatSugs();
-    setTimeout(()=>document.getElementById('chatInput').focus(),120);
+    setTimeout(()=>{ const ta=document.getElementById('chatInput'); if(ta) ta.focus(); }, 220);
   }
 }
 function openChatWith(text){
@@ -3431,6 +4795,7 @@ async function chatSend(){
   const inp = document.getElementById('chatInput');
   const text = inp.value.trim(); if(!text) return;
   inp.value=''; inp.style.height='auto';
+  if (typeof COACH !== 'undefined') COACH.flag('chat-asked');
   CHAT_HIST.push({ role:'user', text });
   CHAT_HIST.push({ role:'assistant', thinking:true });
   renderChatBody();
@@ -3553,9 +4918,16 @@ function _localFallback(q){
  * --------------------------------------------------------------- */
 function renderIntake(){
   const _prefillCleanup = PREFS._prefillProject;  // consume + clear so it doesn't stick
+  // v0.21 B6 : ID auto-généré affiché clairement avant tout (pas de surprise à la soumission).
+  const _nextId = 'UC-2026-'+((DATA.length+1).toString().padStart(3,'0'));
   document.getElementById('sc-intake').innerHTML = `
     <h2 class="h-pg">${tr('in.h')}</h2>
     <p class="lead">${tr('in.lead')}</p>
+    <div class="intake-idbar" title="${tr('in.idbar.help')}">
+      <span class="lbl">${tr('in.idbar.lbl')}</span>
+      <code class="val">${_nextId}</code>
+      <span class="hint">${tr('in.idbar.hint')}</span>
+    </div>
     <div class="steps-bar">
       <div class="s on"><span class="n"><span class="num">1</span></span>${tr('in.step1')}</div>
       <span class="conn"></span>
@@ -3616,7 +4988,9 @@ function renderIntake(){
     <div class="form-section">
       <h3>${tr('in.s4.h')}</h3>
       <div class="form-grid">
-        <div class="fld"><label for="if_budget">${tr('in.f.budget')} <span class="req">*</span></label><input id="if_budget" type="number" placeholder="${tr('in.f.budget.ph')}"></div>
+        <div class="fld"><label for="if_budget">${tr('in.f.budget')} <span class="req">*</span></label>
+          <div class="fld-money"><span class="cur" aria-hidden="true">$</span><input id="if_budget" type="number" placeholder="${tr('in.f.budget.ph')}" min="0" step="1000" inputmode="numeric" oninput="ifBudgetFormat()"><span class="cur-suf">USD</span></div>
+          <span id="if_budgetHint" class="muted" style="display:block;font-size:11.5px;margin-top:4px">${tr('in.f.budget.help')}</span></div>
         <div class="fld"><label for="if_prio">${tr('in.f.prio')}</label>
           <select id="if_prio">${PRIORITIES.map(p=>`<option value="${p.id}">${prLbl(p)}</option>`).join('')}</select></div>
         <div class="fld full"><label for="if_partner">${tr('in.f.partner')} <span class="req">*</span></label>
@@ -3665,6 +5039,14 @@ function ifAttachList(){
 function ifProtoName(){
   const inp=document.getElementById('if_protocol'), out=document.getElementById('if_protocolName');
   if(inp&&out){ out.textContent = inp.files.length ? '📎 '+inp.files[0].name : tr('in.f.protocol.help'); out.style.color = inp.files.length ? 'var(--green-700)' : ''; }
+}
+function ifBudgetFormat(){
+  const inp=document.getElementById('if_budget'), hint=document.getElementById('if_budgetHint');
+  if(!inp||!hint) return;
+  const v = Number(inp.value)||0;
+  if(v<=0){ hint.textContent = tr('in.f.budget.help'); hint.style.color=''; return; }
+  hint.textContent = '$ '+v.toLocaleString('en-US')+' USD';
+  hint.style.color = 'var(--green-800)';
 }
 function ifVal(id){ const el=document.getElementById(id); return el?el.value.trim():''; }
 function submitUc(isDraft){
@@ -3718,10 +5100,21 @@ function submitUc(isDraft){
     submitted_at: isDraft ? null : new Date().toISOString(),
     owner_bu: ifVal('if_bu')||'SAI'
   };
+  // v0.21 : éligibilité Fast Track (seuils paramétrables via Admin > Gouvernance)
+  if (uc.fast_track && typeof govFtEligible === 'function' && !govFtEligible(uc)) {
+    toast(trf('in.err.ftIneligible', {b: GOV.thresholds.ftMaxBudget.toLocaleString('en-US'), d: GOV.thresholds.ftMaxDurationDays}), 'err');
+    uc.fast_track = false;
+  }
+  // v0.21 : flag CEO requis automatiquement si seuils dépassés
+  if (typeof govCeoRequired === 'function' && govCeoRequired(uc)) {
+    uc.ceo_required = true;
+  }
   DATA.unshift(uc);
   try{ localStorage.setItem(LS_DATA, JSON.stringify(DATA)); }catch(e){}
   apiUpsert('usecases', uc);  // upsert granulaire serveur (anti-clobber multi-user)
-  renderSidebar();
+  if (typeof COACH !== 'undefined') { COACH.flag('uc-created'); COACH.flag('uc:'+uc.id+':mine'); }
+  // v0.21 B9 : propagation centrale (sidebar badges + écran courant si concerné)
+  if (typeof dataChanged === 'function') dataChanged();
   toast(isDraft ? tr('in.toast.draft') : tr('in.toast.submit'));
   PREFS.filters = {}; savePrefs();
   goView('portfolio');
@@ -3809,22 +5202,25 @@ function renderGovernance(){
     ['gov.month.may','gov.bu.may','gov.dec.may',4],
     ['gov.month.jun','gov.bu.jun','gov.dec.jun',3]
   ];
-  const raciRows = [
-    ['gov.step.1', 'r','','','',''],
-    ['gov.step.2', 'c','r','','',''],
-    ['gov.step.3', 'r','c','','',''],
-    ['gov.step.4', 'c','c','','r',''],
-    ['gov.step.5', '','','','','a'],
-    ['gov.step.6', 'c','c','r','',''],
-    ['gov.step.7', 'c','r','','',''],
-    ['gov.step.8', 'r','c','','',''],
-    ['gov.step.9', 'c','c','','r',''],
-    ['gov.step.10','','','','','a'],
-    ['gov.step.11','r','c','','','']
-  ];
+  // v0.21 : RACI lue depuis GOV.raci (configurable via Admin > Gouvernance)
+  const raciRows = Object.keys(GOV.raci).map(k => {
+    const r = GOV.raci[k] || {};
+    return [k, r.sai||'', r.bu||'', r.sf||'', r.gv||'', r.ceo||''];
+  });
+  const slaBadge = (k, lblK) => `<span class="gov-sla-pill">${tr(lblK)}: <b>${GOV.sla[k]||'—'} ${tr('gov.sla.days')}</b></span>`;
   document.getElementById('sc-governance').innerHTML = `
     <h2 class="h-pg">${tr('gov.h')}</h2>
     <p class="lead">${tr('gov.lead')}</p>
+
+    <div class="gov-sla-bar">
+      <span class="gov-sla-h">${tr('gov.sla.h')}</span>
+      ${slaBadge('sai_review','gov.sla.sai')}
+      ${slaBadge('steering','gov.sla.steering')}
+      ${slaBadge('ceo','gov.sla.ceo')}
+      ${slaBadge('fast_track','gov.sla.ft')}
+      ${slaBadge('monitoring','gov.sla.mon')}
+      <span class="gov-sla-cfg" onclick="PREFS.adminTab='gov-cfg';savePrefs();goView('admin')" title="${tr('gov.sla.cfg.tt')}">⚙ ${tr('gov.sla.cfg')}</span>
+    </div>
 
     <div class="row-2c">
       <div class="card">
@@ -3898,13 +5294,21 @@ function renderFastTrack(){
 /* -----------------------------------------------------------------
  * 13. KB CLOSURE — lessons learned
  * --------------------------------------------------------------- */
+function defaultClosureLesson(u, i){
+  i = i || 0;
+  return u.status==='closed-go'  ? trf('kb.l.go',{p:5+i%4})
+       : u.status==='closed-hold' ? tr('kb.l.hold')
+       : tr('kb.l.kill');
+}
+function closureOf(u, i){
+  // v0.21 B7 : si une closure éditée existe, elle prime sur la version computée.
+  if (u.closure && (u.closure.summary || u.closure.recommendation)) return u.closure;
+  return { summary: defaultClosureLesson(u, i||0), recommendation: '', edited_at: null, edited_by: null };
+}
 function renderKB(){
   const closed = DATA.filter(u=>/^closed-/.test(u.status));
   const lessons = closed.map((u,i)=>{
-    const lesson = u.status==='closed-go'  ? trf('kb.l.go',{p:5+i%4})
-                : u.status==='closed-hold' ? tr('kb.l.hold')
-                : tr('kb.l.kill');
-    return Object.assign({}, u, { _lesson:lesson });
+    return Object.assign({}, u, { _closure: closureOf(u, i) });
   });
   document.getElementById('sc-kb').innerHTML = `
     <h2 class="h-pg">${tr('kb.h')}</h2>
@@ -3921,14 +5325,105 @@ function renderKB(){
 
     <div class="kb-grid">${lessons.map(u=>{
       const st = statusOf(u.status); const ty = typeOf(u.type);
-      return `<div class="kb-card" onclick="openUc('${u.id}')">
-        <div class="h"><span class="pill ${st.pill}">${stLbl(st)}</span><span class="pill ${ty.pill}">${tyLbl(ty)}</span></div>
+      const cl = u._closure;
+      const editedBadge = cl.edited_at ? `<span class="kb-edited" title="${tr('kb.edited.tt')}">✎ ${tr('kb.edited')}</span>` : '';
+      return `<div class="kb-card" onclick="if(!event.target.closest('.kb-acts'))openUc('${u.id}')">
+        <div class="h"><span class="pill ${st.pill}">${stLbl(st)}</span><span class="pill ${ty.pill}">${tyLbl(ty)}</span>${editedBadge}</div>
         <h4>${escapeHtml(u.name)}</h4>
-        <div class="ll">${escapeHtml(u._lesson)}</div>
+        <div class="ll">${escapeHtml(cl.summary)}</div>
+        ${cl.recommendation ? `<div class="ll-rec"><b>${tr('kb.rec')}</b> ${escapeHtml(cl.recommendation)}</div>` : ''}
         <div class="ft"><span>${u.id}</span> · <span>${escapeHtml(u.crop)}</span> · <span>${escapeHtml(buOf(u.bu).nm)}</span></div>
+        <div class="kb-acts">
+          <button class="btn ghost sm" onclick="event.stopPropagation();kbEditClosure('${u.id}')" title="${tr('kb.edit.tt')}">✏ ${tr('kb.edit')}</button>
+          <button class="btn ghost sm" onclick="event.stopPropagation();kbExportPdf('${u.id}')" title="${tr('kb.pdf.tt')}">🖨 ${tr('kb.pdf')}</button>
+        </div>
       </div>`;
     }).join('') || `<div class="empty">${tr('kb.empty')}</div>`}</div>
   `;
+}
+
+/* -----------------------------------------------------------------
+ * v0.21 B7 + B8 — Closure : édition modale + export PDF (window.print
+ * sur layout dédié .kb-print-only). La closure éditée prime sur la
+ * version computée par défaut.
+ * --------------------------------------------------------------- */
+async function kbEditClosure(id){
+  const u = ucById(id); if(!u) return;
+  const cur = closureOf(u, 0);
+  const r = await UI.prompt({
+    title: tr('kb.edit.title') + ' · ' + u.id,
+    sub: u.name,
+    fields: [
+      { name:'summary', label:tr('kb.edit.summary'), type:'textarea', rows:4, required:true, value: cur.summary, hint: tr('kb.edit.summary.hint') },
+      { name:'recommendation', label:tr('kb.edit.rec'), type:'textarea', rows:3, value: cur.recommendation, hint: tr('kb.edit.rec.hint') }
+    ],
+    ok: tr('kb.edit.ok'),
+    cancel: tr('btn.cancel')
+  });
+  if(!r) return;
+  u.closure = {
+    summary: (r.summary||'').trim(),
+    recommendation: (r.recommendation||'').trim(),
+    edited_at: new Date().toISOString(),
+    edited_by: (window.DNAI_NPLAN && window.DNAI_NPLAN.user) || 'Hamza K.'
+  };
+  saveData();
+  toast(tr('kb.edit.saved'), 'ok');
+  renderKB();
+}
+function kbExportPdf(id){
+  const u = ucById(id); if(!u) return;
+  const cl = closureOf(u, 0);
+  const st = statusOf(u.status), ty = typeOf(u.type), bu = buOf(u.bu);
+  const host = document.getElementById('kbPrintHost') || (function(){
+    const h = document.createElement('div'); h.id='kbPrintHost'; h.className='kb-print-only'; document.body.appendChild(h); return h;
+  })();
+  host.innerHTML = `
+    <div class="kb-print">
+      <header>
+        <div class="kb-brand">
+          <div class="kb-by">OCP Nutricrops · D²nAI</div>
+          <div class="kb-nm">NutriPlan — Closure Brief</div>
+        </div>
+        <div class="kb-id">
+          <div class="kb-uid">${u.id}</div>
+          <div class="kb-uci">${tr('kb.print.cycle')} 2026</div>
+        </div>
+      </header>
+      <h1>${escapeHtml(u.name)}</h1>
+      <div class="kb-meta">
+        <span class="m"><b>${tr('uc.bu')}</b> ${escapeHtml(bu.nm)}</span>
+        <span class="m"><b>${tr('uc.crop')}</b> ${escapeHtml(u.crop)}</span>
+        <span class="m"><b>${tr('uc.product')}</b> ${escapeHtml(u.product)}</span>
+        <span class="m"><b>${tr('uc.budget')}</b> ${fmtMoney(u.budget)}</span>
+        <span class="m"><b>${tr('uc.partner')}</b> ${escapeHtml(u.partner||'—')}</span>
+        <span class="m"><b>${tr('uc.start')}</b> ${fmtDate(u.start_date)} → ${fmtDate(u.end_date)}</span>
+      </div>
+      <div class="kb-verdict v-${u.status.replace('closed-','')}">
+        <span class="verdict-lbl">${tr('kb.print.verdict')}</span>
+        <span class="verdict-val">${stLbl(st)}</span>
+      </div>
+      <section>
+        <h2>${tr('kb.print.summary')}</h2>
+        <p>${escapeHtml(cl.summary)}</p>
+      </section>
+      ${cl.recommendation ? `<section><h2>${tr('kb.print.rec')}</h2><p>${escapeHtml(cl.recommendation)}</p></section>` : ''}
+      <section>
+        <h2>${tr('kb.print.obj')}</h2>
+        <p>${escapeHtml(u.objective_primary||'—')}</p>
+      </section>
+      ${(u.kpis_primary||[]).length ? `<section><h2>${tr('kb.print.kpi')}</h2><ul>${(u.kpis_primary||[]).map(k=>`<li><b>${escapeHtml(k.k)}</b> — ${escapeHtml(k.target||'—')}</li>`).join('')}</ul></section>`:''}
+      <footer>
+        <span>${tr('kb.print.footer')}</span>
+        <span>${cl.edited_at ? tr('kb.print.editedBy')+' '+escapeHtml(cl.edited_by||'—')+' · '+fmtDate(cl.edited_at) : tr('kb.print.computed')}</span>
+      </footer>
+    </div>
+  `;
+  document.body.classList.add('kb-printing');
+  setTimeout(()=>{
+    window.print();
+    setTimeout(()=>document.body.classList.remove('kb-printing'), 200);
+  }, 80);
 }
 
 /* -----------------------------------------------------------------
@@ -3939,12 +5434,14 @@ function renderAdmin(){
   const subnav = [
     ['ref','📚 '+tr('adm.t.ref')],
     ['frame','🧭 '+tr('adm.t.frame')],
+    ['gov-cfg','⚖ '+tr('adm.t.gov')],
     ['access','👥 '+tr('adm.t.access')],
     ['integr','🔗 '+tr('adm.t.integr')]
   ];
   const body =
       tab==='ref'    ? renderAdminRef()
     : tab==='frame'  ? renderAdminFrame()
+    : tab==='gov-cfg'? renderAdminGov()
     : tab==='access' ? renderAdminAccess()
     :                  renderAdminIntegr();
   document.getElementById('sc-admin').innerHTML = `
@@ -3960,8 +5457,27 @@ function renderAdmin(){
 /* ---- Admin · Référentiels (CRUD persisté en BDD) ---- */
 function refUsageField(key){ return {bus:'bu',crops:'crop',products:'product',partners:'partner'}[key]; }
 function refUsageCount(key, value){
+  // v0.21 : extension à MDS (champ array dans chaque UC).
+  if(key==='mds'){
+    return DATA.filter(u => Array.isArray(u.mds_covered) && u.mds_covered.includes(value)).length;
+  }
   const f = refUsageField(key); if(!f) return 0;
   return DATA.filter(u=>String(u[f])===String(value)).length;
+}
+// v0.21 : renommer un item string en propageant l'ancien→nouveau dans DATA (évite les références cassées).
+function refRenameStr(key, i, newVal){
+  const r=refByKey(key); const list=r.get().slice();
+  const old=list[i]; newVal=(newVal||'').trim();
+  if(!newVal || newVal===old) return;
+  if(list.some((x,j)=>j!==i && String(x).toLowerCase()===newVal.toLowerCase())){ toast(tr('adm.dup'),'err'); renderAdmin(); return; }
+  list[i]=newVal; r.set(list);
+  // Propagation cascade dans DATA (champ scalaire OU array MDS)
+  const f = refUsageField(key);
+  if(f){ DATA.forEach(u=>{ if(String(u[f])===String(old)) u[f]=newVal; }); }
+  if(key==='mds'){ DATA.forEach(u=>{ if(Array.isArray(u.mds_covered)){ u.mds_covered = u.mds_covered.map(m=>m===old?newVal:m); } }); }
+  saveData();
+  refAfterChange();
+  toast(trf('adm.renamed',{old:old, n:newVal}),'ok');
 }
 function renderAdminRef(){
   const cards = REF_REGISTRY.map(r=>{
@@ -3971,8 +5487,13 @@ function renderAdminRef(){
     let bodyHtml;
     if(r.kind==='strings'){
       bodyHtml = `<div class="ref-chips">${list.map((v,i)=>{
-        const used = refUsageCount(r.key, (r.key==='bus')?v:v);
-        return `<span class="ref-chip"><span>${escapeHtml(v)}</span><button title="${tr('adm.del')}" onclick="refDel('${r.key}',${i})">×</button></span>`;
+        const used = refUsageCount(r.key, v);
+        const usedBadge = used>0 ? `<span class="ref-used" title="${trf('adm.usedByN',{n:used})}">${used}</span>` : '';
+        const safe = escapeHtml(v);
+        return `<span class="ref-chip" data-key="${r.key}" data-i="${i}" data-v="${safe}" ondblclick="refChipEdit(this)" title="${tr('adm.chip.tt')}">
+          <span class="ref-chip-lbl">${safe}</span>${usedBadge}
+          <button class="ref-chip-x" title="${tr('adm.del')}" onclick="event.stopPropagation();refDel('${r.key}',${i})">×</button>
+        </span>`;
       }).join('')||`<span class="muted">${tr('adm.empty')}</span>`}</div>
       <div class="ref-add"><input type="text" id="refadd_${r.key}" placeholder="${tr('adm.addPh')}" onkeydown="if(event.key==='Enter')refAddStr('${r.key}')"><button class="btn ghost sm" onclick="refAddStr('${r.key}')">+ ${tr('adm.add')}</button></div>`;
     } else {
@@ -3994,6 +5515,22 @@ function renderAdminRef(){
     </div>`;
 }
 function refAfterChange(){ persistRef(); renderAdmin(); renderSidebar(); }
+// v0.21 : édition inline d'une chip ref string (dblclick → input → blur/Enter pour valider)
+function refChipEdit(chip){
+  const key = chip.dataset.key, i = +chip.dataset.i, cur = chip.dataset.v;
+  const lbl = chip.querySelector('.ref-chip-lbl');
+  if(!lbl || lbl.querySelector('input')) return;
+  const inp = document.createElement('input');
+  inp.type='text'; inp.value = cur; inp.className='ref-chip-inp';
+  inp.onblur = ()=>refRenameStr(key, i, inp.value);
+  inp.onkeydown = (e)=>{
+    if(e.key==='Enter'){ e.preventDefault(); inp.blur(); }
+    else if(e.key==='Escape'){ inp.value = cur; inp.blur(); }
+  };
+  lbl.textContent='';
+  lbl.appendChild(inp);
+  inp.focus(); inp.select();
+}
 function refAddStr(key){
   const inp=document.getElementById('refadd_'+key); const v=(inp.value||'').trim(); if(!v) return;
   const r=refByKey(key); const list=r.get().slice();
@@ -4069,17 +5606,487 @@ function renderAdminFrame(){
       <p style="margin:0;color:#bcd4c2;font-size:13.5px;line-height:1.55">${tr('adm.fw.body')}</p>
     </div>`;
 }
+
+/* ============================================================
+ * v0.21 — Admin > Gouvernance paramétrable
+ * RACI éditable + seuils CEO + SLA par étape + Fast Track config.
+ * ============================================================ */
+function govRaciSelect(stepK, role){
+  const cur = (GOV.raci[stepK] && GOV.raci[stepK][role]) || '';
+  return `<select class="gov-raci-sel gov-raci-${cur||'none'}" onchange="govRaciSet('${stepK}','${role}',this.value)">
+    <option value=""${cur===''?' selected':''}>—</option>
+    <option value="r"${cur==='r'?' selected':''}>R</option>
+    <option value="a"${cur==='a'?' selected':''}>A</option>
+    <option value="c"${cur==='c'?' selected':''}>C</option>
+    <option value="i"${cur==='i'?' selected':''}>I</option>
+  </select>`;
+}
+function govRaciSet(stepK, role, val){
+  if(!GOV.raci[stepK]) GOV.raci[stepK] = {};
+  GOV.raci[stepK][role] = val;
+  persistGov();
+  renderAdmin();
+}
+function govThresholdSet(key, val){
+  const n = Math.max(0, Number(val)||0);
+  GOV.thresholds[key] = n;
+  persistGov();
+}
+function govSlaSet(key, val){
+  const n = Math.max(0, Number(val)||0);
+  GOV.sla[key] = n;
+  persistGov();
+}
+function renderAdminGov(){
+  const stepKeys = Object.keys(GOV.raci);
+  const raci = `
+    <div class="card">
+      <h3>${tr('adm.gov.raci.h')} <span class="sub">${tr('adm.gov.raci.sub')}</span></h3>
+      <p class="muted" style="margin:-4px 0 12px;font-size:12.5px">${tr('adm.gov.raci.help')}</p>
+      <div class="tbl-wrap"><table class="tbl raci">
+        <thead><tr>
+          <th>${tr('gov.act')}</th>
+          <th style="text-align:center">${tr('gov.role.sai')}</th>
+          <th style="text-align:center">${tr('gov.role.bu')}</th>
+          <th style="text-align:center">${tr('gov.role.sf')}</th>
+          <th style="text-align:center">${tr('gov.role.gv')}</th>
+          <th style="text-align:center">${tr('gov.role.ceo')}</th>
+        </tr></thead>
+        <tbody>
+          ${stepKeys.map(k=>`<tr>
+            <td><b>${tr(k)}</b></td>
+            <td style="text-align:center">${govRaciSelect(k,'sai')}</td>
+            <td style="text-align:center">${govRaciSelect(k,'bu')}</td>
+            <td style="text-align:center">${govRaciSelect(k,'sf')}</td>
+            <td style="text-align:center">${govRaciSelect(k,'gv')}</td>
+            <td style="text-align:center">${govRaciSelect(k,'ceo')}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>
+      <p class="muted" style="margin-top:10px;font-size:11.5px"><span class="raci-cell r">R</span> ${tr('gov.raci.r')} &nbsp; <span class="raci-cell a">A</span> ${tr('gov.raci.a')} &nbsp; <span class="raci-cell c">C</span> ${tr('gov.raci.c')} &nbsp; <span class="raci-cell i">I</span> ${tr('gov.raci.i')}</p>
+    </div>`;
+
+  const thresholds = `
+    <div class="card">
+      <h3>${tr('adm.gov.thr.h')} <span class="sub">${tr('adm.gov.thr.sub')}</span></h3>
+      <p class="muted" style="margin:-4px 0 14px;font-size:12.5px">${tr('adm.gov.thr.help')}</p>
+      <div class="gov-cfg-grid">
+        <div class="gov-cfg-fld">
+          <label>${tr('adm.gov.thr.ceoBudget')}</label>
+          <div class="fld-money"><span class="cur">$</span><input type="number" min="0" step="50000" value="${GOV.thresholds.ceoMinBudget}" onchange="govThresholdSet('ceoMinBudget',this.value);renderAdmin()"><span class="cur-suf">USD</span></div>
+          <span class="hint">${tr('adm.gov.thr.ceoBudget.hint')}</span>
+        </div>
+        <div class="gov-cfg-fld">
+          <label>${tr('adm.gov.thr.ceoDur')}</label>
+          <div class="fld-money"><input type="number" min="0" step="30" value="${GOV.thresholds.ceoMinDurationDays}" onchange="govThresholdSet('ceoMinDurationDays',this.value);renderAdmin()" style="padding-left:12px"><span class="cur-suf">${tr('gov.sla.days')}</span></div>
+          <span class="hint">${tr('adm.gov.thr.ceoDur.hint')}</span>
+        </div>
+        <div class="gov-cfg-fld">
+          <label>${tr('adm.gov.thr.ftBudget')}</label>
+          <div class="fld-money"><span class="cur">$</span><input type="number" min="0" step="25000" value="${GOV.thresholds.ftMaxBudget}" onchange="govThresholdSet('ftMaxBudget',this.value);renderAdmin()"><span class="cur-suf">USD</span></div>
+          <span class="hint">${tr('adm.gov.thr.ftBudget.hint')}</span>
+        </div>
+        <div class="gov-cfg-fld">
+          <label>${tr('adm.gov.thr.ftDur')}</label>
+          <div class="fld-money"><input type="number" min="0" step="15" value="${GOV.thresholds.ftMaxDurationDays}" onchange="govThresholdSet('ftMaxDurationDays',this.value);renderAdmin()" style="padding-left:12px"><span class="cur-suf">${tr('gov.sla.days')}</span></div>
+          <span class="hint">${tr('adm.gov.thr.ftDur.hint')}</span>
+        </div>
+      </div>
+    </div>`;
+
+  const sla = `
+    <div class="card">
+      <h3>${tr('adm.gov.sla.h')} <span class="sub">${tr('adm.gov.sla.sub')}</span></h3>
+      <p class="muted" style="margin:-4px 0 14px;font-size:12.5px">${tr('adm.gov.sla.help')}</p>
+      <div class="gov-cfg-grid">
+        ${[
+          ['sai_review','gov.sla.sai'],['steering','gov.sla.steering'],['ceo','gov.sla.ceo'],
+          ['fast_track','gov.sla.ft'],['monitoring','gov.sla.mon']
+        ].map(([k,lblK])=>`<div class="gov-cfg-fld">
+          <label>${tr(lblK)}</label>
+          <div class="fld-money"><input type="number" min="0" step="1" value="${GOV.sla[k]||0}" onchange="govSlaSet('${k}',this.value);renderAdmin()" style="padding-left:12px"><span class="cur-suf">${tr('gov.sla.days')}</span></div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+
+  return `<p class="muted" style="margin:-4px 0 14px">${tr('adm.gov.lead')}</p>
+    ${raci}
+    ${thresholds}
+    ${sla}
+    <div class="tool-bar" style="margin-top:8px">
+      <button class="btn ghost sm" onclick="govResetDefaults()">↺ ${tr('adm.gov.reset')}</button>
+      <span class="sp"></span>
+      <span class="muted" style="font-size:11.5px">${tr('adm.gov.persisted')}</span>
+    </div>`;
+}
+
+/* ============================================================
+ * v0.17 — Admin > Accès (Users & Roles) version pro max.
+ * Mockdata réel (Halima, Abdellah, Abdelali, etc.) qui correspond
+ * aux discussions OCP de juin. À brancher sur Entra ID en v0.18.
+ * ============================================================ */
+const AX_USERS = [
+  {n:'Halima El Jaddaoui',  u:'halima.eljaddaoui@ocpnutricrops.com', av:'HE', avc:'',   roles:[['admin','adm']],                                       scope:'Global · process owner',          mfa:1, last:'il y a 12 min',  date:'24 juin 14:38'},
+  {n:'Abdellah Hamma',      u:'abdellah.hamma@ocpgroup.ma',          av:'AH', avc:'a1', roles:[['admin','adm'],['steering_member','com']],            scope:'Global',                          mfa:1, last:'il y a 3 h',     date:'24 juin 11:22'},
+  {n:'Abdelali El Tahiri',  u:'abdelali.eltahiri@ocpnutricrops.com', av:'AE', avc:'a2', roles:[['admin','adm']],                                       scope:'Global · backup',                 mfa:1, last:'hier',           date:'23 juin 17:51'},
+  {n:'Saâd Khelil',         u:'saad.khelil@ocpnutricrops.com',       av:'SK', avc:'a3', roles:[['entity_manager',''],['steering_member','com']],      scope:'India · BU Customization',        mfa:1, last:'il y a 2 j',     date:'22 juin 09:14'},
+  {n:'Mounia Daoudi',       u:'mounia.daoudi@ocpnutricrops.com',     av:'MD', avc:'a4', roles:[['sai_reviewer','']],                                   scope:'Global · SAI R&D',                mfa:0, last:'il y a 4 j',     date:'20 juin 08:02'},
+  {n:'Youssef Lamrabet',    u:'youssef.lamrabet@ocpnutricrops.com',  av:'YL', avc:'',   roles:[['entity_trial_owner',''],['entity_contributor','']],  scope:'Africa · 4 trials portés',        mfa:1, last:'il y a 1 sem.',  date:'17 juin 14:22'},
+  {n:'Robson Carvalho',     u:'robson.carvalho@ocp.com.br',          av:'RC', avc:'a1', roles:[['entity_manager','']],                                 scope:'OCP Brazil',                      mfa:1, last:'il y a 1 sem.',  date:'17 juin 11:08'},
+  {n:'Mostapha Mounir',     u:'mostapha.mounir@ocpgroup.ma',         av:'MM', avc:'a2', roles:[['ceo_approver','com']],                                scope:'Vue projet · décision finale',    mfa:1, last:'il y a 2 sem.',  date:'10 juin'},
+  {n:'Lina Benkirane',      u:'lina.benkirane@ocpnutricrops.com',    av:'LB', avc:'a3', roles:[['reader','read']],                                     scope:'Africa (lecture)',                mfa:0, last:'il y a 3 sem.',  date:'4 juin'},
+];
+const AX_ROLES_DEFS = [
+  {id:'admin',              nm:'admin',               ds:'Global · gestion référentiels, accès, configuration cycle.',                  st:'global'},
+  {id:'entity_manager',     nm:'entity_manager',      ds:'Soumet le portefeuille de l\'entité, crée et édite projets/trials.',          st:'entité'},
+  {id:'entity_contributor', nm:'entity_contributor',  ds:'Saisit dans l\'entité, ne soumet pas en revue.',                              st:'entité'},
+  {id:'entity_trial_owner', nm:'entity_trial_owner',  ds:'Édite uniquement les trials dont il est responsable nommément.',              st:'ses trials'},
+  {id:'sai_reviewer',       nm:'sai_reviewer',        ds:'Statue en SAI Review, ne soumet jamais (séparation des devoirs).',            st:'global lecture'},
+  {id:'steering_member',    nm:'steering_member',     ds:'Statue en Steering Committee, transmet le portefeuille validé au CEO.',       st:'global lecture'},
+  {id:'monitoring_member',  nm:'monitoring_member',   ds:'Statue Go/Hold/Kill post-exécution.',                                         st:'global résultats'},
+  {id:'ceo_approver',       nm:'ceo_approver',        ds:'Décision finale au niveau projet (pas le détail trial).',                     st:'vue projet'},
+  {id:'fast_track_approver',nm:'fast_track_approver', ds:'Approuve les Fast Track hors cycle (EVP délégué).',                           st:'global'},
+  {id:'reader',             nm:'reader',              ds:'Consultation seule, sans modification ni soumission.',                        st:'global/entité'},
+  {id:'it_support',         nm:'it_support',          ds:'Technique uniquement, aucune donnée métier.',                                 st:'technique'},
+];
+
+function axRolesHTML(rs){return rs.map(([n,c])=>`<span class="ax-role ${c}">${n}</span>`).join('');}
+function axMfaHTML(on){
+  if(on) return `<span class="ax-mfa on" data-tip="TOTP · vérifiée"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-12V5l-8-3-8 3v5c0 8 8 12 8 12z"/><path d="M9 12l2 2 4-4"/></svg>Activée</span>`;
+  return `<span class="ax-mfa off" data-tip="Aucune méthode MFA configurée"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M12 2L2 22h20L12 2z"/></svg>Manquante</span>`;
+}
+
 function renderAdminAccess(){
-  return `<div class="card"><h3>👥 ${tr('adm.t.access')}</h3>
-    <p class="muted">${tr('adm.access.body')}</p>
-    <div class="tbl-wrap" style="margin-top:10px"><table class="tbl"><thead><tr><th>${tr('adm.access.role')}</th><th>${tr('adm.access.scope')}</th><th>${tr('adm.access.rights')}</th></tr></thead><tbody>
-      <tr><td><b>Admin D²nAI</b></td><td>Global</td><td>${tr('adm.access.all')}</td></tr>
-      <tr><td><b>SAI</b></td><td>Global</td><td>${tr('adm.access.sai')}</td></tr>
-      <tr><td><b>Sponsor BU</b></td><td>1 BU</td><td>${tr('adm.access.bu')}</td></tr>
-      <tr><td><b>Trial owner</b></td><td>${tr('adm.access.own')}</td><td>${tr('adm.access.create')}</td></tr>
-      <tr><td><b>Lecteur</b></td><td>Global</td><td>${tr('adm.access.read')}</td></tr>
-    </tbody></table></div>
-    <p class="muted" style="margin-top:10px;font-size:12px">⚙ ${tr('adm.backendNote')}</p></div>`;
+  // Inject SVG sparkline gradients once (after first render).
+  setTimeout(axInitAccess, 30);
+  const tbody = AX_USERS.map((p,i)=>`
+    <tr>
+      <td class="cb"><input type="checkbox" class="ax-cb ax-cb-row" aria-label="Sélectionner ${p.n}" onchange="axUpdBatch()" /></td>
+      <td><div class="ax-user"><div class="ax-av ${p.avc}" aria-hidden="true">${p.av}</div><div><div class="ax-uname">${p.n}</div><div class="ax-uupn">${p.u}</div></div></div></td>
+      <td><div class="ax-roles">${axRolesHTML(p.roles)}</div></td>
+      <td><span class="ax-scope">${p.scope}</span></td>
+      <td>${axMfaHTML(p.mfa)}</td>
+      <td class="ax-last">${p.last}<small>${p.date}</small></td>
+      <td><div class="ax-rowact">
+        <button class="ax-icob" data-tip="Éditer" aria-label="Éditer ${p.n}" onclick="axOpenModal(this, ${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 113 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button>
+        <button class="ax-icob" data-tip="Plus" aria-label="Plus d'actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button>
+      </div></td>
+    </tr>`).join('');
+
+  return `
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="ax-spark-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2E7D32" stop-opacity=".5"/><stop offset="100%" stop-color="#2E7D32" stop-opacity="0"/></linearGradient>
+      <linearGradient id="ax-spark-grad-warn" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#B45309" stop-opacity=".5"/><stop offset="100%" stop-color="#B45309" stop-opacity="0"/></linearGradient>
+    </defs>
+  </svg>
+
+  <div class="ax-eyebrow">Administration · Accès</div>
+  <h2 class="ax-h">Utilisateurs <em>& rôles applicatifs.</em></h2>
+  <p class="ax-lead">Identités synchronisées depuis Entra ID. Les rôles sont attribués par groupe AD et propagés à la prochaine connexion. Toute action sensible est journalisée.</p>
+  <div class="ax-sig">11 rôles applicatifs · 9 entités · cycle 2026</div>
+
+  <div class="ax-kpis" style="margin-top:24px">
+    <div class="ax-kpi">
+      <div class="ax-kpi-head"><span class="ax-kpi-lbl">Utilisateurs actifs</span><span class="ax-kpi-trend up">+4 ce mois</span></div>
+      <div class="ax-kpi-val"><span class="ax-ctr" data-to="31">0</span></div>
+      <div class="ax-kpi-sub">sur <strong>34 invités</strong> · 3 en attente</div>
+      <svg class="ax-spark" viewBox="0 0 200 32" preserveAspectRatio="none" aria-hidden="true"><path class="area" d="M0,26 L10,24 L25,22 L40,21 L55,18 L70,17 L85,17 L100,14 L115,15 L130,12 L150,11 L170,9 L185,7 L200,5 L200,32 L0,32 Z"/><path class="line" d="M0,26 L10,24 L25,22 L40,21 L55,18 L70,17 L85,17 L100,14 L115,15 L130,12 L150,11 L170,9 L185,7 L200,5"/></svg>
+    </div>
+    <div class="ax-kpi">
+      <div class="ax-kpi-head"><span class="ax-kpi-lbl">Rôles applicatifs</span><span class="ax-kpi-trend flat">stable</span></div>
+      <div class="ax-kpi-val"><span class="ax-ctr" data-to="11">0</span></div>
+      <div class="ax-kpi-sub"><strong>3</strong> admins · <strong>2</strong> SAI · <strong>5</strong> comités</div>
+      <svg class="ax-spark" viewBox="0 0 200 32" preserveAspectRatio="none" aria-hidden="true"><path class="area" d="M0,18 L40,18 L80,18 L120,18 L160,18 L200,18 L200,32 L0,32 Z"/><path class="line" d="M0,18 L40,18 L80,18 L120,18 L160,18 L200,18"/></svg>
+    </div>
+    <div class="ax-kpi warn">
+      <div class="ax-kpi-head"><span class="ax-kpi-lbl">Sans MFA</span><span class="ax-kpi-trend down">-2 cette sem.</span></div>
+      <div class="ax-kpi-val"><span class="ax-ctr" data-to="3">0</span></div>
+      <div class="ax-kpi-sub"><a>À régulariser sous 7 j →</a></div>
+      <svg class="ax-spark warn" viewBox="0 0 200 32" preserveAspectRatio="none" aria-hidden="true"><path class="area" d="M0,3 L20,4 L40,6 L60,9 L80,11 L100,13 L120,16 L140,18 L160,20 L180,24 L200,26 L200,32 L0,32 Z"/><path class="line" d="M0,3 L20,4 L40,6 L60,9 L80,11 L100,13 L120,16 L140,18 L160,20 L180,24 L200,26"/></svg>
+    </div>
+    <div class="ax-kpi">
+      <div class="ax-kpi-head"><span class="ax-kpi-lbl">Entités</span><span class="ax-kpi-trend up">+1 ce trim.</span></div>
+      <div class="ax-kpi-val"><span class="ax-ctr" data-to="9">0</span></div>
+      <div class="ax-kpi-sub"><strong>BUs</strong> · <strong>Régions</strong> · <strong>Fonctions</strong></div>
+      <svg class="ax-spark" viewBox="0 0 200 32" preserveAspectRatio="none" aria-hidden="true"><path class="area" d="M0,21 L30,20 L60,18 L90,15 L120,13 L150,11 L180,9 L200,8 L200,32 L0,32 Z"/><path class="line" d="M0,21 L30,20 L60,18 L90,15 L120,13 L150,11 L180,9 L200,8"/></svg>
+    </div>
+  </div>
+
+  <div class="ax-filters">
+    <div class="ax-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-3.5-3.5"/></svg>
+      <input type="search" placeholder="Rechercher par nom, UPN, entité…" oninput="axFilterUsers(this.value)" aria-label="Rechercher un utilisateur" />
+    </div>
+    <div class="ax-chips" role="tablist" aria-label="Filtrer par rôle">
+      <button class="ax-chip on" role="tab" aria-pressed="true" onclick="axPickChip(this,'all')">Tous<span class="c">9</span></button>
+      <button class="ax-chip" role="tab" aria-pressed="false" onclick="axPickChip(this,'admin')">Admin<span class="c">3</span></button>
+      <button class="ax-chip" role="tab" aria-pressed="false" onclick="axPickChip(this,'entity_manager')">Entités<span class="c">2</span></button>
+      <button class="ax-chip" role="tab" aria-pressed="false" onclick="axPickChip(this,'steering_member')">Comités<span class="c">2</span></button>
+      <button class="ax-chip" role="tab" aria-pressed="false" onclick="axPickChip(this,'ceo_approver')">CEO<span class="c">1</span></button>
+      <button class="ax-chip" role="tab" aria-pressed="false" onclick="axPickChip(this,'reader')">Lecteurs<span class="c">1</span></button>
+    </div>
+  </div>
+  <div class="ax-count"><strong>9 utilisateurs</strong> · triés par dernière connexion descendante</div>
+
+  <div class="ax-batch" id="axBatch" role="region" aria-live="polite" aria-label="Actions groupées">
+    <span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="20 6 9 17 4 12"/></svg><span id="axSelN">0</span> utilisateur(s) sélectionné(s)</span>
+    <span class="sp"></span>
+    <button class="b" type="button">Assigner un rôle</button>
+    <button class="b" type="button">Forcer MFA</button>
+    <button class="b" type="button">Désactiver</button>
+    <button class="x" type="button" aria-label="Fermer la sélection" onclick="axClearSel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+
+  <div class="ax-users">
+    <table aria-label="Liste des utilisateurs et leurs rôles">
+      <thead>
+        <tr>
+          <th class="cb"><input type="checkbox" class="ax-cb" id="axCbAll" aria-label="Tout sélectionner" onchange="axToggleAll(this)" /></th>
+          <th class="s" aria-sort="none" onclick="axSort(this)" tabindex="0"><span class="sx">Utilisateur <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6-6 6 6M6 15l6 6 6-6"/></svg></span></th>
+          <th>Rôles applicatifs</th>
+          <th>Scope</th>
+          <th class="s" aria-sort="none" onclick="axSort(this)" tabindex="0"><span class="sx">MFA <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6-6 6 6M6 15l6 6 6-6"/></svg></span></th>
+          <th class="s" aria-sort="descending" onclick="axSort(this)" tabindex="0"><span class="sx">Dernière connexion <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6-6 6 6M6 15l6 6 6-6"/></svg></span></th>
+          <th><span class="sr-only">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody id="axTbody">${tbody}</tbody>
+    </table>
+  </div>
+
+  <div class="ax-rbac-head">
+    <div>
+      <div class="ax-eyebrow">Référence · droits par rôle</div>
+      <h3>Matrice des permissions <em>(extrait)</em></h3>
+    </div>
+    <button class="chip" type="button">Voir la matrice complète <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:13px;height:13px;margin-left:4px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+  </div>
+  <div class="ax-rbac">
+    <table aria-label="Matrice RBAC (extrait)">
+      <thead><tr><th class="rc">Rôle / Scope</th><th>Créer / éditer trial</th><th>Soumettre SAI</th><th>Statuer</th><th>Voir détail trial</th><th>Gérer accès</th></tr></thead>
+      <tbody>
+        <tr><td class="rc">admin<span>Global · process owner</span></td><td><span class="ax-perm y">✓</span></td><td><span class="ax-perm n">—</span></td><td><span class="ax-perm n">—</span></td><td><span class="ax-perm y">✓</span></td><td><span class="ax-perm y">✓</span></td></tr>
+        <tr><td class="rc">entity_manager<span>Une entité</span></td><td><span class="ax-perm y">✓</span></td><td><span class="ax-perm y">✓</span></td><td><span class="ax-perm n">—</span></td><td><span class="ax-perm y">✓</span></td><td><span class="ax-perm n">—</span></td></tr>
+        <tr><td class="rc">entity_trial_owner<span>Ses propres trials</span></td><td><span class="ax-perm y">✓</span></td><td><span class="ax-perm r">👁</span></td><td><span class="ax-perm n">—</span></td><td><span class="ax-perm y">✓</span></td><td><span class="ax-perm n">—</span></td></tr>
+        <tr><td class="rc">sai_reviewer<span>Global (statue SAI)</span></td><td><span class="ax-perm n">—</span></td><td><span class="ax-perm n">—</span></td><td><span class="ax-perm y">✓</span></td><td><span class="ax-perm y">✓</span></td><td><span class="ax-perm n">—</span></td></tr>
+        <tr><td class="rc">ceo_approver<span>Vue projet agrégée</span></td><td><span class="ax-perm n">—</span></td><td><span class="ax-perm n">—</span></td><td><span class="ax-perm y">✓</span></td><td><span class="ax-perm n">—</span></td><td><span class="ax-perm n">—</span></td></tr>
+        <tr><td class="rc">reader<span>Global ou une entité</span></td><td><span class="ax-perm r">👁</span></td><td><span class="ax-perm n">—</span></td><td><span class="ax-perm n">—</span></td><td><span class="ax-perm r">👁</span></td><td><span class="ax-perm n">—</span></td></tr>
+      </tbody>
+    </table>
+    <div class="ax-rbac-foot">
+      <div class="lk"><span class="ax-perm y">✓</span> peut faire</div>
+      <div class="lk"><span class="ax-perm r">👁</span> lecture seule</div>
+      <div class="lk"><span class="ax-perm n">—</span> pas d'accès</div>
+      <span style="margin-left:auto">Source : matrice RBAC consolidée v2 · cycle 2026</span>
+    </div>
+  </div>`;
+}
+
+/* ============== JS helpers — Admin > Accès ============== */
+let AX_LAST_FOCUS = null;
+
+// v0.19 — persistence des rôles (collection 'roles' whitelistée côté PHP)
+function axLoadRolesFromServer(){
+  const c = apiCfg && apiCfg();
+  if(!c || !c.api) return;
+  fetch(c.api+'/collection/roles', { headers:{'X-WP-Nonce':c.nonce||''}, credentials:'same-origin' })
+    .then(r=>r.ok?r.json():null)
+    .then(r=>{
+      if(r && Array.isArray(r.data) && r.data.length){
+        AX_USERS = r.data;
+        // Re-render si on est sur l'écran admin > access
+        if(PREFS.view==='admin' && PREFS.adminTab==='access' && typeof renderAdmin==='function') renderAdmin();
+      } else {
+        // Première fois : pousse le seed AX_USERS sur le serveur
+        axSaveRolesToServer();
+      }
+    })
+    .catch(()=>{});
+}
+function axSaveRolesToServer(){
+  const c = apiCfg && apiCfg();
+  if(!c || !c.api) return;
+  fetch(c.api+'/collection/roles', {
+    method:'PUT', credentials:'same-origin',
+    headers:{'Content-Type':'application/json', 'X-WP-Nonce':c.nonce||''},
+    body: JSON.stringify({ data: AX_USERS })
+  }).catch(()=>{});
+}
+
+function axInitAccess(){
+  // Tente de charger depuis le serveur (sinon reste sur le seed AX_USERS)
+  axLoadRolesFromServer();
+  // Animate sparklines
+  document.querySelectorAll('#sc-admin .ax-spark').forEach(s => s.classList.add('revealed'));
+  // Animate number counters
+  document.querySelectorAll('#sc-admin .ax-ctr').forEach(el => {
+    const to = parseInt(el.dataset.to, 10);
+    const dur = 900;
+    const start = performance.now();
+    function step(t){
+      const k = Math.min(1, (t - start)/dur);
+      const eased = 1 - Math.pow(1-k, 4);
+      el.textContent = Math.round(to * eased);
+      if (k < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+}
+function axFilterUsers(q){
+  q = (q||'').toLowerCase().trim();
+  document.querySelectorAll('#axTbody tr').forEach(tr => {
+    const t = tr.textContent.toLowerCase();
+    tr.style.display = !q || t.includes(q) ? '' : 'none';
+  });
+}
+function axPickChip(el, role){
+  document.querySelectorAll('.ax-chip').forEach(c => { c.classList.remove('on'); c.setAttribute('aria-pressed','false'); });
+  el.classList.add('on'); el.setAttribute('aria-pressed','true');
+  document.querySelectorAll('#axTbody tr').forEach((tr,i) => {
+    if (role === 'all') { tr.style.display = ''; return; }
+    const roles = (AX_USERS[i] && AX_USERS[i].roles) || [];
+    tr.style.display = roles.some(r => r[0] === role) ? '' : 'none';
+  });
+}
+function axSort(th){
+  const cur = th.getAttribute('aria-sort');
+  document.querySelectorAll('#sc-admin .ax-users th.s').forEach(o => o.setAttribute('aria-sort','none'));
+  th.setAttribute('aria-sort', cur === 'descending' ? 'ascending' : 'descending');
+}
+function axToggleAll(master){
+  document.querySelectorAll('.ax-cb-row').forEach(cb => cb.checked = master.checked);
+  axUpdBatch();
+}
+function axClearSel(){
+  document.querySelectorAll('.ax-cb-row, #axCbAll').forEach(cb => { cb.checked = false; cb.indeterminate = false; });
+  axUpdBatch();
+}
+function axUpdBatch(){
+  const sel = document.querySelectorAll('.ax-cb-row:checked').length;
+  const tot = document.querySelectorAll('.ax-cb-row').length;
+  const cbAll = document.getElementById('axCbAll');
+  const bar = document.getElementById('axBatch');
+  const n = document.getElementById('axSelN');
+  if (n) n.textContent = sel;
+  if (bar) bar.classList.toggle('on', sel > 0);
+  document.querySelectorAll('.ax-cb-row').forEach(cb => cb.closest('tr').classList.toggle('sel', cb.checked));
+  if (cbAll){
+    if (sel === 0) { cbAll.checked = false; cbAll.indeterminate = false; }
+    else if (sel === tot) { cbAll.checked = true; cbAll.indeterminate = false; }
+    else { cbAll.checked = false; cbAll.indeterminate = true; }
+  }
+}
+function axOpenModal(trigger, idx){
+  AX_LAST_FOCUS = document.activeElement;
+  const p = AX_USERS[idx] || AX_USERS[3];
+  axEnsureModalDom();
+  const scrim = document.getElementById('axScrim');
+  const modal = scrim.querySelector('.ax-modal');
+  if (trigger){
+    const r = trigger.getBoundingClientRect();
+    const x = (r.left + r.width/2)/window.innerWidth*100;
+    const y = (r.top + r.height/2)/window.innerHeight*100;
+    modal.style.transformOrigin = x + '% ' + y + '%';
+  }
+  // Build body
+  document.getElementById('axMavLg').textContent = p.av;
+  document.getElementById('axMavLg').className = 'av-lg ' + (p.avc || '');
+  document.getElementById('axMh3').textContent = p.n;
+  document.getElementById('axMupn').textContent = p.u + ' · ' + p.scope;
+  document.getElementById('axIName').textContent = p.n;
+  document.getElementById('axIUpn').textContent = p.u;
+  document.getElementById('axIDept').textContent = p.scope;
+  document.getElementById('axIMfa').innerHTML = p.mfa ? '<span style="color:var(--green-700)">Activée · TOTP</span>' : '<span style="color:var(--warn)">Manquante</span>';
+  // Roles list
+  const userRoles = (p.roles || []).map(r => r[0]);
+  document.getElementById('axRolesList').innerHTML = AX_ROLES_DEFS.slice(0,4).map(r => `
+    <label class="ax-rr ${userRoles.includes(r.id)?'on':''}">
+      <input type="checkbox" ${userRoles.includes(r.id)?'checked':''} onchange="this.closest('.ax-rr').classList.toggle('on', this.checked)" />
+      <div class="ax-rri"><div class="nm">${r.nm}</div><div class="ds">${r.ds}</div></div>
+      <div class="ax-rst">scope · ${r.st}</div>
+    </label>`).join('') +
+    `<details style="margin-top:4px"><summary style="cursor:pointer;padding:11px 14px;font:500 12.5px 'Inter';color:var(--muted);border:1px dashed var(--line);border-radius:11px">${AX_ROLES_DEFS.length-4} autres rôles : ${AX_ROLES_DEFS.slice(4).map(r=>r.nm).join(', ')}</summary></details>`;
+
+  scrim.classList.add('on');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => {
+    const f = modal.querySelector('input, button:not(.x)');
+    (f || modal).focus();
+  }, 60);
+}
+function axCloseModal(){
+  const s = document.getElementById('axScrim');
+  if (s) s.classList.remove('on');
+  document.body.style.overflow = '';
+  if (AX_LAST_FOCUS) AX_LAST_FOCUS.focus();
+}
+function axSaveRoles(){
+  // v0.19 — push vers le serveur (collection 'roles')
+  axSaveRolesToServer();
+  axCloseModal();
+  axToast('Rôles enregistrés (collection roles · serveur).');
+}
+function axToast(msg){
+  let tray = document.getElementById('axTray');
+  if (!tray) { tray = document.createElement('div'); tray.id = 'axTray'; tray.className = 'ax-tray'; tray.setAttribute('aria-live','polite'); document.body.appendChild(tray); }
+  const el = document.createElement('div'); el.className = 'ax-toast';
+  el.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>'+msg+'</span>';
+  tray.appendChild(el);
+  setTimeout(() => { el.style.opacity='0'; el.style.transform='translateY(8px)'; setTimeout(()=>el.remove(), 280); }, 3500);
+}
+function axEnsureModalDom(){
+  if (document.getElementById('axScrim')) return;
+  const html = `
+    <div class="ax-scrim" id="axScrim" role="presentation" onclick="if(event.target.id==='axScrim')axCloseModal()">
+      <div class="ax-mw">
+        <div class="ax-modal" role="dialog" aria-modal="true" aria-labelledby="axMh3" tabindex="-1">
+          <div class="ax-mh">
+            <div class="av-lg" id="axMavLg" aria-hidden="true">SK</div>
+            <div><h3 id="axMh3">…</h3><div class="upn" id="axMupn">…</div></div>
+            <button class="x" type="button" onclick="axCloseModal()" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          </div>
+          <div class="ax-mb">
+            <div class="ax-fs">
+              <h4>Identité <span class="ax-src"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px"><path d="M12 22s8-4 8-12V5l-8-3-8 3v5c0 8 8 12 8 12z"/></svg>Entra ID</span></h4>
+              <div class="ax-info">
+                <div class="it"><span>Nom complet</span><strong id="axIName"></strong></div>
+                <div class="it"><span>UPN</span><strong id="axIUpn" style="font-variant-numeric:tabular-nums"></strong></div>
+                <div class="it"><span>Périmètre</span><strong id="axIDept"></strong></div>
+                <div class="it"><span>MFA</span><strong id="axIMfa"></strong></div>
+              </div>
+            </div>
+            <fieldset class="ax-fs" style="border:0;padding:0;margin-inline:0">
+              <legend style="padding:0"><h4 style="margin:0 0 10px">Rôles applicatifs</h4></legend>
+              <div class="ax-rp" id="axRolesList"></div>
+            </fieldset>
+            <fieldset class="ax-fs" style="border:0;padding:0;margin-inline:0">
+              <legend style="padding:0"><h4 style="margin:0 0 10px">Périmètre d'entité</h4></legend>
+              <div class="ax-sp">
+                <label class="ax-sr"><input type="radio" name="axSc" onchange="this.closest('.ax-sr').classList.add('on');document.querySelectorAll('.ax-sr').forEach(o=>{if(o!==this.closest('.ax-sr'))o.classList.remove('on')})" /><div><div class="lb">Global</div><span class="sb">accès à toutes les entités</span></div></label>
+                <label class="ax-sr on"><input type="radio" name="axSc" checked onchange="this.closest('.ax-sr').classList.add('on');document.querySelectorAll('.ax-sr').forEach(o=>{if(o!==this.closest('.ax-sr'))o.classList.remove('on')})" /><div><div class="lb">Une entité</div><span class="sb">restreint aux trials de cette entité</span></div>
+                  <select aria-label="Entité"><option>OCP Nutricrops India · BU Customization</option><option>OCP Nutricrops Africa</option><option>OCP Brazil</option><option>OCP Europe</option></select>
+                </label>
+                <label class="ax-sr"><input type="radio" name="axSc" onchange="this.closest('.ax-sr').classList.add('on');document.querySelectorAll('.ax-sr').forEach(o=>{if(o!==this.closest('.ax-sr'))o.classList.remove('on')})" /><div><div class="lb">Ses propres trials</div><span class="sb">scope auto selon les trials dont il est owner</span></div></label>
+              </div>
+            </fieldset>
+            <div class="ax-fs" style="margin-bottom:0">
+              <h4>Synchronisation</h4>
+              <div class="ax-sn">Les rôles sont propagés via le groupe Entra ID <code>np_steering</code> et appliqués à la prochaine connexion. Toute modification est tracée dans le journal d'audit.</div>
+            </div>
+          </div>
+          <div class="ax-mf">
+            <button class="ax-db" type="button">Désactiver le compte</button>
+            <div style="display:flex;gap:8px">
+              <button class="chip" type="button" onclick="axCloseModal()">Annuler</button>
+              <button class="btn btn-primary" style="background:var(--green-900);color:#fff;padding:9px 16px;border-radius:9px;font:600 13px Inter" type="button" onclick="axSaveRoles()">Enregistrer les rôles</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  const wrap = document.createElement('div'); wrap.innerHTML = html; document.body.appendChild(wrap.firstElementChild);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.getElementById('axScrim').classList.contains('on')) axCloseModal(); });
 }
 function renderAdminIntegr(){
   return `<div class="card"><h3>🔗 ${tr('adm.t.integr')}</h3>
@@ -4119,8 +6126,28 @@ document.querySelectorAll('.tb-lang button').forEach(b=>b.onclick=()=>{ setLang(
 
 // Référentiels : charge le cache local avant le premier rendu (sync serveur ensuite).
 try{ const _r=JSON.parse(localStorage.getItem('nplan_reference_v1')); if(_r) applyRefFromServer(_r); }catch(e){}
+// v0.21 : Gouvernance (RACI/seuils/SLA) — cache local d'abord, serveur ensuite.
+try{ const _g=JSON.parse(localStorage.getItem('nplan_governance_v1')); if(_g) applyGovFromServer(_g); }catch(e){}
 renderSidebar();
 applyLang();
+// v0.19 — peuple le sélecteur impersonate
+(function initImpersonate(){
+  const sel = document.getElementById('impSel');
+  if(!sel) return;
+  sel.innerHTML = IMPERSONATE_ROLES.map(([v,l])=>`<option value="${v}">${l}</option>`).join('');
+  sel.value = getImpersonate();
+  applyImpersonateUI();
+})();
+// v0.21 — Coach D²nAI (guide intelligent)
+if (typeof COACH !== 'undefined') COACH.init();
+// Click ailleurs ferme le menu coach
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('coachMenu');
+  const btn = document.getElementById('coachToggle');
+  if (menu && menu.classList.contains('on') && !menu.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+    menu.classList.remove('on');
+  }
+});
 goView(PREFS.view || 'cockpit');
 if(PREFS.chatOpen) toggleChat();
 syncFromServer();  // full-screen : window.DNAI_NPLAN injecté → sync BDD immédiate
