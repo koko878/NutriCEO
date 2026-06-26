@@ -3944,6 +3944,7 @@ function persistGov(){
 }
 function govSnapshot(){ return JSON.parse(JSON.stringify(GOV)); }
 function govResetDefaults(){
+  if(typeof _rbacGuard==='function' && !_rbacGuard('do-configure-gov')) return;
   GOV = JSON.parse(JSON.stringify(GOV_DEFAULTS));
   persistGov(); renderAdmin();
   toast(tr('gov.cfg.reset.ok')||'Configuration restaurée', 'ok');
@@ -7269,6 +7270,7 @@ function renderGovernance(){
 
 // v0.22 — Décision steering & monitoring inline (depuis l'accordion)
 function govSetDecision(ucId, val){
+  if(typeof _rbacGuard==='function' && !_rbacGuard('do-steering-decide')) return;
   const u = ucById(ucId); if(!u) return;
   if(!val) return;
   // Trace dans le UC (gates synthétique)
@@ -7282,6 +7284,7 @@ function govSetDecision(ucId, val){
   toast(trf('gov.dec.applied',{id:u.id,d:val})||u.id+' : décision '+val+' enregistrée','ok');
 }
 function govSetMonDecision(ucId, val){
+  if(typeof _rbacGuard==='function' && !_rbacGuard('do-monitoring-decide')) return;
   const u = ucById(ucId); if(!u) return;
   if(!val) return;
   u.status = val;  // closed-go | closed-hold | closed-kill
@@ -7458,6 +7461,7 @@ function renderCEO(){
   `;
 }
 function ceoSetDecision(buId, region, field, value){
+  if(typeof _rbacGuard==='function' && !_rbacGuard('do-ceo-decide')) return;
   if(!window._ceoDecisions) window._ceoDecisions = {};
   const key = buId + '|||' + region;
   if(!window._ceoDecisions[key]) window._ceoDecisions[key] = {};
@@ -7563,6 +7567,7 @@ function renderKB(){
  * version computée par défaut.
  * --------------------------------------------------------------- */
 async function kbEditClosure(id){
+  if(typeof _rbacGuard==='function' && !_rbacGuard('do-edit-closure')) return;
   const u = ucById(id); if(!u) return;
   const cur = closureOf(u, 0);
   const r = await UI.prompt({
@@ -7680,7 +7685,16 @@ function refUsageCount(key, value){
   return DATA.filter(u=>String(u[f])===String(value)).length;
 }
 // v0.21 : renommer un item string en propageant l'ancien→nouveau dans DATA (évite les références cassées).
+// v0.22.4 — Guard RBAC réutilisable (defense in depth pour mutations admin)
+function _rbacGuard(perm, msg){
+  if(typeof can === 'function' && !can(perm)){
+    if(typeof toast === 'function') toast(msg || (tr('rbac.deny')||'Action non autorisée pour ce rôle'), 'err');
+    return false;
+  }
+  return true;
+}
 function refRenameStr(key, i, newVal){
+  if(!_rbacGuard('do-crud-ref')) return;
   const r=refByKey(key); const list=r.get().slice();
   const old=list[i]; newVal=(newVal||'').trim();
   if(!newVal || newVal===old) return;
@@ -7701,29 +7715,30 @@ function renderAdminRef(){
       <span class="ref-prov">${(['bus','crops','products','partners','mds'].includes(r.key))?tr('adm.prov.core'):tr('adm.prov.excel')}</span></div>`;
     let bodyHtml;
     if(r.kind==='strings'){
+      // v0.22.4 — RBAC defense in depth : × et + Add gatés par .rbac-crud-ref-only
       bodyHtml = `<div class="ref-chips">${list.map((v,i)=>{
         const used = refUsageCount(r.key, v);
         const usedBadge = used>0 ? `<span class="ref-used" title="${trf('adm.usedByN',{n:used})}">${used}</span>` : '';
         const safe = escapeHtml(v);
         return `<span class="ref-chip" data-key="${r.key}" data-i="${i}" data-v="${safe}" ondblclick="refChipEdit(this)" title="${tr('adm.chip.tt')}">
           <span class="ref-chip-lbl">${safe}</span>${usedBadge}
-          <button class="ref-chip-x" title="${tr('adm.del')}" onclick="event.stopPropagation();refDel('${r.key}',${i})">×</button>
+          <button class="ref-chip-x rbac-crud-ref-only" title="${tr('adm.del')}" onclick="event.stopPropagation();refDel('${r.key}',${i})">×</button>
         </span>`;
       }).join('')||`<span class="muted">${tr('adm.empty')}</span>`}</div>
-      <div class="ref-add"><input type="text" id="refadd_${r.key}" placeholder="${tr('adm.addPh')}" onkeydown="if(event.key==='Enter')refAddStr('${r.key}')"><button class="btn ghost sm" onclick="refAddStr('${r.key}')">+ ${tr('adm.add')}</button></div>`;
+      <div class="ref-add rbac-crud-ref-only"><input type="text" id="refadd_${r.key}" placeholder="${tr('adm.addPh')}" onkeydown="if(event.key==='Enter')refAddStr('${r.key}')"><button class="btn ghost sm" onclick="refAddStr('${r.key}')">+ ${tr('adm.add')}</button></div>`;
     } else {
       const cols = r.cols;
       bodyHtml = `<div class="tbl-wrap"><table class="tbl"><thead><tr>${cols.map(c=>`<th>${c[1]}</th>`).join('')}<th></th></tr></thead><tbody>${
         list.map((row,i)=>`<tr>${cols.map(c=>`<td><input class="ref-inp" value="${escapeHtml(row[c[0]]||'')}" onchange="refUpdObj('${r.key}',${i},'${c[0]}',this.value)"></td>`).join('')}
-          <td style="text-align:right"><button class="ref-x" title="${tr('adm.del')}" onclick="refDel('${r.key}',${i})">🗑</button></td></tr>`).join('')
+          <td style="text-align:right"><button class="ref-x rbac-crud-ref-only" title="${tr('adm.del')}" onclick="refDel('${r.key}',${i})">🗑</button></td></tr>`).join('')
       }</tbody></table></div>
-      <div class="ref-add">${cols.map(c=>`<input type="text" id="refadd_${r.key}_${c[0]}" placeholder="${c[1]}">`).join('')}<button class="btn ghost sm" onclick="refAddObj('${r.key}')">+ ${tr('adm.add')}</button></div>`;
+      <div class="ref-add rbac-crud-ref-only">${cols.map(c=>`<input type="text" id="refadd_${r.key}_${c[0]}" placeholder="${c[1]}">`).join('')}<button class="btn ghost sm" onclick="refAddObj('${r.key}')">+ ${tr('adm.add')}</button></div>`;
     }
     return `<div class="card ref-card">${head}${bodyHtml}</div>`;
   }).join('');
   return `<p class="muted" style="margin:-4px 0 14px">${tr('adm.ref.lead')}</p>
     <div class="ref-grid">${cards}</div>
-    <div class="tool-bar" style="margin-top:8px">
+    <div class="tool-bar rbac-crud-ref-only" style="margin-top:8px">
       <button class="btn ghost sm" onclick="refExport()">⤓ ${tr('adm.export')}</button>
       <span class="sp"></span>
       <button class="btn ghost sm" onclick="refResetDefaults()">↺ ${tr('adm.reset')}</button>
@@ -7732,6 +7747,11 @@ function renderAdminRef(){
 function refAfterChange(){ persistRef(); renderAdmin(); renderSidebar(); }
 // v0.21 : édition inline d'une chip ref string (dblclick → input → blur/Enter pour valider)
 function refChipEdit(chip){
+  // v0.22.4 — RBAC defense in depth : seul admin peut renommer un référentiel
+  if(typeof can === 'function' && !can('do-crud-ref')){
+    if(typeof toast === 'function') toast(tr('rbac.deny')||'Action réservée à l\'admin', 'err');
+    return;
+  }
   const key = chip.dataset.key, i = +chip.dataset.i, cur = chip.dataset.v;
   const lbl = chip.querySelector('.ref-chip-lbl');
   if(!lbl || lbl.querySelector('input')) return;
@@ -7747,12 +7767,14 @@ function refChipEdit(chip){
   inp.focus(); inp.select();
 }
 function refAddStr(key){
+  if(!_rbacGuard('do-crud-ref')) return;
   const inp=document.getElementById('refadd_'+key); const v=(inp.value||'').trim(); if(!v) return;
   const r=refByKey(key); const list=r.get().slice();
   if(list.some(x=>String(x).toLowerCase()===v.toLowerCase())){ toast(tr('adm.dup')); return; }
   list.push(v); r.set(list); refAfterChange();
 }
 function refAddObj(key){
+  if(!_rbacGuard('do-crud-ref')) return;
   const r=refByKey(key); const obj={};
   r.cols.forEach(c=>{ const el=document.getElementById('refadd_'+key+'_'+c[0]); obj[c[0]]=(el&&el.value.trim())||''; });
   if(!Object.values(obj).some(Boolean)){ return; }
@@ -7761,10 +7783,12 @@ function refAddObj(key){
   const list=r.get().slice(); list.push(obj); r.set(list); refAfterChange();
 }
 function refUpdObj(key,i,field,val){
+  if(!_rbacGuard('do-crud-ref')) return;
   const r=refByKey(key); const list=r.get().slice(); if(!list[i]) return;
   list[i]={...list[i],[field]:val}; r.set(list); persistRef();
 }
 async function refDel(key,i){
+  if(!_rbacGuard('do-crud-ref')) return;
   const r=refByKey(key); const list=r.get().slice(); const val=list[i];
   const label = (typeof val==='object')?(val.nm||val.id):val;
   const used = refUsageCount(key, (typeof val==='object')?(val.id||val.nm):val);
@@ -7786,6 +7810,7 @@ function refExport(){
   document.body.appendChild(a); a.click(); a.remove();
 }
 async function refResetDefaults(){
+  if(!_rbacGuard('do-crud-ref')) return;
   const ok = await UI.confirm({
     eyebrow: tr('adm.reset'),
     title: tr('adm.confirmReset'),
@@ -7837,17 +7862,20 @@ function govRaciSelect(stepK, role){
   </select>`;
 }
 function govRaciSet(stepK, role, val){
+  if(typeof _rbacGuard==='function' && !_rbacGuard('do-configure-gov')) return;
   if(!GOV.raci[stepK]) GOV.raci[stepK] = {};
   GOV.raci[stepK][role] = val;
   persistGov();
   renderAdmin();
 }
 function govThresholdSet(key, val){
+  if(typeof _rbacGuard==='function' && !_rbacGuard('do-configure-gov')) return;
   const n = Math.max(0, Number(val)||0);
   GOV.thresholds[key] = n;
   persistGov();
 }
 function govSlaSet(key, val){
+  if(typeof _rbacGuard==='function' && !_rbacGuard('do-configure-gov')) return;
   const n = Math.max(0, Number(val)||0);
   GOV.sla[key] = n;
   persistGov();

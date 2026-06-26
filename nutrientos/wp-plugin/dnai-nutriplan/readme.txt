@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.22.3
+Stable tag: 0.22.4
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,34 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.22.4 — RBAC defense in depth (Référentiels + mutations sensibles) =
+* CONSTAT : v0.22.2 wirait les classes RBAC sur les éléments de
+  navigation/onglet mais oubliait les × / + Add / 🗑 buttons inside
+  des cards référentiels (Admin > Référentiels). Un utilisateur qui
+  forcerait l'URL Admin pouvait théoriquement voir et cliquer les
+  CRUD ref même sans droits.
+* FIX UI : classes .rbac-crud-ref-only ajoutées sur :
+  - × suppression chips strings (BUs, crops, products, MDS…)
+  - + Add input pour ajouter une string
+  - 🗑 suppression rows objects (Partners, BUs détaillés)
+  - + Add row pour les objects
+  - Toolbar bottom (⤓ Export · ↺ Reset)
+* FIX LOGIC : nouveau helper _rbacGuard(perm, msg) ajouté en tête
+  de toutes les fonctions de mutation pour rejeter les appels même
+  si l'élément UI est forcé (dev console, URL hack) :
+  - refDel, refAddStr, refAddObj, refUpdObj, refRenameStr,
+    refResetDefaults, refChipEdit → guard 'do-crud-ref'
+  - govSetDecision → guard 'do-steering-decide'
+  - govSetMonDecision → guard 'do-monitoring-decide'
+  - ceoSetDecision → guard 'do-ceo-decide'
+  - kbEditClosure → guard 'do-edit-closure'
+  - govRaciSet, govThresholdSet, govSlaSet, govResetDefaults
+    → guard 'do-configure-gov'
+* Pattern : guard CSS (whitelist par data-effective-role) + guard JS
+  (toast d'erreur en cas d'appel non autorisé). 2 couches de défense
+  UI ; le backend reste l'autorité finale (REST permission_callback).
+* PHP : v0.22.3 → v0.22.4.
 
 = 0.22.3 — Polish UX/UI global (impeccable polish pass) =
 * DESIGN TOKENS étendus :
