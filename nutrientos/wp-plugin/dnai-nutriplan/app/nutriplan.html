@@ -1986,22 +1986,114 @@ body.imp-on .topbar::after{
   z-index:5;
 }
 
-/* Masquages selon rôle impersonné (effet visuel, non sécurité) */
-body.imp-on[data-imp-role="reader"] .tb-btn.primary,
-body.imp-on[data-imp-role="reader"] .btn.primary,
-body.imp-on[data-imp-role="ceo_approver"] .tb-btn.primary,
-body.imp-on[data-imp-role="sai_reviewer"] .tb-btn.primary,
-body.imp-on[data-imp-role="steering_member"] .tb-btn.primary{
-  display:none!important;
+/* ==========================================================================
+ * v0.22.2 — RBAC UI (gating visuel selon rôle effectif). Backend reste
+ * autorité. Pattern : .rbac-X-only est visible UNIQUEMENT pour les rôles
+ * qui ont la permission X.
+ *
+ * Par défaut tout est caché, et on whitelist explicitement les rôles
+ * autorisés. C'est plus safe que blacklister (oubli = invisible vs
+ * leak).
+ * ========================================================================== */
+
+/* Permission 'do-create-uc' : Admin + Entity Manager */
+.rbac-create-uc-only{display:none}
+body[data-effective-role="admin"] .rbac-create-uc-only,
+body[data-effective-role="entity_manager"] .rbac-create-uc-only{display:inline-flex}
+
+/* Permission 'view-admin' : Admin uniquement */
+.rbac-admin-only{display:none}
+body[data-effective-role="admin"] .rbac-admin-only{display:revert}
+body[data-effective-role="admin"] li.rbac-admin-only,
+body[data-effective-role="admin"] tr.rbac-admin-only{display:table-row}
+body[data-effective-role="admin"] button.rbac-admin-only,
+body[data-effective-role="admin"] a.rbac-admin-only{display:inline-flex}
+body[data-effective-role="admin"] .sb-item.rbac-admin-only{display:flex}
+
+/* Permission 'do-configure-gov' : Admin uniquement (SLA, RACI, seuils) */
+.rbac-configure-gov-only{display:none}
+body[data-effective-role="admin"] .rbac-configure-gov-only{display:inline-flex}
+
+/* Permission 'do-crud-ref' : Admin uniquement (CRUD référentiels) */
+.rbac-crud-ref-only{display:none}
+body[data-effective-role="admin"] .rbac-crud-ref-only{display:revert}
+
+/* Permission 'do-manage-users' : Admin uniquement (Admin > Accès) */
+.rbac-manage-users-only{display:none}
+body[data-effective-role="admin"] .rbac-manage-users-only{display:revert}
+
+/* Permission 'view-ceo-tab' : CEO + Steering + Admin */
+.rbac-ceo-tab-only{display:none}
+body[data-effective-role="admin"] .rbac-ceo-tab-only,
+body[data-effective-role="ceo_approver"] .rbac-ceo-tab-only,
+body[data-effective-role="steering_member"] .rbac-ceo-tab-only{display:inline-flex}
+
+/* Permission 'view-controls' : Admin + Steering */
+.rbac-controls-only{display:none}
+body[data-effective-role="admin"] .rbac-controls-only,
+body[data-effective-role="steering_member"] .rbac-controls-only{display:inline-flex}
+
+/* Permission 'view-sai-review' : Admin + SAI Reviewer */
+.rbac-sai-review-only{display:none}
+body[data-effective-role="admin"] .rbac-sai-review-only,
+body[data-effective-role="sai_reviewer"] .rbac-sai-review-only{display:revert}
+
+/* Permission 'do-steering-decide' : Admin + Steering Member */
+.rbac-steering-decide-only{display:none}
+body[data-effective-role="admin"] .rbac-steering-decide-only,
+body[data-effective-role="steering_member"] .rbac-steering-decide-only{display:revert}
+
+/* Permission 'do-monitoring-decide' : Admin + Monitoring Member */
+.rbac-monitoring-decide-only{display:none}
+body[data-effective-role="admin"] .rbac-monitoring-decide-only,
+body[data-effective-role="monitoring_member"] .rbac-monitoring-decide-only{display:revert}
+
+/* Permission 'do-ceo-decide' : Admin + CEO */
+.rbac-ceo-decide-only{display:none}
+body[data-effective-role="admin"] .rbac-ceo-decide-only,
+body[data-effective-role="ceo_approver"] .rbac-ceo-decide-only{display:revert}
+
+/* Permission 'do-edit-closure' : Admin + Steering + Entity Manager + Trial Owner */
+.rbac-edit-closure-only{display:none}
+body[data-effective-role="admin"] .rbac-edit-closure-only,
+body[data-effective-role="steering_member"] .rbac-edit-closure-only,
+body[data-effective-role="entity_manager"] .rbac-edit-closure-only,
+body[data-effective-role="entity_trial_owner"] .rbac-edit-closure-only{display:inline-flex}
+
+/* Permission 'do-ft-decide' : Admin + Fast Track Approver */
+.rbac-ft-decide-only{display:none}
+body[data-effective-role="admin"] .rbac-ft-decide-only,
+body[data-effective-role="fast_track_approver"] .rbac-ft-decide-only{display:revert}
+
+/* Banner "Vue lecture seule" pour les rôles non-decision-makers */
+body[data-effective-role="reader"] [contenteditable],
+body[data-effective-role="reader"] input:not([type="search"]):not([type="hidden"]):not([type="checkbox"][readonly]),
+body[data-effective-role="reader"] select,
+body[data-effective-role="reader"] textarea{
+  pointer-events:none;background:#f5f5f3!important;color:var(--muted)!important;
 }
-body.imp-on[data-imp-role="reader"] .sb-item[data-v="admin"],
-body.imp-on[data-imp-role="entity_manager"] .sb-item[data-v="admin"],
-body.imp-on[data-imp-role="entity_trial_owner"] .sb-item[data-v="admin"],
-body.imp-on[data-imp-role="sai_reviewer"] .sb-item[data-v="admin"],
-body.imp-on[data-imp-role="steering_member"] .sb-item[data-v="admin"],
-body.imp-on[data-imp-role="ceo_approver"] .sb-item[data-v="admin"]{
-  display:none!important;
+body[data-effective-role="reader"] .btn.primary,
+body[data-effective-role="reader"] .tb-btn.primary{
+  opacity:.4;pointer-events:none;
 }
+
+/* IT Support : ne voit aucune donnée métier — banner d'orientation */
+body[data-effective-role="it_support"] #main::before{
+  content:'IT Support — accès technique uniquement. Aucune donnée métier visible.';
+  display:block;background:#fff3cd;color:#856404;border:1px solid #ffc107;
+  border-radius:9px;padding:14px 18px;margin:0 0 18px;font:600 13px Inter;
+}
+body[data-effective-role="it_support"] .screen > *:not(.cxtab){display:none!important}
+
+/* Banner mode impersonate (admin qui simule un autre rôle) — préservé */
+body.imp-on::before{
+  content:'⚠ Démo · Vous voyez NutriPlan comme un ' attr(data-imp-role) '. Vue lecture seule simulée.';
+  position:fixed;top:0;left:0;right:0;background:linear-gradient(90deg,#fff3cd,#ffeaa7);
+  color:#856404;font:700 11.5px Inter;padding:4px 14px;z-index:9999;text-align:center;
+  border-bottom:1px solid #ffc107;
+}
+body.imp-on .topbar::after{content:'';display:block;height:0}
+body.imp-on{padding-top:22px}
 
 </style>
 </head>
@@ -2074,7 +2166,7 @@ body.imp-on[data-imp-role="ceo_approver"] .sb-item[data-v="admin"]{
       <button role="menuitem" type="button" onclick="document.getElementById('coachMenu').classList.remove('on');COACH.disable()">🔕 Désactiver le coach</button>
       <button role="menuitem" type="button" onclick="document.getElementById('coachMenu').classList.remove('on');COACH.enable()">🔔 Activer le coach</button>
     </div>
-    <button class="tb-btn primary" onclick="goView('intake')" id="btnTopIntake">+ New Use Case</button>
+    <button class="tb-btn primary rbac-create-uc-only" onclick="goView('intake')" id="btnTopIntake">+ New Use Case</button>
     <button class="tb-btn ai" onclick="toggleChat()"><span class="dot"></span> D²nAI bot</button>
     <div class="tb-prof"><span class="av">HK</span><div><div class="nm">Hamza K.</div><div class="ro" id="profRole">Global Head Data &amp; AI</div></div></div>
   </header>
@@ -4089,43 +4181,124 @@ function injectCxTab(viewId){
   if(!sc) return;
   const old = sc.querySelector('.cxtab');
   if(old) old.remove();
+  // v0.22.2 — RBAC : classe selon onglet sensible (CEO, Controls)
+  const CXTAB_RBAC = { ceo: 'rbac-ceo-tab-only', controls: 'rbac-controls-only' };
   const wrap = document.createElement('div');
   wrap.className = 'cxtab';
-  wrap.innerHTML = g.map(([id,lbl])=>`<button class="cxtab-btn${id===viewId?' on':''}" onclick="goView('${id}')">${escapeHtml(lbl)}</button>`).join('');
+  wrap.innerHTML = g.map(([id,lbl])=>{
+    const rbacCls = CXTAB_RBAC[id] ? ' ' + CXTAB_RBAC[id] : '';
+    return `<button class="cxtab-btn${id===viewId?' on':''}${rbacCls}" onclick="goView('${id}')">${escapeHtml(lbl)}</button>`;
+  }).join('');
   sc.insertBefore(wrap, sc.firstChild);
 }
 
 /* =================================================================
- * v0.19 — Impersonate : sélecteur "Se faire passer pour" en topbar
- * pour démos. Stocké dans PREFS.impersonate = {role, scope}.
- * En lecture seule, ne modifie pas les permissions backend.
+ * v0.22.2 — RBAC complet UI/UX (11 rôles × 17 permissions atomiques)
+ *
+ * 2 niveaux :
+ *   - actualRole : rôle réel de l'utilisateur (lu depuis AX_USERS via
+ *     l'email apporté par window.DNAI_NPLAN.userEmail si dispo, sinon
+ *     'admin' par défaut pour Hamza/dev).
+ *   - impersonate : rôle simulé via le sélecteur "Vue" en topbar
+ *     (uniquement utilisable par admin, masqué pour les autres rôles).
+ *
+ * effectiveRole() = impersonate || actualRole — utilisé partout via
+ * can(perm) pour décider de masquer/afficher un élément.
+ *
+ * En CSS : <body data-effective-role="X"> + classes .rbac-XXX-only sur
+ * les éléments sensibles ; le CSS masque ceux qui ne correspondent pas
+ * au rôle effectif. Backend RBAC reste autorité (cette couche est UI).
  * ================================================================= */
 const IMPERSONATE_ROLES = [
-  ['',                     'Vue normale'],
+  ['',                     'Vue normale (mon rôle)'],
   ['admin',                'Admin'],
   ['entity_manager',       'Entity Manager (sponsor BU)'],
+  ['entity_contributor',   'Entity Contributor'],
   ['entity_trial_owner',   'Trial Owner'],
   ['sai_reviewer',         'SAI Reviewer'],
   ['steering_member',      'Membre Steering'],
+  ['monitoring_member',    'Membre Monitoring'],
   ['ceo_approver',         'CEO Approver'],
+  ['fast_track_approver',  'Fast Track Approver'],
   ['reader',               'Lecteur seul'],
+  ['it_support',           'IT Support'],
 ];
+
+/* Matrice RBAC : rôle → liste des permissions atomiques accordées.
+ * Les permissions sont ensuite gatées en UI via .rbac-<perm>-only
+ * (caché si !can(perm)). 'view-*' = peut voir l'écran/onglet/section.
+ * 'do-*' = peut effectuer l'action (boutons, dropdowns décision). */
+const RBAC_MATRIX = {
+  admin: ['view-admin','view-ceo-tab','view-controls','view-sai-review',
+          'do-create-uc','do-edit-uc-any','do-delete-uc','do-sai-review',
+          'do-steering-decide','do-monitoring-decide','do-ceo-decide',
+          'do-ft-decide','do-edit-closure','do-export-closure',
+          'do-configure-gov','do-crud-ref','do-manage-users','do-impersonate'],
+  entity_manager: ['do-create-uc','do-edit-uc-bu','do-edit-closure','do-export-closure'],
+  entity_contributor: ['do-edit-uc-bu','do-export-closure'],
+  entity_trial_owner: ['do-edit-uc-own','do-edit-closure','do-export-closure'],
+  sai_reviewer: ['view-sai-review','do-sai-review','do-export-closure'],
+  steering_member: ['view-ceo-tab','view-controls','do-steering-decide','do-export-closure'],
+  monitoring_member: ['do-monitoring-decide','do-export-closure'],
+  ceo_approver: ['view-ceo-tab','do-ceo-decide','do-export-closure'],
+  fast_track_approver: ['do-ft-decide','do-export-closure'],
+  reader: [],
+  it_support: [],
+};
+
 function getImpersonate(){ return (PREFS.impersonate && PREFS.impersonate.role) || ''; }
+/* Rôle réel : par défaut admin (Hamza). En prod SSO Entra, ce sera
+ * lu depuis le claim 'role' du token JWT injecté par window.DNAI_NPLAN. */
+function actualRole(){
+  if(window.DNAI_NPLAN && window.DNAI_NPLAN.role) return window.DNAI_NPLAN.role;
+  return PREFS.actualRole || 'admin';
+}
+/* Rôle effectif : si admin a impersonné qqun, on prend l'impersonate ;
+ * sinon le rôle réel. Les non-admin ne peuvent PAS impersonner. */
+function effectiveRole(){
+  const imp = getImpersonate();
+  if(imp && actualRole() === 'admin') return imp;
+  return actualRole();
+}
+function can(perm){
+  const role = effectiveRole();
+  const perms = RBAC_MATRIX[role] || [];
+  return perms.includes(perm);
+}
+function canAny(perms){ return perms.some(p => can(p)); }
+
 function setImpersonate(role){
+  if(actualRole() !== 'admin'){
+    toast(tr('rbac.imp.deny')||'Impersonate réservé aux admins', 'err');
+    return;
+  }
   PREFS.impersonate = role ? {role} : null;
   savePrefs();
-  applyImpersonateUI();
-  toast(role ? 'Démo · vous voyez NutriPlan comme un '+role : 'Vue normale rétablie', 'ok');
+  applyRBACUI();
+  const lbl = role ? (IMPERSONATE_ROLES.find(r=>r[0]===role)||[])[1] || role : null;
+  toast(role ? trf('rbac.imp.now',{r:lbl})||('Vue '+lbl) : tr('rbac.imp.reset')||'Vue normale rétablie', 'ok');
 }
-function applyImpersonateUI(){
-  const role = getImpersonate();
-  document.body.classList.toggle('imp-on', !!role);
-  document.body.setAttribute('data-imp-role', role);
-  // Re-render la sidebar pour cacher/montrer Admin selon rôle simulé
+
+/* Applique le rôle effectif en UI : body[data-effective-role] +
+ * data-actual-role. Le CSS .rbac-*-only utilise ces attrs pour
+ * masquer ce qui n'est pas autorisé. Re-render sidebar + vue
+ * courante pour appliquer les masquages dynamiques. */
+function applyRBACUI(){
+  const eff = effectiveRole();
+  const actual = actualRole();
+  const isImpersonating = getImpersonate() && actual === 'admin';
+  document.body.setAttribute('data-effective-role', eff);
+  document.body.setAttribute('data-actual-role', actual);
+  document.body.classList.toggle('imp-on', !!isImpersonating);
+  document.body.setAttribute('data-imp-role', isImpersonating ? eff : '');
+  // Masque le sélecteur impersonate pour non-admin
+  const impSel = document.getElementById('impSel');
+  if(impSel){ impSel.closest('.tb-imp').style.display = (actual==='admin')?'':'none'; }
   if(typeof renderSidebar==='function') renderSidebar();
-  // Re-render l'écran courant pour appliquer les masquages
   if(typeof goView==='function' && PREFS.view) goView(PREFS.view);
 }
+/* Alias rétrocompat */
+function applyImpersonateUI(){ applyRBACUI(); }
 
 /* =================================================================
  * v0.21.1 — COACH D²nAI : guided tour pas-à-pas (style Intercom Product
@@ -4833,7 +5006,9 @@ function renderSidebar(){
     if(it.sec) return `<div class="sb-section">${tr(it.sec)}</div>`;
     const bd = badges[it.id];
     const bdCls = it.id==='governance' && bd ? 'warn' : '';
-    return `<button class="sb-item ${PREFS.view===it.id?'on':''}" data-v="${it.id}" onclick="goView('${it.id}')"><svg class="ico" aria-hidden="true" focusable="false" width="18" height="18"><use href="#${it.svg}"/></svg><span class="lbl">${tr(it.lblK)}</span>${bd?`<span class="badge ${bdCls}">${bd}</span>`:''}</button>`;
+    // v0.22.2 — RBAC : ajout classes selon nature de l'item nav
+    const rbacCls = it.id === 'admin' ? ' rbac-admin-only' : '';
+    return `<button class="sb-item ${PREFS.view===it.id?'on':''}${rbacCls}" data-v="${it.id}" onclick="goView('${it.id}')"><svg class="ico" aria-hidden="true" focusable="false" width="18" height="18"><use href="#${it.svg}"/></svg><span class="lbl">${tr(it.lblK)}</span>${bd?`<span class="badge ${bdCls}">${bd}</span>`:''}</button>`;
   }).join('');
   const sf = document.getElementById('sbFoot');
   if(sf) sf.innerHTML = `<b style="color:#fff;margin:0 4px">${tr('cycle')} 2026</b> · ${tr('side.foot')}`;
@@ -6848,7 +7023,7 @@ function renderGovernance(){
       ${slaBadge('ceo','gov.sla.ceo')}
       ${slaBadge('fast_track','gov.sla.ft')}
       ${slaBadge('monitoring','gov.sla.mon')}
-      <span class="gov-sla-cfg" onclick="PREFS.adminTab='gov-cfg';savePrefs();goView('admin')" title="${tr('gov.sla.cfg.tt')}">⚙ ${tr('gov.sla.cfg')}</span>
+      <span class="gov-sla-cfg rbac-configure-gov-only" onclick="PREFS.adminTab='gov-cfg';savePrefs();goView('admin')" title="${tr('gov.sla.cfg.tt')}">⚙ ${tr('gov.sla.cfg')}</span>
     </div>
 
     <div class="row-2c">
@@ -6869,7 +7044,7 @@ function renderGovernance(){
     <div class="card">
       <h3>${tr('gov.steerAcc.h')||'Portefeuille Steering — groupé par project'} <span class="sub">${tr('gov.steerAcc.sub')||'(vue consolidée projet → trials pour décision en comité)'}</span></h3>
       ${govProjectAccordion(inSteering, (uc)=>`
-        <select class="gov-acc-dec" data-id="${uc.id}" onchange="govSetDecision('${uc.id}', this.value)">
+        <select class="gov-acc-dec rbac-steering-decide-only" data-id="${uc.id}" onchange="govSetDecision('${uc.id}', this.value)">
           <option value="">— ${tr('gov.dec.choose')||'Décision'} —</option>
           <option value="go" ${uc._dec==='go'?'selected':''}>✓ Go</option>
           <option value="hold" ${uc._dec==='hold'?'selected':''}>⏸ Hold</option>
@@ -6882,7 +7057,7 @@ function renderGovernance(){
     ${monitoring.length ? `<div class="card">
       <h3>${tr('gov.monAcc.h')||'Portefeuille Monitoring — groupé par project'} <span class="sub">${tr('gov.monAcc.sub')||'(suivi Go/Hold/Kill post-exécution)'}</span></h3>
       ${govProjectAccordion(monitoring, (uc)=>`
-        <select class="gov-acc-mondec" data-id="${uc.id}" onchange="govSetMonDecision('${uc.id}', this.value)">
+        <select class="gov-acc-mondec rbac-monitoring-decide-only" data-id="${uc.id}" onchange="govSetMonDecision('${uc.id}', this.value)">
           <option value="">— ${tr('gov.mondec.choose')||'Verdict'} —</option>
           <option value="closed-go">✓ Go (déploiement)</option>
           <option value="closed-hold">⏸ Hold (à itérer)</option>
@@ -7024,7 +7199,7 @@ function renderCEO(){
           ${!regGo && !regKill?'<span class="muted" style="font-size:11px">—</span>':''}
         </td>
         <td>
-          <select class="${selCls}" onchange="ceoSetDecision('${bu.id}','${reg.replace(/'/g,"\\'")}','decision', this.value)">
+          <select class="${selCls} rbac-ceo-decide-only" onchange="ceoSetDecision('${bu.id}','${reg.replace(/'/g,"\\'")}','decision', this.value)">
             <option value="">— Choisir —</option>
             <option value="Approved" ${dec==='Approved'?'selected':''}>✓ Approved</option>
             <option value="Needs Review" ${dec==='Needs Review'?'selected':''}>⚠ Needs Review</option>
@@ -7197,7 +7372,7 @@ function renderKB(){
         ${cl.recommendation ? `<div class="ll-rec"><b>${tr('kb.rec')}</b> ${escapeHtml(cl.recommendation)}</div>` : ''}
         <div class="ft"><span>${u.id}</span> · <span>${escapeHtml(u.crop)}</span> · <span>${escapeHtml(buOf(u.bu).nm)}</span></div>
         <div class="kb-acts">
-          <button class="btn ghost sm" onclick="event.stopPropagation();kbEditClosure('${u.id}')" title="${tr('kb.edit.tt')}">✏ ${tr('kb.edit')}</button>
+          <button class="btn ghost sm rbac-edit-closure-only" onclick="event.stopPropagation();kbEditClosure('${u.id}')" title="${tr('kb.edit.tt')}">✏ ${tr('kb.edit')}</button>
           <button class="btn ghost sm" onclick="event.stopPropagation();kbExportPdf('${u.id}')" title="${tr('kb.pdf.tt')}">🖨 ${tr('kb.pdf')}</button>
         </div>
       </div>`;

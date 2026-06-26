@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.22.1
+Stable tag: 0.22.2
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,46 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.22.2 — RBAC complet UI/UX (11 rôles × 17 permissions atomiques) =
+* MATRICE RBAC : 11 rôles applicatifs × 17 permissions atomiques.
+  Voir RBAC_MATRIX dans nutriplan.html. Backend reste autorité ; cette
+  couche est purement UI (gating visuel + désactivation actions).
+* MOTEUR : effectiveRole() = impersonate || actualRole, can(perm)
+  exposé globalement. Non-admin ne peuvent pas impersonner.
+* PATTERN CSS : <body data-effective-role="X"> + classes .rbac-*-only
+  sur les éléments sensibles. Whitelist explicit par rôle (plus safe
+  que blacklist : oubli = invisible vs leak).
+* ÉLÉMENTS GATÉS :
+  - .rbac-create-uc-only : bouton "+ New UC" topbar (admin + entity_mgr)
+  - .rbac-admin-only : item sidebar Admin + CRUD ref + manage users
+  - .rbac-configure-gov-only : bouton "Configurer" SLA (admin)
+  - .rbac-ceo-tab-only : CXTAB "Approbation CEO" (CEO + steering + admin)
+  - .rbac-controls-only : CXTAB "Contrôles internes" (admin + steering)
+  - .rbac-steering-decide-only : dropdowns Go/Hold/Kill (steering + admin)
+  - .rbac-monitoring-decide-only : dropdowns verdict (monitoring + admin)
+  - .rbac-ceo-decide-only : selects CEO par entité × région (CEO + admin)
+  - .rbac-edit-closure-only : bouton ✏ Éditer KB (admin + steering +
+    entity_mgr + trial_owner)
+  - .rbac-ft-decide-only : décisions Fast Track (admin + ft_approver)
+  - .rbac-sai-review-only : actions SAI Review (admin + sai_reviewer)
+* RÔLE READER : tous les inputs/selects/textarea sont disabled visuels
+  (pointer-events:none + bg gris), boutons primary opacity .4.
+* RÔLE IT_SUPPORT : banner d'orientation "accès technique uniquement"
+  + tout le contenu métier masqué (.screen > *:not(.cxtab)).
+* MODE IMPERSONATE (admin) : sélecteur "Vue" en topbar (masqué pour
+  non-admin) avec 12 rôles. Banner sticky top en jaune indique le mode.
+* ACTUAL ROLE : lu depuis window.DNAI_NPLAN.role (claim SSO Entra
+  futur), fallback PREFS.actualRole, fallback 'admin' (dev/Hamza).
+* IMPERSONATE_ROLES étendu : passage de 8 à 12 rôles (ajout
+  entity_contributor, monitoring_member, fast_track_approver, it_support
+  + libellé "Vue normale (mon rôle)" plus clair).
+* injectCxTab() étendu pour appliquer .rbac-ceo-tab-only et
+  .rbac-controls-only sur les onglets contextuels CEO/Controls.
+* renderSidebar() étendu pour appliquer .rbac-admin-only sur l'item
+  Admin (rétrocompat avec ancien CSS impersonate).
+* applyImpersonateUI() renommé applyRBACUI() (alias rétro conservé).
+* PHP : v0.22.1 → v0.22.2.
 
 = 0.22.1 — Reproduction visuelle Halima (V14) à l'identique, charte D²nAI =
 * WORLD MAP géographique réelle : intégration de WORLDMAP_DATA (171KB
