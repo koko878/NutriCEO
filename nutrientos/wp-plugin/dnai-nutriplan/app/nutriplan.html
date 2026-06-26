@@ -316,6 +316,184 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .kn-card .foot > .bdg{flex-shrink:0;white-space:nowrap;font-variant-numeric:tabular-nums}
 
 /* ==========================================================================
+ * v0.22 — Project accordion (Portfolio + Steering + Monitoring vues groupées)
+ * ========================================================================== */
+.proj-acc{display:flex;flex-direction:column;gap:10px}
+.proj-acc-card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:box-shadow .18s var(--ease-out-quart)}
+.proj-acc-card:hover{box-shadow:0 4px 20px -8px rgba(8,30,16,.12)}
+.proj-acc-h{display:flex;align-items:center;gap:14px;padding:14px 18px;cursor:pointer;background:#fff;transition:background .15s,border-color .15s}
+.proj-acc-h:hover{background:linear-gradient(180deg,#fafffa,#fff)}
+.proj-acc-h.open{background:linear-gradient(180deg, var(--green-50), #fff);border-bottom:1px solid var(--green-100)}
+.proj-acc-chev{font:700 12px Inter;color:var(--green-700);transition:transform .25s var(--ease-out-quart);flex-shrink:0;width:18px;text-align:center}
+.proj-acc-h.open .proj-acc-chev{transform:rotate(90deg)}
+.proj-acc-meta{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.proj-acc-id{font:700 11px 'JetBrains Mono',ui-monospace,monospace;color:var(--muted);letter-spacing:-.01em}
+.proj-acc-title{font:700 15px 'Cormorant Garamond',Georgia,serif;color:var(--green-900);line-height:1.2;letter-spacing:-.01em}
+.proj-acc-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px}
+.proj-acc-tags .badge{font:600 10.5px Inter;padding:3px 8px;border-radius:999px;background:#f1f5f1;color:var(--ink-2);border:1px solid var(--line)}
+.proj-acc-tags .badge.bg-soft{background:var(--green-50);color:var(--green-800);border-color:var(--green-100)}
+.proj-acc-tags .badge.bg-info{background:#eaf3f8;color:var(--info);border-color:#cde2ed}
+.proj-acc-cnt{text-align:right;flex-shrink:0}
+.proj-acc-cnt .cnt{font:800 26px 'Cormorant Garamond',serif;color:var(--green-900);line-height:1;font-variant-numeric:tabular-nums}
+.proj-acc-cnt .cnt-lbl{font:500 10.5px Inter;color:var(--muted);margin-top:2px}
+.proj-acc-body{display:none;padding:0;background:linear-gradient(180deg,#f9fbf9,#fff)}
+.proj-acc-body.open{display:block;animation:accSlide .28s var(--ease-out-quart)}
+@keyframes accSlide{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.proj-acc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;padding:14px 18px}
+.proj-acc-card-uc{background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 13px;cursor:pointer;transition:transform .12s,border-color .15s,box-shadow .15s}
+.proj-acc-card-uc:hover{transform:translateY(-1px);border-color:var(--green-200);box-shadow:0 4px 12px -4px rgba(8,30,16,.08)}
+.pauc-h{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:5px}
+.pauc-id{font:700 10.5px 'JetBrains Mono',monospace;color:var(--muted)}
+.pauc-title{font:700 13px Inter;color:var(--ink);line-height:1.25;margin-bottom:6px}
+.pauc-meta{display:flex;justify-content:space-between;font:500 11px Inter;color:var(--muted);gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.pauc-pills{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.pauc-budget{font:700 12px 'JetBrains Mono',monospace;color:var(--green-800);font-variant-numeric:tabular-nums}
+.pauc-action{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.pauc-action select{width:100%;padding:5px 8px;border:1px solid var(--line);border-radius:6px;font:600 11.5px Inter;background:#fff}
+.pauc-action .btn{font-size:11px;padding:4px 10px}
+
+/* v0.22 — Enriched trial card (Project Desc / Business Case / Trial Desc / Status) */
+.uc-blocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:18px}
+.uc-block{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.uc-block-h{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:9px;border-bottom:1px solid var(--line)}
+.uc-block-ico{width:28px;height:28px;border-radius:7px;background:var(--green-50);color:var(--green-800);display:grid;place-items:center;font-size:14px;flex-shrink:0}
+.uc-block-t{font:700 12.5px Inter;color:var(--green-900);text-transform:uppercase;letter-spacing:.05em}
+.uc-block-body{font:500 13px/1.55 Inter;color:var(--ink-2)}
+.uc-block-body .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:12.5px}
+.uc-block-body .kv b{font-weight:600;color:var(--muted);text-transform:uppercase;font-size:10.5px;letter-spacing:.04em;align-self:center}
+.uc-block-dl{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:6px 10px;background:var(--green-50);border:1px solid var(--green-100);border-radius:7px;font:600 11.5px Inter;color:var(--green-800);cursor:pointer;transition:.15s;text-decoration:none}
+.uc-block-dl:hover{background:var(--green-100);border-color:var(--green-200)}
+
+/* v0.22 — Wizard 3 étapes (New Use Case selector + Business Case) */
+.wiz-selector{max-width:780px;margin:24px auto 0;text-align:center}
+.wiz-sel-h{font:700 32px 'Cormorant Garamond',Georgia,serif;color:var(--green-900);letter-spacing:-.02em;margin-bottom:8px}
+.wiz-sel-sub{font:500 14px/1.5 Inter;color:var(--ink-2);margin-bottom:32px}
+.wiz-sel-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:30px}
+.wiz-sel-card{border:2px solid var(--line);border-radius:18px;padding:32px 24px;text-align:center;position:relative;overflow:hidden;transition:all .22s var(--ease-out-quart)}
+.wiz-sel-card.locked{background:#fafaf8;cursor:not-allowed}
+.wiz-sel-card.locked .wiz-sel-ico,.wiz-sel-card.locked h3,.wiz-sel-card.locked p{filter:grayscale(1);opacity:.5}
+.wiz-sel-card.open{background:linear-gradient(135deg,#fffdf7 0%,#fff8ec 100%);border-color:#e3a23c;cursor:pointer;box-shadow:0 2px 16px rgba(227,162,60,.12)}
+.wiz-sel-card.open:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(227,162,60,.22)}
+.wiz-sel-badge{position:absolute;top:12px;right:12px;font:700 10px Inter;letter-spacing:.05em;padding:3px 10px;border-radius:11px}
+.wiz-sel-card.locked .wiz-sel-badge{background:#f0ede6;color:#bbb}
+.wiz-sel-card.open .wiz-sel-badge{background:#e3a23c;color:#fff}
+.wiz-sel-ico{font-size:42px;margin-bottom:14px}
+.wiz-sel-card h3{font:700 16px 'Cormorant Garamond',serif;margin:0 0 8px;color:var(--green-900);letter-spacing:-.01em}
+.wiz-sel-card.locked h3{color:#bbb}
+.wiz-sel-card p{font:500 12.5px/1.5 Inter;color:var(--ink-2);margin:0 0 16px}
+.wiz-sel-card.locked p{color:#c5c2ba}
+.wiz-sel-info{padding:9px 13px;border-radius:10px;font:600 11.5px Inter}
+.wiz-sel-card.locked .wiz-sel-info{background:#f0ede6;color:#bbb}
+.wiz-sel-card.open .wiz-sel-info{background:rgba(227,162,60,.12);color:#a06f1f;border:1px solid rgba(227,162,60,.25)}
+.wiz-sel-preview{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 22px}
+.wiz-sel-preview-h{font:700 11.5px Inter;color:var(--green-800);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px}
+.wiz-sel-preview-steps{display:flex;align-items:center;gap:0;justify-content:space-between}
+.wiz-sel-step{flex:1;text-align:center}
+.wiz-sel-step-circle{width:44px;height:44px;border-radius:50%;background:var(--green-50);border:2px solid var(--green-200);display:grid;place-items:center;margin:0 auto 6px;font-size:18px}
+.wiz-sel-step-n{font:700 10.5px Inter;color:var(--green-800);text-transform:uppercase;letter-spacing:.04em}
+.wiz-sel-step-lbl{font:500 11.5px Inter;color:var(--muted);margin-top:2px}
+.wiz-sel-step-line{flex:0 0 32px;height:2px;background:var(--green-200);align-self:flex-start;margin-top:22px}
+
+/* Stepper du wizard 3 étapes */
+.wiz-stepper{display:flex;align-items:flex-start;justify-content:space-between;max-width:680px;margin:24px auto 32px;position:relative}
+.wiz-stepper::before{content:'';position:absolute;top:21px;left:60px;right:60px;height:2px;background:var(--line);z-index:0}
+.wiz-step{flex:1;text-align:center;position:relative;z-index:1}
+.wiz-step-c{width:44px;height:44px;border-radius:50%;background:#fff;border:2px solid var(--line);display:grid;place-items:center;margin:0 auto 8px;font:700 14px Inter;color:var(--muted);transition:all .25s var(--ease-out-quart)}
+.wiz-step.active .wiz-step-c{background:var(--green-700);border-color:var(--green-700);color:#fff;box-shadow:0 4px 14px -2px rgba(46,125,50,.4)}
+.wiz-step.done .wiz-step-c{background:var(--green-600);border-color:var(--green-600);color:#fff}
+.wiz-step-lbl{font:600 11.5px Inter;color:var(--muted);line-height:1.3}
+.wiz-step.active .wiz-step-lbl{color:var(--green-900);font-weight:700}
+.wiz-step.done .wiz-step-lbl{color:var(--green-800)}
+
+/* Business Case : tabs */
+.bc-tabs{display:flex;border-bottom:2px solid var(--line);margin-bottom:20px;gap:0}
+.bc-tab{padding:10px 22px;border:0;background:none;font:700 13px Inter;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:.15s}
+.bc-tab:hover{color:var(--ink)}
+.bc-tab.on{color:var(--green-800);border-bottom-color:var(--green-700)}
+.bc-ctx{background:var(--green-50);border:1px solid var(--green-100);padding:9px 14px;border-radius:8px;font-size:12.5px;color:var(--green-900);margin-bottom:14px}
+.bc-ctx b{color:var(--green-700)}
+.bc-tbl{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:13px}
+.bc-tbl th{text-align:left;padding:7px 10px;background:var(--green-50);font:700 11px Inter;color:var(--green-800);text-transform:uppercase;letter-spacing:.04em;border:1px solid var(--green-100)}
+.bc-tbl td{padding:5px 7px;border:1px solid var(--line)}
+.bc-tbl td input{width:100%;border:0;background:transparent;padding:5px 7px;font:500 12.5px Inter}
+.bc-tbl td input:focus{outline:1px solid var(--green-700);background:#fff}
+.bc-tbl .bc-tbl-x{background:none;border:0;color:var(--muted);cursor:pointer;font-size:14px;padding:4px 8px;border-radius:5px}
+.bc-tbl .bc-tbl-x:hover{background:#fde7e7;color:var(--bad)}
+.bc-tbl-add{font:600 12px Inter;color:var(--green-700);cursor:pointer;padding:6px 10px;border:1px dashed var(--green-200);border-radius:7px;background:transparent;transition:.15s}
+.bc-tbl-add:hover{background:var(--green-50);border-style:solid}
+
+/* v0.22 — CEO Portfolio par entité */
+.ceo-annual-tbl{border-collapse:collapse;width:100%;font-size:13px;margin-bottom:18px}
+.ceo-annual-tbl thead{background:var(--green-900);color:#fff}
+.ceo-annual-tbl th{padding:9px 14px;font:700 11px Inter;text-transform:uppercase;letter-spacing:.05em;text-align:left}
+.ceo-annual-tbl th.num{text-align:center}
+.ceo-annual-tbl th.right{text-align:right}
+.ceo-annual-tbl tbody tr{border-bottom:1px solid var(--line)}
+.ceo-annual-tbl tbody tr:nth-child(odd){background:#fafbf9}
+.ceo-annual-tbl td{padding:10px 14px}
+.ceo-annual-tbl td.year{font:800 14px 'Cormorant Garamond',serif;color:var(--green-900)}
+.ceo-annual-tbl td.num{text-align:center;font-weight:600}
+.ceo-annual-tbl td.right{text-align:right;font-weight:700;color:var(--green-900);font-variant-numeric:tabular-nums}
+.ceo-ent-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:18px}
+.ceo-ent-h{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:14px}
+.ceo-ent-nm{font:800 17px 'Cormorant Garamond',serif;color:var(--green-900);letter-spacing:-.01em}
+.ceo-ent-sub{font:500 12px Inter;color:var(--muted);margin-top:3px}
+.ceo-ent-sub b{color:var(--ink-2);font-weight:700}
+.ceo-ent-badges{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ceo-ent-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.ceo-ent-tbl thead{background:var(--green-50)}
+.ceo-ent-tbl th{padding:7px 10px;font:700 11px Inter;color:var(--green-800);text-transform:uppercase;letter-spacing:.04em;text-align:left;border-bottom:1px solid var(--green-100)}
+.ceo-ent-tbl td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.ceo-ent-tbl td.reg{font:700 12.5px Inter;color:var(--green-900)}
+.ceo-ent-tbl td.num{text-align:center;font-weight:700}
+.ceo-ent-tbl td.right{text-align:right;font-weight:700;color:var(--green-900)}
+.ceo-ent-tbl td select{width:100%;padding:5px 8px;border:1px solid var(--line);border-radius:6px;font:600 12px Inter;background:#fff}
+.ceo-ent-tbl td textarea{width:100%;padding:5px 8px;border:1px solid var(--line);border-radius:6px;font:500 11px Inter;resize:vertical;min-height:40px}
+.ceo-ent-tbl select.ok{border-color:var(--ok)}
+.ceo-ent-tbl select.warn{border-color:var(--amber);background:#fffaf0}
+.ceo-ent-tbl select.bad{border-color:var(--bad)}
+.ceo-ent-tbl textarea.warn{border-color:var(--amber)}
+
+/* v0.22 — World Map */
+.wmap-wrap{position:relative;background:linear-gradient(180deg,#f8fbf8,#fff);border-radius:14px;padding:16px;border:1px solid var(--line)}
+.wmap-svg{width:100%;height:auto;display:block}
+.wmap-country{fill:#e6efe9;stroke:#fff;stroke-width:.5;transition:fill .25s var(--ease-out-quart)}
+.wmap-bubble-t{fill:#e3a23c;opacity:.85;cursor:pointer;transition:opacity .15s}
+.wmap-bubble-d{fill:var(--green-500);opacity:.85;cursor:pointer;transition:opacity .15s}
+.wmap-bubble-t:hover,.wmap-bubble-d:hover{opacity:1;filter:drop-shadow(0 2px 6px rgba(0,0,0,.3))}
+.wmap-bubble-lbl{font:700 11px Inter;fill:#fff;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.wmap-region-lbl{font:600 11px Inter;fill:var(--green-900);text-anchor:middle;pointer-events:none}
+.wmap-progress{font:500 10px Inter;fill:var(--muted);text-anchor:middle;pointer-events:none}
+.wmap-legend{display:flex;gap:18px;justify-content:flex-end;flex-wrap:wrap;font:500 12px Inter;color:var(--muted);margin-top:12px}
+.wmap-legend .dot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:middle;margin-right:5px}
+
+.reg-split{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:18px}
+.reg-split-toggles{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.reg-split-toggles .btn{font:600 12px Inter;padding:7px 14px;border-radius:8px}
+.reg-split-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.reg-split-lbl{width:130px;flex-shrink:0;font:700 12.5px Inter;color:var(--green-900)}
+.reg-split-bar-wrap{flex:1;height:24px;border-radius:6px;background:#f3f5f3;display:flex;overflow:hidden}
+.reg-split-bar-t{background:#e3a23c;display:flex;align-items:center;justify-content:center;font:700 11px Inter;color:#fff;min-width:24px}
+.reg-split-bar-d{background:var(--green-500);display:flex;align-items:center;justify-content:center;font:700 11px Inter;color:#fff;min-width:24px}
+.reg-split-bar-b{background:var(--green-700);display:flex;align-items:center;padding-left:8px;font:700 11px Inter;color:#fff;height:100%}
+.reg-split-num{width:110px;flex-shrink:0;text-align:right;font:600 12px Inter;color:var(--ink-2)}
+.reg-split-num b{font-weight:700;color:var(--green-900)}
+.reg-split-num small{display:block;font:500 10px Inter;color:var(--muted);font-weight:400}
+.reg-split-total{margin-top:14px;padding:10px 14px;background:var(--green-50);border-radius:8px;font:700 12.5px Inter;color:var(--green-900);display:flex;justify-content:space-between}
+
+@media(max-width:760px){
+  .uc-blocks{grid-template-columns:1fr}
+  .wiz-sel-grid{grid-template-columns:1fr}
+  .ceo-ent-tbl{font-size:11px}
+  .ceo-ent-tbl th,.ceo-ent-tbl td{padding:5px 6px}
+  .reg-split-row{flex-wrap:wrap}
+  .reg-split-lbl{width:100%}
+  .reg-split-num{width:auto;text-align:left;margin-top:4px}
+  .bc-tabs{overflow-x:auto;flex-wrap:nowrap}
+  .bc-tab{white-space:nowrap}
+}
+
+/* ==========================================================================
  * AI CHAT panel (slide-in from right)
  * ========================================================================== */
 .chat{grid-area:chat;background:linear-gradient(180deg,#0a1812 0%,#07140c 100%);color:#dff0e3;display:flex;flex-direction:column;border-left:1px solid rgba(124,252,154,.15);position:relative;overflow:hidden;min-width:0}
@@ -1885,6 +2063,9 @@ body.imp-on[data-imp-role="ceo_approver"] .sb-item[data-v="admin"]{
     <!-- ----- GOVERNANCE SCREEN ----- -->
     <section class="screen" id="sc-governance"></section>
 
+    <!-- ----- v0.22 CEO APPROVAL SCREEN (retour Halima #4) ----- -->
+    <section class="screen" id="sc-ceo"></section>
+
     <!-- ----- CLOSURE / KB SCREEN ----- -->
     <section class="screen" id="sc-kb"></section>
 
@@ -2322,6 +2503,41 @@ fr:{
  'tour.v.adm.t3':'Ajouter / configurer','tour.v.adm.b3':'Toolbar en bas : exporter le référentiel en JSON, réinitialiser aux valeurs par défaut, ou ajouter une nouvelle entrée via le formulaire inline.',
  // Menu coach
  'tour.seen':'déjà vu','tour.new':'nouveau','tour.reset':'Tous les tours sont réinitialisés. Le tour de cette page va se relancer.',
+ // v0.22 — Halima retours #1-#5
+ 'uc.bk.project':'Description projet','uc.bk.bcase':'Business case','uc.bk.trial':'Description trial','uc.bk.status':'Statut',
+ 'uc.bk.parent':'Projet parent','uc.bk.noProject':'Trial sans projet parent',
+ 'uc.bk.region':'Région','uc.bk.market':'Marché','uc.bk.budget':'Budget','uc.bk.partner':'Partenaire',
+ 'uc.bk.expectedY':'Uplift visé','uc.bk.co2':'CO₂ évité','uc.bk.competitors':'concurrents mappés',
+ 'uc.bk.plan':'Plan','uc.bk.window':'Fenêtre','uc.bk.mds':'MDS','uc.bk.dlProto':'Protocole',
+ 'uc.bk.dlPending':'Téléchargement à venir (protocole stocké côté serveur)','uc.bk.noProto':'Pas de protocole attaché',
+ 'uc.bk.type':'Type','uc.bk.prio':'Priorité','uc.bk.ft':'Fast track','uc.bk.std':'Standard','uc.bk.gates':'Gates','uc.bk.done':'terminés',
+ 'acc.orphan':'Trials sans projet rattaché','acc.trials':'trials','acc.demos':'demos',
+ 'pf.v.accordion':'Par projet',
+ 'intake.sel.h':'Nouvelle soumission Trial / Démo','intake.sel.sub':'Choisis ton processus de soumission. Une fois validé par le Steering Committee, ton trial entre dans le pipeline.',
+ 'intake.sel.locked':'LOCKED','intake.sel.open':'OPEN',
+ 'intake.sel.std.h':'Standard Process','intake.sel.std.body':'Cycle annuel complet : soumission Use Case, SAI Review, Steering Committee, Approbation CEO.','intake.sel.std.info':'🔒 Disponible uniquement aux fenêtres QBR',
+ 'intake.sel.ft.h':'Fast Track','intake.sel.ft.body':'Voie accélérée pour les UCs urgents ou stratégiques. Décision en 12 jours vs 90 standard.','intake.sel.ft.info':'✓ Disponible toute l\'année · click pour démarrer',
+ 'intake.sel.afterPick':'Une fois le processus choisi, tu compléteras :','intake.step':'Étape',
+ 'intake.step.project':'Project<br>Identification','intake.step.bcase':'Business<br>Case','intake.step.trial':'Trial<br>Description',
+ 'intake.std.locked.h':'Standard Process actuellement fermé','intake.std.locked.body':'Les soumissions standard ne sont acceptées que pendant les fenêtres QBR (Mars, Juin, Septembre, Décembre). Contacte ton coordinateur SAI.',
+ 'intake.wiz.lead':'Complète chaque étape pour soumettre ton Use Case.',
+ 'intake.wiz.cancel':'Annuler','intake.wiz.prev':'Précédent','intake.wiz.next':'Suivant',
+ 'intake.bc.ctx':'Business Case','intake.bc.intro':'Quantifie le marché, l\'hypothèse agronomique et l\'impact écologique.',
+ 'intake.bc.t1':'1 · P Market','intake.bc.t2':'2 · Design & Hypothesis','intake.bc.t3':'3 · Eco Impact',
+ 'intake.bc.pmarket.h':'Description du marché phosphaté',
+ 'intake.bc.area':'Surface culture (ha)','intake.bc.currp':'Consommation P₂O₅ actuelle (t)','intake.bc.potp':'Potentiel marché P₂O₅ (t)',
+ 'intake.bc.comp.h':'Mapping concurrents','intake.bc.comp.sub':'Liste les produits concurrents présents sur ce marché.',
+ 'intake.bc.comp.prod':'Produit','intake.bc.comp.co':'Société','intake.bc.comp.vol':'Vol. (t)','intake.bc.comp.eqp':'Eq. P₂O₅','intake.bc.comp.add':'Ajouter un concurrent',
+ 'intake.bc.design.h':'Hypothèse agronomique & design','intake.bc.hyp':'Hypothèse principale','intake.bc.yield':'Uplift rendement visé','intake.bc.revenue':'Revenue additionnel modélisé',
+ 'intake.bc.eco.h':'Impact écologique & adoption','intake.bc.co2':'CO₂ évité (kg CO₂eq/ha)','intake.bc.water':'Empreinte eau réduite (%)','intake.bc.adopt':'Adoption visée 3 ans (ha)','intake.bc.share':'Part de marché visée','intake.bc.notes':'Notes complémentaires',
+ 'dash.map.trials':'Trials','dash.map.demos':'Demos',
+ 'dash.regsplit.h':'Regional Breakdown','dash.regsplit.tab.trials':'Trials & Demos par région','dash.regsplit.tab.budget':'Budget engagé 2026 par région','dash.regsplit.total':'Total engagé 2026',
+ 'ceo.h':'Approbation CEO','ceo.lead':'Validation du portfolio annuel au niveau entité. Le CEO valide l\'enveloppe globale par BU × région ; les détails trial par trial restent sous la responsabilité des Steering & Monitoring Committees.',
+ 'ceo.annual.h':'Annual Portfolio KPIs','ceo.annual.sub':'(vue 7 ans : 2024 → 2030)','ceo.ents.h':'Portfolio Overview by Entity','ceo.ents.empty':'Aucune entité avec des UCs au cycle courant.',
+ 'ceo.persist':'Les décisions CEO sont persistées en temps réel (localStorage + serveur). Le drill-down « View Projects » filtre le portefeuille sur l\'entité.',
+ 'gov.dec.choose':'Décision','gov.mondec.choose':'Verdict','gov.dec.applied':'{id} : décision {d} enregistrée','gov.mondec.applied':'{id} : verdict {d}',
+ 'gov.steerAcc.h':'Portefeuille Steering — groupé par project','gov.steerAcc.sub':'(vue consolidée projet → trials pour décision en comité)',
+ 'gov.monAcc.h':'Portefeuille Monitoring — groupé par project','gov.monAcc.sub':'(suivi Go/Hold/Kill post-exécution)',
  'adm.t.ref':'Référentiels','adm.t.frame':'Cadre v1.0','adm.t.gov':'Gouvernance','adm.t.access':'Accès & rôles','adm.t.integr':'Intégrations',
  'adm.gov.lead':'Paramètres de gouvernance : matrice RACI, seuils déclenchant la décision CEO, éligibilité Fast Track, SLA par étape. Toute modification est propagée immédiatement.',
  'adm.gov.raci.h':'Matrice RACI éditable','adm.gov.raci.sub':'(11 étapes × 5 rôles)','adm.gov.raci.help':'Pour chaque étape, choisis qui Réalise (R), est Accountable (A), est Consulté (C) ou Informé (I).',
@@ -2681,6 +2897,39 @@ en:{
  'tour.v.adm.t2':'Today\'s action','tour.v.adm.b2':'Depending on the tab: edit a reference (double-click a chip to rename), adjust a CEO threshold, assign a role to a user. All persisted server-side in real time.',
  'tour.v.adm.t3':'Add / configure','tour.v.adm.b3':'Toolbar at the bottom: export reference as JSON, reset to defaults, or add a new entry via the inline form.',
  'tour.seen':'already seen','tour.new':'new','tour.reset':'All tours reset. The tour for this page will run again.',
+ // v0.22 EN
+ 'uc.bk.project':'Project description','uc.bk.bcase':'Business case','uc.bk.trial':'Trial description','uc.bk.status':'Status',
+ 'uc.bk.parent':'Parent project','uc.bk.noProject':'Trial without parent project',
+ 'uc.bk.region':'Region','uc.bk.market':'Market','uc.bk.budget':'Budget','uc.bk.partner':'Partner',
+ 'uc.bk.expectedY':'Target uplift','uc.bk.co2':'CO₂ avoided','uc.bk.competitors':'competitors mapped',
+ 'uc.bk.plan':'Plan','uc.bk.window':'Window','uc.bk.mds':'MDS','uc.bk.dlProto':'Protocol',
+ 'uc.bk.dlPending':'Download coming soon (protocol stored server-side)','uc.bk.noProto':'No protocol attached',
+ 'uc.bk.type':'Type','uc.bk.prio':'Priority','uc.bk.ft':'Fast track','uc.bk.std':'Standard','uc.bk.gates':'Gates','uc.bk.done':'completed',
+ 'acc.orphan':'Trials without parent project','acc.trials':'trials','acc.demos':'demos','pf.v.accordion':'By project',
+ 'intake.sel.h':'New Trial / Demo submission','intake.sel.sub':'Pick your submission process. Once validated by Steering, your trial enters the pipeline.',
+ 'intake.sel.locked':'LOCKED','intake.sel.open':'OPEN',
+ 'intake.sel.std.h':'Standard Process','intake.sel.std.body':'Full annual cycle: Use Case submission, SAI Review, Steering Committee, CEO Approval.','intake.sel.std.info':'🔒 Available only during QBR windows',
+ 'intake.sel.ft.h':'Fast Track','intake.sel.ft.body':'Accelerated lane for urgent or strategic UCs. Decision in 12 days vs 90 standard.','intake.sel.ft.info':'✓ Available year-round · click to start',
+ 'intake.sel.afterPick':'Once a process is chosen, you will complete:','intake.step':'Step',
+ 'intake.step.project':'Project<br>Identification','intake.step.bcase':'Business<br>Case','intake.step.trial':'Trial<br>Description',
+ 'intake.std.locked.h':'Standard Process currently closed','intake.std.locked.body':'Standard submissions are only accepted during QBR windows (March, June, September, December). Contact your SAI coordinator.',
+ 'intake.wiz.lead':'Complete each step to submit your Use Case.','intake.wiz.cancel':'Cancel','intake.wiz.prev':'Back','intake.wiz.next':'Next',
+ 'intake.bc.ctx':'Business Case','intake.bc.intro':'Quantify the market, agronomic hypothesis and ecological impact.',
+ 'intake.bc.t1':'1 · P Market','intake.bc.t2':'2 · Design & Hypothesis','intake.bc.t3':'3 · Eco Impact',
+ 'intake.bc.pmarket.h':'Phosphorus market description',
+ 'intake.bc.area':'Crop area (ha)','intake.bc.currp':'Current P₂O₅ consumption (t)','intake.bc.potp':'P₂O₅ market potential (t)',
+ 'intake.bc.comp.h':'Competition mapping','intake.bc.comp.sub':'List competitor products in this market.',
+ 'intake.bc.comp.prod':'Product','intake.bc.comp.co':'Company','intake.bc.comp.vol':'Vol. (t)','intake.bc.comp.eqp':'Eq. P₂O₅','intake.bc.comp.add':'Add a competitor',
+ 'intake.bc.design.h':'Agronomic hypothesis & design','intake.bc.hyp':'Main hypothesis','intake.bc.yield':'Target yield uplift','intake.bc.revenue':'Modelled additional revenue',
+ 'intake.bc.eco.h':'Ecological impact & adoption','intake.bc.co2':'CO₂ avoided (kg CO₂eq/ha)','intake.bc.water':'Water footprint reduction (%)','intake.bc.adopt':'3-year adoption target (ha)','intake.bc.share':'Target market share','intake.bc.notes':'Additional notes',
+ 'dash.map.trials':'Trials','dash.map.demos':'Demos',
+ 'dash.regsplit.h':'Regional Breakdown','dash.regsplit.tab.trials':'Trials & Demos by region','dash.regsplit.tab.budget':'Committed budget 2026 by region','dash.regsplit.total':'Total committed 2026',
+ 'ceo.h':'CEO Approval','ceo.lead':'Annual portfolio validation at entity level. The CEO validates the overall envelope per BU × region; trial-by-trial details remain under the Steering & Monitoring Committees.',
+ 'ceo.annual.h':'Annual Portfolio KPIs','ceo.annual.sub':'(7-year view: 2024 → 2030)','ceo.ents.h':'Portfolio Overview by Entity','ceo.ents.empty':'No entity with active UCs this cycle.',
+ 'ceo.persist':'CEO decisions are persisted in real-time (localStorage + server). Drill-down "View Projects" filters the portfolio on the entity.',
+ 'gov.dec.choose':'Decision','gov.mondec.choose':'Verdict','gov.dec.applied':'{id}: decision {d} recorded','gov.mondec.applied':'{id}: verdict {d}',
+ 'gov.steerAcc.h':'Steering Portfolio — grouped by project','gov.steerAcc.sub':'(consolidated project → trials view for committee decision)',
+ 'gov.monAcc.h':'Monitoring Portfolio — grouped by project','gov.monAcc.sub':'(post-execution Go/Hold/Kill tracking)',
  'adm.t.ref':'Reference data','adm.t.frame':'Framework v1.0','adm.t.gov':'Governance','adm.t.access':'Access & roles','adm.t.integr':'Integrations',
  'adm.gov.lead':'Governance settings: RACI matrix, CEO decision thresholds, Fast Track eligibility, per-step SLAs. Changes propagate immediately.',
  'adm.gov.raci.h':'Editable RACI matrix','adm.gov.raci.sub':'(11 steps × 5 roles)','adm.gov.raci.help':'For each step, choose who is Responsible (R), Accountable (A), Consulted (C) or Informed (I).',
@@ -3039,6 +3288,37 @@ pt:{
  'tour.v.adm.t2':'Ação do dia','tour.v.adm.b2':'Conforme a aba: editar um catálogo (duplo-clique numa chip para renomear), ajustar um limite CEO, atribuir um papel. Tudo persistido no servidor.',
  'tour.v.adm.t3':'Adicionar / configurar','tour.v.adm.b3':'Toolbar embaixo: exportar catálogo como JSON, restaurar padrões, ou adicionar entrada via formulário inline.',
  'tour.seen':'já visto','tour.new':'novo','tour.reset':'Todos os tours reiniciados. O tour desta página será reexecutado.',
+ // v0.22 PT-BR
+ 'uc.bk.project':'Descrição projeto','uc.bk.bcase':'Business case','uc.bk.trial':'Descrição trial','uc.bk.status':'Status',
+ 'uc.bk.parent':'Projeto pai','uc.bk.noProject':'Trial sem projeto pai','uc.bk.region':'Região','uc.bk.market':'Mercado','uc.bk.budget':'Orçamento','uc.bk.partner':'Parceiro',
+ 'uc.bk.expectedY':'Uplift esperado','uc.bk.co2':'CO₂ evitado','uc.bk.competitors':'concorrentes mapeados',
+ 'uc.bk.plan':'Plano','uc.bk.window':'Janela','uc.bk.mds':'MDS','uc.bk.dlProto':'Protocolo','uc.bk.dlPending':'Download em breve','uc.bk.noProto':'Sem protocolo anexado',
+ 'uc.bk.type':'Tipo','uc.bk.prio':'Prioridade','uc.bk.ft':'Fast track','uc.bk.std':'Standard','uc.bk.gates':'Gates','uc.bk.done':'concluídos',
+ 'acc.orphan':'Trials sem projeto pai','acc.trials':'trials','acc.demos':'demos','pf.v.accordion':'Por projeto',
+ 'intake.sel.h':'Nova submissão Trial / Demo','intake.sel.sub':'Escolha seu processo de submissão.',
+ 'intake.sel.locked':'LOCKED','intake.sel.open':'OPEN',
+ 'intake.sel.std.h':'Standard Process','intake.sel.std.body':'Ciclo anual completo: submissão Use Case, SAI Review, Steering Committee, Aprovação CEO.','intake.sel.std.info':'🔒 Disponível apenas nas janelas QBR',
+ 'intake.sel.ft.h':'Fast Track','intake.sel.ft.body':'Via acelerada para UCs urgentes ou estratégicos. Decisão em 12 dias vs 90 standard.','intake.sel.ft.info':'✓ Disponível o ano todo · clique para iniciar',
+ 'intake.sel.afterPick':'Após escolher um processo, você completará:','intake.step':'Etapa',
+ 'intake.step.project':'Projeto<br>Identificação','intake.step.bcase':'Business<br>Case','intake.step.trial':'Trial<br>Descrição',
+ 'intake.std.locked.h':'Standard Process atualmente fechado','intake.std.locked.body':'Submissões standard só são aceitas durante as janelas QBR (Março, Junho, Setembro, Dezembro).',
+ 'intake.wiz.lead':'Complete cada etapa para submeter seu Use Case.','intake.wiz.cancel':'Cancelar','intake.wiz.prev':'Anterior','intake.wiz.next':'Próximo',
+ 'intake.bc.ctx':'Business Case','intake.bc.intro':'Quantifique o mercado, a hipótese agronômica e o impacto ecológico.',
+ 'intake.bc.t1':'1 · P Market','intake.bc.t2':'2 · Design & Hypothesis','intake.bc.t3':'3 · Eco Impact',
+ 'intake.bc.pmarket.h':'Descrição do mercado de fósforo',
+ 'intake.bc.area':'Área cultura (ha)','intake.bc.currp':'Consumo P₂O₅ atual (t)','intake.bc.potp':'Potencial mercado P₂O₅ (t)',
+ 'intake.bc.comp.h':'Mapeamento concorrentes','intake.bc.comp.sub':'Liste os produtos concorrentes neste mercado.',
+ 'intake.bc.comp.prod':'Produto','intake.bc.comp.co':'Empresa','intake.bc.comp.vol':'Vol. (t)','intake.bc.comp.eqp':'Eq. P₂O₅','intake.bc.comp.add':'Adicionar concorrente',
+ 'intake.bc.design.h':'Hipótese agronômica & design','intake.bc.hyp':'Hipótese principal','intake.bc.yield':'Uplift de rendimento alvo','intake.bc.revenue':'Receita adicional modelada',
+ 'intake.bc.eco.h':'Impacto ecológico & adoção','intake.bc.co2':'CO₂ evitado (kg CO₂eq/ha)','intake.bc.water':'Redução pegada hídrica (%)','intake.bc.adopt':'Adoção alvo 3 anos (ha)','intake.bc.share':'Market share alvo','intake.bc.notes':'Notas complementares',
+ 'dash.map.trials':'Trials','dash.map.demos':'Demos',
+ 'dash.regsplit.h':'Análise Regional','dash.regsplit.tab.trials':'Trials & Demos por região','dash.regsplit.tab.budget':'Orçamento comprometido 2026 por região','dash.regsplit.total':'Total comprometido 2026',
+ 'ceo.h':'Aprovação CEO','ceo.lead':'Validação anual do portfolio no nível entidade. O CEO valida o envelope global por BU × região.',
+ 'ceo.annual.h':'KPIs Anual do Portfolio','ceo.annual.sub':'(visão 7 anos: 2024 → 2030)','ceo.ents.h':'Visão do Portfolio por Entidade','ceo.ents.empty':'Nenhuma entidade com UCs ativos neste ciclo.',
+ 'ceo.persist':'Decisões CEO persistidas em tempo real (localStorage + servidor).',
+ 'gov.dec.choose':'Decisão','gov.mondec.choose':'Veredicto','gov.dec.applied':'{id}: decisão {d} registrada','gov.mondec.applied':'{id}: veredicto {d}',
+ 'gov.steerAcc.h':'Portfolio Steering — agrupado por projeto','gov.steerAcc.sub':'(visão consolidada projeto → trials para decisão em comitê)',
+ 'gov.monAcc.h':'Portfolio Monitoring — agrupado por projeto','gov.monAcc.sub':'(acompanhamento Go/Hold/Kill pós-execução)',
  'adm.t.ref':'Catálogos','adm.t.frame':'Framework v1.0','adm.t.gov':'Governança','adm.t.access':'Acessos & papéis','adm.t.integr':'Integrações',
  'adm.gov.lead':'Configurações de governança: matriz RACI, limites de decisão CEO, elegibilidade Fast Track, SLAs por etapa. Alterações são propagadas imediatamente.',
  'adm.gov.raci.h':'Matriz RACI editável','adm.gov.raci.sub':'(11 etapas × 5 papéis)','adm.gov.raci.help':'Para cada etapa, escolha quem é Responsável (R), Accountable (A), Consultado (C) ou Informado (I).',
@@ -3731,9 +4011,10 @@ const CXTAB_GROUPS = {
   dashboards: [['cockpit','Cockpit'],     ['dashboards','Vue analytique']],
   portfolio:  [['portfolio','Trials'],    ['projects','Projets']],
   projects:   [['portfolio','Trials'],    ['projects','Projets']],
-  governance: [['governance','Comités'],  ['calendar','Calendrier'], ['controls','Contrôles internes']],
-  calendar:   [['governance','Comités'],  ['calendar','Calendrier'], ['controls','Contrôles internes']],
-  controls:   [['governance','Comités'],  ['calendar','Calendrier'], ['controls','Contrôles internes']],
+  governance: [['governance','Comités'],  ['ceo','Approbation CEO'], ['calendar','Calendrier'], ['controls','Contrôles internes']],
+  ceo:        [['governance','Comités'],  ['ceo','Approbation CEO'], ['calendar','Calendrier'], ['controls','Contrôles internes']],
+  calendar:   [['governance','Comités'],  ['ceo','Approbation CEO'], ['calendar','Calendrier'], ['controls','Contrôles internes']],
+  controls:   [['governance','Comités'],  ['ceo','Approbation CEO'], ['calendar','Calendrier'], ['controls','Contrôles internes']],
   intake:     [['intake','Standard'],     ['fasttrack','Fast Track']],
   fasttrack:  [['intake','Standard'],     ['fasttrack','Fast Track']],
 };
@@ -4241,6 +4522,133 @@ function buOf(id){ return BUS.find(b=>b.id===id) || BUS[6]; }
 function fmtMoney(n){ return '$'+(n||0).toLocaleString('en-US',{maximumFractionDigits:0}); }
 function fmtDate(s){ if(!s) return '—'; try{ return new Date(s).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'2-digit'}); }catch(e){ return s; } }
 function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);}
+
+/* =================================================================
+ * v0.22 — UC schema enrichment (retours Halima)
+ * 3 blocs structurels par UC :
+ *   - Project Description (rationale projet, héritage du parent)
+ *   - Business Case (P Market + Design & Hypothesis + Eco Impact)
+ *   - Trial Description (objectifs, KPIs, MDS, protocole)
+ * Accesseurs rétro-compatibles : si le bloc n'existe pas (UCs créés
+ * avant v0.22), on le fabrique depuis les champs scalaires existants.
+ * ================================================================= */
+function ucProjectDescription(u){
+  if(!u) return {};
+  if(u.project_description && typeof u.project_description==='object') return u.project_description;
+  const proj = u.project_id ? projById(u.project_id) : null;
+  return {
+    rationale: u.rationale || (proj ? (proj.description || '') : ''),
+    parent_project: proj ? {id:proj.id, title:proj.title} : null,
+    strategic_objectives: u.strategic_objectives || [],
+    bu: u.bu, region: u.region,
+  };
+}
+function ucBusinessCase(u){
+  if(!u) return {};
+  if(u.business_case && typeof u.business_case==='object') return u.business_case;
+  // Fabrique un Business Case minimal depuis les champs existants
+  return {
+    p_market: { crop:u.crop, country:u.region, currentP2O5:'', potentialP2O5:'', competitors:[] },
+    design: { nbTrials:1, hypothesis:u.objective_primary||'', expectedYield:'', treatments:u.treatments||0, replications:u.replications||0 },
+    eco: { co2Reduction:'', adoption:'', revenue:'', notes:'' },
+  };
+}
+function ucTrialDescription(u){
+  if(!u) return {};
+  if(u.trial_description && typeof u.trial_description==='object') return u.trial_description;
+  return {
+    name: u.name, objective_primary: u.objective_primary,
+    objectives_secondary: u.objectives_secondary||[],
+    kpis_primary: u.kpis_primary||[], kpis_secondary: u.kpis_secondary||[],
+    mds_covered: u.mds_covered||[],
+    treatments: u.treatments, replications: u.replications,
+    start_date: u.start_date, end_date: u.end_date,
+    partner: u.partner, sai_lead: u.sai_lead,
+    protocol: u.protocol, attachments: u.attachments||[],
+    risks: u.risks||[],
+  };
+}
+
+/* govProjectAccordion(items, actionFn, opts?) — utilisé par Portfolio,
+ * Steering, Monitoring : groupe les trials sous leur project parent
+ * avec un accordion. actionFn(uc) → HTML inséré au pied de chaque
+ * trial card (boutons décision, par exemple). opts.containerId pour
+ * le wiring du click-to-toggle. */
+function govProjectAccordion(items, actionFn, opts){
+  opts = opts || {};
+  if(!items || !items.length) return `<div class="empty" style="padding:48px 20px"><div class="big">📦</div>${tr('pf.kn.empty')}</div>`;
+  const groups = {};
+  items.forEach(u => {
+    const pid = u.project_id || '__orphan__';
+    if(!groups[pid]) groups[pid] = [];
+    groups[pid].push(u);
+  });
+  const orderedIds = Object.keys(groups).sort((a,b) => {
+    if(a==='__orphan__') return 1;
+    if(b==='__orphan__') return -1;
+    return a.localeCompare(b);
+  });
+  const html = `<div class="proj-acc">${orderedIds.map(pid => {
+    const list = groups[pid];
+    const proj = (pid==='__orphan__')
+      ? {id:'—', title:tr('acc.orphan')||'Trials sans projet rattaché', region:'—', entity:'—', status:'—'}
+      : (projById(pid) || {id:pid, title:'Unknown', region:'—', entity:'—', status:'—'});
+    const trials = list.filter(u => u.type !== 'demo').length;
+    const demos = list.filter(u => u.type === 'demo').length;
+    const totBudget = list.reduce((s,u)=>s+(u.budget||0),0);
+    const opened = opts.openFirst && pid === orderedIds[0];
+    return `
+      <div class="proj-acc-card" data-pid="${escapeHtml(pid)}">
+        <div class="proj-acc-h ${opened?'open':''}" data-pid="${escapeHtml(pid)}">
+          <span class="proj-acc-chev" aria-hidden="true">▶</span>
+          <div class="proj-acc-meta">
+            <div class="proj-acc-id">${escapeHtml(proj.id)}</div>
+            <div class="proj-acc-title">${escapeHtml(proj.title)}</div>
+            <div class="proj-acc-tags">
+              ${proj.region && proj.region!=='—' ? `<span class="badge bg-soft">${escapeHtml(proj.region)}</span>` : ''}
+              ${proj.entity && proj.entity!=='—' ? `<span class="badge bg-soft">${escapeHtml(String(proj.entity).replace('BU-',''))}</span>` : ''}
+              ${proj.status && proj.status!=='—' ? `<span class="badge bg-info">${escapeHtml(proj.status)}</span>` : ''}
+            </div>
+          </div>
+          <div class="proj-acc-cnt">
+            <div class="cnt">${list.length}</div>
+            <div class="cnt-lbl">${trials} ${tr('acc.trials')||'trials'} · ${demos} ${tr('acc.demos')||'demos'} · ${fmtMoney(totBudget)}</div>
+          </div>
+        </div>
+        <div class="proj-acc-body ${opened?'open':''}" data-pid="${escapeHtml(pid)}">
+          <div class="proj-acc-grid">${list.map(u => {
+            const st = statusOf(u.status), ty = typeOf(u.type), bu = buOf(u.bu);
+            return `<div class="proj-acc-card-uc" onclick="if(!event.target.closest('.no-bubble'))openUc('${u.id}')">
+              <div class="pauc-h">
+                <span class="pauc-id">${u.id} · ${tyLbl(ty)}</span>
+                ${u.fast_track?`<span class="pill" style="background:#fde7e7;color:#a01f1f">${tr('badge.ft')}</span>`:''}
+              </div>
+              <div class="pauc-title">${escapeHtml(u.name)}</div>
+              <div class="pauc-meta"><span>📍 ${escapeHtml(u.region)} · ${escapeHtml(buOf(u.bu).nm)}</span><span>🌾 ${escapeHtml(u.crop)}</span></div>
+              <div class="pauc-pills">
+                <span class="pill ${st.pill}">${stLbl(st)}</span>
+                <span class="pauc-budget">${fmtMoney(u.budget)}</span>
+              </div>
+              ${actionFn ? `<div class="pauc-action no-bubble" onclick="event.stopPropagation()">${actionFn(u)}</div>` : ''}
+            </div>`;
+          }).join('')}</div>
+        </div>
+      </div>`;
+  }).join('')}</div>`;
+  // Wire toggles après injection
+  setTimeout(()=>{
+    document.querySelectorAll('.proj-acc-h').forEach(h => {
+      h.onclick = ()=>{
+        const pid = h.dataset.pid;
+        const body = h.parentElement.querySelector('.proj-acc-body');
+        const isOpen = body.classList.contains('open');
+        h.classList.toggle('open', !isOpen);
+        body.classList.toggle('open', !isOpen);
+      };
+    });
+  }, 20);
+  return html;
+}
 function toast(m, kind){
   const t=document.getElementById('toast');
   t.textContent=m;
@@ -4381,6 +4789,7 @@ function goView(id){
   if(id==='intake')     renderIntake();
   if(id==='calendar')   renderCalendar();
   if(id==='governance') renderGovernance();
+  if(id==='ceo')        renderCEO();
   if(id==='controls')   renderControls();
   if(id==='fasttrack')  renderFastTrack();
   if(id==='kb')         renderKB();
@@ -4791,6 +5200,22 @@ function renderDashboards(){
           <div class="db-prog">${r.progress}% ${tr('dash.map.progress')}</div>
         </div>`).join('')}
       </div>
+      <div class="wmap-legend">
+        <span><i class="dot" style="background:#e3a23c"></i>${tr('dash.map.trials')||'Trials'}</span>
+        <span><i class="dot" style="background:var(--green-500)"></i>${tr('dash.map.demos')||'Demos'}</span>
+      </div>
+    </div>
+
+    <!-- v0.22 — Regional Breakdown : toggle Trials/Demos ↔ Budget par région (retour Halima #1) -->
+    <div class="reg-split">
+      <div class="dash-card-h" style="margin-bottom:14px">
+        <h3>${tr('dash.regsplit.h')||'Regional Breakdown'}</h3>
+        <div class="reg-split-toggles">
+          <button id="btnRegTrials" class="btn primary sm">👥 ${tr('dash.regsplit.tab.trials')||'Trials & Demos par région'}</button>
+          <button id="btnRegBudget" class="btn ghost sm">💰 ${tr('dash.regsplit.tab.budget')||'Budget engagé 2026 par région'}</button>
+        </div>
+      </div>
+      <div id="regSplitPane"></div>
     </div>
 
     <div class="dash-donuts">
@@ -4800,6 +5225,49 @@ function renderDashboards(){
     </div>
     <p class="muted" style="font-size:12px;margin-top:6px">${tr('dash.note')}</p>
   `;
+  // v0.22 — wire region-split toggle
+  const renderRegSplit = (mode)=>{
+    const pane = document.getElementById('regSplitPane');
+    if(!pane) return;
+    document.getElementById('btnRegTrials').className = 'btn '+(mode==='trials'?'primary':'ghost')+' sm';
+    document.getElementById('btnRegBudget').className = 'btn '+(mode==='budget'?'primary':'ghost')+' sm';
+    if(mode==='trials'){
+      const data = DASH_REGIONS.map(r => {
+        const ucs = DATA.filter(u => u.bu === r.key);
+        return { key:r.key, label:r.label, trials:ucs.filter(u=>!isDemo(u)).length, demos:ucs.filter(u=>isDemo(u)).length };
+      }).filter(d=>d.trials+d.demos>0);
+      const max = Math.max(1, ...data.map(d=>d.trials+d.demos));
+      pane.innerHTML = data.map(d => `
+        <div class="reg-split-row">
+          <div class="reg-split-lbl">${escapeHtml(d.label)}</div>
+          <div class="reg-split-bar-wrap">
+            ${d.trials?`<div class="reg-split-bar-t" style="width:${d.trials/max*100}%">${d.trials}</div>`:''}
+            ${d.demos?`<div class="reg-split-bar-d" style="width:${d.demos/max*100}%">${d.demos}</div>`:''}
+          </div>
+          <div class="reg-split-num"><b style="color:#e3a23c">${d.trials}T</b> · <b style="color:var(--green-700)">${d.demos}D</b></div>
+        </div>
+      `).join('') || '<p class="muted" style="text-align:center;padding:14px">Aucune donnée à afficher.</p>';
+    } else {
+      const data = DASH_REGIONS.map(r => {
+        const ucs = DATA.filter(u => u.bu === r.key);
+        return { key:r.key, label:r.label, budget: ucs.reduce((s,u)=>s+(u.budget||0),0) };
+      }).filter(d=>d.budget>0).sort((a,b)=>b.budget-a.budget);
+      const max = Math.max(1, ...data.map(d=>d.budget));
+      const total = data.reduce((s,d)=>s+d.budget, 0);
+      pane.innerHTML = data.map(d => `
+        <div class="reg-split-row">
+          <div class="reg-split-lbl">${escapeHtml(d.label)}</div>
+          <div class="reg-split-bar-wrap">
+            <div class="reg-split-bar-b" style="width:${d.budget/max*100}%">$${(d.budget/1000).toFixed(0)}K</div>
+          </div>
+          <div class="reg-split-num"><b>${fmtMoney(d.budget)}</b><small>${Math.round(d.budget/total*100)}% du total</small></div>
+        </div>
+      `).join('') + `<div class="reg-split-total"><span>${tr('dash.regsplit.total')||'Total engagé 2026'}</span><span>${fmtMoney(total)}</span></div>`;
+    }
+  };
+  document.getElementById('btnRegTrials').onclick = ()=>renderRegSplit('trials');
+  document.getElementById('btnRegBudget').onclick = ()=>renderRegSplit('budget');
+  renderRegSplit('trials');
 }
 
 /* Export CSV des trials clôturés (B8 — KB / Closure). */
@@ -4996,6 +5464,7 @@ function renderPortfolio(){
     <div class="tool-bar">
       <div class="subnav">
         <button class="${view==='kanban'?'on':''}" onclick="PREFS.portfolioView='kanban';savePrefs();renderPortfolio()">${tr('pf.v.kanban')}</button>
+        <button class="${view==='accordion'?'on':''}" onclick="PREFS.portfolioView='accordion';savePrefs();renderPortfolio()">${tr('pf.v.accordion')||'Par projet'}</button>
         <button class="${view==='table'?'on':''}"  onclick="PREFS.portfolioView='table';savePrefs();renderPortfolio()">${tr('pf.v.table')}</button>
       </div>
       <div class="sp"></div>
@@ -5007,7 +5476,9 @@ function renderPortfolio(){
     </div>
     ${activeFiltersBar()}
 
-    ${view==='kanban' ? renderKanban(list) : renderTable(list)}
+    ${view==='kanban' ? renderKanban(list)
+      : view==='accordion' ? govProjectAccordion(list, null, {openFirst:true})
+      : renderTable(list)}
   `;
 }
 // Reset complet — efface TOUS les filtres (type, bu, status, project, q, crop, partnerq, fast_track)
@@ -5189,6 +5660,72 @@ function openUc(id){
         </div>
       </div>
       <button class="x" onclick="closeUc()" title="${tr('uc.close')}" aria-label="${tr('uc.close')}">✕</button>
+    </div>
+    <!-- v0.22 — Trial card enrichie : Project Desc · Business Case · Trial Desc · Status (retour Halima #2) -->
+    <div class="uc-blocks">
+      ${(()=>{ const pd = ucProjectDescription(u); return `
+        <div class="uc-block">
+          <div class="uc-block-h">
+            <span class="uc-block-ico">📁</span>
+            <span class="uc-block-t">${tr('uc.bk.project')||'Project description'}</span>
+          </div>
+          <div class="uc-block-body">
+            ${pd.parent_project ? `<div class="kv"><b>${tr('uc.bk.parent')||'Parent'}</b><span><b>${escapeHtml(pd.parent_project.id)}</b> — ${escapeHtml(pd.parent_project.title)}</span></div>` : `<div class="muted" style="font-size:12px;font-style:italic">${tr('uc.bk.noProject')||'Trial sans projet parent'}</div>`}
+            <div class="kv" style="margin-top:6px">
+              <b>BU</b><span>${escapeHtml(buOf(pd.bu).nm)}</span>
+              <b>${tr('uc.bk.region')||'Région'}</b><span>${escapeHtml(pd.region||'—')}</span>
+            </div>
+            ${pd.rationale ? `<p style="margin:10px 0 0;font-size:12.5px;line-height:1.55">${escapeHtml(pd.rationale)}</p>` : ''}
+          </div>
+        </div>`; })()}
+      ${(()=>{ const bc = ucBusinessCase(u); return `
+        <div class="uc-block">
+          <div class="uc-block-h">
+            <span class="uc-block-ico">📊</span>
+            <span class="uc-block-t">${tr('uc.bk.bcase')||'Business case'}</span>
+          </div>
+          <div class="uc-block-body">
+            <div class="kv">
+              <b>${tr('uc.bk.market')||'Marché'}</b><span>${escapeHtml(bc.p_market?.country || u.region || '—')} · ${escapeHtml(bc.p_market?.crop || u.crop || '—')}</span>
+              <b>${tr('uc.bk.budget')||'Budget'}</b><span>${fmtMoney(u.budget)}</span>
+              <b>${tr('uc.bk.partner')||'Partenaire'}</b><span>${escapeHtml(u.partner||'—')}</span>
+              ${bc.design?.expectedYield ? `<b>${tr('uc.bk.expectedY')||'Uplift visé'}</b><span>${escapeHtml(bc.design.expectedYield)}</span>` : ''}
+              ${bc.eco?.co2Reduction ? `<b>${tr('uc.bk.co2')||'CO₂ évité'}</b><span>${escapeHtml(bc.eco.co2Reduction)}</span>` : ''}
+            </div>
+            ${(bc.p_market?.competitors||[]).length ? `<p style="margin:10px 0 0;font-size:11.5px;color:var(--muted)">${(bc.p_market.competitors||[]).length} ${tr('uc.bk.competitors')||'concurrents mappés'}</p>` : ''}
+          </div>
+        </div>`; })()}
+      ${(()=>{ const td = ucTrialDescription(u); return `
+        <div class="uc-block">
+          <div class="uc-block-h">
+            <span class="uc-block-ico">🔬</span>
+            <span class="uc-block-t">${tr('uc.bk.trial')||'Trial description'}</span>
+          </div>
+          <div class="uc-block-body">
+            <div class="kv">
+              <b>${tr('uc.bk.plan')||'Plan'}</b><span>${td.treatments||0}T × ${td.replications||0}R</span>
+              <b>${tr('uc.bk.window')||'Fenêtre'}</b><span>${fmtDate(td.start_date)} → ${fmtDate(td.end_date)}</span>
+              <b>${tr('uc.bk.mds')||'MDS'}</b><span>${(td.mds_covered||[]).length}/${MDS_ITEMS.length}</span>
+            </div>
+            ${td.objective_primary ? `<p style="margin:10px 0 6px;font-size:12.5px;line-height:1.5">${escapeHtml(td.objective_primary)}</p>` : ''}
+            ${td.protocol ? `<a class="uc-block-dl" onclick="event.stopPropagation();toast(tr('uc.bk.dlPending')||'Téléchargement à venir (protocole stocké côté serveur)','ok')">⬇ ${tr('uc.bk.dlProto')||'Protocole'} (${escapeHtml(td.protocol)})</a>` : `<span class="muted" style="font-size:11.5px;font-style:italic">${tr('uc.bk.noProto')||'Pas de protocole attaché'}</span>`}
+          </div>
+        </div>`; })()}
+      <div class="uc-block">
+        <div class="uc-block-h">
+          <span class="uc-block-ico">🎯</span>
+          <span class="uc-block-t">${tr('uc.bk.status')||'Statut'}</span>
+        </div>
+        <div class="uc-block-body">
+          <div style="margin-bottom:8px"><span class="pill ${st.pill}" style="font-size:13px;padding:4px 10px">${stLbl(st)}</span></div>
+          <div class="kv">
+            <b>${tr('uc.bk.type')||'Type'}</b><span>${tyLbl(ty)}</span>
+            <b>${tr('uc.bk.prio')||'Priorité'}</b><span>${prLbl(pr)}</span>
+            <b>${tr('uc.bk.ft')||'Fast track'}</b><span>${u.fast_track?'<b style="color:#a01f1f">'+tr('badge.ft')+'</b>':tr('uc.bk.std')||'Standard'}</span>
+            <b>${tr('uc.bk.gates')||'Gates'}</b><span>${(u.gates||[]).filter(g=>g.status==='done').length}/${(u.gates||[]).length} ${tr('uc.bk.done')||'terminés'}</span>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="modal-body">
       <div>
@@ -5492,9 +6029,287 @@ function _localFallback(q){
 }
 
 /* -----------------------------------------------------------------
- * 9. INTAKE FORM (placeholder for MVP V1 — full form coming next iteration)
+ * 9. INTAKE — v0.22 : selector Standard/Fast Track + wizard 3 étapes
+ *
+ * Flow :
+ *   1. Sans mode choisi → écran selector (Standard LOCKED / Fast Track OPEN)
+ *   2. Avec mode choisi → wizard 3 étapes
+ *      - Step 1 : Project Identification (champs objectifs + périmètre)
+ *      - Step 2 : Business Case (3 tabs : P Market / Design / Eco Impact)
+ *      - Step 3 : Trial Description (MDS + Budget + Protocole)
+ *   3. Soumission → submitUc() (logique existante, IDs des champs préservés)
  * --------------------------------------------------------------- */
 function renderIntake(){
+  const _prefillCleanup = PREFS._prefillProject;
+  if(!PREFS.intakeMode){ renderIntakeSelector(); return; }
+  if(!PREFS.intakeStep) PREFS.intakeStep = 1;
+  renderIntakeWizard();
+  if(_prefillCleanup){ delete PREFS._prefillProject; savePrefs(); }
+}
+function renderIntakeSelector(){
+  document.getElementById('sc-intake').innerHTML = `
+    <div class="wiz-selector">
+      <div style="font-size:36px;margin-bottom:10px">🌱</div>
+      <div class="wiz-sel-h">${tr('intake.sel.h')||'Nouvelle soumission Trial / Démo'}</div>
+      <div class="wiz-sel-sub">${tr('intake.sel.sub')||'Choisis ton processus de soumission. Une fois validé par le Steering Committee, ton trial passe dans le pipeline standard ou Fast Track.'}</div>
+
+      <div class="wiz-sel-grid">
+        <!-- Standard Process : LOCKED hors fenêtre QBR -->
+        <div class="wiz-sel-card locked" id="cardStandard" onclick="intakeSelectStandard()">
+          <span class="wiz-sel-badge">${tr('intake.sel.locked')||'LOCKED'}</span>
+          <div class="wiz-sel-ico">📋</div>
+          <h3>${tr('intake.sel.std.h')||'Standard Process'}</h3>
+          <p>${tr('intake.sel.std.body')||'Cycle annuel complet : soumission Use Case, SAI Review, Steering Committee, Approbation CEO.'}</p>
+          <div class="wiz-sel-info">${tr('intake.sel.std.info')||'🔒 Disponible uniquement aux fenêtres QBR'}</div>
+        </div>
+
+        <!-- Fast Track : OPEN -->
+        <div class="wiz-sel-card open" id="cardFastTrack" onclick="intakeSelectFastTrack()">
+          <span class="wiz-sel-badge">${tr('intake.sel.open')||'OPEN'}</span>
+          <div class="wiz-sel-ico">⚡</div>
+          <h3>${tr('intake.sel.ft.h')||'Fast Track'}</h3>
+          <p>${tr('intake.sel.ft.body')||'Voie accélérée pour les UCs urgents ou stratégiques. Décision en 12 jours vs 90 standard.'}</p>
+          <div class="wiz-sel-info">${tr('intake.sel.ft.info')||'✓ Disponible toute l\'année · click pour démarrer'}</div>
+        </div>
+      </div>
+
+      <div class="wiz-sel-preview">
+        <div class="wiz-sel-preview-h">${tr('intake.sel.afterPick')||'Une fois le processus choisi, tu compléteras :'}</div>
+        <div class="wiz-sel-preview-steps">
+          ${[['1','📁',tr('intake.step.project')||'Project Identification'],['2','📊',tr('intake.step.bcase')||'Business Case'],['3','🔬',tr('intake.step.trial')||'Trial Description']].map(([n,ico,lbl],i,arr)=>`
+            <div class="wiz-sel-step">
+              <div class="wiz-sel-step-circle">${ico}</div>
+              <div class="wiz-sel-step-n">${tr('intake.step')||'Step'} ${n}</div>
+              <div class="wiz-sel-step-lbl">${lbl}</div>
+            </div>
+            ${i<arr.length-1?'<div class="wiz-sel-step-line"></div>':''}
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+function intakeSelectFastTrack(){
+  PREFS.intakeMode = 'fast'; PREFS.intakeStep = 1; PREFS.intakeFT = true; savePrefs();
+  renderIntake();
+}
+function intakeSelectStandard(){
+  // Vérification fenêtre QBR (Mar / Jun / Sep / Dec)
+  const m = new Date().getMonth() + 1;
+  const open = [3,6,9,12].includes(m);
+  if(!open){
+    const card = document.getElementById('cardStandard');
+    if(card && !card.querySelector('.intake-locked-msg')){
+      const msg = document.createElement('div');
+      msg.className = 'intake-locked-msg';
+      msg.style.cssText = 'margin-top:12px;padding:11px 14px;background:#fff3cd;border:1px solid #ffc107;border-radius:9px;font-size:12.5px;color:#856404;line-height:1.5';
+      msg.innerHTML = `<b>ℹ️ ${tr('intake.std.locked.h')||'Standard Process actuellement fermé'}</b><br>${tr('intake.std.locked.body')||'Les soumissions standard ne sont acceptées que pendant les fenêtres QBR (Mars, Juin, Septembre, Décembre). Contacte ton coordinateur SAI pour la prochaine fenêtre.'}`;
+      card.parentNode.insertBefore(msg, card.nextSibling);
+      setTimeout(()=>msg.remove(), 7000);
+    }
+    return;
+  }
+  PREFS.intakeMode = 'standard'; PREFS.intakeStep = 1; PREFS.intakeFT = false; savePrefs();
+  renderIntake();
+}
+function intakeWizardBack(){ PREFS.intakeMode = null; PREFS.intakeStep = 1; savePrefs(); renderIntake(); }
+function intakeWizardGoStep(n){ PREFS.intakeStep = n; savePrefs(); renderIntake(); }
+function intakeWizardNext(){
+  const cur = PREFS.intakeStep || 1;
+  if(cur < 3){ PREFS.intakeStep = cur+1; savePrefs(); renderIntake(); }
+}
+function intakeWizardPrev(){
+  const cur = PREFS.intakeStep || 1;
+  if(cur > 1){ PREFS.intakeStep = cur-1; savePrefs(); renderIntake(); }
+  else intakeWizardBack();
+}
+function renderIntakeWizard(){
+  const _nextId = 'UC-2026-'+((DATA.length+1).toString().padStart(3,'0'));
+  const step = PREFS.intakeStep || 1;
+  const isFT = !!PREFS.intakeFT;
+  document.getElementById('sc-intake').innerHTML = `
+    <h2 class="h-pg">${tr('in.h')} ${isFT?'<span class="pill" style="background:#fff8ec;color:#a06f1f;font-size:13px;padding:4px 10px;margin-left:8px">⚡ Fast Track</span>':''}</h2>
+    <p class="lead">${tr('intake.wiz.lead')||'Complète chaque étape pour soumettre ton Use Case.'}</p>
+    <div class="intake-idbar" title="${tr('in.idbar.help')}">
+      <span class="lbl">${tr('in.idbar.lbl')}</span>
+      <code class="val">${_nextId}</code>
+      <span class="hint">${tr('in.idbar.hint')}</span>
+    </div>
+
+    <div class="wiz-stepper">
+      <div class="wiz-step ${step>1?'done':step===1?'active':''}" onclick="intakeWizardGoStep(1)" style="cursor:pointer">
+        <div class="wiz-step-c">${step>1?'✓':'1'}</div>
+        <div class="wiz-step-lbl">${tr('intake.step.project')||'Project<br>Identification'}</div>
+      </div>
+      <div class="wiz-step ${step>2?'done':step===2?'active':''}" ${step>=2?'onclick="intakeWizardGoStep(2)" style="cursor:pointer"':''}>
+        <div class="wiz-step-c">${step>2?'✓':'2'}</div>
+        <div class="wiz-step-lbl">${tr('intake.step.bcase')||'Business<br>Case'}</div>
+      </div>
+      <div class="wiz-step ${step===3?'active':''}" ${step>=3?'onclick="intakeWizardGoStep(3)" style="cursor:pointer"':''}>
+        <div class="wiz-step-c">3</div>
+        <div class="wiz-step-lbl">${tr('intake.step.trial')||'Trial<br>Description'}</div>
+      </div>
+    </div>
+
+    <div id="wizBody">${
+      step===1 ? renderWizStep1Html() :
+      step===2 ? renderWizStep2Html() :
+                 renderWizStep3Html()
+    }</div>
+
+    <div class="tool-bar" style="margin-top:20px;border-top:1px solid var(--line);padding-top:16px">
+      <button class="btn ghost" onclick="intakeWizardPrev()">← ${step===1 ? (tr('intake.wiz.cancel')||'Annuler') : (tr('intake.wiz.prev')||'Précédent')}</button>
+      <span class="sp"></span>
+      ${step < 3 ? `<button class="btn primary" onclick="intakeWizardNext()">${tr('intake.wiz.next')||'Suivant'} →</button>` : `
+        <button class="btn ghost" onclick="submitUc(true)">💾 ${tr('in.btn.draft')}</button>
+        <button class="btn primary" onclick="submitUc(false)">📨 ${tr('in.btn.submit')}</button>
+      `}
+    </div>
+  `;
+  // Wire BC tabs si on est à l'étape 2
+  if(step===2){
+    document.querySelectorAll('.bc-tab').forEach(b=>{
+      b.onclick = ()=>{
+        const id = b.dataset.tab;
+        document.querySelectorAll('.bc-tab').forEach(x=>x.classList.toggle('on', x===b));
+        document.querySelectorAll('.bc-pane').forEach(p=>p.style.display = (p.dataset.tab===id ? '' : 'none'));
+      };
+    });
+  }
+}
+function renderWizStep1Html(){
+  return `
+    <div class="form-section">
+      <h3>${tr('in.s1.h')}</h3>
+      <p class="sub">${tr('in.s1.sub')}</p>
+      <div class="form-grid">
+        <div class="fld full"><label for="if_project">${tr('in.f.project')} <span class="req">*</span></label>
+          <select id="if_project">${PROJECTS.map(p=>`<option value="${p.id}"${PREFS._prefillProject===p.id?' selected':''}>${escapeHtml(p.id+' · '+p.title)}</option>`).join('')}</select>
+          <span class="muted" style="display:block;font-size:11.5px;margin-top:4px">${tr('in.f.project.help')}</span></div>
+        <div class="fld full"><label for="if_name">${tr('in.f.name')} <span class="req">*</span></label><input id="if_name" type="text" placeholder="${tr('in.f.name.ph')}"></div>
+        <div class="fld"><label for="if_bu">${tr('in.f.bu')} <span class="req">*</span></label>
+          <select id="if_bu">${BUS.map(b=>`<option value="${b.id}">${b.nm}</option>`).join('')}</select></div>
+        <div class="fld"><label for="if_type">${tr('in.f.type')} <span class="req">*</span></label>
+          <select id="if_type">${TYPES.map(t=>`<option value="${t.id}">${tyLbl(t)} — TRL ${t.id==='scientific'?'2-4':(t.id==='applied'?'5-8':'7-9')}</option>`).join('')}</select></div>
+        <div class="fld full"><label for="if_objp">${tr('in.f.objPrim')} <span class="req">*</span></label><textarea id="if_objp" placeholder="${tr('in.f.objPrim.ph')}"></textarea></div>
+        <div class="fld full"><label for="if_objs">${tr('in.f.objSec')} <span class="opt">${tr('in.f.objSec.opt')}</span></label><textarea id="if_objs" placeholder="1. …\n2. …\n3. …"></textarea></div>
+        <div class="fld full"><label for="if_rat">${tr('in.f.rat')} <span class="req">*</span></label><textarea id="if_rat" placeholder="${tr('in.f.rat.ph')}"></textarea></div>
+      </div>
+    </div>
+    <div class="form-section">
+      <h3>${tr('in.s2.h')}</h3>
+      <p class="sub">${tr('in.s2.sub')}</p>
+      <div class="form-grid">
+        <div class="fld"><label for="if_region">${tr('in.f.region')} <span class="req">*</span></label>
+          <select id="if_region">${Object.values(REGIONS).flat().map(r=>`<option>${r}</option>`).join('')}</select></div>
+        <div class="fld"><label for="if_crop">${tr('in.f.crop')} <span class="req">*</span></label>
+          <select id="if_crop">${CROPS.map(c=>`<option>${c}</option>`).join('')}</select></div>
+        <div class="fld"><label for="if_prod">${tr('in.f.prod')} <span class="req">*</span></label>
+          <select id="if_prod">${PRODUCTS.map(p=>`<option>${p}</option>`).join('')}</select></div>
+        <div class="fld"><label for="if_ref">${tr('in.f.ref')}</label>
+          <select id="if_ref">${PRODUCTS.map(p=>`<option>${p}</option>`).join('')}</select></div>
+      </div>
+    </div>
+  `;
+}
+function renderWizStep2Html(){
+  // Business Case en 3 tabs (P Market / Design & Hypothesis / Eco Impact)
+  return `
+    <div class="bc-ctx">
+      <b>${tr('intake.bc.ctx')||'Business Case'}</b> — ${tr('intake.bc.intro')||'Quantifie le marché, l\'hypothèse agronomique et l\'impact écologique. Toutes les sections sont sauvegardées même en brouillon.'}
+    </div>
+    <div class="bc-tabs">
+      <button class="bc-tab on" data-tab="pmarket">${tr('intake.bc.t1')||'1 · P Market'}</button>
+      <button class="bc-tab" data-tab="design">${tr('intake.bc.t2')||'2 · Design & Hypothesis'}</button>
+      <button class="bc-tab" data-tab="eco">${tr('intake.bc.t3')||'3 · Eco Impact'}</button>
+    </div>
+
+    <div class="bc-pane" data-tab="pmarket">
+      <div class="form-section" style="margin-top:0">
+        <h3>${tr('intake.bc.pmarket.h')||'Description du marché phosphaté'}</h3>
+        <div class="form-grid">
+          <div class="fld"><label for="bc_area">${tr('intake.bc.area')||'Surface culture (ha)'}</label><input id="bc_area" type="text" placeholder="80000"></div>
+          <div class="fld"><label for="bc_currp">${tr('intake.bc.currp')||'Consommation P₂O₅ actuelle (t)'}</label><input id="bc_currp" type="text" placeholder="1200"></div>
+          <div class="fld full"><label for="bc_potp">${tr('intake.bc.potp')||'Potentiel marché P₂O₅ (t)'}</label><input id="bc_potp" type="text" placeholder="2500"></div>
+        </div>
+        <h3 style="margin-top:18px">${tr('intake.bc.comp.h')||'Mapping concurrents'}</h3>
+        <p class="muted" style="font-size:12px;margin:-6px 0 10px">${tr('intake.bc.comp.sub')||'Liste les produits concurrents présents sur ce marché.'}</p>
+        <table class="bc-tbl">
+          <thead><tr><th>${tr('intake.bc.comp.prod')||'Produit'}</th><th>${tr('intake.bc.comp.co')||'Société'}</th><th>${tr('intake.bc.comp.vol')||'Vol. (t)'}</th><th>${tr('intake.bc.comp.eqp')||'Eq. P₂O₅'}</th><th></th></tr></thead>
+          <tbody id="bcCompTbody">
+            <tr><td><input type="text" placeholder="ex: MAP 11-52-0"></td><td><input type="text" placeholder="Société"></td><td><input type="text" placeholder="0"></td><td><input type="text" placeholder="0"></td><td><button class="bc-tbl-x" onclick="this.closest('tr').remove()">✕</button></td></tr>
+          </tbody>
+        </table>
+        <button class="bc-tbl-add" onclick="document.getElementById('bcCompTbody').insertAdjacentHTML('beforeend','<tr><td><input type=\\'text\\' placeholder=\\'ex: MAP 11-52-0\\'></td><td><input type=\\'text\\' placeholder=\\'Société\\'></td><td><input type=\\'text\\' placeholder=\\'0\\'></td><td><input type=\\'text\\' placeholder=\\'0\\'></td><td><button class=\\'bc-tbl-x\\' onclick=&quot;this.closest(\\'tr\\').remove()&quot;>✕</button></td></tr>')">+ ${tr('intake.bc.comp.add')||'Ajouter un concurrent'}</button>
+      </div>
+    </div>
+
+    <div class="bc-pane" data-tab="design" style="display:none">
+      <div class="form-section" style="margin-top:0">
+        <h3>${tr('intake.bc.design.h')||'Hypothèse agronomique & design'}</h3>
+        <div class="form-grid">
+          <div class="fld"><label for="if_treat">${tr('in.f.treat')} <span class="req">*</span></label><input id="if_treat" type="number" placeholder="4" min="1"></div>
+          <div class="fld"><label for="if_rep">${tr('in.f.rep')} <span class="req">*</span></label><input id="if_rep" type="number" placeholder="3" min="3"></div>
+          <div class="fld"><label for="if_start">${tr('in.f.start')}</label><input id="if_start" type="date" oninput="ifDateCheck()"></div>
+          <div class="fld"><label for="if_end">${tr('in.f.end')}</label><input id="if_end" type="date" oninput="ifDateCheck()">
+            <span id="if_dateErr" class="fld-err" style="display:none;color:var(--bad);font-size:11.5px;margin-top:4px">${tr('in.f.dateErr')}</span></div>
+          <div class="fld full"><label for="bc_hyp">${tr('intake.bc.hyp')||'Hypothèse principale (uplift attendu, mécanisme)'}</label><textarea id="bc_hyp" placeholder="ex: +12 % rendement vs MAP grâce à libération progressive…"></textarea></div>
+          <div class="fld"><label for="bc_yield">${tr('intake.bc.yield')||'Uplift rendement visé'}</label><input id="bc_yield" type="text" placeholder="+12% vs ref"></div>
+          <div class="fld"><label for="bc_revenue">${tr('intake.bc.revenue')||'Revenue additionnel modélisé'}</label><input id="bc_revenue" type="text" placeholder="$240/ha"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bc-pane" data-tab="eco" style="display:none">
+      <div class="form-section" style="margin-top:0">
+        <h3>${tr('intake.bc.eco.h')||'Impact écologique & adoption'}</h3>
+        <div class="form-grid">
+          <div class="fld"><label for="bc_co2">${tr('intake.bc.co2')||'CO₂ évité (kg CO₂eq/ha)'}</label><input id="bc_co2" type="text" placeholder="120"></div>
+          <div class="fld"><label for="bc_water">${tr('intake.bc.water')||'Empreinte eau réduite (%)'}</label><input id="bc_water" type="text" placeholder="-8%"></div>
+          <div class="fld"><label for="bc_adopt">${tr('intake.bc.adopt')||'Adoption visée 3 ans (ha)'}</label><input id="bc_adopt" type="text" placeholder="40000"></div>
+          <div class="fld"><label for="bc_share">${tr('intake.bc.share')||'Part de marché visée'}</label><input id="bc_share" type="text" placeholder="5%"></div>
+          <div class="fld full"><label for="bc_eco_notes">${tr('intake.bc.notes')||'Notes complémentaires'}</label><textarea id="bc_eco_notes" placeholder="Sources, hypothèses, références…"></textarea></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+function renderWizStep3Html(){
+  return `
+    <div class="form-section" style="margin-top:0">
+      <h3>${tr('in.s3.h')}</h3>
+      <p class="sub">${tr('in.s3.sub')}</p>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px">${MDS_ITEMS.map(m=>`<label class="mds-row mds-check" style="cursor:pointer"><input type="checkbox" class="if_mds" data-mds="${escapeHtml(m)}" style="accent-color:var(--green-700);margin-right:8px"><span class="nm">${escapeHtml(m)}</span></label>`).join('')}</div>
+      <p class="help" style="margin-top:10px;color:var(--muted)">${tr('in.s3.help')}</p>
+    </div>
+
+    <div class="form-section">
+      <h3>${tr('in.s4.h')}</h3>
+      <div class="form-grid">
+        <div class="fld"><label for="if_budget">${tr('in.f.budget')} <span class="req">*</span></label>
+          <div class="fld-money"><span class="cur" aria-hidden="true">$</span><input id="if_budget" type="number" placeholder="${tr('in.f.budget.ph')}" min="0" step="1000" inputmode="numeric" oninput="ifBudgetFormat()"><span class="cur-suf">USD</span></div>
+          <span id="if_budgetHint" class="muted" style="display:block;font-size:11.5px;margin-top:4px">${tr('in.f.budget.help')}</span></div>
+        <div class="fld"><label for="if_prio">${tr('in.f.prio')}</label>
+          <select id="if_prio">${PRIORITIES.map(p=>`<option value="${p.id}">${prLbl(p)}</option>`).join('')}</select></div>
+        <div class="fld full"><label for="if_partner">${tr('in.f.partner')} <span class="req">*</span></label>
+          <select id="if_partner" onchange="ifPartnerOther()">${PARTNERS.map(p=>`<option value="${escapeHtml(p.nm)}">${p.nm} — ${p.typ}</option>`).join('')}<option value="__other__">${tr('in.f.partnerOther')}</option></select></div>
+        <div class="fld full" id="if_partnerOtherWrap" style="display:none"><label for="if_partnerOther">${tr('in.f.partnerOtherName')} <span class="req">*</span></label><input id="if_partnerOther" type="text" placeholder="${tr('in.f.partnerOtherName.ph')}"></div>
+        <div class="fld"><label for="if_ft">${tr('in.f.ft')}</label>
+          <select id="if_ft"><option value="0"${PREFS.intakeFT?'':' selected'}>${tr('in.f.std')}</option><option value="1"${PREFS.intakeFT?' selected':''}>${tr('in.f.urgent')}</option></select></div>
+        <div class="fld"><label for="if_sai">${tr('in.f.sai')}</label><input id="if_sai" type="text" placeholder="${tr('in.f.sai.ph')}"></div>
+        <div class="fld full"><label for="if_attach">${tr('in.f.attach')} <span class="opt">${tr('in.f.objSec.opt')}</span></label>
+          <input id="if_attach" type="file" multiple onchange="ifAttachList()" style="font-size:12.5px">
+          <span id="if_attachList" class="muted" style="display:block;font-size:11.5px;margin-top:4px"></span></div>
+        <div class="fld full"><label for="if_protocol">${tr('in.f.protocol')} <span class="req">*</span></label>
+          <input id="if_protocol" type="file" accept=".doc,.docx" onchange="ifProtoName()" style="font-size:12.5px">
+          <span id="if_protocolName" class="muted" style="display:block;font-size:11.5px;margin-top:4px">${tr('in.f.protocol.help')}</span></div>
+      </div>
+    </div>
+  `;
+}
+
+/* Ancien renderIntake monolithique gardé pour compat si appelé directement */
+function _legacyRenderIntake(){
   const _prefillCleanup = PREFS._prefillProject;  // consume + clear so it doesn't stick
   // v0.21 B6 : ID auto-généré affiché clairement avant tout (pas de surprise à la soumission).
   const _nextId = 'UC-2026-'+((DATA.length+1).toString().padStart(3,'0'));
@@ -5634,6 +6449,21 @@ function submitUc(isDraft){
   let partner = ifVal('if_partner');
   if(partner==='__other__'){ partner = ifVal('if_partnerOther') || 'Autre partenaire'; }
   const type = ifVal('if_type') || 'applied';
+  // v0.22 : Business case capturé depuis le wizard step 2 (tabs P Market / Design / Eco)
+  const _bcCompetitors = Array.from(document.querySelectorAll('#bcCompTbody tr')).map(tr => {
+    const inputs = tr.querySelectorAll('input');
+    return { product: inputs[0]?.value||'', company: inputs[1]?.value||'', volumes: inputs[2]?.value||'', eqP2O5: inputs[3]?.value||'' };
+  }).filter(c => c.product || c.company);
+  const businessCase = {
+    p_market: { crop: ifVal('if_crop'), country: ifVal('if_region'),
+      area: ifVal('bc_area'), currentP2O5: ifVal('bc_currp'), potentialP2O5: ifVal('bc_potp'),
+      competitors: _bcCompetitors },
+    design: { hypothesis: ifVal('bc_hyp'), expectedYield: ifVal('bc_yield'),
+      revenue: ifVal('bc_revenue'),
+      nbTrials: Number(ifVal('if_treat'))||0, replications: Number(ifVal('if_rep'))||0 },
+    eco: { co2Reduction: ifVal('bc_co2'), waterReduction: ifVal('bc_water'),
+      adoption: ifVal('bc_adopt'), share: ifVal('bc_share'), notes: ifVal('bc_eco_notes') },
+  };
   const cls = type==='scientific' ? 'fundamental' : type==='applied' ? 'validation' : 'demo';
   const clsObj = (window.REF?REF.classes:CLASSES).find(c=>c.id===cls) || CLASSES[0];
   const mds = Array.from(document.querySelectorAll('.if_mds:checked')).map(c=>c.dataset.mds);
@@ -5676,7 +6506,10 @@ function submitUc(isDraft){
     gates: _gatesFor(isDraft?'draft':'submitted'),
     created_at: new Date().toISOString(),
     submitted_at: isDraft ? null : new Date().toISOString(),
-    owner_bu: ifVal('if_bu')||'SAI'
+    owner_bu: ifVal('if_bu')||'SAI',
+    // v0.22 : 3-block structure pour Halima retour #3
+    business_case: businessCase,
+    project_description: { rationale: ifVal('if_rat') },
   };
   // v0.21 : éligibilité Fast Track (seuils paramétrables via Admin > Gouvernance)
   if (uc.fast_track && typeof govFtEligible === 'function' && !govFtEligible(uc)) {
@@ -5694,7 +6527,10 @@ function submitUc(isDraft){
   // v0.21 B9 : propagation centrale (sidebar badges + écran courant si concerné)
   if (typeof dataChanged === 'function') dataChanged();
   toast(isDraft ? tr('in.toast.draft') : tr('in.toast.submit'));
-  PREFS.filters = {}; savePrefs();
+  PREFS.filters = {};
+  // v0.22 : reset wizard state pour la prochaine soumission
+  delete PREFS.intakeMode; delete PREFS.intakeStep; delete PREFS.intakeFT;
+  savePrefs();
   goView('portfolio');
 }
 
@@ -5814,6 +6650,32 @@ function renderGovernance(){
       </div>
     </div>
 
+    <!-- v0.22 — Vue accordéon Steering : trials groupés sous leur project (retour Halima #5) -->
+    <div class="card">
+      <h3>${tr('gov.steerAcc.h')||'Portefeuille Steering — groupé par project'} <span class="sub">${tr('gov.steerAcc.sub')||'(vue consolidée projet → trials pour décision en comité)'}</span></h3>
+      ${govProjectAccordion(inSteering, (uc)=>`
+        <select class="gov-acc-dec" data-id="${uc.id}" onchange="govSetDecision('${uc.id}', this.value)">
+          <option value="">— ${tr('gov.dec.choose')||'Décision'} —</option>
+          <option value="go" ${uc._dec==='go'?'selected':''}>✓ Go</option>
+          <option value="hold" ${uc._dec==='hold'?'selected':''}>⏸ Hold</option>
+          <option value="kill" ${uc._dec==='kill'?'selected':''}>✕ Kill</option>
+        </select>
+      `, {openFirst:true})}
+    </div>
+
+    <!-- v0.22 — Vue accordéon Monitoring : idem (retour Halima #5) -->
+    ${monitoring.length ? `<div class="card">
+      <h3>${tr('gov.monAcc.h')||'Portefeuille Monitoring — groupé par project'} <span class="sub">${tr('gov.monAcc.sub')||'(suivi Go/Hold/Kill post-exécution)'}</span></h3>
+      ${govProjectAccordion(monitoring, (uc)=>`
+        <select class="gov-acc-mondec" data-id="${uc.id}" onchange="govSetMonDecision('${uc.id}', this.value)">
+          <option value="">— ${tr('gov.mondec.choose')||'Verdict'} —</option>
+          <option value="closed-go">✓ Go (déploiement)</option>
+          <option value="closed-hold">⏸ Hold (à itérer)</option>
+          <option value="closed-kill">✕ Kill (ne pas répliquer)</option>
+        </select>
+      `)}
+    </div>` : ''}
+
     <div class="card">
       <h3>${tr('gov.monitor.h')} <span class="sub">${tr('gov.monitor.sub')}</span></h3>
       <p class="muted" style="margin:0 0 12px">${trf('gov.monitor.cnt',{n:monitoring.length})}</p>
@@ -5836,6 +6698,214 @@ function renderGovernance(){
       <p class="muted" style="margin-top:10px;font-size:11.5px"><span class="raci-cell r">R</span> ${tr('gov.raci.r')} &nbsp; <span class="raci-cell a">A</span> ${tr('gov.raci.a')} &nbsp; <span class="raci-cell c">C</span> ${tr('gov.raci.c')} &nbsp; <span class="raci-cell i">I</span> ${tr('gov.raci.i')}</p>
     </div>
   `;
+}
+
+// v0.22 — Décision steering & monitoring inline (depuis l'accordion)
+function govSetDecision(ucId, val){
+  const u = ucById(ucId); if(!u) return;
+  if(!val) return;
+  // Trace dans le UC (gates synthétique)
+  if(!u._steeringDecision) u._steeringDecision = {};
+  u._steeringDecision = { decision: val, at: new Date().toISOString() };
+  // Si Go : passe à CEO, si Hold : reste en steering avec flag, si Kill : closed-kill
+  if(val==='go') u.status = (u.fast_track ? 'approved' : 'ceo');
+  else if(val==='kill') u.status = 'closed-kill';
+  // hold = reste en steering
+  saveData();
+  toast(trf('gov.dec.applied',{id:u.id,d:val})||u.id+' : décision '+val+' enregistrée','ok');
+}
+function govSetMonDecision(ucId, val){
+  const u = ucById(ucId); if(!u) return;
+  if(!val) return;
+  u.status = val;  // closed-go | closed-hold | closed-kill
+  u._monitoringDecision = { decision: val, at: new Date().toISOString() };
+  saveData();
+  toast(trf('gov.mondec.applied',{id:u.id,d:val})||u.id+' : verdict '+val,'ok');
+}
+
+/* -----------------------------------------------------------------
+ * v0.22 — CEO APPROVAL : validation au niveau portfolio entité
+ * (retour Halima #4 + #5). Le CEO valide le portfolio entité dans
+ * son ensemble, avec drill-down possible vers les projets.
+ *
+ * Layout :
+ *  - Section 1 : Annual Portfolio KPIs (7 ans × Projects/Trials/Demos/Budget)
+ *  - Section 2 : Portfolio Overview by Entity (1 card par entité avec
+ *    table interne par région + CEO Decision dropdown + commentaires)
+ * --------------------------------------------------------------- */
+function renderCEO(){
+  const Y = 2026;
+  // Persistance des décisions CEO par entité×région (localStorage + serveur)
+  if(!window._ceoDecisions){
+    try { window._ceoDecisions = JSON.parse(localStorage.getItem('nplan_ceo_decisions_v1')||'{}'); }
+    catch(e) { window._ceoDecisions = {}; }
+  }
+
+  // ── Annual KPIs : 7 années (2024 → 2030) ──
+  const years = [2024,2025,2026,2027,2028,2029,2030];
+  const annualKPI = years.map(yr => {
+    const projOfYear = (typeof PROJECTS !== 'undefined' ? PROJECTS : []).filter(p => {
+      const s = parseInt(p.start_year || p.cycle || 2026) || 2026;
+      const e = parseInt(p.end_year   || p.duration_end || (s+(p.duration||3))) || (s+3);
+      return yr >= s && yr <= e;
+    });
+    const ucsOfYear = DATA.filter(u => {
+      if(!u.start_date) return yr === 2026;  // fallback : UC sans date = cycle courant
+      const sy = new Date(u.start_date).getFullYear();
+      const ey = u.end_date ? new Date(u.end_date).getFullYear() : sy;
+      return yr >= sy && yr <= ey;
+    });
+    const committed = ucsOfYear.reduce((s,u) => s + (u.budget||0), 0);
+    return {
+      yr, projects: projOfYear.length,
+      trials: ucsOfYear.filter(u => u.type !== 'demo').length,
+      demos:  ucsOfYear.filter(u => u.type === 'demo').length,
+      committed,
+    };
+  });
+
+  // ── Entity cards : 1 card par BU avec table par région ──
+  const entCards = BUS.map(bu => {
+    const entUCs = DATA.filter(u => u.bu === bu.id);
+    if(entUCs.length === 0) return '';  // skip empty entities
+    const entProjs = [...new Set(entUCs.map(u => u.project_id).filter(Boolean))];
+    const totalBudget = entUCs.reduce((s,u) => s+(u.budget||0), 0);
+
+    // Steering decisions summary
+    const goCount = entUCs.filter(u => u._steeringDecision?.decision === 'go').length;
+    const holdCount = entUCs.filter(u => u._steeringDecision?.decision === 'hold').length;
+    const killCount = entUCs.filter(u => u._steeringDecision?.decision === 'kill').length;
+    const pendingCount = entUCs.length - goCount - holdCount - killCount;
+
+    // Groupement par région
+    const regions = [...new Set(entUCs.map(u => u.region).filter(Boolean))];
+    const regionRows = regions.map(reg => {
+      const regUCs = entUCs.filter(u => u.region === reg);
+      const regProjs = [...new Set(regUCs.map(u => u.project_id).filter(Boolean))];
+      const regTrials = regUCs.filter(u => u.type !== 'demo').length;
+      const regDemos  = regUCs.filter(u => u.type === 'demo').length;
+      const regBudget = regUCs.reduce((s,u) => s+(u.budget||0), 0);
+      const regCrops  = [...new Set(regUCs.map(u => u.crop).filter(Boolean))];
+
+      const key = bu.id + '|||' + reg;
+      const dec = (window._ceoDecisions[key]||{}).decision || '';
+      const cmt = (window._ceoDecisions[key]||{}).comment || '';
+      const selCls = dec==='Approved'?'ok' : dec==='Rejected'?'bad' : dec?'warn' : '';
+      const taCls = (dec==='Needs Review' || dec==='Rejected') && !cmt ? 'warn' : '';
+
+      // Steering decisions for this region
+      const regGo = regUCs.filter(u => u._steeringDecision?.decision === 'go').length;
+      const regKill = regUCs.filter(u => u._steeringDecision?.decision === 'kill').length;
+
+      return `<tr>
+        <td class="reg">${escapeHtml(reg)}</td>
+        <td>${regCrops.slice(0,3).map(c=>`🌾${escapeHtml(c)}`).join(' · ')||'—'}</td>
+        <td class="num">${regProjs.length}</td>
+        <td class="num">${regTrials}T · ${regDemos}D</td>
+        <td class="right">${fmtMoney(regBudget)}</td>
+        <td>
+          ${regGo?`<span class="pill" style="background:var(--green-50);color:var(--green-800);font-size:10.5px">✓ ${regGo} Go</span>`:''}
+          ${regKill?`<span class="pill" style="background:var(--bad-bg);color:var(--bad);font-size:10.5px">✕ ${regKill} Kill</span>`:''}
+          ${!regGo && !regKill?'<span class="muted" style="font-size:11px">—</span>':''}
+        </td>
+        <td>
+          <select class="${selCls}" onchange="ceoSetDecision('${bu.id}','${reg.replace(/'/g,"\\'")}','decision', this.value)">
+            <option value="">— Choisir —</option>
+            <option value="Approved" ${dec==='Approved'?'selected':''}>✓ Approved</option>
+            <option value="Needs Review" ${dec==='Needs Review'?'selected':''}>⚠ Needs Review</option>
+            <option value="Rejected" ${dec==='Rejected'?'selected':''}>✕ Rejected</option>
+          </select>
+        </td>
+        <td>
+          <textarea class="${taCls}" rows="2"
+            placeholder="${dec==='Needs Review'||dec==='Rejected'?'Obligatoire : justification…':'Optionnel'}"
+            onchange="ceoSetDecision('${bu.id}','${reg.replace(/'/g,"\\'")}','comment', this.value)">${escapeHtml(cmt)}</textarea>
+        </td>
+      </tr>`;
+    }).join('');
+
+    return `<div class="ceo-ent-card">
+      <div class="ceo-ent-h">
+        <div>
+          <div class="ceo-ent-nm">${escapeHtml(bu.nm)}</div>
+          <div class="ceo-ent-sub">${entProjs.length} project${entProjs.length>1?'s':''} · ${entUCs.length} UCs · Total <b>${fmtMoney(totalBudget)}</b></div>
+        </div>
+        <div class="ceo-ent-badges">
+          ${goCount?`<span class="pill" style="background:var(--green-50);color:var(--green-800)">✓ ${goCount} Aligned</span>`:''}
+          ${holdCount?`<span class="pill" style="background:#fff5e6;color:#856404">⏸ ${holdCount} No Consensus</span>`:''}
+          ${killCount?`<span class="pill" style="background:var(--bad-bg);color:var(--bad)">✕ ${killCount} Rejected</span>`:''}
+          ${pendingCount?`<span class="pill" style="background:#f1f5f1;color:var(--muted)">⏳ ${pendingCount} Pending</span>`:''}
+          <button class="btn ghost sm" onclick="ceoDrillDown('${bu.id}')">View Projects →</button>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table class="ceo-ent-tbl">
+          <thead>
+            <tr>
+              <th>Région</th>
+              <th>Cultures</th>
+              <th style="text-align:center">Projects</th>
+              <th style="text-align:center">Trials/Demos</th>
+              <th style="text-align:right">Committed ${Y}</th>
+              <th>Steering</th>
+              <th>CEO Decision</th>
+              <th>Comments</th>
+            </tr>
+          </thead>
+          <tbody>${regionRows || '<tr><td colspan="8" class="muted" style="text-align:center;padding:14px">Aucune donnée régionale</td></tr>'}</tbody>
+        </table>
+      </div>
+    </div>`;
+  }).filter(Boolean).join('');
+
+  document.getElementById('sc-ceo').innerHTML = `
+    <h2 class="h-pg">${tr('ceo.h')||'Approbation CEO'}</h2>
+    <p class="lead">${tr('ceo.lead')||'Validation du portfolio annuel au niveau entité. Le CEO valide l\'enveloppe globale par BU × région ; les détails trial par trial restent sous la responsabilité des Steering & Monitoring Committees.'}</p>
+
+    <div class="card">
+      <h3>${tr('ceo.annual.h')||'Annual Portfolio KPIs'} <span class="sub">${tr('ceo.annual.sub')||'(vue 7 ans : 2024 → 2030)'}</span></h3>
+      <div class="tbl-wrap" style="margin-top:10px">
+        <table class="ceo-annual-tbl">
+          <thead><tr>
+            <th>Year</th>
+            <th class="num">Projects</th>
+            <th class="num">Trials</th>
+            <th class="num">Demos</th>
+            <th class="right">Committed Budget</th>
+          </tr></thead>
+          <tbody>${annualKPI.map(k => `<tr>
+            <td class="year">${k.yr}</td>
+            <td class="num">${k.projects}</td>
+            <td class="num">${k.trials}</td>
+            <td class="num">${k.demos}</td>
+            <td class="right">${k.committed?fmtMoney(k.committed):'—'}</td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3 style="margin:24px 0 14px;font:700 16px 'Cormorant Garamond',serif;color:var(--green-900)">${tr('ceo.ents.h')||'Portfolio Overview by Entity'}</h3>
+    ${entCards || `<div class="empty"><div class="big">🏢</div>${tr('ceo.ents.empty')||'Aucune entité avec des UCs au cycle courant.'}</div>`}
+
+    <p class="muted" style="font-size:11.5px;margin-top:18px">${tr('ceo.persist')||'Les décisions CEO sont persistées en temps réel (localStorage + serveur). Le drill-down "View Projects" filtre le portefeuille sur l\'entité.'}</p>
+  `;
+}
+function ceoSetDecision(buId, region, field, value){
+  if(!window._ceoDecisions) window._ceoDecisions = {};
+  const key = buId + '|||' + region;
+  if(!window._ceoDecisions[key]) window._ceoDecisions[key] = {};
+  window._ceoDecisions[key][field] = value;
+  window._ceoDecisions[key].at = new Date().toISOString();
+  try{ localStorage.setItem('nplan_ceo_decisions_v1', JSON.stringify(window._ceoDecisions)); }catch(e){}
+  // Push serveur via apiPush (collection 'ceo_decisions' à whitelist plus tard)
+  if(typeof apiPush==='function') apiPush('ceo_decisions', window._ceoDecisions);
+  // Re-render léger pour refléter le changement de couleur du select
+  if(field === 'decision') renderCEO();
+}
+function ceoDrillDown(buId){
+  PREFS.filters = { bu: buId };
+  savePrefs();
+  goView('portfolio');
 }
 
 /* -----------------------------------------------------------------

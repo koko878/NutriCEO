@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.21.2
+Stable tag: 0.22.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,68 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.22.0 — Refonte selon retours Halima (V13/V14 + docx) =
+* CHANTIER 1 — Dashboards : nouveau panneau "Regional Breakdown" sous la
+  carte avec toggle 2 vues : "Trials & Demos par région" (barres
+  horizontales amber=trials / vert=demos) et "Budget engagé 2026 par
+  région" (barres vert OCP avec % et total). Légende ajoutée sous la
+  carte. Map bubble enrichie avec dot legend.
+* CHANTIER 2 — Trial cards enrichies : la modale openUc() expose
+  désormais 4 blocs structurés en haut (avant les détails techniques) :
+  📁 Project description (parent + BU + région + rationale),
+  📊 Business case (marché + budget + uplift + CO₂),
+  🔬 Trial description (plan T×R + fenêtre + MDS coverage + download
+  protocole .docx),
+  🎯 Status (statut + type + priorité + Fast Track + gates).
+* CHANTIER 3 — New Use Case : refonte intake en 2 temps :
+  - Écran 1 (selector) : 2 cards côte à côte
+    * Standard Process LOCKED (grayscale, info "fenêtres QBR" au clic)
+    * Fast Track OPEN (gradient amber, click pour démarrer)
+    + preview 3-step en bas.
+  - Écran 2 (wizard) : stepper visuel avec progress bar + 3 étapes :
+    Step 1 Project Identification (champs objectifs + périmètre),
+    Step 2 Business Case (3 tabs : P Market + Design & Hypothesis +
+    Eco Impact, mapping concurrents tabulaire avec add/remove),
+    Step 3 Trial Description (MDS + budget USD + protocole + Fast Track
+    switch).
+  - Navigation prev/next + brouillon/submit sur la dernière étape.
+  - La structure business_case = {p_market, design, eco} est désormais
+    persistée par UC (rétrocompatible : accessors fabriquent les blocs
+    depuis les champs scalaires existants pour les vieux UCs).
+* CHANTIER 4 — CEO Approval : nouvelle vue (CXTAB Gouvernance > CEO).
+  - Section 1 "Annual Portfolio KPIs" : table 7 ans (2024 → 2030) ×
+    (Projects / Trials / Demos / Committed Budget), header vert deep.
+  - Section 2 "Portfolio Overview by Entity" : 1 card par BU avec
+    header (totaux + badges Aligned/No Consensus/Rejected/Pending +
+    "View Projects →" drill-down) + table interne par région
+    (Région · Cultures · Projects · Trials/Demos · Committed · Steering
+    decision · CEO Decision dropdown · CEO Comments textarea).
+  - CEO Decision dropdown change la couleur du select (vert/ambre/
+    rouge) ; commentaire devient obligatoire si "Needs Review" ou
+    "Rejected".
+  - Persistance : localStorage 'nplan_ceo_decisions_v1' + collection
+    serveur 'ceo_decisions' (whitelistée PHP).
+  - Drill-down filtre le portfolio sur la BU sélectionnée.
+* CHANTIER 5 — Steering + Monitoring accordion : nouvelle vue
+  "Par projet" dans Portfolio (3e onglet en plus de Kanban/Table) +
+  cards Steering Portfolio et Monitoring Portfolio dans Governance
+  utilisant le helper réutilisable govProjectAccordion(items, actionFn).
+  - Chaque project = header expandable (id + titre serif + badges
+    région/entité/status + count trials/demos + budget total) → body
+    avec grid de trial cards.
+  - Dropdown décision (Go/Hold/Kill) inline par trial dans le Steering
+    accordion ; verdict (closed-go/hold/kill) dans le Monitoring.
+  - Helper utilisé aussi par Portfolio view "Par projet".
+* PHP : version 0.21.2 → 0.22.0, collection 'ceo_decisions' ajoutée
+  à la whitelist REST.
+* i18n : 120+ nouvelles clés FR/EN/PT couvrant les 5 chantiers.
+* Smoke E2E np-smoke-v22.mjs : EXIT=0 sur 11 checks (boot helpers,
+  Dashboards region split trials+budget, Portfolio accordion 35 UCs
+  groupés, trial detail 4 blocs, Intake selector + wizard 3 steps
+  + tabs Business Case, CEO 7 ans × 7 entités × 28 selects décisions,
+  Steering accordion 3 projets × 4 decision selects, anti-régression
+  Admin 9 users).
 
 = 0.21.2 — Coach étendu : mini-tour auto-déclenché sur chaque page =
 * EXTENSION COACH à toutes les vues : à chaque fois que l'utilisateur
