@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.23.0
+Stable tag: 0.23.1
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,44 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.23.1 — Fix 14 findings du code review xhigh effort sur v0.23.0 =
+* #1 CRITICAL — apiPush('notifications', singleEvent) RETIRÉ. L'appel
+  écrasait la collection serveur entière à chaque trigger (replace, pas
+  append). En attendant un endpoint POST /notify dédié côté PHP
+  (append-only, v0.23.2), la persistance reste localStorage. TODO
+  commenté dans le code pour faire le backend correctement.
+* #2 HIGH — Inbox keyé par email uniquement (avant : email+role).
+  Conséquence en prod : un utilisateur garde son inbox même quand son
+  rôle change (SSO promotion/démotion). En démo impersonate, l'affichage
+  filtre par effectiveRole() pour montrer seulement les notifs de la
+  vue courante. Helper _visibleInbox() ajouté.
+* #3 MEDIUM — ctx snapshot (JSON.parse(JSON.stringify(ctx))) au moment
+  de notify() pour éviter qu'une mutation ultérieure du UC change le
+  contenu de l'historique des notifs.
+* #4 — Batch des localStorage writes. notify() écrit maintenant 1 seule
+  fois (un seul _saveInbox à la fin) au lieu de 5 pour ceo.decided.
+* #5 — Random ID tail passé de 3 à 10 chars (~78 milliards de combos),
+  collision quasi-impossible même pour des bursts de 35 notifs/ms.
+* #6 a11y — Bell button : ajout aria-haspopup="dialog", aria-controls,
+  aria-expanded (toggle dans toggleNotifPanel). Panel : aria-modal=false.
+  Focus retourne sur le bell à la fermeture pour navigation clavier.
+* #7 — applyRBACUI() ne fait plus _loadInbox redondant (inbox keyé par
+  email = stable across role changes). Juste _refreshBell() pour
+  re-filtrer l'affichage par le nouveau effectiveRole().
+* #9 — notifInit() guard _notifMounted : re-init ne double pas le click
+  listener. Ref _notifClickHandler conservée pour pouvoir
+  removeEventListener proprement si jamais.
+* #10 — ceoSetDecision : dedupe — notify('ceo.decided') ne fire QUE si
+  la décision change effectivement de valeur. Avant : changer de
+  'Approved' à 'Rejected' à 'Needs Review' envoyait 3 notifs spam.
+* #11 — _saveInbox trim aussi NOTIF_INBOX in-memory.
+* #12 — notifMarkRead fait un update DOM surgical (toggle classes +
+  remove dot) au lieu de rebuild complet du panel.
+* #13 — console.log gateé derrière flag NOTIF_DEBUG (false en prod).
+* #14 — notifMarkAllRead et notifClear ne re-render le panel que s'il
+  est visible (.on). early-return si rien à changer.
+* PHP : v0.23.0 → v0.23.1 inchangé sur la whitelist REST.
 
 = 0.23.0 — Notifications engine (60+ triggers, matrice Halima) =
 * MOTEUR : nouvelle const NOTIF_TEMPLATES (15 triggers principaux du

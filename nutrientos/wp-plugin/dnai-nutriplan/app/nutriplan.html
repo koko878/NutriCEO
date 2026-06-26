@@ -2385,10 +2385,11 @@ body.imp-on{padding-top:22px}
       <select id="impSel" onchange="setImpersonate(this.value)" aria-label="Se faire passer pour un rôle"></select>
     </label>
     <!-- v0.23 — Notifications bell (60+ triggers Halima) -->
-    <button id="notifBell" class="tb-notif" type="button" onclick="toggleNotifPanel()" aria-label="Notifications">
+    <button id="notifBell" class="tb-notif" type="button" onclick="toggleNotifPanel()"
+            aria-label="Notifications" aria-haspopup="dialog" aria-expanded="false" aria-controls="notifPanel">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
     </button>
-    <div id="notifPanel" class="tb-notif-panel" role="dialog" aria-label="Inbox notifications" onclick="event.stopPropagation()"></div>
+    <div id="notifPanel" class="tb-notif-panel" role="dialog" aria-label="Inbox notifications" aria-modal="false" onclick="event.stopPropagation()"></div>
     <!-- v0.21.1 — Coach D²nAI : 💡 = lance le tour guidé / clic-droit = menu -->
     <button id="coachToggle" class="tb-coach" type="button"
             onclick="if(COACH.isOn()) COACH.startTour('welcome'); else { COACH.enable(); COACH.startTour('welcome'); }"
@@ -4536,8 +4537,9 @@ function applyRBACUI(){
   if(impSel){ impSel.closest('.tb-imp').style.display = (actual==='admin')?'':'none'; }
   if(typeof renderSidebar==='function') renderSidebar();
   if(typeof goView==='function' && PREFS.view) goView(PREFS.view);
-  // v0.23 — recharge l'inbox pour le nouveau rôle effectif (clé localStorage différente)
-  if(typeof _loadInbox==='function'){ _loadInbox(); _refreshBell(); }
+  // v0.23.1 — inbox keyé par email (stable), juste refresh le bell pour
+  // re-filtrer par le nouveau rôle effectif. Plus de reload du localStorage.
+  if(typeof _refreshBell==='function'){ _refreshBell(); }
 }
 /* Alias rétrocompat */
 function applyImpersonateUI(){ applyRBACUI(); }
@@ -4661,91 +4663,142 @@ const NOTIF_TEMPLATES = {
 
 /* Inbox utilisateur courant. Persisté par email ; en démo, indexé par
  * "effectiveRole" pour que chaque switch de "Vue" affiche le bon inbox. */
-let NOTIF_INBOX = [];
+/* v0.23.1 — Refonte suite code review xhigh effort (fix 14 findings) :
+ *
+ * MODÈLE : 1 inbox stable PAR USER (email), indépendamment du rôle. Chaque
+ * notif a un recipientRole (qui devait la recevoir). À l'affichage, on
+ * filtre par effectiveRole() pour le mode démo impersonate ; en prod
+ * (1 user = 1 role), tous les items de l'inbox correspondent à l'user.
+ *
+ * Pourquoi : key par email = un changement de rôle (SSO promotion) ne perd
+ * plus l'historique des notifs. C'était bug #2 du code review.
+ *
+ * En prod, cette fn devrait POST à /wp-json/dnai-nutriplan/v1/notify
+ * (endpoint dédié, append-only, vs. l'apiPush qui replace la collection
+ * entière — bug #1 du code review : apiPush retiré ici).
+ */
+let NOTIF_INBOX = [];          // toutes les notifs de l'utilisateur, tous rôles confondus
+let _notifMounted = false;      // guard #9 (re-init ne double pas le listener)
+let _notifClickHandler = null;  // ref pour pouvoir remove proprement
+const NOTIF_INBOX_MAX = 200;
+const NOTIF_DEBUG = false;       // #13 : passer à true en dev pour logs détaillés
+
 function _notifInboxKey(){
+  // Key par email uniquement (#2) — un user garde son inbox même si son rôle change
   const userEmail = (window.DNAI_NPLAN && window.DNAI_NPLAN.userEmail) || 'demo';
-  const role = (typeof effectiveRole==='function') ? effectiveRole() : 'admin';
-  return 'nplan_notif_inbox_' + userEmail + '_' + role;
+  return 'nplan_notif_inbox_' + userEmail;
 }
 function _loadInbox(){
   try { NOTIF_INBOX = JSON.parse(localStorage.getItem(_notifInboxKey())||'[]'); } catch(e){ NOTIF_INBOX = []; }
 }
 function _saveInbox(){
-  try { localStorage.setItem(_notifInboxKey(), JSON.stringify(NOTIF_INBOX.slice(0,200))); } catch(e){}
+  // #11 : trim in-memory ET on disk pour ne pas accumuler indéfiniment
+  if(NOTIF_INBOX.length > NOTIF_INBOX_MAX) NOTIF_INBOX = NOTIF_INBOX.slice(0, NOTIF_INBOX_MAX);
+  try { localStorage.setItem(_notifInboxKey(), JSON.stringify(NOTIF_INBOX)); } catch(e){}
+}
+// Notifs visibles dans l'inbox courant (filtrées par rôle effectif en mode démo).
+// En prod (1 user = 1 role), c'est l'identité.
+function _visibleInbox(){
+  const role = (typeof effectiveRole==='function') ? effectiveRole() : null;
+  if(!role) return NOTIF_INBOX;
+  return NOTIF_INBOX.filter(n => n.recipientRole === role);
+}
+// ID unique avec entropie suffisante (#5 : 3 chars → 10 chars = 60+ bits)
+function _notifId(role){
+  return 'ntf-' + Date.now().toString(36) + '-' + role.slice(0,4) + '-' + Math.random().toString(36).slice(2,12);
 }
 
-/* notify(triggerId, ctx) : crée 1 notif par recipient role défini dans
- * le template. Si le rôle effectif courant fait partie des recipients,
- * la notif apparaît dans l'inbox immédiatement (et fait flasher la bell).
- *
- * En prod, cette fn devrait :
- *  1. POST à /wp-json/dnai-nutriplan/v1/notify (admin nonce)
- *  2. Le backend résout users par rôle + envoie wp_mail
- *  3. Une notif WS push met à jour le inbox en temps réel
- * Pour la démo : mock direct côté JS + console.log de l'email simulé. */
+/* notify(triggerId, ctx) : pour chaque recipient role, crée une notif
+ * dans l'inbox utilisateur (avec recipientRole = role destinataire). En
+ * démo, toutes les notifs vont dans le même bucket localStorage de
+ * l'utilisateur connecté ; l'affichage filtre par effectiveRole.
+ * En prod, le serveur résout les users par rôle et écrit dans le bucket
+ * de chaque user destinataire. */
 function notify(triggerId, ctx){
   const tpl = NOTIF_TEMPLATES[triggerId];
-  if(!tpl){ console.warn('[notify] unknown trigger', triggerId); return; }
+  if(!tpl){ if(NOTIF_DEBUG) console.warn('[notify] unknown trigger', triggerId); return; }
   ctx = ctx || {};
+  // #3 : snapshot du ctx pour éviter qu'une mutation ultérieure du UC change l'historique
+  let ctxSnapshot;
+  try { ctxSnapshot = JSON.parse(JSON.stringify(ctx)); } catch(e) { ctxSnapshot = {}; }
   const myRole = (typeof effectiveRole==='function') ? effectiveRole() : 'admin';
-  const userEmail = (window.DNAI_NPLAN && window.DNAI_NPLAN.userEmail) || 'demo';
-  const title = (typeof tpl.title==='function') ? tpl.title(ctx) : tpl.title;
-  const body = (typeof tpl.body==='function') ? tpl.body(ctx) : tpl.body;
-  // Pour CHAQUE recipient role : persister une notif dans son inbox localStorage
-  // (en prod, ce sera côté serveur → tous les users du rôle reçoivent leur copie)
+  const title = (typeof tpl.title==='function') ? tpl.title(ctxSnapshot) : tpl.title;
+  const body = (typeof tpl.body==='function') ? tpl.body(ctxSnapshot) : tpl.body;
+  // #4 : batch — on accumule en mémoire puis un seul _saveInbox à la fin
+  let touched = false, myBatch = 0;
   tpl.recipients.forEach(role => {
-    console.log('[notify] %s → %s : %s', triggerId, role, title);
+    if(NOTIF_DEBUG) console.log('[notify] %s → %s : %s', triggerId, role, title);
     const n = {
-      id: 'ntf-' + Date.now().toString(36) + '-' + role.slice(0,4) + Math.random().toString(36).slice(2,5),
+      id: _notifId(role),
       ts: new Date().toISOString(),
       triggerId, recipientRole: role,
       title, body, ico: tpl.ico||'🔔', phase: tpl.phase,
-      read: false, ctx,
+      read: false, ctx: ctxSnapshot,
     };
-    // Persiste dans l'inbox de CE role (pas le mien)
-    const key = 'nplan_notif_inbox_' + userEmail + '_' + role;
-    let inbox = [];
-    try { inbox = JSON.parse(localStorage.getItem(key)||'[]'); } catch(e){}
-    inbox.unshift(n);
-    try { localStorage.setItem(key, JSON.stringify(inbox.slice(0,200))); } catch(e){}
-    // Si je suis ce recipient (rôle effectif courant), refresh in-memory + UI
-    if(role === myRole){
-      NOTIF_INBOX.unshift(n);
-      _refreshBell();
-      if(typeof toast==='function') toast('🔔 ' + title, 'ok');
-    }
+    NOTIF_INBOX.unshift(n);
+    touched = true;
+    if(role === myRole) myBatch++;
   });
-  // Backend push (silencieux en démo si pas configuré)
-  if(typeof apiPush==='function') apiPush('notifications', {triggerId, ctx, recipients: tpl.recipients, ts: new Date().toISOString()});
+  if(touched) _saveInbox();  // #4 : un seul write par notify(), pas N
+  if(myBatch > 0){
+    _refreshBell();
+    if(typeof toast==='function') toast('🔔 ' + title, 'ok');
+  }
+  // #1 + #8 : apiPush('notifications', singleEvent) retiré car il écrasait
+  // la collection serveur entière à chaque appel. En prod, il faudra un
+  // endpoint POST /notify dédié (append-only) côté PHP. TODO v0.23.2.
 }
 
 function notifMarkRead(id){
   const n = NOTIF_INBOX.find(x => x.id === id);
-  if(n){ n.read = true; _saveInbox(); _refreshBell(); }
+  if(!n || n.read) return;
+  n.read = true;
+  _saveInbox();
+  _refreshBell();
+  // #12 : update DOM surgicalement au lieu de tout reconstruire
+  const item = document.querySelector('.notif-it[data-id="'+id+'"]');
+  if(item){
+    item.classList.remove('unread');
+    item.classList.add('read');
+    const dot = item.querySelector('.notif-it-dot');
+    if(dot) dot.remove();
+    // Met à jour le compteur "N non lues sur M"
+    const sub = document.querySelector('.notif-sub');
+    if(sub){
+      const vis = _visibleInbox();
+      sub.textContent = vis.filter(x=>!x.read).length + ' non lues sur ' + vis.length;
+    }
+  }
 }
 function notifMarkAllRead(){
-  NOTIF_INBOX.forEach(n => n.read = true);
+  let changed = false;
+  NOTIF_INBOX.forEach(n => { if(!n.read){ n.read = true; changed = true; } });
+  if(!changed) return;
   _saveInbox(); _refreshBell();
-  renderNotifPanel();
+  // #14 : ne re-render que si le panel est visible
+  const p = document.getElementById('notifPanel');
+  if(p && p.classList.contains('on')) renderNotifPanel();
 }
 function notifClear(){
+  if(NOTIF_INBOX.length === 0) return;
   NOTIF_INBOX = [];
   _saveInbox(); _refreshBell();
-  renderNotifPanel();
+  const p = document.getElementById('notifPanel');
+  if(p && p.classList.contains('on')) renderNotifPanel();
 }
 
 function _refreshBell(){
   const bell = document.getElementById('notifBell');
   if(!bell) return;
-  const unread = NOTIF_INBOX.filter(n => !n.read).length;
-  const badge = bell.querySelector('.notif-bell-badge');
+  const unread = _visibleInbox().filter(n => !n.read).length;
+  let badge = bell.querySelector('.notif-bell-badge');
   if(unread > 0){
     if(!badge){
-      const b = document.createElement('span');
-      b.className = 'notif-bell-badge';
-      bell.appendChild(b);
+      badge = document.createElement('span');
+      badge.className = 'notif-bell-badge';
+      bell.appendChild(badge);
     }
-    bell.querySelector('.notif-bell-badge').textContent = unread > 99 ? '99+' : String(unread);
+    badge.textContent = unread > 99 ? '99+' : String(unread);
     bell.classList.add('has-unread');
   } else {
     if(badge) badge.remove();
@@ -4755,14 +4808,22 @@ function _refreshBell(){
 
 function toggleNotifPanel(){
   const p = document.getElementById('notifPanel');
+  const bell = document.getElementById('notifBell');
   if(!p) return;
   const open = p.classList.toggle('on');
-  if(open) renderNotifPanel();
+  // #6 : a11y — sync aria-expanded sur le bell
+  if(bell) bell.setAttribute('aria-expanded', open ? 'true' : 'false');
+  if(open){
+    renderNotifPanel();
+  } else if(bell){
+    // Retour focus sur le bell à la fermeture pour navigation clavier
+    bell.focus();
+  }
 }
 function renderNotifPanel(){
   const p = document.getElementById('notifPanel');
   if(!p) return;
-  const list = NOTIF_INBOX.slice(0, 50);
+  const list = _visibleInbox().slice(0, 50);
   p.innerHTML = `
     <div class="notif-h">
       <div>
@@ -4778,7 +4839,7 @@ function renderNotifPanel(){
       ${list.length ? list.map(n => {
         const dt = new Date(n.ts);
         const rel = _notifRelTime(dt);
-        return `<div class="notif-it ${n.read?'read':'unread'}" onclick="notifMarkRead('${n.id}')">
+        return `<div class="notif-it ${n.read?'read':'unread'}" data-id="${escapeHtml(n.id)}" onclick="notifMarkRead('${n.id}')">
           <span class="notif-it-ico" aria-hidden="true">${n.ico}</span>
           <div class="notif-it-body">
             <div class="notif-it-title">${escapeHtml(n.title)}</div>
@@ -4804,16 +4865,27 @@ function _notifRelTime(d){
   return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
 }
 
-/* Init : charger l'inbox + brancher click outside pour fermer le panel */
+/* notifInit : charge l'inbox + brancher click outside.
+ * #9 : guard mounted pour éviter d'accumuler des listeners si re-appelé. */
 function notifInit(){
+  if(_notifMounted){
+    // Re-init : juste refresh, le listener existe déjà
+    _loadInbox(); _refreshBell();
+    return;
+  }
+  _notifMounted = true;
   _loadInbox();
   _refreshBell();
-  document.addEventListener('click', (e) => {
+  _notifClickHandler = (e) => {
     const p = document.getElementById('notifPanel');
     const bell = document.getElementById('notifBell');
     if(!p || !p.classList.contains('on')) return;
-    if(!p.contains(e.target) && !bell.contains(e.target)) p.classList.remove('on');
-  });
+    if(!p.contains(e.target) && !bell.contains(e.target)){
+      p.classList.remove('on');
+      if(bell) bell.setAttribute('aria-expanded','false');
+    }
+  };
+  document.addEventListener('click', _notifClickHandler);
 }
 
 /* =================================================================
@@ -7812,13 +7884,15 @@ function ceoSetDecision(buId, region, field, value){
   if(!window._ceoDecisions) window._ceoDecisions = {};
   const key = buId + '|||' + region;
   if(!window._ceoDecisions[key]) window._ceoDecisions[key] = {};
+  // v0.23.1 #10 : dedupe notif — ne fire que si la décision change vraiment
+  const previousDecision = window._ceoDecisions[key][field];
   window._ceoDecisions[key][field] = value;
   window._ceoDecisions[key].at = new Date().toISOString();
   try{ localStorage.setItem('nplan_ceo_decisions_v1', JSON.stringify(window._ceoDecisions)); }catch(e){}
   // Push serveur via apiPush (collection 'ceo_decisions' à whitelist plus tard)
   if(typeof apiPush==='function') apiPush('ceo_decisions', window._ceoDecisions);
-  // v0.23 — Notif Halima : 'ceo.decided' → entity_* + sai + steering quand décision change
-  if(field === 'decision' && value && typeof notify==='function'){
+  // Notif uniquement si decision change effectivement de valeur (évite spam)
+  if(field === 'decision' && value && value !== previousDecision && typeof notify==='function'){
     const bu = buOf(buId);
     notify('ceo.decided', {bu: bu?bu.nm:buId, region, decision: value, comment: window._ceoDecisions[key].comment});
   }
