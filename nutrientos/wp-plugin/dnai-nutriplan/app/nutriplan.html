@@ -4724,8 +4724,10 @@ function notify(triggerId, ctx){
   const myRole = (typeof effectiveRole==='function') ? effectiveRole() : 'admin';
   const title = (typeof tpl.title==='function') ? tpl.title(ctxSnapshot) : tpl.title;
   const body = (typeof tpl.body==='function') ? tpl.body(ctxSnapshot) : tpl.body;
-  // #4 : batch — on accumule en mémoire puis un seul _saveInbox à la fin
+  // #4 : batch — on accumule en mémoire puis un seul _saveInbox à la fin.
+  // v0.23.2 : on accumule aussi un array `batch` pour POST en bulk au backend.
   let touched = false, myBatch = 0;
+  const batch = [];
   tpl.recipients.forEach(role => {
     if(NOTIF_DEBUG) console.log('[notify] %s → %s : %s', triggerId, role, title);
     const n = {
@@ -4736,6 +4738,7 @@ function notify(triggerId, ctx){
       read: false, ctx: ctxSnapshot,
     };
     NOTIF_INBOX.unshift(n);
+    batch.push(n);
     touched = true;
     if(role === myRole) myBatch++;
   });
@@ -4744,9 +4747,23 @@ function notify(triggerId, ctx){
     _refreshBell();
     if(typeof toast==='function') toast('🔔 ' + title, 'ok');
   }
-  // #1 + #8 : apiPush('notifications', singleEvent) retiré car il écrasait
-  // la collection serveur entière à chaque appel. En prod, il faudra un
-  // endpoint POST /notify dédié (append-only) côté PHP. TODO v0.23.2.
+  // v0.23.2 : POST en bulk au backend (append-only via /notify endpoint).
+  // Idempotent côté serveur via UNIQUE(notif_id) — si le call est retried,
+  // INSERT IGNORE évite les doublons. Silent fail si backend offline ou
+  // pas configuré (localStorage reste la source de vérité côté client).
+  if(batch.length){
+    const c = (typeof apiCfg==='function') ? apiCfg() : null;
+    if(c && c.api){
+      try {
+        fetch(c.api + '/notify', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json', 'X-WP-Nonce': c.nonce||''},
+          credentials: 'same-origin',
+          body: JSON.stringify({notifications: batch}),
+        }).catch(()=>{});  // silent — l'inbox local est la source de vérité côté UI
+      } catch(e){}
+    }
+  }
 }
 
 function notifMarkRead(id){
@@ -4769,22 +4786,98 @@ function notifMarkRead(id){
       sub.textContent = vis.filter(x=>!x.read).length + ' non lues sur ' + vis.length;
     }
   }
+  _notifPushBackend('mark-read', {ids: [id]});
 }
 function notifMarkAllRead(){
   let changed = false;
   NOTIF_INBOX.forEach(n => { if(!n.read){ n.read = true; changed = true; } });
-  if(!changed) return;
-  _saveInbox(); _refreshBell();
-  // #14 : ne re-render que si le panel est visible
-  const p = document.getElementById('notifPanel');
-  if(p && p.classList.contains('on')) renderNotifPanel();
+  if(changed){
+    _saveInbox(); _refreshBell();
+    // #14 : ne re-render que si le panel est visible
+    const p = document.getElementById('notifPanel');
+    if(p && p.classList.contains('on')) renderNotifPanel();
+  }
+  // v0.23.2 : push toujours au backend même si rien n'a changé en local
+  // (le serveur peut avoir des notifs non encore syncées). Filtré par rôle
+  // effectif pour ne pas mark-read des notifs d'autres rôles en démo
+  // impersonate.
+  const role = (typeof effectiveRole==='function') ? effectiveRole() : null;
+  if(role) _notifPushBackend('mark-read', {all: true, roles: [role]});
 }
 function notifClear(){
   if(NOTIF_INBOX.length === 0) return;
-  NOTIF_INBOX = [];
+  const role = (typeof effectiveRole==='function') ? effectiveRole() : null;
+  // En démo impersonate, on ne clear que les notifs du rôle effectif
+  // (l'inbox local contient toutes les notifs de l'user, tous rôles confondus)
+  if(role){
+    NOTIF_INBOX = NOTIF_INBOX.filter(n => n.recipientRole !== role);
+    if(_notifPushBackend) _notifPushBackend('delete', {all: true, roles: [role]});
+  } else {
+    NOTIF_INBOX = [];
+  }
   _saveInbox(); _refreshBell();
   const p = document.getElementById('notifPanel');
   if(p && p.classList.contains('on')) renderNotifPanel();
+}
+
+// v0.23.2 — Helper unique pour POST/DELETE au backend notifications.
+// Silent fail si backend offline ou pas configuré. action ∈ {'mark-read','delete'}.
+function _notifPushBackend(action, body){
+  const c = (typeof apiCfg==='function') ? apiCfg() : null;
+  if(!c || !c.api) return;
+  const url = c.api + (action === 'delete' ? '/inbox' : '/inbox/mark-read');
+  const method = (action === 'delete') ? 'DELETE' : 'POST';
+  try {
+    fetch(url, {
+      method,
+      headers: {'Content-Type':'application/json', 'X-WP-Nonce': c.nonce||''},
+      credentials: 'same-origin',
+      body: JSON.stringify(body || {}),
+    }).catch(()=>{});
+  } catch(e){}
+}
+
+// v0.23.2 — Fetch from backend at boot + merge with localStorage (dedupe by id).
+// Appelé une fois depuis notifInit() après _loadInbox.
+function _notifSyncFromServer(){
+  const c = (typeof apiCfg==='function') ? apiCfg() : null;
+  if(!c || !c.api) return;
+  // Récupère les notifs de TOUS les rôles que l'user peut potentiellement
+  // voir (en démo : tous les rôles RBAC, en prod : juste son rôle réel).
+  // Permet de switcher impersonate et voir directement l'inbox de chaque vue.
+  const roles = (typeof RBAC_MATRIX === 'object') ? Object.keys(RBAC_MATRIX) : ['admin'];
+  const url = c.api + '/inbox?limit=500&roles=' + encodeURIComponent(roles.join(','));
+  try {
+    fetch(url, {
+      headers: {'X-WP-Nonce': c.nonce||''},
+      credentials: 'same-origin',
+    })
+    .then(r => r.ok ? r.json() : null)
+    .then(res => {
+      if(!res || !Array.isArray(res.notifications)) return;
+      // Merge dédupliqué (id unique) — serveur fait autorité sur le statut read.
+      const byId = {};
+      NOTIF_INBOX.forEach(n => byId[n.id] = n);
+      res.notifications.forEach(n => {
+        if(!n.id) return;
+        // Si déjà en local, on prend read_at du serveur si il l'a marqué lu
+        if(byId[n.id]){ byId[n.id].read = n.read || byId[n.id].read; }
+        else { byId[n.id] = n; }
+      });
+      // Reconstruit l'array triée par ts desc, cappée
+      // ts peut être number (Date.now()) OU string ISO côté payload → on
+      // normalise via Date.parse pour un compare robuste.
+      const _t = v => { if(!v) return 0; if(typeof v==='number') return v; const p = Date.parse(v); return isNaN(p) ? 0 : p; };
+      NOTIF_INBOX = Object.values(byId)
+        .sort((a,b) => _t(b.ts) - _t(a.ts))
+        .slice(0, NOTIF_INBOX_MAX);
+      _saveInbox();
+      _refreshBell();
+      const p = document.getElementById('notifPanel');
+      if(p && p.classList.contains('on')) renderNotifPanel();
+    })
+    .catch(()=>{});
+  } catch(e){}
 }
 
 function _refreshBell(){
@@ -4876,6 +4969,10 @@ function notifInit(){
   _notifMounted = true;
   _loadInbox();
   _refreshBell();
+  // v0.23.2 : sync from server backend (async, silent fail si offline).
+  // L'inbox local s'affiche immédiatement (paint rapide), le serveur
+  // overrides quand il répond (à 200ms après init).
+  if(typeof _notifSyncFromServer === 'function') _notifSyncFromServer();
   _notifClickHandler = (e) => {
     const p = document.getElementById('notifPanel');
     const bell = document.getElementById('notifBell');

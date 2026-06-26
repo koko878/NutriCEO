@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.23.1
+Stable tag: 0.23.2
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,34 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.23.2 — Backend notifications append-only (fix CRITICAL bug #1) =
+* Table dédiée wp_dnai_nplan_notifications (DB_VER 1→2, dbDelta auto à
+  l'activation). Schéma : notif_id (UNIQUE), trigger_id, recipient_role,
+  recipient_user_id, payload (JSON), read_at, created_at + index sur
+  recipient_role et created_at. UNIQUE(notif_id) garantit l'idempotence
+  côté serveur : retry/double-tap = silent skip via INSERT IGNORE.
+* 4 nouveaux endpoints REST (dnai-nutriplan/v1) avec permission_callback
+  same-origin nonce :
+  - POST /notify       → bulk insert (max 200 par batch, sanitization
+                          stricte sur notif_id/trigger_id/role)
+  - GET  /inbox        → ?roles=admin,reader&limit=200, filtre par
+                          recipient_role, retourne payload + read_at
+  - POST /inbox/mark-read → body {ids:[]} ou {all:true, roles:[]}
+  - DELETE /inbox      → body {ids:[]} ou {all:true, roles:[]}
+* JS engine refactoré : notify() POSTe le batch au backend en plus du
+  localStorage. notifMarkRead / notifMarkAllRead / notifClear pushent
+  vers le backend (mark-read / DELETE). Au boot, _notifSyncFromServer()
+  GET /inbox et merge avec localStorage (server = autorité sur read_at).
+* localStorage devient cache, backend devient source of truth. Survie
+  reload + multi-device : un user qui ouvre l'app sur 2 navigateurs
+  voit les mêmes notifs (synchronisation au boot).
+* 'notifications' RETIRÉ de la whitelist apiPush() — l'ancien chemin
+  REPLACE-based est désactivé pour empêcher la régression du bug #1.
+* Sort robuste par ts (number Date.now() OU string ISO) via Date.parse.
+* Tests : smoke E2E backend (POST/GET/mark-read/DELETE + idempotence +
+  survie reload + cross-role isolation) + regression notif engine
+  v0.23.1 + regression RBAC/v22 — tous verts contre router PHP CLI.
 
 = 0.23.1 — Fix 14 findings du code review xhigh effort sur v0.23.0 =
 * #1 CRITICAL — apiPush('notifications', singleEvent) RETIRÉ. L'appel

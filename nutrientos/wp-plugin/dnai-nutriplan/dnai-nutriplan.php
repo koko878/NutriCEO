@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutriPlan — Trial Management Cockpit
  * Description:       Sister-app of NutriTrials covering the full upstream Trial Management cycle (annual planning, Use Case intake, Steering / CEO / Monitoring gates, internal controls, Fast Track lane, closure & knowledge base). Includes a chat-with-data AI co-pilot designed and operated by the D²nAI team.
- * Version:           0.23.1
+ * Version:           0.23.2
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutriplan
@@ -10,10 +10,14 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NPLAN_VER', '0.23.1' );
+define( 'DNAI_NPLAN_VER', '0.23.2' );
 define( 'DNAI_NPLAN_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NPLAN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'DNAI_NPLAN_DB_VER', '1' );
+// DB_VER bumpé à 2 en v0.23.2 : ajout de la table dnai_nplan_notifications
+// (append-only, ligne par notif, indexée par recipient_role) — fix bug #1 du
+// code review : avant, l'endpoint /collection/notifications faisait REPLACE
+// de la collection entière à chaque trigger, écrasant tout l'historique.
+define( 'DNAI_NPLAN_DB_VER', '2' );
 
 /* -------------------------------------------------------------------------
  * REAL DATABASE LAYER (MVP ouvert aux utilisateurs)
@@ -25,19 +29,43 @@ function dnai_nplan_table() {
 	global $wpdb;
 	return $wpdb->prefix . 'dnai_nplan_store';
 }
+function dnai_nplan_notif_table() {
+	global $wpdb;
+	return $wpdb->prefix . 'dnai_nplan_notifications';
+}
 function dnai_nplan_install_db() {
 	global $wpdb;
 	$table   = dnai_nplan_table();
+	$ntable  = dnai_nplan_notif_table();
 	$charset = $wpdb->get_charset_collate();
-	$sql = "CREATE TABLE $table (
+	$sql_store = "CREATE TABLE $table (
 		collection varchar(64) NOT NULL,
 		data longtext NOT NULL,
 		updated_at datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
 		updated_by bigint(20) unsigned NOT NULL DEFAULT 0,
 		PRIMARY KEY  (collection)
 	) $charset;";
+	// v0.23.2 : table dédiée notifications, append-only.
+	// 1 ligne par notif × recipient (donc N lignes si N recipients).
+	// recipient_user_id = 0 signifie "broadcast à tous les users du rôle".
+	$sql_notif = "CREATE TABLE $ntable (
+		id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		notif_id varchar(64) NOT NULL,
+		trigger_id varchar(64) NOT NULL,
+		recipient_role varchar(64) NOT NULL,
+		recipient_user_id bigint(20) unsigned NOT NULL DEFAULT 0,
+		payload longtext NOT NULL,
+		read_at datetime DEFAULT NULL,
+		created_at datetime NOT NULL,
+		PRIMARY KEY  (id),
+		UNIQUE KEY notif_id_idx (notif_id),
+		KEY recipient_role_idx (recipient_role),
+		KEY recipient_user_idx (recipient_user_id),
+		KEY created_at_idx (created_at)
+	) $charset;";
 	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-	dbDelta( $sql );
+	dbDelta( $sql_store );
+	dbDelta( $sql_notif );
 	update_option( 'dnai_nplan_db_ver', DNAI_NPLAN_DB_VER );
 }
 // Auto-migration si la version DB change (sans réactiver le plugin).
@@ -53,9 +81,10 @@ function dnai_nplan_collections() {
 	// v0.21 : ajout de "governance" (RACI/seuils/SLA paramétrables) + "prefs_user"
 	// (préférences personnelles utilisateur, ex: coach on/off, niveau, hints fermés).
 	// v0.22 : ajout de "ceo_decisions" (validation portfolio par entité × région, retour Halima).
-	// v0.23 : ajout de "notifications" (inbox utilisateur, 60+ triggers Halima
-	// sur cycle + steering + CEO + monitoring + QBR).
-	return array( 'usecases', 'projects', 'reference', 'feedback', 'roles', 'governance', 'prefs_user', 'ceo_decisions', 'notifications' );
+	// v0.23.2 : "notifications" RETIRÉ d'ici (avait sa propre table dédiée
+	// append-only via /notify endpoint, vs. l'ancien /collection qui faisait
+	// REPLACE de la collection entière à chaque trigger — bug critique).
+	return array( 'usecases', 'projects', 'reference', 'feedback', 'roles', 'governance', 'prefs_user', 'ceo_decisions' );
 }
 function dnai_nplan_store_get( $collection ) {
 	global $wpdb;
@@ -267,6 +296,35 @@ add_action( 'rest_api_init', function () {
 		'callback'            => 'dnai_nplan_rest_item_delete',
 		'permission_callback' => 'dnai_nplan_same_origin_perm',
 	) );
+
+	/* ----- v0.23.2 NOTIFICATIONS (append-only, table dédiée) ----- */
+	// POST /notify : body {notifications:[{id, triggerId, recipientRole, title, body, ico, phase, ts, ctx}, ...]}
+	// Bulk INSERT, jamais REPLACE. Idempotent sur notif_id (UNIQUE KEY).
+	register_rest_route( 'dnai-nutriplan/v1', '/notify', array(
+		'methods'             => 'POST',
+		'callback'            => 'dnai_nplan_rest_notify',
+		'permission_callback' => 'dnai_nplan_same_origin_perm',
+	) );
+	// GET /inbox?roles=admin,reader&limit=200 : returns notifs filtered by roles.
+	// En prod avec SSO, le filtrage par rôle viendrait du JWT, pas d'un param URL.
+	register_rest_route( 'dnai-nutriplan/v1', '/inbox', array(
+		'methods'             => 'GET',
+		'callback'            => 'dnai_nplan_rest_inbox_get',
+		'permission_callback' => 'dnai_nplan_same_origin_perm',
+	) );
+	// POST /inbox/mark-read : body {ids:[notif_id,...]}. Sets read_at = NOW.
+	register_rest_route( 'dnai-nutriplan/v1', '/inbox/mark-read', array(
+		'methods'             => 'POST',
+		'callback'            => 'dnai_nplan_rest_inbox_mark_read',
+		'permission_callback' => 'dnai_nplan_same_origin_perm',
+	) );
+	// DELETE /inbox : body {ids:[]} pour delete ciblé, ou body vide pour clear all
+	// les notifs visibles par le rôle effectif demandé en query param ?roles=
+	register_rest_route( 'dnai-nutriplan/v1', '/inbox', array(
+		'methods'             => 'DELETE',
+		'callback'            => 'dnai_nplan_rest_inbox_delete',
+		'permission_callback' => 'dnai_nplan_same_origin_perm',
+	) );
 } );
 
 function dnai_nplan_valid_collection( $name ) {
@@ -316,6 +374,144 @@ function dnai_nplan_rest_item_delete( $req ) {
 	$list = array_values( array_filter( $list, function ( $x ) use ( $id ) { return ! ( isset( $x['id'] ) && $x['id'] === $id ); } ) );
 	dnai_nplan_store_put( $name, $list );
 	return new WP_REST_Response( array( 'ok' => true, 'id' => $id, 'count' => count( $list ) ), 200 );
+}
+
+/* ============================================================
+ * v0.23.2 — NOTIFICATIONS REST callbacks (table dédiée append-only)
+ * ============================================================ */
+
+// Normalise un paramètre `roles` (CSV ou array) en array de strings sûres.
+function dnai_nplan_parse_roles( $raw ) {
+	if ( is_array( $raw ) ) { $arr = $raw; }
+	elseif ( is_string( $raw ) && $raw !== '' ) { $arr = explode( ',', $raw ); }
+	else { return array(); }
+	$out = array();
+	foreach ( $arr as $r ) {
+		$r = preg_replace( '/[^a-z_]/', '', strtolower( trim( (string) $r ) ) );
+		if ( $r !== '' ) { $out[] = $r; }
+	}
+	return array_values( array_unique( $out ) );
+}
+
+// POST /notify : insert bulk de notifications. Append-only. Idempotent
+// par notif_id (UNIQUE KEY) — si le même id est posté 2 fois (retry,
+// double-tap), le 2e INSERT échoue silencieusement via INSERT IGNORE.
+function dnai_nplan_rest_notify( $req ) {
+	global $wpdb;
+	$body = $req->get_json_params();
+	$list = isset( $body['notifications'] ) && is_array( $body['notifications'] ) ? $body['notifications'] : array();
+	if ( empty( $list ) ) { return new WP_REST_Response( array( 'ok' => true, 'inserted' => 0 ), 200 ); }
+	if ( count( $list ) > 200 ) { return new WP_REST_Response( array( 'error' => 'too many notifications in one batch (max 200)' ), 400 ); }
+	$ntable = dnai_nplan_notif_table();
+	$now = current_time( 'mysql' );
+	$inserted = 0; $skipped = 0;
+	foreach ( $list as $n ) {
+		if ( ! is_array( $n ) || empty( $n['id'] ) || empty( $n['recipientRole'] ) ) { $skipped++; continue; }
+		$notif_id = substr( preg_replace( '/[^A-Za-z0-9_\-]/', '', (string) $n['id'] ), 0, 64 );
+		$trigger_id = substr( preg_replace( '/[^A-Za-z0-9_.\-]/', '', (string) ( $n['triggerId'] ?? '' ) ), 0, 64 );
+		$role = substr( preg_replace( '/[^a-z_]/', '', strtolower( (string) $n['recipientRole'] ) ), 0, 64 );
+		if ( $notif_id === '' || $role === '' ) { $skipped++; continue; }
+		$user_id = isset( $n['recipientUserId'] ) ? (int) $n['recipientUserId'] : 0;
+		$payload = wp_json_encode( $n );
+		// INSERT IGNORE pour idempotence sur notif_id UNIQUE
+		$ok = $wpdb->query( $wpdb->prepare(
+			"INSERT IGNORE INTO {$ntable} (notif_id, trigger_id, recipient_role, recipient_user_id, payload, created_at) VALUES (%s, %s, %s, %d, %s, %s)",
+			$notif_id, $trigger_id, $role, $user_id, $payload, $now
+		) );
+		if ( $ok ) { $inserted++; } else { $skipped++; }
+	}
+	return new WP_REST_Response( array( 'ok' => true, 'inserted' => $inserted, 'skipped' => $skipped ), 200 );
+}
+
+// GET /inbox?roles=admin,reader&limit=200&since_id=42 : returns notifs
+// pour les rôles demandés (en prod : extrait du JWT). Retourne le payload
+// JSON complet plus le statut read.
+function dnai_nplan_rest_inbox_get( $req ) {
+	global $wpdb;
+	$ntable = dnai_nplan_notif_table();
+	$roles  = dnai_nplan_parse_roles( $req->get_param( 'roles' ) );
+	$limit  = min( 500, max( 1, (int) $req->get_param( 'limit' ) ?: 200 ) );
+	if ( empty( $roles ) ) { return new WP_REST_Response( array( 'notifications' => array() ), 200 ); }
+	$placeholders = implode( ',', array_fill( 0, count( $roles ), '%s' ) );
+	$sql = "SELECT notif_id, trigger_id, recipient_role, recipient_user_id, payload, read_at, created_at FROM {$ntable} WHERE recipient_role IN ($placeholders) ORDER BY created_at DESC LIMIT %d";
+	$rows = $wpdb->get_results( $wpdb->prepare( $sql, array_merge( $roles, array( $limit ) ) ), ARRAY_A );
+	$out = array();
+	foreach ( $rows as $row ) {
+		$payload = json_decode( $row['payload'], true );
+		if ( ! is_array( $payload ) ) { continue; }
+		$payload['read']    = ! empty( $row['read_at'] );
+		$payload['read_at'] = $row['read_at'];
+		$payload['ts']      = isset( $payload['ts'] ) ? $payload['ts'] : $row['created_at'];
+		$out[] = $payload;
+	}
+	$r = new WP_REST_Response( array( 'notifications' => $out, 'count' => count( $out ) ), 200 );
+	$r->header( 'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0' );
+	return $r;
+}
+
+// POST /inbox/mark-read : body {ids:[notif_id,...]}. Optionnel : {all:true, roles:[...]}.
+function dnai_nplan_rest_inbox_mark_read( $req ) {
+	global $wpdb;
+	$ntable = dnai_nplan_notif_table();
+	$body = $req->get_json_params();
+	$now = current_time( 'mysql' );
+	if ( ! empty( $body['all'] ) ) {
+		$roles = dnai_nplan_parse_roles( $body['roles'] ?? null );
+		if ( empty( $roles ) ) { return new WP_REST_Response( array( 'error' => 'roles required for all=true' ), 400 ); }
+		$placeholders = implode( ',', array_fill( 0, count( $roles ), '%s' ) );
+		$affected = $wpdb->query( $wpdb->prepare(
+			"UPDATE {$ntable} SET read_at = %s WHERE read_at IS NULL AND recipient_role IN ($placeholders)",
+			array_merge( array( $now ), $roles )
+		) );
+		return new WP_REST_Response( array( 'ok' => true, 'affected' => (int) $affected ), 200 );
+	}
+	$ids = isset( $body['ids'] ) && is_array( $body['ids'] ) ? $body['ids'] : array();
+	if ( empty( $ids ) ) { return new WP_REST_Response( array( 'ok' => true, 'affected' => 0 ), 200 ); }
+	if ( count( $ids ) > 500 ) { return new WP_REST_Response( array( 'error' => 'too many ids (max 500)' ), 400 ); }
+	$safe_ids = array();
+	foreach ( $ids as $id ) {
+		$id = substr( preg_replace( '/[^A-Za-z0-9_\-]/', '', (string) $id ), 0, 64 );
+		if ( $id !== '' ) { $safe_ids[] = $id; }
+	}
+	if ( empty( $safe_ids ) ) { return new WP_REST_Response( array( 'ok' => true, 'affected' => 0 ), 200 ); }
+	$placeholders = implode( ',', array_fill( 0, count( $safe_ids ), '%s' ) );
+	$affected = $wpdb->query( $wpdb->prepare(
+		"UPDATE {$ntable} SET read_at = %s WHERE notif_id IN ($placeholders) AND read_at IS NULL",
+		array_merge( array( $now ), $safe_ids )
+	) );
+	return new WP_REST_Response( array( 'ok' => true, 'affected' => (int) $affected ), 200 );
+}
+
+// DELETE /inbox : body {ids:[]} OU body {all:true, roles:[...]} pour clear-all
+// limité aux notifs visibles par les rôles demandés.
+function dnai_nplan_rest_inbox_delete( $req ) {
+	global $wpdb;
+	$ntable = dnai_nplan_notif_table();
+	$body = $req->get_json_params();
+	if ( ! empty( $body['all'] ) ) {
+		$roles = dnai_nplan_parse_roles( $body['roles'] ?? null );
+		if ( empty( $roles ) ) { return new WP_REST_Response( array( 'error' => 'roles required for all=true' ), 400 ); }
+		$placeholders = implode( ',', array_fill( 0, count( $roles ), '%s' ) );
+		$affected = $wpdb->query( $wpdb->prepare(
+			"DELETE FROM {$ntable} WHERE recipient_role IN ($placeholders)",
+			$roles
+		) );
+		return new WP_REST_Response( array( 'ok' => true, 'deleted' => (int) $affected ), 200 );
+	}
+	$ids = isset( $body['ids'] ) && is_array( $body['ids'] ) ? $body['ids'] : array();
+	if ( empty( $ids ) ) { return new WP_REST_Response( array( 'ok' => true, 'deleted' => 0 ), 200 ); }
+	$safe_ids = array();
+	foreach ( $ids as $id ) {
+		$id = substr( preg_replace( '/[^A-Za-z0-9_\-]/', '', (string) $id ), 0, 64 );
+		if ( $id !== '' ) { $safe_ids[] = $id; }
+	}
+	if ( empty( $safe_ids ) ) { return new WP_REST_Response( array( 'ok' => true, 'deleted' => 0 ), 200 ); }
+	$placeholders = implode( ',', array_fill( 0, count( $safe_ids ), '%s' ) );
+	$affected = $wpdb->query( $wpdb->prepare(
+		"DELETE FROM {$ntable} WHERE notif_id IN ($placeholders)",
+		$safe_ids
+	) );
+	return new WP_REST_Response( array( 'ok' => true, 'deleted' => (int) $affected ), 200 );
 }
 
 // Bypass WP's global cookie-nonce check for our endpoint when same-origin
