@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.22.0
+Stable tag: 0.22.1
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,33 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.22.1 — Reproduction visuelle Halima (V14) à l'identique, charte D²nAI =
+* WORLD MAP géographique réelle : intégration de WORLDMAP_DATA (171KB
+  countries SVG paths, Natural Earth simplifié, viewBox 1000×500) +
+  REGION_COORDS repris à l'identique de la maquette Halima V14. Carte
+  rendue via drawWorldMap() : chaque pays peint avec shade vert
+  progressif selon le progress moyen des trials de sa région
+  (4 niveaux : #e6efe9 → #a9c8b9 → #5e9479 → #0c3b2e). Bulles par
+  région : trial amber #e3a23c + demo vert OCP (--green-700), rayon ∝
+  √(count). Labels région en serif vert profond, progress en muted.
+  Footer : légende dots + scale shade.
+* PROJECT CARDS Halima-style : refonte renderProjects() avec layout
+  identique à V14 (ligne par projet : icône play ▶ vert OCP, eyebrow
+  PRJ-001 mono, titre serif vert tronqué single-line, ligne de badges
+  pill arrondies [Region · Entity · Status · Contract · 💰 Budget],
+  count à droite séparé par border-left avec gros nombre serif +
+  "N trials · M demos" en sub).
+* TOOLBAR Halima : 3 dropdowns "All Entities / All Regions / All
+  Project Status" + toggle Portfolio / Table + bouton primary
+  "+ Nouveau projet" à droite, dans une card unifiée.
+* CHARTE GRAPHIQUE D²nAI préservée : Cormorant Garamond pour les
+  titres, Inter pour body, vert OCP --green-700/800/900 dominant,
+  amber #e3a23c uniquement pour le code couleur sémantique trials
+  (vs demos vert), badges arrondis cohérents avec le reste de l'app.
+* CSS : 60 lignes ajoutées (.prjh-* + extension .wmap-* avec
+  .wmap-card, .wmap-h, .wmap-foot, .wmap-scale).
+* PHP : v0.22.0 → v0.22.1, taille HTML 728KB → 900KB (worldmap inline).
 
 = 0.22.0 — Refonte selon retours Halima (V13/V14 + docx) =
 * CHANTIER 1 — Dashboards : nouveau panneau "Regional Breakdown" sous la
