@@ -9,19 +9,37 @@
 <style>
 :root{
   --green-900:#103d17;--green-800:#1B5E20;--green-700:#2E7D32;--green-600:#2f8a39;--green-500:#4CAF50;
-  --green-300:#66BB6A;--green-200:#A5D6A7;--green-100:#D6EADb;--green-50:#EAF4EC;
-  --ink:#10231a;--ink-2:#1f3a2a;--muted:#5c6b62;--muted-2:#5f7269;
-  --line:#e3ebe5;--line-2:#cfdcd4;
+  --green-400:#5cb966;--green-300:#66BB6A;--green-200:#A5D6A7;--green-100:#D6EADb;--green-50:#EAF4EC;
+  --green-25:#f5fbf6;
+  --ink:#10231a;--ink-2:#1f3a2a;--ink-3:#3a4d44;--muted:#5c6b62;--muted-2:#7e8d83;
+  --line:#e3ebe5;--line-2:#cfdcd4;--line-soft:#eef3ef;
   --bad:#B91C1C;--bad-bg:#fdeced;--ok:#15803D;--ok-bg:#dcfce7;--warn:#B45309;--warn-bg:#fef3c7;
   --info:#0e4f6e;--info-bg:#dff1fb;
-  --soft:#f5f9f6;--bg-deep:#07140c;
+  --soft:#f5f9f6;--soft-2:#fafdfb;--bg-deep:#07140c;
+  /* v0.22.3 polish — shadows enrichies (chaude/froide selon contexte) */
   --shadow-sm:0 1px 2px rgba(16,35,26,.06);
   --shadow-md:0 6px 18px -6px rgba(16,35,26,.18);
   --shadow-lg:0 24px 60px -20px rgba(16,35,26,.30);
-  --rad-sm:8px;--rad-md:12px;--rad-lg:16px;
+  --shadow-card:0 1px 3px rgba(16,35,26,.04), 0 4px 14px -6px rgba(16,35,26,.08);
+  --shadow-card-hover:0 4px 8px rgba(16,35,26,.06), 0 12px 28px -10px rgba(46,125,50,.18);
+  --shadow-glow:0 0 0 1px rgba(46,125,50,.16), 0 8px 24px -8px rgba(46,125,50,.22);
+  --rad-sm:8px;--rad-md:12px;--rad-lg:16px;--rad-xl:20px;--rad-pill:999px;
   --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  /* v0.22.3 polish — spacing scale 4pt-based */
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;
+  --space-6:24px;--space-7:32px;--space-8:40px;--space-9:56px;--space-10:72px;
+  /* v0.22.3 polish — durations + easings (exponentielle pour décélération naturelle) */
+  --dur-instant:80ms;--dur-fast:140ms;--dur-base:220ms;--dur-slow:380ms;--dur-page:520ms;
+  --ease-out-quart:cubic-bezier(.165,.84,.44,1);
+  --ease-out-quint:cubic-bezier(.23,1,.32,1);
+  --ease-out-expo:cubic-bezier(.19,1,.22,1);
+  --ease-spring:cubic-bezier(.34,1.56,.64,1);
+  --ease-soft:cubic-bezier(.4,0,.2,1);
+  /* z-index scale sémantique */
+  --z-dropdown:100;--z-sticky:200;--z-modal-back:300;--z-modal:400;--z-toast:500;--z-tooltip:600;--z-coach:10000;
   /* semantic tokens (v0.11 — extract pass) */
   --ring-focus:0 0 0 3px rgba(46,125,50,.35);
+  --ring-focus-soft:0 0 0 4px rgba(46,125,50,.18);
   --st-go-bg:#c5f0d4;--st-go-fg:#0c5b27;
   --st-hold-bg:#fde7c7;--st-hold-fg:#8c5a06;
   --st-kill-bg:#fde0e0;--st-kill-fg:#8b1a1a;
@@ -725,7 +743,8 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 /* generic */
 .muted{color:var(--muted)}
 .sp-y-lg{margin:24px 0}
-.empty{padding:36px 20px;text-align:center;color:var(--muted);font-size:13.5px}
+.empty{padding:36px 20px;text-align:center;color:var(--ink-3);font-size:13.5px;background:linear-gradient(180deg,var(--green-25) 0%,#fff 70%);border-radius:var(--rad-md);border:1px dashed var(--green-100)}
+.empty .big{font-size:36px;display:block;margin-bottom:8px;opacity:.55}
 .empty .big{font-size:38px;margin-bottom:10px;opacity:.5}
 
 /* tiny toast */
@@ -1984,6 +2003,164 @@ body.imp-on .topbar::after{
   border-bottom:1px solid var(--warn-border);
   pointer-events:none;text-align:center;
   z-index:5;
+}
+
+/* ==========================================================================
+ * v0.22.3 polish — global UX/UI improvements
+ *
+ * Pillars :
+ *  1. Smooth page transitions (.screen.on enters with fade+slide-up)
+ *  2. Card hover micro-interaction (lift + glow, not just shadow)
+ *  3. Better focus rings (visible, branded, never removed)
+ *  4. Loading skeletons (replace spinners mid-content)
+ *  5. Empty states with personality (illustration + 1-line + CTA)
+ *  6. Smoother transitions everywhere (220ms ease-out-quart by default)
+ *  7. Subtle scroll-snap on key flows (cockpit, governance)
+ *  8. KPI variation (asymmetric grid : 1 hero + 3 standard)
+ * ========================================================================== */
+
+/* --- Page transitions : chaque changement d'écran fait un fade+slide subtle --- */
+@keyframes pageEnter{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.screen.on{animation:pageEnter var(--dur-page) var(--ease-out-quart) both}
+@media (prefers-reduced-motion: reduce){
+  .screen.on{animation:none}
+}
+
+/* --- Card hover : lift + glow vert subtil (au lieu de bg change) --- */
+.card{transition:transform var(--dur-base) var(--ease-out-quart), box-shadow var(--dur-base) var(--ease-out-quart), border-color var(--dur-base) var(--ease-out-quart)}
+.card:hover:not(.no-hover){border-color:var(--green-100)}
+.card-hoverable{cursor:pointer}
+.card-hoverable:hover{transform:translateY(-2px);box-shadow:var(--shadow-card-hover);border-color:var(--green-200)}
+.card-hoverable:active{transform:translateY(-1px);transition-duration:var(--dur-fast)}
+
+/* --- KPI : default = standard, .kpi--hero = large featured one --- */
+.kpi-grid{gap:var(--space-3)}
+.kpi{transition:transform var(--dur-base) var(--ease-out-quart), box-shadow var(--dur-base) var(--ease-out-quart), border-color var(--dur-base) var(--ease-out-quart)}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-card-hover);border-color:var(--green-200)}
+.kpi:active{transform:translateY(-1px);transition-duration:var(--dur-fast)}
+.kpi--hero{
+  grid-column:span 2;background:linear-gradient(135deg,var(--green-700) 0%, var(--green-900) 100%);
+  color:#fff;border:0;padding:var(--space-6) var(--space-7);
+}
+.kpi--hero .k{color:rgba(255,255,255,.7);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.kpi--hero .v{color:#fff;font-size:clamp(36px,5vw,52px);line-height:1;letter-spacing:-.025em}
+.kpi--hero .s{color:rgba(255,255,255,.65);font-size:13px}
+.kpi--hero .bar{background:rgba(255,255,255,.12)}
+.kpi--hero .bar > i{background:linear-gradient(90deg,#fff,rgba(255,255,255,.7))}
+.kpi--hero:hover{transform:translateY(-2px);box-shadow:0 12px 32px -8px rgba(16,35,26,.42)}
+
+/* --- Buttons : add active state + subtle scale --- */
+.btn,.tb-btn{transition:background var(--dur-fast) var(--ease-soft), color var(--dur-fast) var(--ease-soft), border-color var(--dur-fast) var(--ease-soft), transform var(--dur-fast) var(--ease-out-quart), box-shadow var(--dur-fast) var(--ease-out-quart)}
+.btn:active:not(:disabled),.tb-btn:active:not(:disabled){transform:scale(.97)}
+.btn.primary:hover:not(:disabled),.tb-btn.primary:hover:not(:disabled){box-shadow:0 4px 14px -2px rgba(46,125,50,.4)}
+.btn.primary:active:not(:disabled),.tb-btn.primary:active:not(:disabled){box-shadow:0 2px 8px -2px rgba(46,125,50,.3)}
+.btn:disabled,.tb-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* --- Focus rings : plus visibles, branded --- */
+:focus-visible{outline:none;box-shadow:var(--ring-focus)!important;border-radius:8px}
+.btn:focus-visible,.tb-btn:focus-visible{box-shadow:var(--ring-focus), 0 4px 14px -2px rgba(46,125,50,.3)!important}
+
+/* --- Loading skeletons --- */
+@keyframes skelShimmer{
+  0%{background-position:-200px 0}
+  100%{background-position:calc(200px + 100%) 0}
+}
+.skel{
+  background:linear-gradient(90deg,var(--line-soft) 0%,#fff 50%,var(--line-soft) 100%);
+  background-size:200px 100%;background-repeat:no-repeat;
+  animation:skelShimmer 1.4s var(--ease-soft) infinite;
+  border-radius:var(--rad-sm);color:transparent!important;
+}
+.skel-text{height:14px;margin-bottom:6px;display:block}
+.skel-card{padding:var(--space-5);background:#fff;border:1px solid var(--line);border-radius:var(--rad-md);margin-bottom:var(--space-3)}
+.skel-line{height:12px;margin:6px 0;border-radius:4px}
+@media (prefers-reduced-motion: reduce){
+  .skel{animation:none;background:var(--line-soft)}
+}
+
+/* --- Empty states : warm, welcoming --- */
+.empty-pro{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:var(--space-9) var(--space-5);
+  background:linear-gradient(180deg,var(--green-25) 0%,#fff 60%);
+  border:1px dashed var(--green-100);border-radius:var(--rad-lg);
+}
+.empty-pro-ico{font-size:48px;margin-bottom:var(--space-4);opacity:.6;filter:grayscale(.3)}
+.empty-pro h3{font:700 18px/1.3 'Cormorant Garamond',serif;color:var(--ink);margin:0 0 var(--space-2);letter-spacing:-.01em}
+.empty-pro p{font:500 13px/1.55 'Inter',sans-serif;color:var(--muted);margin:0 0 var(--space-5);max-width:380px;text-wrap:pretty}
+.empty-pro .btn{align-self:center}
+
+/* --- Hero cockpit : subtle vignette + softer gradient --- */
+.ck-hero{
+  position:relative;overflow:hidden;
+  transition:transform var(--dur-slow) var(--ease-out-quart),box-shadow var(--dur-slow) var(--ease-out-quart);
+}
+.ck-hero::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at top right, rgba(124,252,154,.08), transparent 60%),
+             radial-gradient(ellipse at bottom left, rgba(16,35,26,.18), transparent 50%);
+}
+
+/* --- Sidebar nav items : subtle hover lift --- */
+.sb-item{transition:background var(--dur-fast) var(--ease-soft), color var(--dur-fast) var(--ease-soft), transform var(--dur-fast) var(--ease-out-quart)}
+.sb-item:hover:not(.on){background:rgba(255,255,255,.04);color:#fff}
+.sb-item:active{transform:scale(.98)}
+.sb-item.on{position:relative}
+.sb-item.on::before{
+  content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;
+  background:var(--green-300);border-radius:0 2px 2px 0;
+}
+
+/* --- Pills/badges : tighter, more consistent --- */
+.pill{transition:background var(--dur-fast) var(--ease-soft), color var(--dur-fast) var(--ease-soft)}
+
+/* --- Chips/toggles : smooth state transitions --- */
+.chip{transition:background var(--dur-fast) var(--ease-soft), border-color var(--dur-fast) var(--ease-soft), color var(--dur-fast) var(--ease-soft)}
+
+/* --- Toast : entry/exit polish (already exists, just refine timing) --- */
+.toast{transition:transform var(--dur-base) var(--ease-spring), opacity var(--dur-base) var(--ease-out-quart)}
+
+/* --- Table rows : subtle hover for clickables --- */
+.tbl tr.t-link,.tbl tbody tr[onclick]{cursor:pointer;transition:background var(--dur-fast) var(--ease-soft)}
+.tbl tr.t-link:hover,.tbl tbody tr[onclick]:hover{background:var(--green-25)}
+
+/* --- Smooth scroll for in-page anchors --- */
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+
+/* --- Touch targets : minimum 44x44 on mobile --- */
+@media (hover:none) and (pointer:coarse){
+  .btn,.tb-btn,.chip,.sb-item,.kn-card{min-height:44px}
+}
+
+/* --- Better text selection (branded) --- */
+::selection{background:rgba(46,125,50,.18);color:var(--green-900)}
+
+/* --- Progress bars : smooth fill animation --- */
+.bar > i,.dash-bar > i,.coach-tour-prog-fill{transition:width var(--dur-slow) var(--ease-out-quart)}
+
+/* --- Subtle stagger reveal on list items (cards, alerts) --- */
+@keyframes itemFadeUp{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.screen.on .alert,
+.screen.on .kn-card,
+.screen.on .kb-card,
+.screen.on .proj-acc-card,
+.screen.on .prjh-card{
+  animation:itemFadeUp var(--dur-base) var(--ease-out-quart) both;
+}
+.screen.on .alert:nth-child(1),.screen.on .kn-card:nth-child(1),.screen.on .kb-card:nth-child(1),.screen.on .prjh-card:nth-child(1){animation-delay:40ms}
+.screen.on .alert:nth-child(2),.screen.on .kn-card:nth-child(2),.screen.on .kb-card:nth-child(2),.screen.on .prjh-card:nth-child(2){animation-delay:80ms}
+.screen.on .alert:nth-child(3),.screen.on .kn-card:nth-child(3),.screen.on .kb-card:nth-child(3),.screen.on .prjh-card:nth-child(3){animation-delay:120ms}
+.screen.on .alert:nth-child(4),.screen.on .kn-card:nth-child(4),.screen.on .kb-card:nth-child(4),.screen.on .prjh-card:nth-child(4){animation-delay:160ms}
+.screen.on .alert:nth-child(5),.screen.on .kn-card:nth-child(5),.screen.on .kb-card:nth-child(5),.screen.on .prjh-card:nth-child(5){animation-delay:200ms}
+@media (prefers-reduced-motion: reduce){
+  .screen.on .alert,.screen.on .kn-card,.screen.on .kb-card,.screen.on .proj-acc-card,.screen.on .prjh-card{animation:none}
 }
 
 /* ==========================================================================

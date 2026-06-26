@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.22.2
+Stable tag: 0.22.3
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,51 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.22.3 — Polish UX/UI global (impeccable polish pass) =
+* DESIGN TOKENS étendus :
+  - Spacing scale 4pt-based : --space-1..10 (4 → 72px).
+  - Duration scale : --dur-instant/fast/base/slow/page (80→520ms).
+  - Easing tokens : --ease-out-quart/quint/expo/spring/soft (courbes
+    exponentielles pour décélération naturelle, jamais bounce).
+  - Z-index scale sémantique : dropdown→sticky→modal→toast→tooltip.
+  - Shadows enrichies : card / card-hover / glow (chaude/froide
+    selon contexte).
+  - Couleurs : ajout --green-25 (très clair), --green-400, --ink-3,
+    --muted-2, --line-soft pour gradations plus fines.
+* PAGE TRANSITIONS : chaque changement d'écran fade+slide-up
+  (520ms ease-out-quart). Désactivé en prefers-reduced-motion.
+* CARD HOVER : lift -2px + soft glow vert (au lieu de juste bg
+  change). Active state -1px scale 0.97. Border-color passage à
+  --green-200.
+* BUTTON STATES : active scale .97, hover lift sur primary avec
+  shadow vert, disabled opacity .5 + cursor not-allowed.
+* FOCUS RINGS : plus visibles, branded vert, jamais supprimés. Sur
+  buttons : ring + halo shadow vert combiné.
+* LOADING SKELETONS : nouvelle classe .skel avec shimmer animation
+  (1.4s ease-soft infinite). .skel-text, .skel-card, .skel-line
+  composables.
+* EMPTY STATES : nouvelle classe .empty-pro (warm gradient bg
+  + serif Cormorant + microcopy + CTA). Ancienne .empty enrichie
+  avec dashed border vert + bg gradient.
+* SIDEBAR : sidebar items avec subtle hover lift + barre verte 3px
+  à gauche sur l'item actif (indicateur visuel propre).
+* STAGGER REVEAL : alerts/cards/kn-cards apparaissent avec un
+  micro-stagger (40ms entre chaque), donne du rythme à la page.
+* TABLE ROWS : t-link rows avec hover bg --green-25 (subtle,
+  signal de cliquabilité sans agressivité).
+* SMOOTH SCROLL : html scroll-behavior smooth (désactivé en
+  reduced-motion).
+* TOUCH TARGETS : min-height 44px sur mobile (hover:none) pour
+  buttons, chips, sb-items, kn-cards.
+* TEXT SELECTION : branded vert OCP.
+* COCKPIT HERO : vignette subtile (radial gradient bottom-left +
+  highlight top-right) pour donner de la profondeur.
+* PROGRESS BARS : transition width 380ms ease-out-quart (au lieu
+  de 550ms ease linear).
+* TOAST : entry/exit avec spring easing.
+* RESPECT prefers-reduced-motion partout : transitions et stagger
+  désactivés.
 
 = 0.22.2 — RBAC complet UI/UX (11 rôles × 17 permissions atomiques) =
 * MATRICE RBAC : 11 rôles applicatifs × 17 permissions atomiques.
