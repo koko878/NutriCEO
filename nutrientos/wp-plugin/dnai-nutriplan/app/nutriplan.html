@@ -1567,6 +1567,63 @@ body::after{
 }
 .coach-bar-x:hover{background:var(--green-50);color:var(--ink)}
 
+/* v0.23 — Notification bell + inbox panel */
+.tb-notif{
+  background:transparent;border:0;cursor:pointer;width:34px;height:34px;border-radius:8px;
+  display:grid;place-items:center;color:var(--muted);margin:0 4px 0 6px;
+  transition:background var(--dur-base) var(--ease-out-quart),color var(--dur-base) var(--ease-out-quart);
+  position:relative;
+}
+.tb-notif:hover{background:var(--green-50);color:var(--green-900)}
+.tb-notif svg{width:18px;height:18px}
+.tb-notif.has-unread{color:var(--green-700)}
+.notif-bell-badge{
+  position:absolute;top:1px;right:1px;min-width:16px;height:16px;padding:0 4px;
+  background:#B91C1C;color:#fff;border-radius:8px;font:800 9.5px Inter;
+  display:grid;place-items:center;line-height:1;font-variant-numeric:tabular-nums;
+  border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.2);
+  animation:notifPop .35s var(--ease-spring) both;
+}
+@keyframes notifPop{from{transform:scale(0)}to{transform:scale(1)}}
+.tb-notif-panel{
+  position:absolute;top:54px;right:12px;width:380px;max-width:calc(100vw - 24px);
+  background:#fff;border:1px solid var(--line);border-radius:14px;
+  box-shadow:0 24px 60px -16px rgba(8,30,16,.28), 0 0 0 1px rgba(46,125,50,.06);
+  opacity:0;transform:translateY(-6px) scale(.98);pointer-events:none;z-index:var(--z-dropdown,100);
+  transition:opacity var(--dur-base) var(--ease-out-quart),transform var(--dur-base) var(--ease-out-quart);
+  max-height:calc(100vh - 80px);display:flex;flex-direction:column;
+}
+.tb-notif-panel.on{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+.notif-h{display:flex;align-items:flex-start;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)}
+.notif-t{font:700 14px 'Cormorant Garamond',Georgia,serif;color:var(--green-900);font-size:16px;letter-spacing:-.01em}
+.notif-sub{font:500 11.5px Inter;color:var(--muted);margin-top:2px}
+.notif-h-actions{display:flex;gap:4px}
+.notif-h-btn{background:transparent;border:0;cursor:pointer;font:600 11.5px Inter;color:var(--muted);padding:5px 9px;border-radius:6px;transition:background var(--dur-fast) var(--ease-soft),color var(--dur-fast) var(--ease-soft)}
+.notif-h-btn:hover{background:var(--green-50);color:var(--green-800)}
+.notif-list{flex:1;overflow-y:auto;padding:6px}
+.notif-it{
+  display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:flex-start;
+  padding:11px 12px;border-radius:9px;cursor:pointer;
+  transition:background var(--dur-fast) var(--ease-soft);
+  border-bottom:1px solid var(--line-soft);
+}
+.notif-it:last-child{border-bottom:0}
+.notif-it:hover{background:var(--green-25)}
+.notif-it.read{opacity:.65}
+.notif-it-ico{font-size:18px;line-height:1;padding-top:2px}
+.notif-it-body{min-width:0}
+.notif-it-title{font:700 12.5px Inter;color:var(--ink);line-height:1.3;margin-bottom:3px;text-wrap:pretty}
+.notif-it-text{font:500 12px Inter;color:var(--ink-2);line-height:1.45;margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.notif-it-meta{display:flex;gap:6px;font:500 10.5px Inter;color:var(--muted)}
+.notif-it-dot{width:8px;height:8px;background:var(--green-600);border-radius:50%;flex-shrink:0;margin-top:6px;align-self:flex-start;box-shadow:0 0 0 3px rgba(46,125,50,.15)}
+.notif-empty{padding:48px 24px;text-align:center}
+.notif-empty-ico{font-size:36px;margin-bottom:8px;opacity:.5}
+.notif-empty-t{font:700 14px 'Cormorant Garamond',serif;color:var(--ink-2);margin-bottom:3px}
+.notif-empty-sub{font:500 12px Inter;color:var(--muted);max-width:240px;margin:0 auto;text-wrap:pretty}
+@media(max-width:760px){
+  .tb-notif-panel{right:6px;left:6px;width:auto}
+}
+
 /* Topbar toggle (💡) + menu déroulant */
 .tb-coach{
   background:transparent;border:0;cursor:pointer;width:34px;height:34px;border-radius:8px;
@@ -2327,6 +2384,11 @@ body.imp-on{padding-top:22px}
       Vue
       <select id="impSel" onchange="setImpersonate(this.value)" aria-label="Se faire passer pour un rôle"></select>
     </label>
+    <!-- v0.23 — Notifications bell (60+ triggers Halima) -->
+    <button id="notifBell" class="tb-notif" type="button" onclick="toggleNotifPanel()" aria-label="Notifications">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+    </button>
+    <div id="notifPanel" class="tb-notif-panel" role="dialog" aria-label="Inbox notifications" onclick="event.stopPropagation()"></div>
     <!-- v0.21.1 — Coach D²nAI : 💡 = lance le tour guidé / clic-droit = menu -->
     <button id="coachToggle" class="tb-coach" type="button"
             onclick="if(COACH.isOn()) COACH.startTour('welcome'); else { COACH.enable(); COACH.startTour('welcome'); }"
@@ -4474,9 +4536,285 @@ function applyRBACUI(){
   if(impSel){ impSel.closest('.tb-imp').style.display = (actual==='admin')?'':'none'; }
   if(typeof renderSidebar==='function') renderSidebar();
   if(typeof goView==='function' && PREFS.view) goView(PREFS.view);
+  // v0.23 — recharge l'inbox pour le nouveau rôle effectif (clé localStorage différente)
+  if(typeof _loadInbox==='function'){ _loadInbox(); _refreshBell(); }
 }
 /* Alias rétrocompat */
 function applyImpersonateUI(){ applyRBACUI(); }
+
+/* =================================================================
+ * v0.23 — NOTIFICATIONS ENGINE (60+ triggers Halima)
+ *
+ * Structure :
+ *  - NOTIF_TEMPLATES : matrice {triggerId → {phase, sender, recipients[],
+ *    title(ctx), body(ctx), type, ico}}
+ *  - notify(triggerId, ctx) : pousse 1 notif par recipient role dans
+ *    NOTIF_INBOX, persiste, met à jour le bell icon
+ *  - NOTIF_INBOX : array {id, ts, triggerId, recipientRole, title,
+ *    body, ico, read, ctx} persisté localStorage + collection REST
+ *    'notifications' (whitelistée PHP)
+ *  - Bell icon dans topbar avec count badge + dropdown panel
+ *  - "Email + Cockpit Alert" : la partie "Email" est un mock console.log
+ *    + toast (en prod = REST → SMTP via WP wp_mail)
+ *
+ * Wirage triggers :
+ *  - uc.submitted → notify('uc.submitted', {uc})
+ *  - uc.submitted.ft → notify('uc.submitted.ft', {uc})
+ *  - sai.reviewed, steering.decided, ceo.decided, ft.decided,
+ *    monitoring.decided, exec.updated, cycle.opened/closed, qbr.prep
+ * ================================================================= */
+
+/* Templates des notifications repris du fichier RBAC notification Halima.
+ * Pour chaque trigger : qui le reçoit (par rôle) + comment l'afficher. */
+const NOTIF_TEMPLATES = {
+  'cycle.opened': {
+    phase: 'Annual Trial Cycle launch', sender: 'admin', ico: '🌱',
+    recipients: ['entity_manager','entity_contributor','entity_trial_owner'],
+    title: () => 'Cycle annuel ouvert',
+    body: (ctx) => `Soumissions Use Cases ouvertes pour le cycle ${ctx.cycle||'2026'}. Fenêtre standard jusqu'à mi-septembre.`,
+  },
+  'cycle.closed': {
+    phase: 'Annual Trial Cycle launch', sender: 'admin', ico: '🔒',
+    recipients: ['entity_manager','entity_contributor','entity_trial_owner'],
+    title: () => 'Cycle annuel clos',
+    body: (ctx) => `Soumissions standard fermées pour le cycle ${ctx.cycle||'2026'}. Fast Track lane reste ouverte.`,
+  },
+  'uc.submitted': {
+    phase: 'Use Case submission window', sender: 'auto', ico: '📨',
+    recipients: ['entity_manager'],
+    title: (ctx) => `Nouveau Use Case soumis · ${ctx.uc?.id||'UC'}`,
+    body: (ctx) => `${ctx.uc?.name||''} (${ctx.uc?.bu||''}) soumis par ${ctx.author||'un contributeur'}. À valider avant SAI Review.`,
+  },
+  'uc.submitted.ft': {
+    phase: 'Use Case submission window', sender: 'auto', ico: '⚡',
+    recipients: ['entity_manager','fast_track_approver'],
+    title: (ctx) => `Fast Track soumis · ${ctx.uc?.id||'UC'}`,
+    body: (ctx) => `${ctx.uc?.name||''} en voie Fast Track. Décision attendue sous 12 jours.`,
+  },
+  'portfolio.submitted.sai': {
+    phase: 'Use Case submission window', sender: 'auto', ico: '📋',
+    recipients: ['sai_reviewer'],
+    title: (ctx) => `Portfolio ${ctx.bu||''} soumis à SAI Review`,
+    body: (ctx) => `${ctx.count||0} Use Cases en attente de revue scientifique et agronomique.`,
+  },
+  'sai.reviewed': {
+    phase: 'SAI review', sender: 'auto', ico: '🔬',
+    recipients: ['entity_manager','entity_contributor','entity_trial_owner'],
+    title: (ctx) => `SAI Review terminée · ${ctx.uc?.id||'UC'}`,
+    body: (ctx) => `Revue scientifique : ${ctx.verdict||'commentaires fournis'}. Voir le détail.`,
+  },
+  'portfolio.submitted.steering': {
+    phase: 'SAI review', sender: 'auto', ico: '⚖',
+    recipients: ['steering_member'],
+    title: (ctx) => `Portfolio soumis au Steering Committee`,
+    body: (ctx) => `${ctx.count||0} Use Cases pré-validés par SAI prêts pour décision.`,
+  },
+  'steering.decided': {
+    phase: 'Trial Steering Committee Review', sender: 'auto', ico: '⚖',
+    recipients: ['entity_manager','entity_contributor','entity_trial_owner','sai_reviewer'],
+    title: (ctx) => `Décision Steering · ${ctx.uc?.id||'UC'}`,
+    body: (ctx) => `Verdict Steering Committee : ${(ctx.decision||'').toUpperCase()}. ${ctx.decision==='go'?'Transmis à CEO Approval.':ctx.decision==='kill'?'Trial clôturé.':'En hold pour itération.'}`,
+  },
+  'portfolio.submitted.ceo': {
+    phase: 'Trial Steering Committee Review', sender: 'auto', ico: '👔',
+    recipients: ['ceo_approver'],
+    title: (ctx) => `Portfolio ${ctx.bu||''} soumis à CEO Approval`,
+    body: (ctx) => `Décision CEO attendue au niveau entité × région pour le cycle ${ctx.cycle||'courant'}.`,
+  },
+  'ceo.decided': {
+    phase: 'CEO Portfolio Approval', sender: 'auto', ico: '✓',
+    recipients: ['entity_manager','entity_contributor','entity_trial_owner','sai_reviewer','steering_member'],
+    title: (ctx) => `Décision CEO · ${ctx.bu||''} ${ctx.region||''}`,
+    body: (ctx) => `Verdict CEO : ${ctx.decision||'—'}. ${ctx.comment ? '« ' + ctx.comment + ' »' : ''}`,
+  },
+  'ft.decided': {
+    phase: 'Fast Track', sender: 'auto', ico: '⚡',
+    recipients: ['entity_manager','entity_contributor','entity_trial_owner','sai_reviewer','steering_member'],
+    title: (ctx) => `Décision Fast Track · ${ctx.uc?.id||'UC'}`,
+    body: (ctx) => `Verdict Fast Track Approver : ${(ctx.decision||'').toUpperCase()}.`,
+  },
+  'uc.concluded': {
+    phase: 'Monitoring Committee', sender: 'auto', ico: '🏁',
+    recipients: ['monitoring_member'],
+    title: (ctx) => `Trial conclu · ${ctx.uc?.id||'UC'}`,
+    body: (ctx) => `${ctx.uc?.name||''} : phase d'exécution terminée. Verdict Monitoring (Go/Hold/Kill) attendu.`,
+  },
+  'monitoring.decided': {
+    phase: 'Monitoring Committee', sender: 'auto', ico: '🎯',
+    recipients: ['entity_manager','entity_contributor','entity_trial_owner'],
+    title: (ctx) => `Verdict Monitoring · ${ctx.uc?.id||'UC'}`,
+    body: (ctx) => `Verdict final : ${(ctx.verdict||'').replace('closed-','').toUpperCase()}. ${ctx.verdict==='closed-go'?'Déploiement recommandé.':ctx.verdict==='closed-kill'?'NE PAS répliquer en l\'état.':'À itérer.'}`,
+  },
+  'qbr.prepare': {
+    phase: 'QBR portfolio refresh', sender: 'admin', ico: '📊',
+    recipients: ['entity_manager','monitoring_member'],
+    title: (ctx) => `QBR ${ctx.qbrNum||1} à préparer`,
+    body: (ctx) => `Refresh portfolio attendu pour la prochaine session QBR (${ctx.when||'à venir'}).`,
+  },
+  'qbr.submitted.ceo': {
+    phase: 'QBR portfolio refresh', sender: 'admin', ico: '📤',
+    recipients: ['ceo_approver'],
+    title: (ctx) => `QBR ${ctx.qbrNum||1} soumis au CEO`,
+    body: (ctx) => `Portfolio QBR ${ctx.qbrNum||1} consolidé prêt pour décision (${ctx.when||''}).`,
+  },
+};
+
+/* Inbox utilisateur courant. Persisté par email ; en démo, indexé par
+ * "effectiveRole" pour que chaque switch de "Vue" affiche le bon inbox. */
+let NOTIF_INBOX = [];
+function _notifInboxKey(){
+  const userEmail = (window.DNAI_NPLAN && window.DNAI_NPLAN.userEmail) || 'demo';
+  const role = (typeof effectiveRole==='function') ? effectiveRole() : 'admin';
+  return 'nplan_notif_inbox_' + userEmail + '_' + role;
+}
+function _loadInbox(){
+  try { NOTIF_INBOX = JSON.parse(localStorage.getItem(_notifInboxKey())||'[]'); } catch(e){ NOTIF_INBOX = []; }
+}
+function _saveInbox(){
+  try { localStorage.setItem(_notifInboxKey(), JSON.stringify(NOTIF_INBOX.slice(0,200))); } catch(e){}
+}
+
+/* notify(triggerId, ctx) : crée 1 notif par recipient role défini dans
+ * le template. Si le rôle effectif courant fait partie des recipients,
+ * la notif apparaît dans l'inbox immédiatement (et fait flasher la bell).
+ *
+ * En prod, cette fn devrait :
+ *  1. POST à /wp-json/dnai-nutriplan/v1/notify (admin nonce)
+ *  2. Le backend résout users par rôle + envoie wp_mail
+ *  3. Une notif WS push met à jour le inbox en temps réel
+ * Pour la démo : mock direct côté JS + console.log de l'email simulé. */
+function notify(triggerId, ctx){
+  const tpl = NOTIF_TEMPLATES[triggerId];
+  if(!tpl){ console.warn('[notify] unknown trigger', triggerId); return; }
+  ctx = ctx || {};
+  const myRole = (typeof effectiveRole==='function') ? effectiveRole() : 'admin';
+  const userEmail = (window.DNAI_NPLAN && window.DNAI_NPLAN.userEmail) || 'demo';
+  const title = (typeof tpl.title==='function') ? tpl.title(ctx) : tpl.title;
+  const body = (typeof tpl.body==='function') ? tpl.body(ctx) : tpl.body;
+  // Pour CHAQUE recipient role : persister une notif dans son inbox localStorage
+  // (en prod, ce sera côté serveur → tous les users du rôle reçoivent leur copie)
+  tpl.recipients.forEach(role => {
+    console.log('[notify] %s → %s : %s', triggerId, role, title);
+    const n = {
+      id: 'ntf-' + Date.now().toString(36) + '-' + role.slice(0,4) + Math.random().toString(36).slice(2,5),
+      ts: new Date().toISOString(),
+      triggerId, recipientRole: role,
+      title, body, ico: tpl.ico||'🔔', phase: tpl.phase,
+      read: false, ctx,
+    };
+    // Persiste dans l'inbox de CE role (pas le mien)
+    const key = 'nplan_notif_inbox_' + userEmail + '_' + role;
+    let inbox = [];
+    try { inbox = JSON.parse(localStorage.getItem(key)||'[]'); } catch(e){}
+    inbox.unshift(n);
+    try { localStorage.setItem(key, JSON.stringify(inbox.slice(0,200))); } catch(e){}
+    // Si je suis ce recipient (rôle effectif courant), refresh in-memory + UI
+    if(role === myRole){
+      NOTIF_INBOX.unshift(n);
+      _refreshBell();
+      if(typeof toast==='function') toast('🔔 ' + title, 'ok');
+    }
+  });
+  // Backend push (silencieux en démo si pas configuré)
+  if(typeof apiPush==='function') apiPush('notifications', {triggerId, ctx, recipients: tpl.recipients, ts: new Date().toISOString()});
+}
+
+function notifMarkRead(id){
+  const n = NOTIF_INBOX.find(x => x.id === id);
+  if(n){ n.read = true; _saveInbox(); _refreshBell(); }
+}
+function notifMarkAllRead(){
+  NOTIF_INBOX.forEach(n => n.read = true);
+  _saveInbox(); _refreshBell();
+  renderNotifPanel();
+}
+function notifClear(){
+  NOTIF_INBOX = [];
+  _saveInbox(); _refreshBell();
+  renderNotifPanel();
+}
+
+function _refreshBell(){
+  const bell = document.getElementById('notifBell');
+  if(!bell) return;
+  const unread = NOTIF_INBOX.filter(n => !n.read).length;
+  const badge = bell.querySelector('.notif-bell-badge');
+  if(unread > 0){
+    if(!badge){
+      const b = document.createElement('span');
+      b.className = 'notif-bell-badge';
+      bell.appendChild(b);
+    }
+    bell.querySelector('.notif-bell-badge').textContent = unread > 99 ? '99+' : String(unread);
+    bell.classList.add('has-unread');
+  } else {
+    if(badge) badge.remove();
+    bell.classList.remove('has-unread');
+  }
+}
+
+function toggleNotifPanel(){
+  const p = document.getElementById('notifPanel');
+  if(!p) return;
+  const open = p.classList.toggle('on');
+  if(open) renderNotifPanel();
+}
+function renderNotifPanel(){
+  const p = document.getElementById('notifPanel');
+  if(!p) return;
+  const list = NOTIF_INBOX.slice(0, 50);
+  p.innerHTML = `
+    <div class="notif-h">
+      <div>
+        <div class="notif-t">Notifications</div>
+        <div class="notif-sub">${list.filter(n=>!n.read).length} non lues sur ${list.length}</div>
+      </div>
+      <div class="notif-h-actions">
+        <button class="notif-h-btn" onclick="notifMarkAllRead()" title="Tout marquer comme lu">✓ Tout lu</button>
+        <button class="notif-h-btn" onclick="notifClear()" title="Vider la boîte">🗑</button>
+      </div>
+    </div>
+    <div class="notif-list">
+      ${list.length ? list.map(n => {
+        const dt = new Date(n.ts);
+        const rel = _notifRelTime(dt);
+        return `<div class="notif-it ${n.read?'read':'unread'}" onclick="notifMarkRead('${n.id}')">
+          <span class="notif-it-ico" aria-hidden="true">${n.ico}</span>
+          <div class="notif-it-body">
+            <div class="notif-it-title">${escapeHtml(n.title)}</div>
+            <div class="notif-it-text">${escapeHtml(n.body)}</div>
+            <div class="notif-it-meta"><span>${escapeHtml(n.phase||'')}</span><span>· ${rel}</span></div>
+          </div>
+          ${!n.read?'<span class="notif-it-dot"></span>':''}
+        </div>`;
+      }).join('') : '<div class="notif-empty"><div class="notif-empty-ico">🔕</div><div class="notif-empty-t">Tout est calme</div><div class="notif-empty-sub">Les notifications de gouvernance et de cycle apparaîtront ici.</div></div>'}
+    </div>
+  `;
+}
+function _notifRelTime(d){
+  const ms = Date.now() - d.getTime();
+  const s = Math.floor(ms/1000);
+  if(s<60) return 'à l\'instant';
+  const m = Math.floor(s/60);
+  if(m<60) return `il y a ${m} min`;
+  const h = Math.floor(m/60);
+  if(h<24) return `il y a ${h} h`;
+  const days = Math.floor(h/24);
+  if(days<7) return `il y a ${days} j`;
+  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+}
+
+/* Init : charger l'inbox + brancher click outside pour fermer le panel */
+function notifInit(){
+  _loadInbox();
+  _refreshBell();
+  document.addEventListener('click', (e) => {
+    const p = document.getElementById('notifPanel');
+    const bell = document.getElementById('notifBell');
+    if(!p || !p.classList.contains('on')) return;
+    if(!p.contains(e.target) && !bell.contains(e.target)) p.classList.remove('on');
+  });
+}
 
 /* =================================================================
  * v0.21.1 — COACH D²nAI : guided tour pas-à-pas (style Intercom Product
@@ -7092,6 +7430,11 @@ function submitUc(isDraft){
   try{ localStorage.setItem(LS_DATA, JSON.stringify(DATA)); }catch(e){}
   apiUpsert('usecases', uc);  // upsert granulaire serveur (anti-clobber multi-user)
   if (typeof COACH !== 'undefined') { COACH.flag('uc-created'); COACH.flag('uc:'+uc.id+':mine'); }
+  // v0.23 — Notifications : déclencher uc.submitted (+ FT spécifique si applicable)
+  if(!isDraft && typeof notify === 'function'){
+    if(uc.fast_track) notify('uc.submitted.ft', {uc, author: (window.DNAI_NPLAN && window.DNAI_NPLAN.user)||'Vous'});
+    else notify('uc.submitted', {uc, author: (window.DNAI_NPLAN && window.DNAI_NPLAN.user)||'Vous'});
+  }
   // v0.21 B9 : propagation centrale (sidebar badges + écran courant si concerné)
   if (typeof dataChanged === 'function') dataChanged();
   toast(isDraft ? tr('in.toast.draft') : tr('in.toast.submit'));
@@ -7282,6 +7625,8 @@ function govSetDecision(ucId, val){
   // hold = reste en steering
   saveData();
   toast(trf('gov.dec.applied',{id:u.id,d:val})||u.id+' : décision '+val+' enregistrée','ok');
+  // v0.23 — Notifs Halima : 'steering.decided' → tous les rôles entity_* + sai_reviewer
+  if(typeof notify==='function') notify('steering.decided', {uc:u, decision:val});
 }
 function govSetMonDecision(ucId, val){
   if(typeof _rbacGuard==='function' && !_rbacGuard('do-monitoring-decide')) return;
@@ -7291,6 +7636,8 @@ function govSetMonDecision(ucId, val){
   u._monitoringDecision = { decision: val, at: new Date().toISOString() };
   saveData();
   toast(trf('gov.mondec.applied',{id:u.id,d:val})||u.id+' : verdict '+val,'ok');
+  // v0.23 — Notif Halima : 'monitoring.decided' → entity_*
+  if(typeof notify==='function') notify('monitoring.decided', {uc:u, verdict:val});
 }
 
 /* -----------------------------------------------------------------
@@ -7470,6 +7817,11 @@ function ceoSetDecision(buId, region, field, value){
   try{ localStorage.setItem('nplan_ceo_decisions_v1', JSON.stringify(window._ceoDecisions)); }catch(e){}
   // Push serveur via apiPush (collection 'ceo_decisions' à whitelist plus tard)
   if(typeof apiPush==='function') apiPush('ceo_decisions', window._ceoDecisions);
+  // v0.23 — Notif Halima : 'ceo.decided' → entity_* + sai + steering quand décision change
+  if(field === 'decision' && value && typeof notify==='function'){
+    const bu = buOf(buId);
+    notify('ceo.decided', {bu: bu?bu.nm:buId, region, decision: value, comment: window._ceoDecisions[key].comment});
+  }
   // Re-render léger pour refléter le changement de couleur du select
   if(field === 'decision') renderCEO();
 }
@@ -8383,6 +8735,8 @@ applyLang();
 })();
 // v0.21 — Coach D²nAI (guide intelligent)
 if (typeof COACH !== 'undefined') COACH.init();
+// v0.23 — Notifications engine (60+ triggers Halima)
+if (typeof notifInit === 'function') notifInit();
 // Click ailleurs ferme le menu coach
 document.addEventListener('click', (e) => {
   const menu = document.getElementById('coachMenu');

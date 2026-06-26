@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutriPlan — Trial Management Cockpit
  * Description:       Sister-app of NutriTrials covering the full upstream Trial Management cycle (annual planning, Use Case intake, Steering / CEO / Monitoring gates, internal controls, Fast Track lane, closure & knowledge base). Includes a chat-with-data AI co-pilot designed and operated by the D²nAI team.
- * Version:           0.22.4
+ * Version:           0.23.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutriplan
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NPLAN_VER', '0.22.4' );
+define( 'DNAI_NPLAN_VER', '0.23.0' );
 define( 'DNAI_NPLAN_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NPLAN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DNAI_NPLAN_DB_VER', '1' );
@@ -53,7 +53,9 @@ function dnai_nplan_collections() {
 	// v0.21 : ajout de "governance" (RACI/seuils/SLA paramétrables) + "prefs_user"
 	// (préférences personnelles utilisateur, ex: coach on/off, niveau, hints fermés).
 	// v0.22 : ajout de "ceo_decisions" (validation portfolio par entité × région, retour Halima).
-	return array( 'usecases', 'projects', 'reference', 'feedback', 'roles', 'governance', 'prefs_user', 'ceo_decisions' );
+	// v0.23 : ajout de "notifications" (inbox utilisateur, 60+ triggers Halima
+	// sur cycle + steering + CEO + monitoring + QBR).
+	return array( 'usecases', 'projects', 'reference', 'feedback', 'roles', 'governance', 'prefs_user', 'ceo_decisions', 'notifications' );
 }
 function dnai_nplan_store_get( $collection ) {
 	global $wpdb;

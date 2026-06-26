@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.22.4
+Stable tag: 0.23.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,44 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.23.0 — Notifications engine (60+ triggers, matrice Halima) =
+* MOTEUR : nouvelle const NOTIF_TEMPLATES (15 triggers principaux du
+  fichier RBAC Notification Halima : cycle.opened/closed, uc.submitted,
+  uc.submitted.ft, portfolio.submitted.{sai,steering,ceo}, sai.reviewed,
+  steering.decided, ceo.decided, ft.decided, uc.concluded,
+  monitoring.decided, qbr.prepare, qbr.submitted.ceo).
+* FONCTION notify(triggerId, ctx) : pour chaque template, calcule les
+  recipients par rôle + crée 1 notif par recipient + ajoute à l'inbox
+  local si le rôle effectif courant est destinataire + console.log
+  "email simulé" pour les autres (en prod = REST → wp_mail).
+* INBOX par user : NOTIF_INBOX array persisté localStorage indexé par
+  email+rôle effectif (donc en mode impersonate, chaque rôle a son
+  inbox propre). Cap 200 notifs.
+* BELL ICON : nouveau bouton 🔔 dans le topbar (entre lang/impersonate
+  et coach 💡). Badge rouge si non-lues, animation pop spring à
+  l'arrivée. Click → dropdown panel.
+* PANEL INBOX : 380×max-height calc, ouverture animée scale+slide,
+  liste des 50 dernières notifs avec icône + title + body (clamp 2
+  lignes) + meta (phase + temps relatif "il y a 12 min") + dot vert
+  pour non-lues. Actions header : "✓ Tout lu" + "🗑 Vider".
+* CLICK OUTSIDE ferme le panel. ESC support futur.
+* EMPTY STATE : "🔕 Tout est calme · Les notifications de gouvernance
+  et de cycle apparaîtront ici."
+* WIRAGE 5 TRIGGERS PRINCIPAUX :
+  - submitUc(false) : notify('uc.submitted') ou 'uc.submitted.ft'
+  - govSetDecision : notify('steering.decided', {uc, decision})
+  - govSetMonDecision : notify('monitoring.decided', {uc, verdict})
+  - ceoSetDecision : notify('ceo.decided', {bu, region, decision, comment})
+  - Les 10 autres triggers (cycle, SAI, QBR, FT, portfolio submissions)
+    sont dans le moteur, prêts à être wirés par les fonctions futures.
+* PHP : v0.22.4 → v0.23.0 ; whitelist étendue avec 'notifications'.
+* RBAC : la matrice notif est alignée avec celle de Halima (les
+  destinataires sont les rôles qu'elle a définis dans son Excel).
+  Les permissions RBAC actuelles couvrent l'accès aux décisions ;
+  les notifs ajoutent la couche "qui est informé" complémentaire.
+* RESPECT prefers-reduced-motion : animations bell pop + panel
+  scale-in désactivées.
 
 = 0.22.4 — RBAC defense in depth (Référentiels + mutations sensibles) =
 * CONSTAT : v0.22.2 wirait les classes RBAC sur les éléments de
