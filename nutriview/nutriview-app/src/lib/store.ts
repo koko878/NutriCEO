@@ -6,6 +6,7 @@
 // =====================================================================
 
 import { STORE_KEY, type Project } from "./model";
+import { fetchProjects, projectsBackendAvailable } from "./projects";
 
 export interface AppState {
   projects: Project[];
@@ -78,6 +79,26 @@ class Store {
   subscribe(cb: Listener): () => void {
     this.listeners.add(cb);
     return () => this.listeners.delete(cb);
+  }
+
+  /**
+   * Hydrate depuis le backend WP (source de vérité partagée). À appeler une
+   * fois au boot. Le serveur remplace la liste des projets (le localStorage
+   * n'était qu'un cache). No-op si backend indisponible (mode démo).
+   */
+  async hydrateRemote(): Promise<void> {
+    if (!projectsBackendAvailable()) return;
+    const remote = await fetchProjects();
+    if (!remote) return;
+    const activeStillExists = remote.some((p) => p.id === this.state.activeProjectId);
+    this.state = {
+      projects: remote,
+      activeProjectId: activeStillExists ? this.state.activeProjectId : null,
+    };
+    this.hydrated = true;
+    if (this.writeTimer) clearTimeout(this.writeTimer);
+    this.writeTimer = setTimeout(() => writeLS(this.state), 200);
+    this.notify();
   }
 
   private notify() {

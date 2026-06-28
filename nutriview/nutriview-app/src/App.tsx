@@ -17,6 +17,7 @@ import { store, type AppState } from "./lib/store";
 import type { Project } from "./lib/model";
 import { inboxBadgeCount } from "./lib/inbox";
 import { hasPendingPerimeterForUser } from "./lib/perimeters";
+import { pushProject } from "./lib/projects";
 import { useGov } from "./lib/useGov";
 import { Projects } from "./views/Projects";
 import { Ingest } from "./views/Ingest";
@@ -47,6 +48,8 @@ export default function App() {
 
   useEffect(() => {
     const unsub = store.subscribe(setState);
+    // Hydrate depuis le backend WP (projets partagés multi-utilisateurs).
+    void store.hydrateRemote();
     return () => {
       unsub();
     };
@@ -79,6 +82,7 @@ export default function App() {
       ...prev,
       projects: prev.projects.map((p) => (p.id === next.id ? next : p)),
     }));
+    pushProject(next); // sync backend (no-op si standalone)
   }, []);
 
   const addProject = useCallback((p: Project) => {
@@ -87,6 +91,7 @@ export default function App() {
       projects: [p, ...prev.projects],
       activeProjectId: p.id,
     }));
+    pushProject(p); // sync backend (no-op si standalone)
   }, []);
 
   const ctxUser = currentUser;

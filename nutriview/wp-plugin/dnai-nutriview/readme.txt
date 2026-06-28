@@ -4,7 +4,7 @@ Tags: dgssi, classification, securite, data, ocp, nutricrops
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 0.7.4
+Stable tag: 0.7.5
 License: GPL-2.0-or-later
 
 Assistant DGSSI de classification des données pour OCP Nutricrops (équipe D²nAI). Sert l'application React mono-fichier en plein écran (`/nutriview`) ou via shortcode `[nutriview]`. v0.4 : workflow signature SHA-256 + inbox propriétaire + notifications email.
@@ -31,6 +31,15 @@ NutriView accompagne le chargé de projet sur le parcours complet de classificat
 6. (Optionnel — audit) Outils → NutriView Validations : journal des envois et signatures.
 
 == Changelog ==
+
+= 0.7.5 =
+Persistance serveur des projets (phase 1) — débloque le multi-utilisateurs :
+* nouvelle table {prefix}dnai_nview_projects (créée automatiquement à l'activation/maj) ; 1 ligne par projet, JSON complet + colonnes miroir (status, owner, data_owner).
+* endpoints REST inc/rest-api-projects.php : GET /projects (lecture connecté), PUT /projects/{id} et DELETE /projects/{id} (écriture edit_posts), auth nonce same-origin.
+* le front synchronise : hydrate depuis le serveur au boot (source de vérité partagée), pousse chaque mutation (PUT debouncé par id). localStorage devient un cache. Last-write-wins par projet.
+* conséquence : un projet créé sur un poste est visible par les autres ; le workflow multi-propriétaires (inbox d'un owner sur SA machine) fonctionne enfin entre personnes différentes.
+* en mode démo standalone (sans backend), tout reste en localStorage comme avant.
+Tests : E2E persistance (navigateur A crée → navigateur B, cache vide, autre user, voit le projet via le serveur) ; non-régression scan / multi-owners / print / OpenAPI. Suite 110 verts.
 
 = 0.7.4 =
 Contrat crawler → NutriView (intégration de l'agent d'exploration d'app SSO) :

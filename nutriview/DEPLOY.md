@@ -27,17 +27,14 @@ Trois briques, indépendantes. **Seule la brique A est obligatoire.**
    - Amorçage : tant qu'aucun admin n'est défini, tout utilisateur connecté a
      l'accès complet. **Mets-toi admin en premier**, sinon tu te verrouilles.
 
-> ⚠️ **Limite importante (à connaître avant de déployer en multi-utilisateurs).**
-> Dans cette version, les **projets/classifications sont stockés dans le
-> navigateur** (localStorage), pas sur le serveur. Conséquences :
-> - un projet créé sur un poste n'est PAS visible sur un autre poste/navigateur ;
-> - le workflow multi-propriétaires (inbox d'un owner sur SA machine) suppose
->   une persistance serveur **pas encore implémentée** (prévue phase 1 :
->   REST + MySQL).
+> ✅ **Multi-utilisateurs (depuis v0.7.5).** Les projets/classifications sont
+> persistés côté serveur (table MySQL `wp_dnai_nview_projects`, créée
+> automatiquement à l'activation). Un projet créé sur un poste est visible par
+> les autres ; le workflow multi-propriétaires fonctionne entre personnes
+> différentes. Le localStorage n'est plus qu'un cache local.
 >
-> Utilisable tel quel pour : démo, exercice de classification mono-poste,
-> production du livrable PDF signé. Pour du vrai multi-utilisateurs partagé,
-> il faut d'abord brancher la persistance serveur (voir « Étape suivante »).
+> En mode démo standalone (app ouverte hors WordPress), tout reste en
+> localStorage — aucun backend requis.
 
 ---
 
@@ -126,10 +123,17 @@ d'intégration (Salesforce), service principal (API), ou une session sauvegardé
 2. **+ B** quand tu veux les suggestions IA.
 3. **+ C** quand tu veux scanner des apps (Salesforce & co).
 
-## Étape suivante (pour le vrai multi-utilisateurs)
+## Vérifier la persistance serveur (après activation)
 
-Brancher la **persistance serveur des projets** (REST + table MySQL) pour que
-les classifications soient partagées entre postes et que le workflow
-multi-propriétaires fonctionne entre personnes différentes. C'est le seul
-chantier bloquant pour un déploiement multi-utilisateurs ; dis-le-moi et je le
-fais.
+À l'activation du plugin, la table `wp_dnai_nview_projects` est créée
+automatiquement (au premier chargement, hook `init`). Pour vérifier :
+
+1. Connecte-toi à NutriView sur un poste, crée un projet.
+2. Ouvre NutriView depuis un autre navigateur / compte → le projet doit
+   apparaître. Sinon : vérifier que l'utilisateur est connecté à WordPress et
+   que les permaliens sont actifs (l'API REST `/wp-json/dnai/nview/v1/projects`
+   doit répondre).
+
+Modèle de cohérence v1 : *last-write-wins* par projet. Pour de la coédition
+simultanée fine (verrouillage optimiste sur `updated_at`), c'est une évolution
+ultérieure — dis-le-moi si le besoin se présente.
