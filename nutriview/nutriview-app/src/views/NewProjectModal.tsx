@@ -9,7 +9,8 @@ import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { Button } from "../components/Button";
 import { Modal } from "../components/Modal";
-import type { Project } from "../lib/model";
+import type { Project, Region } from "../lib/model";
+import { REGIONS } from "../lib/model";
 import { useGov } from "../lib/useGov";
 import {
   busOfEntity,
@@ -36,6 +37,7 @@ export function NewProjectModal({ open, onClose, onCreate }: Props) {
   const [title, setTitle] = useState("");
   const [entityId, setEntityId] = useState<string>("");
   const [buId, setBuId] = useState<string>("");
+  const [region, setRegion] = useState<Region | "">("");
   const [dataDomainId, setDataDomainId] = useState<string>("");
   const [owner, setOwner] = useState("");
   const [dataOwner, setDataOwner] = useState("");
@@ -68,6 +70,7 @@ export function NewProjectModal({ open, onClose, onCreate }: Props) {
     setTitle("");
     setEntityId("");
     setBuId("");
+    setRegion("");
     setDataDomainId("");
     setOwner("");
     setDataOwner("");
@@ -88,7 +91,7 @@ export function NewProjectModal({ open, onClose, onCreate }: Props) {
 
   function submit() {
     setTouched(true);
-    if (!title.trim()) return;
+    if (!title.trim() || !region) return;
     const ent = refs.entities.find((e) => e.id === entityId);
     const bu = buOptions.find((b) => b.id === buId);
     const buLabel = bu?.name ?? (entityId ? "" : undefined);
@@ -96,6 +99,7 @@ export function NewProjectModal({ open, onClose, onCreate }: Props) {
       id: uid(),
       title: title.trim(),
       bu: bu?.name || buLabel || undefined,
+      region: region || undefined,
       entityId: entityId || undefined,
       buId: buId || undefined,
       dataDomainId: dataDomainId || undefined,
@@ -115,6 +119,7 @@ export function NewProjectModal({ open, onClose, onCreate }: Props) {
   }
 
   const titleError = touched && !title.trim();
+  const regionError = touched && !region;
 
   return (
     <Modal
@@ -137,7 +142,11 @@ export function NewProjectModal({ open, onClose, onCreate }: Props) {
           >
             Annuler
           </Button>
-          <Button variant="primary" onClick={submit} disabled={!title.trim()}>
+          <Button
+            variant="primary"
+            onClick={submit}
+            disabled={!title.trim() || !region}
+          >
             Créer le projet
           </Button>
         </>
@@ -202,27 +211,53 @@ export function NewProjectModal({ open, onClose, onCreate }: Props) {
           </Field>
         </div>
 
-        <Field
-          id="np-domain"
-          label="Data domain"
-          hint="Choisir un domaine pré-remplit son propriétaire (signataire)."
-        >
-          <select
-            id="np-domain"
-            value={dataDomainId}
-            onChange={(e) => onPickDomain(e.target.value)}
-            className="w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm focus:border-ocp-500 focus:outline-none"
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <Field
+            id="np-region"
+            label="Région"
+            required
+            error={regionError ? "Sélectionnez une région" : undefined}
           >
-            <option value="">— aucun / transverse —</option>
-            {refs.dataDomains
-              .filter((d) => d.active)
-              .map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.name}
+            <select
+              id="np-region"
+              value={region}
+              onChange={(e) => setRegion(e.target.value as Region | "")}
+              className={`w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm focus:outline-none ${
+                regionError
+                  ? "border-rose-300 focus:border-rose-500"
+                  : "border-zinc-200 focus:border-ocp-500"
+              }`}
+            >
+              <option value="">— à préciser —</option>
+              {REGIONS.map((r) => (
+                <option key={r} value={r}>
+                  {r}
                 </option>
               ))}
-          </select>
-        </Field>
+            </select>
+          </Field>
+          <Field
+            id="np-domain"
+            label="Data domain"
+            hint="Choisir un domaine pré-remplit son propriétaire (signataire)."
+          >
+            <select
+              id="np-domain"
+              value={dataDomainId}
+              onChange={(e) => onPickDomain(e.target.value)}
+              className="w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm focus:border-ocp-500 focus:outline-none"
+            >
+              <option value="">— aucun / transverse —</option>
+              {refs.dataDomains
+                .filter((d) => d.active)
+                .map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}
+                  </option>
+                ))}
+            </select>
+          </Field>
+        </div>
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Field id="np-owner" label="Chef de projet">

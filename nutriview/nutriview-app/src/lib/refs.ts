@@ -131,6 +131,57 @@ export function ownerOfDomain(refs: Refs, domainId?: string): DataDomainOwner | 
   return ownerById(refs, d?.ownerId);
 }
 
+/** Résout un data domain par son nom (insensible casse/espaces). */
+export function resolveDomainByName(refs: Refs, name?: string): DataDomain | undefined {
+  if (!name) return undefined;
+  const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, " ");
+  const target = norm(name);
+  if (!target) return undefined;
+  return refs.dataDomains.find((d) => d.active && norm(d.name) === target);
+}
+
+// Mots trop génériques pour discriminer un domaine (évite que "Données
+// analytiques & IA" capte toutes les lignes contenant « données »).
+const DOMAIN_STOPWORDS = new Set([
+  "donnees",
+  "donnée",
+  "données",
+  "data",
+  "domain",
+  "domaine",
+  "projet",
+  "fichier",
+  "base",
+  "registre",
+]);
+
+/** Retire accents pour une comparaison robuste. */
+function deburr(s: string): string {
+  return s.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+}
+
+/**
+ * Suggère le data domain le plus probable pour un texte (nom + description
+ * d'une donnée), par recoupement des mots significatifs du nom du domaine.
+ * Déterministe, fonctionne hors IA. Renvoie l'id ou undefined.
+ */
+export function suggestDomainId(refs: Refs, text: string): string | undefined {
+  const hay = deburr((text || "").toLowerCase());
+  if (!hay.trim()) return undefined;
+  let best: { id: string; score: number } | undefined;
+  for (const d of refs.dataDomains.filter((x) => x.active)) {
+    const words = deburr(d.name.toLowerCase())
+      .split(/[^a-z0-9]+/)
+      .filter((w) => w.length >= 4 && !DOMAIN_STOPWORDS.has(w));
+    let score = 0;
+    for (const w of words) if (hay.includes(w)) score++;
+    if (score > 0 && (!best || score > best.score)) {
+      best = { id: d.id, score };
+    }
+  }
+  return best?.id;
+}
+
 /** BU actives d'une entité (ou toutes si entité non précisée). */
 export function busOfEntity(refs: Refs, entityId?: string): BusinessUnit[] {
   return refs.businessUnits.filter(

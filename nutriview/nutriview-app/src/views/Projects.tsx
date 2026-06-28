@@ -235,6 +235,14 @@ function ProjectRow({
             )}
           </div>
           <div className="mt-1 text-[12px] text-zinc-500">
+            {project.region && (
+              <>
+                <span className="font-medium text-zinc-600">
+                  {project.region}
+                </span>{" "}
+                ·{" "}
+              </>
+            )}
             <span className="tabular-nums">{n}</span> donnée{n > 1 ? "s" : ""} ·{" "}
             <span className="tabular-nums">{classifiedN}</span> classée
             {classifiedN > 1 ? "s" : ""} · maj{" "}

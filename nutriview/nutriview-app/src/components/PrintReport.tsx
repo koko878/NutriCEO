@@ -96,6 +96,7 @@ export function PrintReport({ project, editedAt }: Props) {
             <Meta label="Chef de projet" value={project.owner} />
             <Meta label="Propriétaire des données" value={project.dataOwner} />
             <Meta label="Entité / BU" value={project.bu} />
+            <Meta label="Région" value={project.region} />
             <Meta
               label="Source"
               value={

@@ -7,6 +7,22 @@ export type Dim = "C" | "I" | "D"; // confidentialité / intégrité / disponibi
 export type Level = 0 | 1 | 2 | 3 | 4; // 0=sans impact ... 4=très grave
 export type Classe = "I" | "II" | "III" | "IV" | "V";
 
+/** Région de rattachement du projet (périmètre géographique Nutricrops). */
+export type Region =
+  | "Global"
+  | "Brazil"
+  | "LATAM"
+  | "South West Asia"
+  | "Africa";
+
+export const REGIONS: Region[] = [
+  "Global",
+  "Brazil",
+  "LATAM",
+  "South West Asia",
+  "Africa",
+];
+
 export interface DataItem {
   // une "donnée" au sens DGSSI (Annexe II)
   id: string; // stable
@@ -72,6 +88,8 @@ export interface Project {
   title: string;
   /** Business unit Nutricrops (libellé affiché — rétro-compat). */
   bu?: string;
+  /** Région de rattachement (périmètre géographique). */
+  region?: Region;
   /** Liens vers les référentiels de gouvernance (Phase 6, optionnels). */
   entityId?: string;
   buId?: string;

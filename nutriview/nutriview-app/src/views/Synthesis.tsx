@@ -114,7 +114,11 @@ export function Synthesis({ project, currentUser, onSubmitForReview }: Props) {
       <header className="mb-10 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
         <div className="max-w-2xl">
           <div className="mb-3 flex items-center gap-2 text-xs font-medium text-zinc-500">
-            <span>Synthèse · {project.bu ?? "Nutricrops"} · classification DGSSI</span>
+            <span>
+              Synthèse · {project.bu ?? "Nutricrops"}
+              {project.region ? ` · ${project.region}` : ""} · classification
+              DGSSI
+            </span>
             <ProjectStatusBadge status={project.status} />
           </div>
           <h1 className="font-display text-[40px] font-semibold leading-[1.04] text-zinc-900 md:text-[48px]">

@@ -3,7 +3,9 @@ import {
   busOfEntity,
   normalizeRefs,
   ownerOfDomain,
+  resolveDomainByName,
   seedRefs,
+  suggestDomainId,
   type Refs,
 } from "./refs";
 
@@ -47,6 +49,44 @@ describe("refs.busOfEntity", () => {
   it("toutes les BU actives si entité non précisée", () => {
     const r = seedRefs();
     expect(busOfEntity(r).length).toBe(r.businessUnits.filter((b) => b.active).length);
+  });
+});
+
+describe("refs.resolveDomainByName", () => {
+  it("résout par nom insensible à la casse/espaces", () => {
+    const r = seedRefs();
+    expect(resolveDomainByName(r, "  rh & paie ")?.name).toBe("RH & Paie");
+    expect(resolveDomainByName(r, "FINANCE & COMPTABILITÉ")?.name).toBe(
+      "Finance & Comptabilité"
+    );
+  });
+  it("undefined si nom inconnu ou vide", () => {
+    const r = seedRefs();
+    expect(resolveDomainByName(r, "inexistant")).toBeUndefined();
+    expect(resolveDomainByName(r, "")).toBeUndefined();
+    expect(resolveDomainByName(r, undefined)).toBeUndefined();
+  });
+});
+
+describe("refs.suggestDomainId", () => {
+  it("rattache une donnée RH au domaine RH & Paie", () => {
+    const r = seedRefs();
+    const dom = r.dataDomains.find((d) => d.name === "RH & Paie")!;
+    expect(suggestDomainId(r, "Bulletins de paie des employés")).toBe(dom.id);
+  });
+  it("rattache une donnée finance au domaine Finance", () => {
+    const r = seedRefs();
+    const dom = r.dataDomains.find((d) => d.name === "Finance & Comptabilité")!;
+    expect(suggestDomainId(r, "Grand livre comptable et finance")).toBe(dom.id);
+  });
+  it("ignore les mots génériques (données/data) pour ne pas tout capter", () => {
+    const r = seedRefs();
+    // « données » seul ne doit pas matcher « Données analytiques & IA »
+    expect(suggestDomainId(r, "Données diverses")).toBeUndefined();
+  });
+  it("undefined si aucun recoupement", () => {
+    expect(suggestDomainId(seedRefs(), "xyz qqq")).toBeUndefined();
+    expect(suggestDomainId(seedRefs(), "")).toBeUndefined();
   });
 });
 

@@ -26,6 +26,8 @@ import {
   extractFromPdf,
   extractFromText,
 } from "../lib/ingest";
+import { useGov } from "../lib/useGov";
+import { suggestDomainId } from "../lib/refs";
 
 interface Props {
   project: Project;
@@ -37,13 +39,29 @@ type Ingestion = Project["ingestion"];
 type Mode = "file" | "paste";
 
 export function Ingest({ project, onChange, onDone }: Props) {
+  const { state: gov } = useGov();
   const [mode, setMode] = useState<Mode>("file");
   const [dz, setDz] = useState<DropZoneState>({ kind: "idle" });
   const [preview, setPreview] = useState<DataItem[] | null>(null);
   const [pastedText, setPastedText] = useState("");
   const [pasteErr, setPasteErr] = useState<string | null>(null);
 
-  function commit(items: DataItem[], ingestion: Ingestion) {
+  // Auto-mapping data domain : pour chaque donnée extraite, on devine son
+  // data domain (et donc son owner, résolu via ownerOfDomain) à partir des
+  // référentiels. L'utilisateur peut corriger au Catalogue. Si le projet
+  // porte déjà un data domain global, il sert de défaut.
+  function assignDomains(items: DataItem[]): DataItem[] {
+    return items.map((it) => {
+      if (it.dataDomainId) return it;
+      const guess =
+        suggestDomainId(gov.refs, `${it.name} ${it.description}`) ||
+        project.dataDomainId;
+      return guess ? { ...it, dataDomainId: guess } : it;
+    });
+  }
+
+  function commit(rawItems: DataItem[], ingestion: Ingestion) {
+    const items = assignDomains(rawItems);
     setPreview(items);
     onChange({
       ...project,
