@@ -306,6 +306,27 @@ export function extractFromJson(text: string, fileName?: string): ExtractionResu
   };
 
   const root = obj as Record<string, unknown>;
+
+  // 0) Format NutriView crawler : { objects: [{ name, source?, sample? }] }.
+  // Contrat explicite entre l'agent d'exploration d'app et NutriView.
+  if (Array.isArray(root.objects) && root.objects.length) {
+    let any = false;
+    for (const o of root.objects as unknown[]) {
+      if (o && typeof o === "object" && typeof (o as Record<string, unknown>).name === "string") {
+        const r = o as Record<string, unknown>;
+        const desc = [
+          r.sample ? `ex. ${String(r.sample)}` : "",
+          typeof r.source === "string" ? r.source : "",
+        ]
+          .filter(Boolean)
+          .join(" · ");
+        push(String(r.name), desc);
+        any = true;
+      }
+    }
+    if (any && out.length) return { rawText: text, candidates: out };
+  }
+
   // 1) OpenAPI / Swagger : components.schemas ou definitions.
   const comps = (root.components as Record<string, unknown> | undefined)?.schemas;
   const schemas = (comps ?? root.definitions) as Record<string, unknown> | undefined;

@@ -92,6 +92,18 @@ describe("ingest.extractFromJson (contrat de données)", () => {
     expect(names).toEqual(expect.arrayContaining(["id", "nom", "montant"]));
   });
 
+  it("format crawler NutriView : { objects:[{name,source,sample}] }", () => {
+    const crawl = JSON.stringify({
+      url: "https://app/quorum",
+      objects: [
+        { name: "matricule", source: "api:/api/employes", sample: "E001" },
+        { name: "salaireBrut", source: "api:/api/employes", sample: "4200" },
+      ],
+    });
+    const names = extractFromJson(crawl)!.candidates.map((c) => c.name);
+    expect(names).toEqual(["matricule", "salaireBrut"]);
+  });
+
   it("renvoie null si ce n'est pas du JSON", () => {
     expect(extractFromJson("pas du json")).toBeNull();
   });

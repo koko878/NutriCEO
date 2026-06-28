@@ -4,7 +4,7 @@ Tags: dgssi, classification, securite, data, ocp, nutricrops
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 0.7.3
+Stable tag: 0.7.4
 License: GPL-2.0-or-later
 
 Assistant DGSSI de classification des données pour OCP Nutricrops (équipe D²nAI). Sert l'application React mono-fichier en plein écran (`/nutriview`) ou via shortcode `[nutriview]`. v0.4 : workflow signature SHA-256 + inbox propriétaire + notifications email.
@@ -31,6 +31,12 @@ NutriView accompagne le chargé de projet sur le parcours complet de classificat
 6. (Optionnel — audit) Outils → NutriView Validations : journal des envois et signatures.
 
 == Changelog ==
+
+= 0.7.4 =
+Contrat crawler → NutriView (intégration de l'agent d'exploration d'app SSO) :
+* extractFromJson reconnaît le format de sortie du crawler souverain ({ objects:[{name,source,sample}] }) → chaque objet-donnée capturé dans l'app (champ d'API/XHR derrière le login) devient une donnée candidate du catalogue.
+* On peut donc : faire tourner le crawler (nutriview/crawler) sur une app SSO via une session sauvegardée (storageState), récupérer un .json, et le déposer dans Ingestion → catalogue prêt à classifier.
+Test : extractFromJson sur une sortie crawler → champs extraits. Suite 110 verts.
 
 = 0.7.3 =
 Ingestion d'un contrat de données (la voie fiable pour « scanner une app ») :
