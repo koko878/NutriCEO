@@ -1,0 +1,14 @@
+{
+  "name": "nutriview-crawler",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Agent souverain NutriView : entre dans une app (authentifiée SSO), l'explore et extrait les objets-donnée à cataloguer. Sortie JSON ingérable par NutriView.",
+  "bin": { "nview-crawl": "crawl.mjs" },
+  "scripts": {
+    "crawl": "node crawl.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}
