@@ -18,6 +18,7 @@
 
 import * as XLSX from "xlsx";
 import mammoth from "mammoth";
+import JSZip from "jszip";
 import * as pdfjsLib from "pdfjs-dist";
 // Worker bundlé — Vite résout l'URL côté build, OK même en single-file.
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -149,6 +150,42 @@ export async function extractFromPdf(file: File): Promise<ExtractionResult> {
       .map((it) => ("str" in it ? (it as { str: string }).str : ""))
       .join(" ");
     rawText += pageText + "\n\n";
+  }
+  return { rawText, candidates: heuristicCandidates(rawText, file.name) };
+}
+
+// ---------------------------------------------------------------------------
+// PowerPoint .pptx — unzip + extraction des runs de texte <a:t> par slide.
+// Aucune dépendance réseau : JSZip lit le conteneur OOXML en mémoire.
+// ---------------------------------------------------------------------------
+function decodeXmlEntities(s: string): string {
+  return s
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(Number(d)))
+    .replace(/&amp;/g, "&");
+}
+
+export async function extractFromPptx(file: File): Promise<ExtractionResult> {
+  const buf = await file.arrayBuffer();
+  const zip = await JSZip.loadAsync(buf);
+  const slidePaths = Object.keys(zip.files)
+    .filter((p) => /^ppt\/slides\/slide\d+\.xml$/.test(p))
+    .sort((a, b) => {
+      const na = Number(a.match(/slide(\d+)\.xml$/)?.[1] ?? 0);
+      const nb = Number(b.match(/slide(\d+)\.xml$/)?.[1] ?? 0);
+      return na - nb;
+    });
+  let rawText = "";
+  for (const p of slidePaths) {
+    const xml = await zip.files[p].async("string");
+    const runs = [...xml.matchAll(/<a:t>([\s\S]*?)<\/a:t>/g)].map((m) =>
+      decodeXmlEntities(m[1])
+    );
+    const slideText = runs.join(" ").trim();
+    if (slideText) rawText += slideText + "\n\n";
   }
   return { rawText, candidates: heuristicCandidates(rawText, file.name) };
 }

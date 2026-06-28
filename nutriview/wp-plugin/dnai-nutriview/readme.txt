@@ -4,7 +4,7 @@ Tags: dgssi, classification, securite, data, ocp, nutricrops
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 0.6.0
+Stable tag: 0.7.0
 License: GPL-2.0-or-later
 
 Assistant DGSSI de classification des données pour OCP Nutricrops (équipe D²nAI). Sert l'application React mono-fichier en plein écran (`/nutriview`) ou via shortcode `[nutriview]`. v0.4 : workflow signature SHA-256 + inbox propriétaire + notifications email.
@@ -31,6 +31,15 @@ NutriView accompagne le chargé de projet sur le parcours complet de classificat
 6. (Optionnel — audit) Outils → NutriView Validations : journal des envois et signatures.
 
 == Changelog ==
+
+= 0.7.0 =
+Alignement complet sur le process métier (création → ingestion → extraction → validation) :
+* Région obligatoire à la création (Global / Brazil / LATAM / South West Asia / Africa) — affichée sur les cartes Projets, la synthèse et le livrable PDF.
+* Auto-mapping data domain : chaque donnée extraite est rattachée à son data domain (et donc à son owner) par recoupement avec les référentiels ; correction manuelle au Catalogue.
+* Validation multi-propriétaires : la classification part vers CHAQUE data domain owner concerné ; chacun valide/signe uniquement les données de son périmètre ; le projet n'est clos (signé) que lorsque tous les périmètres ont été signés. Signature SHA-256 par périmètre + signature composite du projet à la clôture. Inbox et vue Validate scopées au périmètre, vue d'ensemble multi-propriétaires.
+* Ingestion PowerPoint (.pptx) : extraction du texte des slides côté navigateur (sans réseau).
+* Scan d'URL d'application : nouveau proxy souverain (inc/rest-api-scan.php) qui récupère la page côté serveur, en extrait le texte visible et le passe au pipeline d'extraction. Garde-fous : http(s) uniquement, timeout, taille plafonnée, content-type HTML/texte.
+* Images (photo/scan) : acceptées à l'ingestion mais l'extraction par vision IA souveraine (Databricks multimodal) reste à brancher avec le modèle confirmé — message explicite, pas d'OCR factice côté navigateur.
 
 = 0.6.0 =
 Export PDF du livrable opposable :

@@ -10,6 +10,7 @@ import {
   FileXls,
   FilePdf,
   FileDoc,
+  FilePpt,
   TextAlignLeft,
   Sparkle,
   ShieldCheck,
@@ -24,10 +25,12 @@ import {
   extractFromEml,
   extractFromExcel,
   extractFromPdf,
+  extractFromPptx,
   extractFromText,
 } from "../lib/ingest";
 import { useGov } from "../lib/useGov";
 import { suggestDomainId } from "../lib/refs";
+import { isValidHttpUrl, scanUrl } from "../lib/scan";
 
 interface Props {
   project: Project;
@@ -36,7 +39,7 @@ interface Props {
 }
 
 type Ingestion = Project["ingestion"];
-type Mode = "file" | "paste";
+type Mode = "file" | "paste" | "url";
 
 export function Ingest({ project, onChange, onDone }: Props) {
   const { state: gov } = useGov();
@@ -45,6 +48,9 @@ export function Ingest({ project, onChange, onDone }: Props) {
   const [preview, setPreview] = useState<DataItem[] | null>(null);
   const [pastedText, setPastedText] = useState("");
   const [pasteErr, setPasteErr] = useState<string | null>(null);
+  const [urlInput, setUrlInput] = useState("");
+  const [urlErr, setUrlErr] = useState<string | null>(null);
+  const [scanning, setScanning] = useState(false);
 
   // Auto-mapping data domain : pour chaque donnée extraite, on devine son
   // data domain (et donc son owner, résolu via ownerOfDomain) à partir des
@@ -86,6 +92,15 @@ export function Ingest({ project, onChange, onDone }: Props) {
       } else if (name.endsWith(".docx")) {
         source = "word";
         result = await extractFromDocx(file);
+      } else if (name.endsWith(".pptx")) {
+        source = "ppt";
+        result = await extractFromPptx(file);
+      } else if (/\.(png|jpe?g|webp|gif|bmp|tiff?)$/.test(name)) {
+        // OCR / vision : nécessite le backend IA souverain (Databricks
+        // multimodal). On ne falsifie pas une extraction côté navigateur.
+        throw new Error(
+          "Image reçue. L'extraction par vision IA souveraine sera branchée avec le modèle multimodal Databricks. En attendant, collez le texte du document ou importez un Excel / PDF / Word / PPT."
+        );
       } else if (name.endsWith(".eml")) {
         source = "email";
         const text = await file.text();
@@ -127,6 +142,31 @@ export function Ingest({ project, onChange, onDone }: Props) {
     });
   }
 
+  async function onScanUrl() {
+    const url = urlInput.trim();
+    if (!isValidHttpUrl(url)) {
+      setUrlErr("Entrez une URL valide (http:// ou https://).");
+      return;
+    }
+    setUrlErr(null);
+    setScanning(true);
+    try {
+      const res = await scanUrl(url);
+      if (!res.ok) {
+        setUrlErr(res.message);
+        return;
+      }
+      const result = extractFromText(res.text);
+      commit(result.candidates, {
+        source: "url",
+        sourceUrl: res.fetchedFrom,
+        extractedAt: new Date().toISOString(),
+      });
+    } finally {
+      setScanning(false);
+    }
+  }
+
   function onManual() {
     commit([], {
       source: "text",
@@ -163,10 +203,73 @@ export function Ingest({ project, onChange, onDone }: Props) {
               onClick={() => setMode("paste")}
               label="Coller du texte"
             />
+            <ModeTab
+              active={mode === "url"}
+              onClick={() => setMode("url")}
+              label="Scanner une URL"
+            />
           </div>
 
           <AnimatePresence mode="wait">
-            {mode === "file" ? (
+            {mode === "url" ? (
+              <motion.div
+                key="url"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.18 }}
+              >
+                <label htmlFor="nv-url" className="sr-only">
+                  URL de l'application à scanner
+                </label>
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <input
+                    id="nv-url"
+                    type="url"
+                    inputMode="url"
+                    value={urlInput}
+                    onChange={(e) => {
+                      setUrlInput(e.target.value);
+                      if (urlErr) setUrlErr(null);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !scanning) onScanUrl();
+                    }}
+                    placeholder="https://app.nutricrops.com/dashboard"
+                    className={`w-full rounded-2xl border bg-white px-5 py-3.5 text-[14px] focus:outline-none ${
+                      urlErr
+                        ? "border-rose-300 focus:border-rose-500"
+                        : "border-zinc-200 focus:border-ocp-500"
+                    }`}
+                  />
+                  <Button
+                    variant="primary"
+                    size="md"
+                    onClick={onScanUrl}
+                    disabled={scanning || !urlInput.trim()}
+                    className="shrink-0"
+                  >
+                    {scanning ? "Scan en cours…" : "Scanner"}
+                  </Button>
+                </div>
+                {urlErr && (
+                  <p className="mt-2 text-[12.5px] text-rose-700">{urlErr}</p>
+                )}
+                <p className="mt-3 flex items-start gap-2 rounded-2xl bg-zinc-50 px-4 py-3 text-[12.5px] text-zinc-600">
+                  <ShieldCheck
+                    size={16}
+                    weight="duotone"
+                    className="mt-0.5 shrink-0 text-ocp-700"
+                  />
+                  <span>
+                    Le scan passe par le proxy souverain NutriView (côté serveur
+                    Nutricrops) : il récupère le texte visible de la page et en
+                    extrait les objets-donnée. Aucune navigation depuis votre
+                    poste.
+                  </span>
+                </p>
+              </motion.div>
+            ) : mode === "file" ? (
               <motion.div
                 key="file"
                 initial={{ opacity: 0, y: 6 }}
@@ -177,12 +280,13 @@ export function Ingest({ project, onChange, onDone }: Props) {
                 <DropZone
                   onFile={onFile}
                   state={dz}
-                  hint="Excel · PDF · Word · .eml · texte (≤ 10 Mo)"
+                  hint="Excel · PDF · Word · PPT · .eml · texte (≤ 10 Mo)"
                 />
                 <div className="mt-3 flex flex-wrap items-center gap-3 text-[12px] text-zinc-500">
                   <FormatChip icon={<FileXls size={14} weight="duotone" />} label="Excel" />
                   <FormatChip icon={<FilePdf size={14} weight="duotone" />} label="PDF" />
                   <FormatChip icon={<FileDoc size={14} weight="duotone" />} label="Word" />
+                  <FormatChip icon={<FilePpt size={14} weight="duotone" />} label="PowerPoint" />
                   <FormatChip icon={<TextAlignLeft size={14} weight="duotone" />} label="Texte / .eml" />
                 </div>
               </motion.div>

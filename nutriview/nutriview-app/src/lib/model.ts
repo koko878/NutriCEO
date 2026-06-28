@@ -99,8 +99,10 @@ export interface Project {
   owner: string; // chef de projet
   dataOwner: string; // propriétaire des données (signataire)
   ingestion: {
-    source: "excel" | "pdf" | "word" | "text" | "email";
+    source: "excel" | "pdf" | "word" | "ppt" | "image" | "text" | "email" | "url";
     fileName?: string;
+    /** URL scannée (source = "url"). */
+    sourceUrl?: string;
     extractedAt: string;
   };
   items: DataItem[];

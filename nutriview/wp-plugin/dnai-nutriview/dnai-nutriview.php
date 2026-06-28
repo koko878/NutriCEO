@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       D²nAI NutriView
  * Description:       Assistant DGSSI de classification des données pour OCP Nutricrops. Inventaire des données d'un projet, attribution des niveaux C/I/D (échelle décret 2-21-406), calcul déterministe de la classe (I-V) et du verdict cloud (résidence MA obligatoire pour les données sensibles loi 05-20). v0.4 : workflow signature SHA-256 + inbox propriétaire + notifications email (Phase 5). v0.3 : IA Databricks (proxy souverain, Sonnet 4.6 par défaut).
- * Version:           0.6.0
+ * Version:           0.7.0
  * Author:            D²nAI · OCP Nutricrops
  * License:           GPL-2.0-or-later
  * Text Domain:       dnai-nutriview
@@ -10,7 +10,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'DNAI_NVIEW_VER', '0.6.0' );
+define( 'DNAI_NVIEW_VER', '0.7.0' );
 define( 'DNAI_NVIEW_URL', plugin_dir_url( __FILE__ ) );
 define( 'DNAI_NVIEW_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -20,6 +20,8 @@ require_once DNAI_NVIEW_DIR . 'inc/rest-api-ai.php';
 require_once DNAI_NVIEW_DIR . 'inc/rest-api-validation.php';
 // Phase 6 — gouvernance (référentiels + accès, sync Azure AD à venir).
 require_once DNAI_NVIEW_DIR . 'inc/rest-api-refs.php';
+// Phase 7 — proxy de scan d'URL (souverain, côté serveur).
+require_once DNAI_NVIEW_DIR . 'inc/rest-api-scan.php';
 
 /* -------------------------------------------------------------------------
  * 1. Route plein écran  →  /nutriview

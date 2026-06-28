@@ -90,7 +90,7 @@ export default function App() {
   }, []);
 
   const ctxUser = currentUser;
-  const ver = window.DNAI_NVIEW?.ver ?? "0.6";
+  const ver = window.DNAI_NVIEW?.ver ?? "0.7";
 
   return (
     <div className="min-h-[100dvh] bg-zinc-50 text-zinc-900">
