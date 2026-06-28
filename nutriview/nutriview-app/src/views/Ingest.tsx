@@ -179,13 +179,8 @@ export function Ingest({ project, onChange, onDone }: Props) {
     <div>
       <PageHero
         eyebrow={`${project.title}${project.bu ? " · " + project.bu : ""}`}
-        title={
-          <>
-            Importez le brief
-            <span className="block text-zinc-400">ou collez vos données.</span>
-          </>
-        }
-        lead="NutriView extrait le texte côté navigateur — aucune donnée ne quitte votre poste. Le découpage v0.2 est heuristique ; l'extraction IA arrive en phase 4."
+        title="Importez le brief"
+        lead="Fichier, texte collé ou scan d'URL : NutriView extrait les objets-donnée et les rattache à leur data domain. Le texte des fichiers est lu côté navigateur, aucune donnée ne quitte votre poste."
       />
 
       {/* Split layout : 2/3 input · 1/3 pédagogie */}

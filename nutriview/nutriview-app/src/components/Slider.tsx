@@ -100,7 +100,7 @@ export function Slider({ dim, value, onChange, onShowExamples }: Props) {
       </div>
 
       <div className="flex items-baseline gap-2 border-t border-zinc-100 pt-3">
-        <span className="text-[11px] uppercase tracking-[0.06em] text-zinc-400">
+        <span className="text-[11px] uppercase tracking-[0.06em] text-zinc-500">
           Niveau retenu
         </span>
         <span className="font-display text-xl font-semibold text-zinc-900 tabular-nums">

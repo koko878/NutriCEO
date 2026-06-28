@@ -71,18 +71,14 @@ export function Projects({ projects, onCreate, onOpen, canCreate = true }: Props
   return (
     <div>
       <PageHero
+        variant="page"
         eyebrow={
           <span className="inline-flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-ocp-600" aria-hidden />
             Référentiel DGSSI · loi 05-20
           </span>
         }
-        title={
-          <>
-            Classifications DGSSI
-            <span className="block text-zinc-400">en cours et signées.</span>
-          </>
-        }
+        title="Classifications DGSSI"
         lead="Chaque projet digital ou data Nutricrops démarre par un exercice de classification. NutriView vous accompagne de l'ingestion du brief jusqu'à la décision d'éligibilité cloud, citation Annexe II à l'appui."
         right={
           canCreate ? (
@@ -158,7 +154,7 @@ export function Projects({ projects, onCreate, onOpen, canCreate = true }: Props
           {/* Header table */}
           <li
             aria-hidden
-            className="grid grid-cols-[2fr_1fr_1fr_140px_50px] gap-4 border-b border-zinc-100 px-6 py-3 text-[11px] font-medium uppercase tracking-[0.06em] text-zinc-400"
+            className="grid grid-cols-[2fr_1fr_1fr_140px_50px] gap-4 border-b border-zinc-100 px-6 py-3 text-[11px] font-medium uppercase tracking-[0.06em] text-zinc-500"
           >
             <span>Projet</span>
             <span>Chef de projet</span>

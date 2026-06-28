@@ -114,9 +114,9 @@ export function Synthesis({ project, currentUser, onSubmitForReview }: Props) {
   return (
     <div>
       {/* Hero asymétrique : titre serif gauche · KPIs droite */}
-      <header className="mb-10 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+      <header className="mb-7 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div className="max-w-2xl">
-          <div className="mb-3 flex items-center gap-2 text-xs font-medium text-zinc-500">
+          <div className="mb-2.5 flex items-center gap-2 text-xs font-medium text-zinc-500">
             <span>
               Synthèse · {project.bu ?? "Nutricrops"}
               {project.region ? ` · ${project.region}` : ""} · classification
@@ -124,15 +124,15 @@ export function Synthesis({ project, currentUser, onSubmitForReview }: Props) {
             </span>
             <ProjectStatusBadge status={project.status} />
           </div>
-          <h1 className="font-display text-[40px] font-semibold leading-[1.04] text-zinc-900 md:text-[48px]">
+          <h1 className="text-balance text-[26px] font-semibold leading-[1.05] text-zinc-900 md:text-[30px]">
             {project.title || "(projet sans titre)"}
           </h1>
           {project.description && (
-            <p className="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-zinc-600">
+            <p className="mt-2.5 max-w-[68ch] text-[13.5px] leading-relaxed text-zinc-600">
               {project.description}
             </p>
           )}
-          <p className="mt-3 text-[13px] text-zinc-500">
+          <p className="mt-2 text-[12.5px] text-zinc-500">
             Chef de projet :{" "}
             <span className="font-medium text-zinc-700">
               {project.owner || "—"}
@@ -144,7 +144,7 @@ export function Synthesis({ project, currentUser, onSubmitForReview }: Props) {
           </p>
         </div>
 
-        <dl className="grid grid-cols-3 gap-6 sm:gap-8">
+        <dl className="grid grid-cols-3 gap-6 sm:gap-7">
           <Kpi label="Données" value={summary.total} />
           <Kpi
             label="Classées"
@@ -335,7 +335,7 @@ export function Synthesis({ project, currentUser, onSubmitForReview }: Props) {
       )}
 
       {/* Distribution par classe — bar chart horizontal */}
-      <section className="mb-10 rounded-3xl border border-zinc-200 bg-white p-7 shadow-[0_20px_40px_-22px_rgba(20,59,24,0.10)]">
+      <section className="mb-8 rounded-2xl border border-zinc-200 bg-white p-7">
         <div className="mb-5 flex items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-1.5 text-[11.5px] font-medium text-zinc-500">
@@ -389,7 +389,7 @@ export function Synthesis({ project, currentUser, onSubmitForReview }: Props) {
       </section>
 
       {/* Liste données — divide-y, badge classe + verdict cloud icon */}
-      <section className="mb-10 overflow-hidden rounded-3xl border border-zinc-200 bg-white">
+      <section className="mb-8 overflow-hidden rounded-2xl border border-zinc-200 bg-white">
         <header className="border-b border-zinc-100 px-7 py-5">
           <div className="flex items-center gap-1.5 text-[11.5px] font-medium text-zinc-500">
             <Database size={14} weight="duotone" />
@@ -410,7 +410,7 @@ export function Synthesis({ project, currentUser, onSubmitForReview }: Props) {
               return (
                 <li
                   key={it.id}
-                  className="flex items-start justify-between gap-6 px-7 py-4 transition-colors hover:bg-zinc-50/60"
+                  className="flex flex-col gap-2.5 px-7 py-4 transition-colors hover:bg-zinc-50/60 sm:flex-row sm:items-start sm:justify-between sm:gap-6"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="font-display text-[17px] font-semibold leading-tight text-zinc-900">
@@ -426,7 +426,7 @@ export function Synthesis({ project, currentUser, onSubmitForReview }: Props) {
                       </p>
                     )}
                   </div>
-                  <div className="flex shrink-0 items-center gap-2">
+                  <div className="flex shrink-0 flex-wrap items-center gap-2">
                     {cls ? (
                       <>
                         <DimChip label="C" value={getLvl(cls, "C")} />
@@ -494,7 +494,7 @@ function Kpi({
         {label}
       </dt>
       <dd
-        className={`mt-1 font-display text-[40px] font-semibold leading-none tabular-nums ${
+        className={`mt-1 font-display text-[28px] font-semibold leading-none tabular-nums ${
           tone === "amber" ? "text-amber-vd-800" : "text-zinc-900"
         }`}
       >

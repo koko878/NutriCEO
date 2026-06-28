@@ -4,7 +4,7 @@ Tags: dgssi, classification, securite, data, ocp, nutricrops
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 0.7.0
+Stable tag: 0.7.1
 License: GPL-2.0-or-later
 
 Assistant DGSSI de classification des données pour OCP Nutricrops (équipe D²nAI). Sert l'application React mono-fichier en plein écran (`/nutriview`) ou via shortcode `[nutriview]`. v0.4 : workflow signature SHA-256 + inbox propriétaire + notifications email.
@@ -31,6 +31,14 @@ NutriView accompagne le chargé de projet sur le parcours complet de classificat
 6. (Optionnel — audit) Outils → NutriView Validations : journal des envois et signatures.
 
 == Changelog ==
+
+= 0.7.1 =
+Passe design (audit /impeccable, registre produit, charte D²nAI conservée) :
+* Système de hero unifié : variante compacte sur les écrans-tâches (catalogue, classification, validation, synthèse, admin, inbox, ingestion) — le contenu utile remonte au-dessus de la ligne de flottaison. La grande variante reste pour la liste Projets.
+* Suppression de la 2ᵉ ligne de titre grise (text-zinc-400) présente sur chaque vue : contraste WCAG insuffisant + tell visuel répété. Le message secondaire passe par le lead.
+* Contraste WCAG AA : libellés de colonnes/eyebrows passés en zinc-500, icônes de suppression en rose (affordance destructive claire). Détecteur slop : 0 finding.
+* Hiérarchie visuelle Synthèse : la bannière verdict reste le seul « moment » en élévation ; distribution et inventaire allégés (filet, plus d'ombre portée). KPIs dé-emphasés.
+* Mobile : l'inventaire classifié empile les badges C/I/D + classe sous le nom de la donnée au lieu de l'écraser.
 
 = 0.7.0 =
 Alignement complet sur le process métier (création → ingestion → extraction → validation) :

@@ -359,7 +359,7 @@ export function PrintReport({ project, editedAt }: Props) {
 function Meta({ label, value }: { label: string; value?: string }) {
   return (
     <div>
-      <dt className="text-[9px] uppercase tracking-[0.07em] text-zinc-400">
+      <dt className="text-[9px] uppercase tracking-[0.07em] text-zinc-500">
         {label}
       </dt>
       <dd className="font-medium text-zinc-800">{value?.trim() || "—"}</dd>

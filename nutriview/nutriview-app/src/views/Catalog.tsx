@@ -147,12 +147,7 @@ export function Catalog({ project, onChange, onClassify }: Props) {
     <div>
       <PageHero
         eyebrow={`${project.title}${project.bu ? " · " + project.bu : ""}`}
-        title={
-          <>
-            Catalogue des données
-            <span className="block text-zinc-400">à classifier.</span>
-          </>
-        }
+        title="Catalogue des données"
         lead="Validez et complétez la liste des données du projet. Chaque ligne sera ensuite classée individuellement sur les trois dimensions C/I/D."
         right={
           <>

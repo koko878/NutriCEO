@@ -92,12 +92,7 @@ export function Admin() {
             Gouvernance · référentiels & accès
           </span>
         }
-        title={
-          <>
-            Administration
-            <span className="block text-zinc-400">de NutriView.</span>
-          </>
-        }
+        title="Administration"
         lead="Gérez les référentiels qui alimentent les projets (entités, business units, data domains et leurs propriétaires) et les droits d'accès des utilisateurs. Les data domain owners seront synchronisés avec Azure AD au branchement du SSO."
         right={
           <span
@@ -206,7 +201,7 @@ function TableShell({
     <div>
       <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
         <div
-          className="grid items-center gap-3 border-b border-zinc-100 bg-zinc-50/60 px-4 py-2.5 text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400"
+          className="grid items-center gap-3 border-b border-zinc-100 bg-zinc-50/60 px-4 py-2.5 text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-500"
           style={{ gridTemplateColumns: columns.map((c) => c.className || "1fr").join(" ") }}
         >
           {columns.map((c, i) => (
@@ -260,7 +255,7 @@ function Row({
         type="button"
         onClick={onDelete}
         aria-label={deleteLabel}
-        className="flex h-8 w-8 items-center justify-center justify-self-end rounded-lg text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600 active:scale-95"
+        className="flex h-8 w-8 items-center justify-center justify-self-end rounded-lg text-rose-400 transition-colors hover:bg-rose-50 hover:text-rose-700 active:scale-95"
       >
         <Trash size={15} weight="duotone" />
       </button>
@@ -645,7 +640,7 @@ function AccessTab({ roles }: { roles: RoleAssignment[] }) {
 
       <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
         <div
-          className="grid items-center gap-3 border-b border-zinc-100 bg-zinc-50/60 px-4 py-2.5 text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400"
+          className="grid items-center gap-3 border-b border-zinc-100 bg-zinc-50/60 px-4 py-2.5 text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-500"
           style={{ gridTemplateColumns: "1fr 1fr 2.2fr 40px" }}
         >
           <span>Login / UPN</span>
@@ -706,7 +701,7 @@ function AccessTab({ roles }: { roles: RoleAssignment[] }) {
                   type="button"
                   onClick={() => remove(idx)}
                   aria-label={`Retirer ${a.login || "l'utilisateur"}`}
-                  className="flex h-8 w-8 items-center justify-center justify-self-end rounded-lg text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600 active:scale-95"
+                  className="flex h-8 w-8 items-center justify-center justify-self-end rounded-lg text-rose-400 transition-colors hover:bg-rose-50 hover:text-rose-700 active:scale-95"
                 >
                   <Trash size={15} weight="duotone" />
                 </button>

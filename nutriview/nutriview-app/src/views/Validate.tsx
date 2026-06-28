@@ -267,14 +267,7 @@ export function Validate({
             {project.bu ?? "Nutricrops"}
           </span>
         }
-        title={
-          <>
-            {project.title || "(projet sans titre)"}
-            <span className="block text-zinc-400">
-              {isSigned ? "signature apposée." : "à valider, puis signer."}
-            </span>
-          </>
-        }
+        title={project.title || "(projet sans titre)"}
         lead={
           isSigned
             ? "Vous avez signé cette classification. Le hash SHA-256 atteste que la décision n'a pas été modifiée depuis."
@@ -369,7 +362,7 @@ export function Validate({
             return (
               <li
                 key={it.id}
-                className={`flex items-start justify-between gap-6 px-7 py-4 transition-colors ${
+                className={`flex flex-col gap-2.5 px-7 py-4 transition-colors sm:flex-row sm:items-start sm:justify-between sm:gap-6 ${
                   validated ? "bg-ocp-50/30" : "hover:bg-zinc-50/60"
                 } ${outOfScope ? "opacity-70" : ""}`}
               >

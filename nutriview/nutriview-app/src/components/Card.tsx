@@ -54,31 +54,57 @@ export function SectionLabel({
 }
 
 /** Hero asymétrique pour les têtes de vue — titre Cormorant gauche,
- * actions droite (responsive : empilement < 768px). */
+ * actions droite (responsive : empilement < 768px).
+ *
+ * Deux densités :
+ *  - `page`    : surface d'accueil (liste Projets). Titre large, respire.
+ *  - `section` : écrans en-tâche (catalogue, classification, validation…).
+ *                Titre compact, l'outil disparaît dans la tâche (registre
+ *                produit) — pas de hero marketing pleine hauteur.
+ *
+ * On n'utilise JAMAIS de 2ᵉ ligne grise (text-zinc-400) : contraste WCAG
+ * insuffisant ET tell visuel répété. Le message secondaire passe par `lead`. */
 export function PageHero({
   eyebrow,
   title,
   lead,
   right,
+  variant = "section",
 }: {
   eyebrow?: ReactNode;
   title: ReactNode;
   lead?: ReactNode;
   right?: ReactNode;
+  variant?: "page" | "section";
 }) {
+  const isPage = variant === "page";
   return (
-    <header className="mb-10 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+    <header
+      className={`flex flex-col gap-5 md:flex-row md:items-end md:justify-between ${
+        isPage ? "mb-9" : "mb-7"
+      }`}
+    >
       <div className="max-w-2xl">
         {eyebrow && (
-          <div className="mb-3 text-xs font-medium text-zinc-500">
+          <div className="mb-2.5 text-xs font-medium text-zinc-500">
             {eyebrow}
           </div>
         )}
-        <h1 className="text-[44px] leading-[1.04] text-zinc-900 md:text-[56px]">
+        <h1
+          className={`text-balance leading-[1.05] text-zinc-900 ${
+            isPage
+              ? "text-[38px] md:text-[46px]"
+              : "text-[26px] md:text-[30px]"
+          }`}
+        >
           {title}
         </h1>
         {lead && (
-          <p className="mt-4 max-w-[65ch] text-[15px] leading-relaxed text-zinc-600">
+          <p
+            className={`max-w-[68ch] leading-relaxed text-zinc-600 ${
+              isPage ? "mt-4 text-[15px]" : "mt-2.5 text-[13.5px]"
+            }`}
+          >
             {lead}
           </p>
         )}

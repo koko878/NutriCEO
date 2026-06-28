@@ -140,14 +140,7 @@ export function Classify({
     <div>
       <PageHero
         eyebrow={`${project.title}${project.bu ? " · " + project.bu : ""}`}
-        title={
-          <>
-            Classification CID
-            <span className="block text-zinc-400">
-              donnée par donnée.
-            </span>
-          </>
-        }
+        title="Classification CID"
         lead="Pour chaque dimension, évaluez l'impact d'une atteinte. La classe globale et le verdict cloud se calculent automatiquement — moteur déterministe, jamais IA."
         right={
           <Button
@@ -384,9 +377,9 @@ export function Classify({
                           {c.citations.map((cit, i) => (
                             <p
                               key={i}
-                              className="mt-1 border-l border-amber-vd-200 pl-3 text-[12px] italic text-zinc-600"
+                              className="mt-1.5 rounded-lg bg-amber-vd-50/70 px-3 py-2 text-[12px] italic text-zinc-700"
                             >
-                              <span className="font-semibold text-amber-vd-800">
+                              <span className="font-semibold not-italic text-amber-vd-800">
                                 {cit.section}
                               </span>
                               {cit.quote && <> — « {cit.quote} »</>}
@@ -506,7 +499,7 @@ function ExamplesPanel({
       >
         <header className="flex items-start justify-between gap-4 border-b border-zinc-100 px-6 py-5">
           <div>
-            <div className="text-[11px] font-medium uppercase tracking-[0.06em] text-zinc-400">
+            <div className="text-[11px] font-medium uppercase tracking-[0.06em] text-zinc-500">
               Annexe II — exemples
             </div>
             <h3 className="mt-1 font-display text-2xl font-semibold text-zinc-900">

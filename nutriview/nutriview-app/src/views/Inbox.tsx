@@ -69,12 +69,7 @@ export function Inbox({ projects, currentUser, onOpen }: Props) {
             Propriétaire des données · validation
           </span>
         }
-        title={
-          <>
-            Vos projets à valider
-            <span className="block text-zinc-400">avant signature.</span>
-          </>
-        }
+        title="Vos projets à valider"
         lead="Le chef de projet a finalisé la classification CID. Vous validez ligne par ligne — vous gardez la décision finale sur chaque donnée — puis vous signez d'un trait : un hash SHA-256 du contenu classifié est apposé, horodaté."
       />
 
@@ -96,7 +91,7 @@ export function Inbox({ projects, currentUser, onOpen }: Props) {
         >
           <li
             aria-hidden
-            className="grid grid-cols-[2fr_1fr_1fr_120px_50px] gap-4 border-b border-zinc-100 px-6 py-3 text-[11px] font-medium uppercase tracking-[0.06em] text-zinc-400"
+            className="grid grid-cols-[2fr_1fr_1fr_120px_50px] gap-4 border-b border-zinc-100 px-6 py-3 text-[11px] font-medium uppercase tracking-[0.06em] text-zinc-500"
           >
             <span>Projet</span>
             <span>Chef de projet</span>
