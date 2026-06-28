@@ -25,6 +25,7 @@ import * as pdfjsLib from "pdfjs-dist";
 // @ts-ignore — pdfjs ships a .mjs worker
 import PdfWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import type { DataItem } from "./model";
+import { aiAvailable, aiExtractCatalog } from "./ai";
 
 if (typeof window !== "undefined") {
   pdfjsLib.GlobalWorkerOptions.workerSrc = PdfWorker as string;
@@ -52,34 +53,89 @@ function clip(s: string, max: number): string {
   return t.length > max ? t.slice(0, max).trim() + "…" : t;
 }
 
+// Chrome/UI à ignorer dans le fallback "libellés" — éléments de navigation,
+// boutons, et mots vides qui ne sont jamais des données métier.
+const UI_NOISE = new Set([
+  "accueil", "connexion", "déconnexion", "deconnexion", "se connecter",
+  "se déconnecter", "menu", "rechercher", "recherche", "valider", "annuler",
+  "ok", "fermer", "suivant", "précédent", "precedent", "retour", "envoyer",
+  "enregistrer", "modifier", "supprimer", "ajouter", "nouveau", "nouvelle",
+  "paramètres", "parametres", "profil", "aide", "support", "contact",
+  "login", "logout", "submit", "cancel", "search", "settings", "home",
+  "next", "previous", "save", "edit", "delete", "add", "close", "back",
+  "mot de passe", "password", "email", "e-mail", "identifiant", "username",
+  "copyright", "tous droits réservés", "mentions légales", "cookies",
+]);
+
+function mkItem(name: string, desc: string, fileName?: string, locator?: string): DataItem {
+  return {
+    id: uid("item"),
+    name: clip(name, 80),
+    description: clip(desc, 240),
+    cycleLifeStates: [],
+    sourceRef: fileName ? { fileName, locator: locator ?? "" } : undefined,
+    proposedByAI: false,
+    status: "draft",
+  };
+}
+
+/**
+ * Découpage heuristique (fallback hors IA). Deux passes :
+ *  1. Marqueurs catalogue FR (« Données… », « Fichier de… ») — haute confiance.
+ *  2. Libellés : segments courts de type champ/colonne/titre (ce qu'on trouve
+ *     sur une page d'app scannée ou un brief non formaté). Indispensable :
+ *     sans ça, tout texte réel qui ne commence pas par un marqueur → 0 donnée.
+ * Résultat fusionné, dédupliqué, plafonné. L'utilisateur corrige au Catalogue.
+ */
 function heuristicCandidates(rawText: string, fileName?: string): DataItem[] {
-  if (!rawText) return [];
-  // Split sur fin de phrase / saut de ligne.
-  const chunks = rawText
+  if (!rawText || !rawText.trim()) return [];
+  const out: DataItem[] = [];
+  const seen = new Set<string>();
+  const MAX = 60;
+
+  const push = (name: string, desc: string, locator?: string) => {
+    const n = name.trim();
+    if (!n) return;
+    const key = n.toLowerCase();
+    if (seen.has(key) || out.length >= MAX) return;
+    seen.add(key);
+    out.push(mkItem(n, desc, fileName, locator));
+  };
+
+  // Passe 1 — marqueurs catalogue (phrases).
+  const sentences = rawText
     .split(/\.\s+|\n+/)
     .map((c) => c.trim())
     .filter(Boolean);
-  const out: DataItem[] = [];
-  const seen = new Set<string>();
-  for (let idx = 0; idx < chunks.length; idx++) {
-    const c = chunks[idx];
-    if (!CATALOG_MARKER.test(c)) continue;
-    const name = clip(c, 80);
-    const key = name.toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push({
-      id: uid("item"),
-      name,
-      description: clip(c, 240),
-      cycleLifeStates: [],
-      sourceRef: fileName
-        ? { fileName, locator: `chunk:${idx}` }
-        : undefined,
-      proposedByAI: false,
-      status: "draft",
-    });
+  sentences.forEach((c, idx) => {
+    if (CATALOG_MARKER.test(c)) push(clip(c, 80), c, `chunk:${idx}`);
+  });
+
+  // Passe 2 — libellés (champs / colonnes / titres) : segments courts.
+  // On découpe aussi sur séparateurs visuels fréquents (·, •, |, ;, tab,
+  // double espace, deux-points) pour récupérer les libellés de formulaires
+  // et d'en-têtes de tableaux.
+  const segments = rawText
+    .split(/[\n\r]+|[•·|;\t]|\s{2,}|:\s/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  for (const seg of segments) {
+    if (out.length >= MAX) break;
+    const words = seg.split(/\s+/);
+    if (seg.length < 3 || seg.length > 70) continue;
+    if (words.length > 9) continue;
+    if (!/[A-Za-zÀ-ÿ]/.test(seg)) continue; // au moins une lettre
+    if (!/^[A-Za-z0-9À-ÿ]/.test(seg)) continue; // pas de puce/symbole en tête
+    if (/[.!?]$/.test(seg)) continue; // exclut les phrases (prose)
+    const low = seg.toLowerCase();
+    if (UI_NOISE.has(low)) continue;
+    // Filtre les clusters de chrome (ex. barre de nav « Accueil Profil
+    // Déconnexion ») : si la majorité des mots sont du bruit UI, on saute.
+    const noiseWords = words.filter((w) => UI_NOISE.has(w.toLowerCase())).length;
+    if (noiseWords * 2 >= words.length) continue;
+    push(seg, seg);
   }
+
   return out;
 }
 
@@ -205,6 +261,49 @@ export async function extractFromDocx(file: File): Promise<ExtractionResult> {
 // ---------------------------------------------------------------------------
 export function extractFromText(input: string): ExtractionResult {
   return { rawText: input, candidates: heuristicCandidates(input) };
+}
+
+// ---------------------------------------------------------------------------
+// Extraction "intelligente" depuis un texte (collage / scan d'URL).
+// Si l'IA souveraine est configurée, elle extrait sémantiquement les objets-
+// donnée (toutes langues, sans dépendre d'un marqueur). Sinon, fallback sur
+// l'heuristique (marqueurs + libellés). Garantit qu'un texte réel ne renvoie
+// pas 0 donnée juste parce qu'il ne commence pas par « Données… ».
+// ---------------------------------------------------------------------------
+export interface SmartExtraction {
+  candidates: DataItem[];
+  source: "ai" | "heuristic";
+  rawText: string;
+}
+
+export async function extractCatalogSmart(text: string): Promise<SmartExtraction> {
+  const raw = text || "";
+  if (aiAvailable()) {
+    try {
+      const r = await aiExtractCatalog({ text: raw });
+      if (r.ok && Array.isArray(r.data.items) && r.data.items.length > 0) {
+        const candidates = r.data.items.map((it) =>
+          mkItemAI(it.name, it.description, it.locator)
+        );
+        return { candidates, source: "ai", rawText: raw };
+      }
+    } catch {
+      /* bascule sur l'heuristique */
+    }
+  }
+  return { candidates: heuristicCandidates(raw), source: "heuristic", rawText: raw };
+}
+
+function mkItemAI(name: string, description?: string, locator?: string): DataItem {
+  return {
+    id: uid("item"),
+    name: clip(name || "", 80),
+    description: clip(description || name || "", 240),
+    cycleLifeStates: [],
+    sourceRef: locator ? { fileName: "(extraction IA)", locator } : undefined,
+    proposedByAI: true,
+    status: "ai_classified",
+  };
 }
 
 // ---------------------------------------------------------------------------

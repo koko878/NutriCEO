@@ -21,6 +21,7 @@ import { PageHero } from "../components/Card";
 import { DropZone, type DropZoneState } from "../components/DropZone";
 import type { DataItem, Project } from "../lib/model";
 import {
+  extractCatalogSmart,
   extractFromDocx,
   extractFromEml,
   extractFromExcel,
@@ -128,13 +129,13 @@ export function Ingest({ project, onChange, onDone }: Props) {
     }
   }
 
-  function onPasteCommit() {
+  async function onPasteCommit() {
     if (!pastedText.trim()) {
       setPasteErr("Collez au moins quelques lignes de texte.");
       return;
     }
     setPasteErr(null);
-    const result = extractFromText(pastedText);
+    const result = await extractCatalogSmart(pastedText);
     commit(result.candidates, {
       source: "text",
       fileName: undefined,
@@ -156,12 +157,17 @@ export function Ingest({ project, onChange, onDone }: Props) {
         setUrlErr(res.message);
         return;
       }
-      const result = extractFromText(res.text);
+      const result = await extractCatalogSmart(res.text);
       commit(result.candidates, {
         source: "url",
         sourceUrl: res.fetchedFrom,
         extractedAt: new Date().toISOString(),
       });
+      if (result.candidates.length === 0) {
+        setUrlErr(
+          "Page récupérée, mais aucune donnée n'a pu être détectée automatiquement (page rendue côté navigateur, ou contenu sans libellés exploitables). Ajoutez les données manuellement au catalogue, ou collez le texte pertinent."
+        );
+      }
     } finally {
       setScanning(false);
     }

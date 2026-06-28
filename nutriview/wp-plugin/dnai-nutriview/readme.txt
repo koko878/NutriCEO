@@ -4,7 +4,7 @@ Tags: dgssi, classification, securite, data, ocp, nutricrops
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 0.7.1
+Stable tag: 0.7.2
 License: GPL-2.0-or-later
 
 Assistant DGSSI de classification des données pour OCP Nutricrops (équipe D²nAI). Sert l'application React mono-fichier en plein écran (`/nutriview`) ou via shortcode `[nutriview]`. v0.4 : workflow signature SHA-256 + inbox propriétaire + notifications email.
@@ -31,6 +31,15 @@ NutriView accompagne le chargé de projet sur le parcours complet de classificat
 6. (Optionnel — audit) Outils → NutriView Validations : journal des envois et signatures.
 
 == Changelog ==
+
+= 0.7.2 =
+Fix : le scan d'URL (et l'import de texte/PDF/Word) renvoyait 0 donnée sur du contenu réel.
+* Cause : l'extraction n'émettait une donnée que si une ligne COMMENÇAIT par un marqueur FR (« Données… », « Fichier de… »). Une vraie page d'app (libellés de champs, en-têtes de tableau) ne commence jamais ainsi → 0 résultat.
+* Heuristique élargie : 2ᵉ passe « libellés » qui capte les champs/colonnes/titres courts (ce qu'on trouve sur une page scannée), filtre le chrome de navigation (Accueil, Déconnexion, Cookies…) et la prose longue.
+* Extraction intelligente : le scan et le collage de texte passent par l'IA souveraine quand elle est configurée (extraction sémantique multilingue), avec repli sur l'heuristique sinon.
+* Proxy de scan (rest-api-scan.php) : séparateur entre TOUTES les balises (les `<span>`/`<td>` inline ne se collent plus : « Prix10 » → « Prix » + « 10 ») ; cellules de tableau converties en lignes (la valeur numérique est filtrée, le libellé est gardé) ; décodage du charset déclaré (iso-8859-1/windows-1252 → UTF-8, plus de mojibake) ; découpe sûre en multi-octets.
+* UX : message explicite quand une page est récupérée mais sans donnée détectable (SPA rendue côté navigateur, ou contenu sans libellés) → invite à saisir manuellement ou coller le texte.
+* Limite connue inchangée : une SPA pure (rendu JS) renvoie une coquille vide ; le rendu headless reste à brancher si besoin.
 
 = 0.7.1 =
 Passe design (audit /impeccable, registre produit, charte D²nAI conservée) :

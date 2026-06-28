@@ -37,21 +37,44 @@ function dnai_nview_scan_html_to_text( $html ) {
 	$html = preg_replace( '#<script\b[^>]*>.*?</script>#is', ' ', $html );
 	$html = preg_replace( '#<style\b[^>]*>.*?</style>#is', ' ', $html );
 	$html = preg_replace( '#<noscript\b[^>]*>.*?</noscript>#is', ' ', $html );
+	$html = preg_replace( '#<head\b[^>]*>.*?</head>#is', ' ', $html );
 	$html = preg_replace( '#<!--.*?-->#s', ' ', $html );
-	// Les balises de bloc deviennent des sauts de ligne (préserve la structure).
-	$html = preg_replace( '#<(br|/p|/div|/li|/h[1-6]|/tr|/td|/th)\b[^>]*>#i', "\n", $html );
-	$text = wp_strip_all_tags( $html );
-	$text = html_entity_decode( $text, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+	// Les balises bloc deviennent des sauts de ligne (préserve la structure
+	// ligne par ligne : titres, items de liste, cellules, lignes de tableau).
+	$html = preg_replace( '#</?(p|div|li|ul|ol|h[1-6]|tr|section|article|header|footer|nav|table|thead|tbody)\b[^>]*>#i', "\n", $html );
+	$html = preg_replace( '#<br\s*/?>#i', "\n", $html );
+	// Les cellules deviennent des sauts de ligne : un libellé par ligne (la
+	// valeur d'à côté, souvent numérique, est filtrée en aval). Évite de coller
+	// « Salaire de base » et « 4500 » sur le même fragment.
+	$html = preg_replace( '#</(td|th)>#i', "\n", $html );
+	// TOUTES les autres balises (inline : span, a, strong…) → ESPACE, jamais
+	// rien : sinon "<span>Prix</span><span>10</span>" devient "Prix10" collé
+	// et l'extraction rate. C'était la cause du « 0 donnée ».
+	$text = preg_replace( '#<[^>]+>#', ' ', $html );
+	$text = html_entity_decode( (string) $text, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
 	// Normalise les espaces et lignes vides multiples.
 	$text = preg_replace( "/[ \t]+/", ' ', $text );
-	$text = preg_replace( "/\n\s*\n\s*\n+/", "\n\n", $text );
-	$text = trim( $text );
+	$text = preg_replace( "/[ \t]*\n[ \t]*/", "\n", $text );
+	$text = preg_replace( "/\n{3,}/", "\n\n", $text );
+	$text = trim( (string) $text );
 	$truncated = false;
-	if ( strlen( $text ) > DNAI_NVIEW_SCAN_MAX_TEXT ) {
-		$text      = substr( $text, 0, DNAI_NVIEW_SCAN_MAX_TEXT );
+	// Découpe sur une frontière multi-octets sûre (mb_substr) pour ne pas
+	// casser un caractère UTF-8 en deux.
+	if ( function_exists( 'mb_strlen' ) ? mb_strlen( $text, 'UTF-8' ) > DNAI_NVIEW_SCAN_MAX_TEXT : strlen( $text ) > DNAI_NVIEW_SCAN_MAX_TEXT ) {
+		$text      = function_exists( 'mb_substr' )
+			? mb_substr( $text, 0, DNAI_NVIEW_SCAN_MAX_TEXT, 'UTF-8' )
+			: substr( $text, 0, DNAI_NVIEW_SCAN_MAX_TEXT );
 		$truncated = true;
 	}
 	return array( 'text' => $text, 'truncated' => $truncated );
+}
+
+/** Charset déclaré dans le Content-Type (ex: "text/html; charset=iso-8859-1"). */
+function dnai_nview_scan_charset( $ctype ) {
+	if ( preg_match( '#charset=([a-z0-9_\-]+)#i', (string) $ctype, $m ) ) {
+		return strtoupper( trim( $m[1] ) );
+	}
+	return '';
 }
 
 function dnai_nview_scan_rest( $request ) {
@@ -104,8 +127,23 @@ function dnai_nview_scan_rest( $request ) {
 		);
 	}
 
-	$html = (string) wp_remote_retrieve_body( $res );
+	$html  = (string) wp_remote_retrieve_body( $res );
 	$bytes = strlen( $html );
+
+	// Recode en UTF-8 si la page déclare un autre charset (intranet legacy
+	// en iso-8859-1, windows-1252…) — sinon html_entity_decode UTF-8 produit
+	// du mojibake et l'extraction rate.
+	$charset = dnai_nview_scan_charset( $ctype );
+	if ( $charset === '' && preg_match( '#<meta[^>]+charset=["\']?([a-z0-9_\-]+)#i', $html, $mm ) ) {
+		$charset = strtoupper( trim( $mm[1] ) );
+	}
+	if ( $charset !== '' && $charset !== 'UTF-8' && function_exists( 'mb_convert_encoding' ) ) {
+		$converted = @mb_convert_encoding( $html, 'UTF-8', $charset );
+		if ( is_string( $converted ) && $converted !== '' ) {
+			$html = $converted;
+		}
+	}
+
 	$parsed = dnai_nview_scan_html_to_text( $html );
 
 	return array(

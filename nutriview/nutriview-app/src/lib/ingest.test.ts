@@ -15,6 +15,33 @@ describe("ingest.extractFromText (heuristique)", () => {
     expect(names.some((n) => n.startsWith("données clients"))).toBe(true);
     expect(names.some((n) => n.startsWith("fichier de paie"))).toBe(true);
   });
+
+  it("fallback libellés : extrait des champs SANS marqueur (cas scan d'app)", () => {
+    // Texte type page d'app : libellés de formulaire, aucun « Données… ».
+    const txt = [
+      "Fiche employé",
+      "Nom complet",
+      "Numéro de sécurité sociale",
+      "Coordonnées bancaires (RIB)",
+      "Salaire de base",
+      "Accueil", // chrome UI → filtré
+      "Déconnexion", // chrome UI → filtré
+    ].join("\n");
+    const r = extractFromText(txt);
+    const names = r.candidates.map((c) => c.name.toLowerCase());
+    expect(r.candidates.length).toBeGreaterThanOrEqual(4);
+    expect(names).toContain("nom complet");
+    expect(names).toContain("salaire de base");
+    expect(names).not.toContain("accueil");
+    expect(names).not.toContain("déconnexion");
+  });
+
+  it("ignore la prose longue (phrases) dans le fallback libellés", () => {
+    const txt =
+      "Ceci est une phrase de contexte assez longue qui décrit le projet et ne doit pas devenir une donnée.";
+    const r = extractFromText(txt);
+    expect(r.candidates.length).toBe(0);
+  });
 });
 
 describe("ingest.extractFromEml", () => {
