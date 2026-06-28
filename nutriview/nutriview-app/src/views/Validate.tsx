@@ -28,14 +28,20 @@ import { Button } from "../components/Button";
 import { PageHero } from "../components/Card";
 import { ClasseBadge, ProjectStatusBadge } from "../components/Badge";
 import { Verdict } from "../components/Verdict";
-import type { Classe, Classification, Project } from "../lib/model";
+import type { Classe, Classification, Perimeter, Project } from "../lib/model";
 import { graduatedMeasures } from "../lib/engine";
 import {
-  allItemsValidated,
+  computePerimeterHash,
   computeProjectHash,
   formatHashShort,
 } from "../lib/signature";
 import { notifySigned } from "../lib/validation";
+import {
+  effectivePerimeters,
+  perimeterItemsValidated,
+  perimetersForUser,
+} from "../lib/perimeters";
+import { useGov } from "../lib/useGov";
 
 interface Props {
   project: Project;
@@ -50,6 +56,7 @@ export function Validate({
   onChange,
   onBackToInbox,
 }: Props) {
+  const { can } = useGov();
   const [signOpen, setSignOpen] = useState(false);
   const [signing, setSigning] = useState(false);
   const [previewHash, setPreviewHash] = useState<string | null>(null);
@@ -81,28 +88,57 @@ export function Validate({
         conditions: graduatedMeasures(projectClasse),
       };
 
-  const validatedN = project.items.filter((it) => it.validation).length;
-  const totalN = project.items.length;
-  const canSign = allItemsValidated(project) && project.status === "in_review";
   const isSigned = project.status === "signed";
+  const allPerimeters = useMemo(() => effectivePerimeters(project), [project]);
 
-  // Pré-calcul du hash de prévisualisation (avant signature).
+  // Périmètres dont l'utilisateur est propriétaire. Un admin (can manage) sans
+  // périmètre propre peut agir sur tous les périmètres encore en attente.
+  const myPerimeters = useMemo(() => {
+    const mine = perimetersForUser(project, currentUser);
+    if (mine.length > 0) return mine;
+    return can("manage") ? allPerimeters : [];
+  }, [project, currentUser, can, allPerimeters]);
+
+  const myPending = myPerimeters.filter((p) => p.status !== "signed");
+  // Données qui relèvent de mon périmètre encore à signer.
+  const myScopeIds = useMemo(
+    () => new Set(myPending.flatMap((p) => p.itemIds)),
+    [myPending]
+  );
+  const myScopeItems = project.items.filter((it) => myScopeIds.has(it.id));
+  // Map donnée → périmètre (pour afficher le propriétaire de chaque ligne).
+  const itemPerimeter = useMemo(() => {
+    const m = new Map<string, Perimeter>();
+    for (const p of allPerimeters) for (const id of p.itemIds) m.set(id, p);
+    return m;
+  }, [allPerimeters]);
+  const myValidatedN = myScopeItems.filter((it) => it.validation).length;
+  const myTotalN = myScopeItems.length;
+  const myItemsAllValidated =
+    myPending.length > 0 && myPending.every((p) => perimeterItemsValidated(project, p));
+  const canSign = myItemsAllValidated && project.status === "in_review";
+  const iOwnNothing = myPerimeters.length === 0;
+  const myPartDone = myPerimeters.length > 0 && myPending.length === 0;
+
+  // Pré-calcul du hash de prévisualisation de MON périmètre (avant signature).
   useEffect(() => {
     let cancelled = false;
-    computeProjectHash(project)
-      .then((h) => {
-        if (!cancelled) setPreviewHash(h);
-      })
-      .catch(() => {
-        if (!cancelled) setPreviewHash(null);
-      });
+    const ids = [...myScopeIds];
+    const p = ids.length
+      ? computePerimeterHash(project, ids)
+      : computeProjectHash(project);
+    p.then((h) => {
+      if (!cancelled) setPreviewHash(h);
+    }).catch(() => {
+      if (!cancelled) setPreviewHash(null);
+    });
     return () => {
       cancelled = true;
     };
-  }, [project]);
+  }, [project, myScopeIds]);
 
   function toggleItemValidation(itemId: string) {
-    if (isSigned) return;
+    if (isSigned || !myScopeIds.has(itemId)) return;
     const it = project.items.find((x) => x.id === itemId);
     if (!it) return;
     const next: Project = {
@@ -130,15 +166,15 @@ export function Validate({
     const next: Project = {
       ...project,
       items: project.items.map((it) =>
-        it.validation
-          ? it
-          : {
+        myScopeIds.has(it.id) && !it.validation
+          ? {
               ...it,
               validation: {
                 validatedAt: now,
                 validatedBy: currentUser || "anonyme",
               },
             }
+          : it
       ),
     };
     onChange(next);
@@ -148,22 +184,59 @@ export function Validate({
     setSigning(true);
     setErrorMsg(null);
     try {
-      const hash = await computeProjectHash(project);
       const signedAt = new Date().toISOString();
-      const next: Project = {
+      const signer = currentUser || "anonyme";
+      // Signe chacun de MES périmètres en attente (hash de leur sous-ensemble).
+      const signedKeys = new Set<string>();
+      const nextPerimeters: Perimeter[] = await Promise.all(
+        allPerimeters.map(async (p) => {
+          const isMine = myPending.some(
+            (mp) => mp.ownerLogin === p.ownerLogin && mp.ownerName === p.ownerName
+          );
+          if (!isMine || p.status === "signed") return p;
+          const hash = await computePerimeterHash(project, p.itemIds);
+          signedKeys.add(p.ownerLogin + "|" + p.ownerName);
+          return {
+            ...p,
+            status: "signed" as const,
+            signedAt,
+            signedBy: signer,
+            contentHash: hash,
+          };
+        })
+      );
+
+      // Données de mes périmètres → statut signed.
+      const justSignedItemIds = new Set(
+        nextPerimeters
+          .filter((p) => signedKeys.has(p.ownerLogin + "|" + p.ownerName))
+          .flatMap((p) => p.itemIds)
+      );
+
+      const everyoneSigned = nextPerimeters.every((p) => p.status === "signed");
+      let next: Project = {
         ...project,
-        status: "signed",
-        signature: {
-          signedBy: currentUser || "anonyme",
-          signedAt,
-          contentHash: hash,
-        },
-        items: project.items.map((it) => ({ ...it, status: "signed" as const })),
+        perimeters: nextPerimeters,
+        items: project.items.map((it) =>
+          justSignedItemIds.has(it.id)
+            ? { ...it, status: "signed" as const }
+            : it
+        ),
       };
+
+      // Le projet n'est clos (signed) que quand TOUS les périmètres le sont.
+      if (everyoneSigned) {
+        const hash = await computeProjectHash(next);
+        next = {
+          ...next,
+          status: "signed",
+          signature: { signedBy: signer, signedAt, contentHash: hash },
+        };
+      }
+
       onChange(next);
       setSignOpen(false);
-      // Best-effort notify (no-op silent en standalone).
-      void notifySigned(next);
+      if (everyoneSigned) void notifySigned(next); // best-effort, no-op standalone
     } catch (e) {
       setErrorMsg(
         e instanceof Error
@@ -230,7 +303,7 @@ export function Validate({
           sensible={projectSensible}
           verdictCloud={projectVerdict}
           sensibleCount={sensibleCount}
-          totalCount={totalN}
+          totalCount={project.items.length}
           measures={
             projectVerdict.eligible
               ? projectVerdict.conditions
@@ -239,31 +312,49 @@ export function Validate({
         />
       </section>
 
-      {/* Tableau données + checkbox validation */}
+      {/* Vue d'ensemble des périmètres (qui valide quoi) */}
+      <PerimeterOverview
+        perimeters={allPerimeters}
+        currentUser={currentUser}
+      />
+
+      {/* Tableau données + checkbox validation (scopé à mon périmètre) */}
       <section className="mb-8 overflow-hidden rounded-3xl border border-zinc-200 bg-white">
         <header className="border-b border-zinc-100 px-7 py-5">
           <div className="flex items-center justify-between gap-4">
             <div>
               <div className="text-[11.5px] font-medium text-zinc-500">
-                Validation ligne par ligne
+                {iOwnNothing
+                  ? "Validation ligne par ligne (lecture seule)"
+                  : "Validation de mon périmètre, ligne par ligne"}
               </div>
               <h2 className="mt-0.5 font-display text-2xl font-semibold text-zinc-900">
-                {totalN} donnée{totalN > 1 ? "s" : ""} ·{" "}
-                <span className="tabular-nums text-ocp-700">
-                  {validatedN}
-                </span>{" "}
-                validée{validatedN > 1 ? "s" : ""}
+                {iOwnNothing ? (
+                  <>
+                    {project.items.length} donnée
+                    {project.items.length > 1 ? "s" : ""} au total
+                  </>
+                ) : (
+                  <>
+                    <span className="tabular-nums">{myTotalN}</span> donnée
+                    {myTotalN > 1 ? "s" : ""} ·{" "}
+                    <span className="tabular-nums text-ocp-700">
+                      {myValidatedN}
+                    </span>{" "}
+                    validée{myValidatedN > 1 ? "s" : ""}
+                  </>
+                )}
               </h2>
             </div>
-            {!isSigned && (
+            {!isSigned && !iOwnNothing && (
               <Button
                 variant="ghost"
                 size="sm"
                 icon={<Check size={14} weight="bold" />}
                 onClick={validateAll}
-                disabled={validatedN === totalN}
+                disabled={myTotalN === 0 || myValidatedN === myTotalN}
               >
-                Tout valider
+                Tout valider (mon périmètre)
               </Button>
             )}
           </div>
@@ -272,12 +363,15 @@ export function Validate({
           {project.items.map((it) => {
             const cls = project.classifications[it.id];
             const validated = Boolean(it.validation);
+            const inScope = myScopeIds.has(it.id);
+            const per = itemPerimeter.get(it.id);
+            const outOfScope = !inScope && !isSigned;
             return (
               <li
                 key={it.id}
                 className={`flex items-start justify-between gap-6 px-7 py-4 transition-colors ${
                   validated ? "bg-ocp-50/30" : "hover:bg-zinc-50/60"
-                }`}
+                } ${outOfScope ? "opacity-70" : ""}`}
               >
                 <div className="min-w-0 flex-1">
                   <div className="font-display text-[17px] font-semibold leading-tight text-zinc-900">
@@ -288,6 +382,15 @@ export function Validate({
                   {it.description && it.description !== it.name && (
                     <p className="mt-0.5 max-w-[65ch] text-[12.5px] text-zinc-500">
                       {it.description}
+                    </p>
+                  )}
+                  {outOfScope && per && (
+                    <p className="mt-1 text-[11.5px] text-zinc-500">
+                      Périmètre de{" "}
+                      <span className="font-medium text-zinc-700">
+                        {per.ownerName}
+                      </span>
+                      {per.status === "signed" ? " · signé" : " · en attente"}
                     </p>
                   )}
                   {validated && it.validation && (
@@ -329,7 +432,7 @@ export function Validate({
                       non classée
                     </span>
                   )}
-                  {!isSigned && (
+                  {!isSigned && inScope && (
                     <button
                       type="button"
                       onClick={() => toggleItemValidation(it.id)}
@@ -348,6 +451,14 @@ export function Validate({
                       <Check size={16} weight="bold" />
                     </button>
                   )}
+                  {!isSigned && !inScope && validated && (
+                    <span
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-ocp-50 text-ocp-600"
+                      aria-label="Validée par son propriétaire"
+                    >
+                      <Check size={16} weight="bold" />
+                    </span>
+                  )}
                 </div>
               </li>
             );
@@ -355,14 +466,18 @@ export function Validate({
         </ul>
       </section>
 
-      {/* Signature : bandeau résultat OU CTA "Tout valider et signer" */}
+      {/* Signature : bandeau résultat / attente des autres / CTA / lecture seule */}
       {isSigned && project.signature ? (
         <SignedBanner project={project} />
+      ) : myPartDone ? (
+        <WaitingOthersBanner perimeters={allPerimeters} />
+      ) : iOwnNothing ? (
+        <ReadOnlyNotice />
       ) : (
         <SignActionBar
           canSign={canSign}
-          validatedN={validatedN}
-          totalN={totalN}
+          validatedN={myValidatedN}
+          totalN={myTotalN}
           previewHash={previewHash}
           onOpenSign={() => setSignOpen(true)}
         />
@@ -428,10 +543,11 @@ function SignActionBar({
         <div className="flex-1">
           <div className="mb-1.5 flex items-center justify-between text-[12px] text-zinc-500">
             <span>
-              Progression validation ·{" "}
+              Mon périmètre ·{" "}
               <span className="tabular-nums font-medium text-zinc-700">
                 {validatedN}/{totalN}
-              </span>
+              </span>{" "}
+              validée(s)
             </span>
             <span className="tabular-nums font-medium text-zinc-700">{pct}%</span>
           </div>
@@ -460,12 +576,132 @@ function SignActionBar({
             disabled={!canSign}
             title={
               canSign
-                ? "Tout est validé — apposer ma signature"
-                : `Validez les ${totalN - validatedN} donnée(s) restante(s) avant de signer`
+                ? "Mon périmètre est validé — apposer ma signature"
+                : `Validez les ${totalN - validatedN} donnée(s) restante(s) de mon périmètre avant de signer`
             }
           >
-            Signer la classification
+            Signer mon périmètre
           </Button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Vue d'ensemble des périmètres : qui valide quoi, et où ça en est.
+function PerimeterOverview({
+  perimeters,
+  currentUser,
+}: {
+  perimeters: Perimeter[];
+  currentUser: string;
+}) {
+  if (perimeters.length <= 1) return null; // mono-propriétaire : inutile
+  const u = (currentUser || "").trim().toLowerCase();
+  const signedN = perimeters.filter((p) => p.status === "signed").length;
+  return (
+    <section className="mb-8 overflow-hidden rounded-3xl border border-zinc-200 bg-white">
+      <header className="flex items-center justify-between border-b border-zinc-100 px-7 py-4">
+        <div>
+          <div className="text-[11.5px] font-medium text-zinc-500">
+            Validation multi-propriétaires
+          </div>
+          <h2 className="mt-0.5 font-display text-xl font-semibold text-zinc-900">
+            {perimeters.length} périmètres ·{" "}
+            <span className="tabular-nums text-ocp-700">{signedN}</span> signé
+            {signedN > 1 ? "s" : ""}
+          </h2>
+        </div>
+      </header>
+      <ul className="divide-y divide-zinc-100">
+        {perimeters.map((p, i) => {
+          const mine =
+            u &&
+            (u === p.ownerLogin.trim().toLowerCase() ||
+              u === p.ownerName.trim().toLowerCase());
+          return (
+            <li
+              key={p.ownerLogin + i}
+              className="flex items-center justify-between gap-4 px-7 py-3.5"
+            >
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 text-[14px] font-medium text-zinc-900">
+                  {p.ownerName}
+                  {mine && (
+                    <span className="rounded bg-ocp-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ocp-700">
+                      vous
+                    </span>
+                  )}
+                </div>
+                <div className="text-[11.5px] text-zinc-500">
+                  {p.domainNames.length
+                    ? p.domainNames.join(" · ")
+                    : "Données transverses"}{" "}
+                  · <span className="tabular-nums">{p.itemIds.length}</span>{" "}
+                  donnée{p.itemIds.length > 1 ? "s" : ""}
+                </div>
+              </div>
+              {p.status === "signed" ? (
+                <span className="inline-flex items-center gap-1 rounded-md bg-ocp-50 px-2 py-1 text-[11px] font-medium text-ocp-800 ring-1 ring-inset ring-ocp-200">
+                  <ShieldCheck size={12} weight="duotone" />
+                  Signé
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 rounded-md bg-amber-vd-50 px-2 py-1 text-[11px] font-medium text-amber-vd-800 ring-1 ring-inset ring-amber-vd-200">
+                  <Tray size={12} weight="duotone" />
+                  En attente
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+// Mon périmètre est signé, mais d'autres restent à valider.
+function WaitingOthersBanner({ perimeters }: { perimeters: Perimeter[] }) {
+  const remaining = perimeters.filter((p) => p.status !== "signed");
+  return (
+    <section className="rounded-3xl border border-ocp-200 bg-ocp-50/40 px-7 py-6">
+      <div className="flex items-start gap-3">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-ocp-100 text-ocp-700">
+          <ShieldCheck size={22} weight="duotone" />
+        </div>
+        <div>
+          <h3 className="font-display text-[22px] font-semibold leading-tight text-ocp-900">
+            Votre périmètre est signé.
+          </h3>
+          <p className="mt-0.5 text-[13px] text-zinc-700">
+            En attente de{" "}
+            <span className="font-medium">
+              {remaining.map((p) => p.ownerName).join(", ") || "—"}
+            </span>
+            . Le projet sera clos quand tous les périmètres auront été signés.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// L'utilisateur n'est propriétaire d'aucun périmètre sur ce projet.
+function ReadOnlyNotice() {
+  return (
+    <section className="rounded-3xl border border-dashed border-zinc-200 bg-white px-7 py-6">
+      <div className="flex items-start gap-3">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-zinc-100 text-zinc-500">
+          <Tray size={22} weight="duotone" />
+        </div>
+        <div>
+          <h3 className="font-display text-[20px] font-semibold leading-tight text-zinc-900">
+            Lecture seule.
+          </h3>
+          <p className="mt-0.5 text-[13px] text-zinc-600">
+            Vous n'êtes propriétaire d'aucun périmètre de ce projet. Seuls les
+            data domain owners concernés valident et signent leurs données.
+          </p>
         </div>
       </div>
     </section>
@@ -583,13 +819,14 @@ function SignDialog({
         </header>
         <div className="px-6 py-5 text-[13.5px] leading-relaxed text-zinc-700">
           <p>
-            Vous êtes sur le point de signer la classification DGSSI du
-            projet <strong>{projectTitle}</strong>. Cette action :
+            Vous êtes sur le point de signer <strong>votre périmètre</strong> de
+            la classification DGSSI du projet <strong>{projectTitle}</strong>.
+            Cette action :
           </p>
           <ul className="mt-3 space-y-2 text-[13px] text-zinc-600">
             <li className="flex items-start gap-2">
               <Check size={13} weight="bold" className="mt-1 text-ocp-600" />
-              calcule un hash <code className="rounded bg-zinc-50 px-1 font-mono text-[11.5px]">SHA-256</code> du contenu classifié,
+              calcule un hash <code className="rounded bg-zinc-50 px-1 font-mono text-[11.5px]">SHA-256</code> des données de votre périmètre,
             </li>
             <li className="flex items-start gap-2">
               <Check size={13} weight="bold" className="mt-1 text-ocp-600" />
@@ -597,7 +834,7 @@ function SignDialog({
             </li>
             <li className="flex items-start gap-2">
               <Check size={13} weight="bold" className="mt-1 text-ocp-600" />
-              fige le projet en statut <strong>Signé</strong> — toute modification ultérieure invaliderait le hash.
+              fige votre périmètre — le projet sera clos en statut <strong>Signé</strong> quand tous les périmètres auront été signés.
             </li>
           </ul>
           <div className="mt-5 rounded-2xl border border-zinc-200 bg-zinc-50/60 p-4">

@@ -30,6 +30,8 @@ import {
   formatHashShort,
 } from "../lib/signature";
 import { notifySubmitForReview } from "../lib/validation";
+import { buildPerimeters, effectivePerimeters } from "../lib/perimeters";
+import { useGov } from "../lib/useGov";
 
 const CLASSES: Classe[] = ["I", "II", "III", "IV", "V"];
 
@@ -49,6 +51,7 @@ interface Props {
 }
 
 export function Synthesis({ project, currentUser, onSubmitForReview }: Props) {
+  const { state: gov } = useGov();
   const [submitOpen, setSubmitOpen] = useState(false);
   const summary = useMemo(() => {
     const all = Object.values(project.classifications) as Classification[];
@@ -207,6 +210,8 @@ export function Synthesis({ project, currentUser, onSubmitForReview }: Props) {
                 submittedAt: new Date().toISOString(),
                 submittedBy: currentUser || project.owner || "anonyme",
               },
+              // Fan-out multi-owners : un périmètre par data domain owner touché.
+              perimeters: buildPerimeters(project, gov.refs),
             };
             onSubmitForReview?.(next);
             // Best-effort notify backend (no-op silent en standalone).
@@ -221,18 +226,17 @@ export function Synthesis({ project, currentUser, onSubmitForReview }: Props) {
       )}
 
       {project.status === "in_review" && (
-        <section className="mb-10 flex flex-col items-start gap-4 rounded-3xl border border-ocp-200 bg-ocp-50/40 px-7 py-6 md:flex-row md:items-center md:justify-between">
+        <section className="mb-10 rounded-3xl border border-ocp-200 bg-ocp-50/40 px-7 py-6">
           <div className="flex items-start gap-3">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-ocp-100 text-ocp-700">
               <Tray size={22} weight="duotone" />
             </div>
-            <div>
+            <div className="flex-1">
               <h3 className="font-display text-[22px] font-semibold leading-tight text-ocp-900">
-                En attente de validation propriétaire.
+                En attente de validation des propriétaires.
               </h3>
               <p className="mt-0.5 text-[13px] text-zinc-700">
-                Envoyé à{" "}
-                <span className="font-medium">{project.dataOwner || "—"}</span>
+                Envoyé pour validation
                 {project.submission?.submittedAt && (
                   <>
                     {" "}le{" "}
@@ -242,8 +246,41 @@ export function Synthesis({ project, currentUser, onSubmitForReview }: Props) {
                     )}
                   </>
                 )}
-                . Vous serez notifié à la signature.
+                . Chaque propriétaire valide les données de son périmètre ; le
+                projet sera signé quand tous auront tranché.
               </p>
+              <ul className="mt-4 space-y-2">
+                {effectivePerimeters(project).map((p, i) => (
+                  <li
+                    key={p.ownerLogin + i}
+                    className="flex items-center justify-between gap-4 rounded-2xl bg-white px-4 py-2.5 ring-1 ring-zinc-200"
+                  >
+                    <div className="min-w-0">
+                      <div className="text-[13.5px] font-medium text-zinc-900">
+                        {p.ownerName}
+                      </div>
+                      <div className="text-[11.5px] text-zinc-500">
+                        {p.domainNames.length
+                          ? p.domainNames.join(" · ")
+                          : "Données transverses"}{" "}
+                        · <span className="tabular-nums">{p.itemIds.length}</span>{" "}
+                        donnée{p.itemIds.length > 1 ? "s" : ""}
+                      </div>
+                    </div>
+                    {p.status === "signed" ? (
+                      <span className="inline-flex items-center gap-1 rounded-md bg-ocp-50 px-2 py-1 text-[11px] font-medium text-ocp-800 ring-1 ring-inset ring-ocp-200">
+                        <ShieldCheck size={12} weight="duotone" />
+                        Signé
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 rounded-md bg-amber-vd-50 px-2 py-1 text-[11px] font-medium text-amber-vd-800 ring-1 ring-inset ring-amber-vd-200">
+                        <Tray size={12} weight="duotone" />
+                        En attente
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </section>

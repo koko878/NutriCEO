@@ -111,6 +111,13 @@ export interface Project {
     submittedAt: string; // ISO — passage drafting → in_review
     submittedBy: string; // chef de projet qui a demandé la validation
   };
+  /**
+   * Périmètres de validation (Phase 7) — un par data domain owner concerné
+   * par les données du projet. Dérivés à la soumission. Le projet n'est
+   * `signed` que lorsque TOUS les périmètres sont signés. Absent = ancien
+   * projet mono-propriétaire (rétro-compat via fallback dataOwner).
+   */
+  perimeters?: Perimeter[];
   signature?: {
     signedBy: string;
     signedAt: string;
@@ -122,6 +129,22 @@ export interface Project {
     rejectedBy: string;
     reason: string;
   };
+}
+
+/**
+ * Périmètre de validation = ensemble des données d'un projet rattachées à un
+ * même data domain owner. Chaque owner valide/signe SON périmètre.
+ */
+export interface Perimeter {
+  ownerLogin: string; // clé d'identité (login/UPN), ou nom à défaut
+  ownerName: string; // affichage
+  domainIds: string[]; // data domains couverts (vide = données non assignées)
+  domainNames: string[];
+  itemIds: string[]; // données du périmètre
+  status: "pending" | "signed";
+  signedAt?: string;
+  signedBy?: string;
+  contentHash?: string; // SHA-256 du périmètre signé
 }
 
 // ---------------------------------------------------------------------------

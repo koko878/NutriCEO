@@ -16,6 +16,7 @@ import {
 import { store, type AppState } from "./lib/store";
 import type { Project } from "./lib/model";
 import { inboxBadgeCount } from "./lib/inbox";
+import { hasPendingPerimeterForUser } from "./lib/perimeters";
 import { useGov } from "./lib/useGov";
 import { Projects } from "./views/Projects";
 import { Ingest } from "./views/Ingest";
@@ -223,7 +224,7 @@ export default function App() {
               // on l'envoie directement sur Validate.
               if (
                 p.status === "in_review" &&
-                p.dataOwner.trim().toLowerCase() === ctxUser.trim().toLowerCase()
+                hasPendingPerimeterForUser(p, ctxUser)
               ) {
                 setView({ kind: "validate", projectId: p.id });
               } else {

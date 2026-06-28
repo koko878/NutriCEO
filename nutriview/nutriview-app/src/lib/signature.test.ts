@@ -11,7 +11,9 @@ import { describe, expect, it } from "vitest";
 import {
   allItemsClassified,
   allItemsValidated,
+  canonicalPerimeterPayload,
   canonicalProjectPayload,
+  computePerimeterHash,
   computeProjectHash,
   formatHashShort,
   sha256Hex,
@@ -135,6 +137,34 @@ describe("signature.sha256Hex", () => {
   it("produit toujours 64 caractères hex", async () => {
     const h = await sha256Hex("nutriview");
     expect(h).toMatch(/^[0-9a-f]{64}$/);
+  });
+});
+
+describe("signature.canonicalPerimeterPayload / computePerimeterHash", () => {
+  it("ne dépend que des données du périmètre", () => {
+    const p = projectFixture();
+    const onlyI1a = canonicalPerimeterPayload(p, ["i-1"]);
+    const onlyI1b = canonicalPerimeterPayload(p, ["i-1"]);
+    expect(onlyI1a).toBe(onlyI1b);
+    // un périmètre {i-1} diffère du périmètre {i-1, i-2}
+    expect(canonicalPerimeterPayload(p, ["i-1"])).not.toBe(
+      canonicalPerimeterPayload(p, ["i-1", "i-2"])
+    );
+  });
+
+  it("le périmètre complet égale le projet entier", () => {
+    const p = projectFixture();
+    expect(canonicalPerimeterPayload(p, ["i-1", "i-2"])).toBe(
+      canonicalProjectPayload(p)
+    );
+  });
+
+  it("computePerimeterHash produit un hex SHA-256 stable", async () => {
+    const p = projectFixture();
+    const h1 = await computePerimeterHash(p, ["i-1"]);
+    const h2 = await computePerimeterHash(p, ["i-1"]);
+    expect(h1).toBe(h2);
+    expect(h1).toMatch(/^[0-9a-f]{64}$/);
   });
 });
 

@@ -8,13 +8,18 @@
 // =====================================================================
 
 import type { Project } from "./model";
+import { hasPendingPerimeterForUser } from "./perimeters";
 
 /** Insensible à la casse, espaces de bord ignorés. */
 function norm(s: string | undefined | null): string {
   return (s ?? "").trim().toLowerCase();
 }
 
-/** Projets `in_review` dont je suis le dataOwner. */
+/**
+ * Projets `in_review` où l'utilisateur porte au moins un périmètre non signé.
+ * Multi-owners (Phase 7) : chaque data domain owner ne voit que les projets
+ * touchant son périmètre, tant qu'il ne l'a pas signé.
+ */
 export function pendingForOwner(
   projects: Project[],
   user: string
@@ -22,7 +27,9 @@ export function pendingForOwner(
   const u = norm(user);
   if (!u) return [];
   return projects
-    .filter((p) => p.status === "in_review" && norm(p.dataOwner) === u)
+    .filter(
+      (p) => p.status === "in_review" && hasPendingPerimeterForUser(p, user)
+    )
     .sort((a, b) => {
       const ta = a.submission?.submittedAt ?? "";
       const tb = b.submission?.submittedAt ?? "";

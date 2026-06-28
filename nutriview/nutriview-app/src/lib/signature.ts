@@ -138,6 +138,41 @@ export async function computeProjectHash(p: Project): Promise<string> {
   return sha256Hex(canonicalProjectPayload(p));
 }
 
+/**
+ * Représentation canonique d'un PÉRIMÈTRE (sous-ensemble de données du projet)
+ * pour la signature d'un data domain owner. Même schéma que le projet, mais
+ * restreint aux itemIds du périmètre.
+ */
+export function canonicalPerimeterPayload(p: Project, itemIds: string[]): string {
+  const set = new Set(itemIds);
+  const items: CanonItem[] = p.items
+    .filter((it) => set.has(it.id))
+    .map(canonItem)
+    .sort((a, b) => a.id.localeCompare(b.id));
+  const classifications: CanonClassification[] = Object.values(p.classifications)
+    .filter((c) => set.has(c.itemId))
+    .map(canonClassification)
+    .sort((a, b) => a.itemId.localeCompare(b.itemId));
+  const payload: CanonPayload = {
+    projectId: p.id,
+    title: (p.title || "").trim(),
+    bu: (p.bu || "").trim(),
+    dataOwner: (p.dataOwner || "").trim(),
+    items,
+    classifications,
+    schemaVersion: 1,
+  };
+  return stableStringify(payload);
+}
+
+/** Hash SHA-256 hex d'un périmètre (données itemIds du projet). */
+export async function computePerimeterHash(
+  p: Project,
+  itemIds: string[]
+): Promise<string> {
+  return sha256Hex(canonicalPerimeterPayload(p, itemIds));
+}
+
 /** Format court pour affichage : `a1b2c3…f4g5h6`. */
 export function formatHashShort(hex: string): string {
   if (!hex || hex.length < 16) return hex;
