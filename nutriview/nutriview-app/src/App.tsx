@@ -25,6 +25,7 @@ import { Synthesis } from "./views/Synthesis";
 import { Inbox } from "./views/Inbox";
 import { Validate } from "./views/Validate";
 import { Admin } from "./views/Admin";
+import { PrintReport } from "./components/PrintReport";
 
 // Type unifié déclaré dans src/lib/ai.ts (source de vérité — inclut aiStatus, restNs, nonce).
 // Pas de re-déclaration ici pour éviter le conflit TS2717.
@@ -88,7 +89,7 @@ export default function App() {
   }, []);
 
   const ctxUser = currentUser;
-  const ver = window.DNAI_NVIEW?.ver ?? "0.5";
+  const ver = window.DNAI_NVIEW?.ver ?? "0.6";
 
   return (
     <div className="min-h-[100dvh] bg-zinc-50 text-zinc-900">
@@ -287,6 +288,13 @@ export default function App() {
           />
         )}
       </main>
+
+      {/* Livrable opposable imprimable — caché à l'écran, seul rendu en print.
+          Rendu hors <main> pour survivre au `main { display:none }` du print. */}
+      {activeProject &&
+        (view.kind === "synthesis" || view.kind === "validate") && (
+          <PrintReport project={activeProject} />
+        )}
 
       <footer className="mx-auto max-w-[1400px] px-6 py-10 text-[11.5px] leading-relaxed text-zinc-400 sm:px-10 nv-no-print">
         <div className="border-t border-zinc-200/70 pt-6">

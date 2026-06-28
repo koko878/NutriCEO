@@ -15,6 +15,7 @@ import {
   Tray,
   PenNib,
   Warning,
+  FilePdf,
 } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { ClasseBadge, ProjectStatusBadge, SensibleBadge } from "../components/Badge";
@@ -155,6 +156,21 @@ export function Synthesis({ project, currentUser, onSubmitForReview }: Props) {
         </dl>
       </header>
 
+      {/* Barre d'action — export du livrable opposable (PDF via print natif) */}
+      {summary.classified > 0 && (
+        <div className="mb-8 flex justify-end nv-no-print">
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<FilePdf size={16} weight="duotone" />}
+            onClick={() => window.print()}
+            title="Imprimer ou exporter en PDF le livrable de classification"
+          >
+            Export PDF
+          </Button>
+        </div>
+      )}
+
       {/* Verdict projet — hero moment */}
       {projectVerdict && (
         <section className="mb-10">
@@ -254,13 +270,24 @@ export function Synthesis({ project, currentUser, onSubmitForReview }: Props) {
                 </p>
               </div>
             </div>
-            <div className="flex flex-col items-start md:items-end">
-              <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-zinc-500">
-                Hash SHA-256
-              </span>
-              <code className="mt-1 rounded-lg bg-white px-3 py-1.5 font-mono text-[12px] text-zinc-800 ring-1 ring-zinc-200">
-                {formatHashShort(project.signature.contentHash)}
-              </code>
+            <div className="flex flex-col items-start gap-3 md:items-end">
+              <div className="flex flex-col items-start md:items-end">
+                <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-zinc-500">
+                  Hash SHA-256
+                </span>
+                <code className="mt-1 rounded-lg bg-white px-3 py-1.5 font-mono text-[12px] text-zinc-800 ring-1 ring-zinc-200">
+                  {formatHashShort(project.signature.contentHash)}
+                </code>
+              </div>
+              <Button
+                variant="primary"
+                size="sm"
+                icon={<FilePdf size={16} weight="duotone" />}
+                onClick={() => window.print()}
+                title="Exporter le livrable signé en PDF"
+              >
+                Exporter le livrable signé
+              </Button>
             </div>
           </div>
         </section>

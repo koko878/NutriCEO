@@ -4,7 +4,7 @@ Tags: dgssi, classification, securite, data, ocp, nutricrops
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 0.5.0
+Stable tag: 0.6.0
 License: GPL-2.0-or-later
 
 Assistant DGSSI de classification des données pour OCP Nutricrops (équipe D²nAI). Sert l'application React mono-fichier en plein écran (`/nutriview`) ou via shortcode `[nutriview]`. v0.4 : workflow signature SHA-256 + inbox propriétaire + notifications email.
@@ -31,6 +31,14 @@ NutriView accompagne le chargé de projet sur le parcours complet de classificat
 6. (Optionnel — audit) Outils → NutriView Validations : journal des envois et signatures.
 
 == Changelog ==
+
+= 0.6.0 =
+Export PDF du livrable opposable :
+* nouveau document imprimable (composant PrintReport) — en-tête institutionnel OCP Nutricrops · D²nAI, verdict cloud net (résidence MA obligatoire si sensible), inventaire tracé ligne par ligne avec citations DGSSI, mesures Annexe I, bloc signature (signataire + horodatage + empreinte SHA-256 complète), mentions légales + souveraineté ;
+* boutons « Export PDF » (synthèse) et « Exporter le livrable signé » (bandeau de signature) → window.print() natif, PDF fidèle sans dépendance lib ;
+* CSS @media print : masque tout le chrome applicatif et n'imprime QUE le rapport (format A4, couleurs forcées) ;
+* logique d'agrégation extraite dans lib/report.ts (pur, testé : 9 tests), partagée pour de futurs dashboards ;
+* document non signé clairement marqué « non opposable » ; le verdict et l'empreinte ne s'impriment qu'à partir des données réellement classées.
 
 = 0.5.0 =
 Phase 6 — Administration (gouvernance + accès) :

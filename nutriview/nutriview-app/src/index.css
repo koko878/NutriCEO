@@ -168,16 +168,45 @@ input[type="range"].nv-slider::-moz-range-thumb {
  * Print — synthèse exportable PDF via window.print()
  * ========================================================================= */
 
+/* Le rapport opposable n'existe qu'à l'impression : caché à l'écran,
+ * affiché (et seul affiché) quand on imprime / exporte en PDF. */
+.nv-print-only {
+  display: none;
+}
+
 @media print {
+  /* On masque tout le chrome applicatif marqué nv-no-print + le main
+   * interactif, et on ne laisse QUE le rapport opposable. */
   .nv-no-print {
     display: none !important;
   }
-  body {
+  main {
+    display: none !important;
+  }
+  .nv-print-only {
+    display: block !important;
+  }
+  @page {
+    size: A4;
+    margin: 16mm 14mm;
+  }
+  html,
+  body,
+  #root {
+    min-height: 0;
     background: #fff;
     color: var(--color-zinc-950);
   }
+  /* Force le rendu des couleurs (badges, bannière verdict) à l'impression. */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
   .nv-print-break {
     break-before: page;
+  }
+  .nv-print-avoid {
+    break-inside: avoid;
   }
 }
 

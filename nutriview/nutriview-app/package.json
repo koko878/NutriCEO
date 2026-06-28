@@ -1,7 +1,7 @@
 {
   "name": "nutriview-app",
   "private": true,
-  "version": "0.5.0",
+  "version": "0.6.0",
   "type": "module",
   "description": "NutriView — assistant de classification DGSSI (OCP Nutricrops · D²nAI). Phases 0-5 : moteur déterministe + ingestion + IA Databricks + workflow signature SHA-256 + inbox propriétaire.",
   "scripts": {
