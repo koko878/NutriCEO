@@ -119,16 +119,34 @@ function dnai_nview_scan_rest( $request ) {
 	}
 
 	$ctype = strtolower( (string) wp_remote_retrieve_header( $res, 'content-type' ) );
-	if ( $ctype !== '' && strpos( $ctype, 'html' ) === false && strpos( $ctype, 'text' ) === false && strpos( $ctype, 'xml' ) === false ) {
+	$is_json = strpos( $ctype, 'json' ) !== false;
+	if ( $ctype !== '' && ! $is_json && strpos( $ctype, 'html' ) === false && strpos( $ctype, 'text' ) === false && strpos( $ctype, 'xml' ) === false ) {
 		return new WP_Error(
 			'unsupported_type',
-			'Type de contenu non exploitable (' . $ctype . '). Attendu HTML/texte.',
+			'Type de contenu non exploitable (' . $ctype . '). Attendu HTML, texte ou JSON (OpenAPI).',
 			array( 'status' => 415 )
 		);
 	}
 
 	$html  = (string) wp_remote_retrieve_body( $res );
 	$bytes = strlen( $html );
+
+	// Contrat de données (OpenAPI/Swagger/JSON) : on renvoie le JSON brut, le
+	// front en extrait les champs. Pas de strip HTML.
+	if ( $is_json ) {
+		$json = $html;
+		if ( function_exists( 'mb_strlen' ) ? mb_strlen( $json, 'UTF-8' ) > DNAI_NVIEW_SCAN_MAX_TEXT : strlen( $json ) > DNAI_NVIEW_SCAN_MAX_TEXT ) {
+			$json = function_exists( 'mb_substr' )
+				? mb_substr( $json, 0, DNAI_NVIEW_SCAN_MAX_TEXT, 'UTF-8' )
+				: substr( $json, 0, DNAI_NVIEW_SCAN_MAX_TEXT );
+		}
+		return array(
+			'url'       => esc_url_raw( $url ),
+			'text'      => $json,
+			'bytes'     => $bytes,
+			'truncated' => false,
+		);
+	}
 
 	// Recode en UTF-8 si la page déclare un autre charset (intranet legacy
 	// en iso-8859-1, windows-1252…) — sinon html_entity_decode UTF-8 produit

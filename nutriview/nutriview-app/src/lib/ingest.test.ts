@@ -4,6 +4,7 @@ import {
   extractFromText,
   extractFromEml,
   extractFromPptx,
+  extractFromJson,
 } from "./ingest";
 
 describe("ingest.extractFromText (heuristique)", () => {
@@ -50,6 +51,49 @@ describe("ingest.extractFromEml", () => {
     const r = extractFromEml(eml);
     expect(r.rawText).toContain("Données RH");
     expect(r.rawText).toContain("Fichier de paie");
+  });
+});
+
+describe("ingest.extractFromJson (contrat de données)", () => {
+  it("OpenAPI : extrait Schema.champ avec description", () => {
+    const oas = JSON.stringify({
+      openapi: "3.0.0",
+      components: {
+        schemas: {
+          Employe: {
+            properties: {
+              nom: { type: "string", description: "Nom complet" },
+              salaire: { type: "number" },
+            },
+          },
+        },
+      },
+    });
+    const r = extractFromJson(oas)!;
+    const names = r.candidates.map((c) => c.name);
+    expect(names).toContain("Employe.nom");
+    expect(names).toContain("Employe.salaire");
+  });
+
+  it("JSON Schema racine : extrait les properties", () => {
+    const schema = JSON.stringify({
+      $schema: "x",
+      title: "Client",
+      properties: { email: { type: "string" }, iban: { type: "string" } },
+    });
+    const names = extractFromJson(schema)!.candidates.map((c) => c.name);
+    expect(names).toContain("email");
+    expect(names).toContain("iban");
+  });
+
+  it("JSON générique (tableau d'objets) : extrait les clés", () => {
+    const arr = JSON.stringify([{ id: 1, nom: "x", montant: 10 }]);
+    const names = extractFromJson(arr)!.candidates.map((c) => c.name);
+    expect(names).toEqual(expect.arrayContaining(["id", "nom", "montant"]));
+  });
+
+  it("renvoie null si ce n'est pas du JSON", () => {
+    expect(extractFromJson("pas du json")).toBeNull();
   });
 });
 

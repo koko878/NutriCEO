@@ -264,6 +264,91 @@ export function extractFromText(input: string): ExtractionResult {
 }
 
 // ---------------------------------------------------------------------------
+// Contrat de données (OpenAPI / JSON Schema / JSON générique).
+// C'est la voie FIABLE pour "scanner une app" : plutôt que scraper un écran,
+// on lit le modèle de données exposé (export Swagger/OpenAPI, schéma, ou un
+// échantillon JSON d'API). Chaque champ devient un objet-donnée candidat.
+// ---------------------------------------------------------------------------
+function jsonFieldDesc(prop: unknown): string {
+  if (!prop || typeof prop !== "object") return "";
+  const p = prop as Record<string, unknown>;
+  const bits: string[] = [];
+  if (typeof p.description === "string" && p.description) bits.push(p.description);
+  else if (typeof p.title === "string" && p.title) bits.push(p.title);
+  if (typeof p.type === "string") bits.push(`type ${p.type}`);
+  if (typeof p.format === "string") bits.push(p.format);
+  return bits.join(" · ");
+}
+
+/**
+ * Tente d'extraire des objets-donnée depuis un contrat JSON.
+ * Renvoie null si le texte n'est pas du JSON exploitable (→ fallback ailleurs).
+ */
+export function extractFromJson(text: string, fileName?: string): ExtractionResult | null {
+  let obj: unknown;
+  try {
+    obj = JSON.parse(text);
+  } catch {
+    return null;
+  }
+  if (!obj || typeof obj !== "object") return null;
+
+  const out: DataItem[] = [];
+  const seen = new Set<string>();
+  const MAX = 300;
+  const push = (name: string, desc: string) => {
+    const n = (name || "").trim();
+    if (!n) return;
+    const key = n.toLowerCase();
+    if (seen.has(key) || out.length >= MAX) return;
+    seen.add(key);
+    out.push(mkItem(n, desc || n, fileName, "json"));
+  };
+
+  const root = obj as Record<string, unknown>;
+  // 1) OpenAPI / Swagger : components.schemas ou definitions.
+  const comps = (root.components as Record<string, unknown> | undefined)?.schemas;
+  const schemas = (comps ?? root.definitions) as Record<string, unknown> | undefined;
+  if (schemas && typeof schemas === "object") {
+    for (const [schemaName, schema] of Object.entries(schemas)) {
+      const props = (schema as Record<string, unknown>)?.properties as
+        | Record<string, unknown>
+        | undefined;
+      if (props && typeof props === "object" && Object.keys(props).length) {
+        for (const [propName, prop] of Object.entries(props)) {
+          push(`${schemaName}.${propName}`, jsonFieldDesc(prop));
+        }
+      } else {
+        push(schemaName, jsonFieldDesc(schema) || "schéma");
+      }
+    }
+    if (out.length) return { rawText: text, candidates: out };
+  }
+
+  // 2) JSON Schema racine unique (properties au top niveau).
+  const topProps = root.properties as Record<string, unknown> | undefined;
+  if (topProps && typeof topProps === "object" && Object.keys(topProps).length) {
+    for (const [propName, prop] of Object.entries(topProps)) {
+      push(propName, jsonFieldDesc(prop));
+    }
+    if (out.length) return { rawText: text, candidates: out };
+  }
+
+  // 3) JSON générique : tableau d'objets → clés ; objet → clés.
+  const sample = Array.isArray(obj)
+    ? (obj.find((x) => x && typeof x === "object") as Record<string, unknown> | undefined)
+    : root;
+  if (sample && typeof sample === "object") {
+    for (const [k, v] of Object.entries(sample)) {
+      push(k, `champ (${Array.isArray(v) ? "array" : typeof v})`);
+    }
+    if (out.length) return { rawText: text, candidates: out };
+  }
+
+  return null;
+}
+
+// ---------------------------------------------------------------------------
 // Extraction "intelligente" depuis un texte (collage / scan d'URL).
 // Si l'IA souveraine est configurée, elle extrait sémantiquement les objets-
 // donnée (toutes langues, sans dépendre d'un marqueur). Sinon, fallback sur
@@ -272,12 +357,20 @@ export function extractFromText(input: string): ExtractionResult {
 // ---------------------------------------------------------------------------
 export interface SmartExtraction {
   candidates: DataItem[];
-  source: "ai" | "heuristic";
+  source: "schema" | "ai" | "heuristic";
   rawText: string;
 }
 
 export async function extractCatalogSmart(text: string): Promise<SmartExtraction> {
   const raw = text || "";
+  // 0) Contrat de données (OpenAPI / JSON Schema / JSON) — le plus fiable.
+  const trimmed = raw.trimStart();
+  if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+    const fromJson = extractFromJson(raw);
+    if (fromJson && fromJson.candidates.length > 0) {
+      return { candidates: fromJson.candidates, source: "schema", rawText: raw };
+    }
+  }
   if (aiAvailable()) {
     try {
       const r = await aiExtractCatalog({ text: raw });

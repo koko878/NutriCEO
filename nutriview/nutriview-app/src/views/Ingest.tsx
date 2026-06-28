@@ -11,6 +11,7 @@ import {
   FilePdf,
   FileDoc,
   FilePpt,
+  FileCode,
   TextAlignLeft,
   Sparkle,
   ShieldCheck,
@@ -25,6 +26,7 @@ import {
   extractFromDocx,
   extractFromEml,
   extractFromExcel,
+  extractFromJson,
   extractFromPdf,
   extractFromPptx,
   extractFromText,
@@ -96,6 +98,11 @@ export function Ingest({ project, onChange, onDone }: Props) {
       } else if (name.endsWith(".pptx")) {
         source = "ppt";
         result = await extractFromPptx(file);
+      } else if (name.endsWith(".json")) {
+        // Contrat de données : OpenAPI / Swagger / JSON Schema / export JSON.
+        source = "text";
+        const txt = await file.text();
+        result = extractFromJson(txt) ?? extractFromText(txt);
       } else if (/\.(png|jpe?g|webp|gif|bmp|tiff?)$/.test(name)) {
         // OCR / vision : nécessite le backend IA souverain (Databricks
         // multimodal). On ne falsifie pas une extraction côté navigateur.
@@ -236,7 +243,7 @@ export function Ingest({ project, onChange, onDone }: Props) {
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !scanning) onScanUrl();
                     }}
-                    placeholder="https://app.nutricrops.com/dashboard"
+                    placeholder="https://app.nutricrops.com/api/openapi.json"
                     className={`w-full rounded-2xl border bg-white px-5 py-3.5 text-[14px] focus:outline-none ${
                       urlErr
                         ? "border-rose-300 focus:border-rose-500"
@@ -264,9 +271,11 @@ export function Ingest({ project, onChange, onDone }: Props) {
                   />
                   <span>
                     Le scan passe par le proxy souverain NutriView (côté serveur
-                    Nutricrops) : il récupère le texte visible de la page et en
-                    extrait les objets-donnée. Aucune navigation depuis votre
-                    poste.
+                    Nutricrops). Le plus fiable : pointez l'URL du contrat de
+                    données de l'app (OpenAPI / Swagger JSON) — NutriView en
+                    extrait chaque champ. À défaut, une page HTML est lue pour
+                    ses libellés. Une SPA rendue côté navigateur peut ne rien
+                    renvoyer.
                   </span>
                 </p>
               </motion.div>
@@ -281,13 +290,14 @@ export function Ingest({ project, onChange, onDone }: Props) {
                 <DropZone
                   onFile={onFile}
                   state={dz}
-                  hint="Excel · PDF · Word · PPT · .eml · texte (≤ 10 Mo)"
+                  hint="Excel · PDF · Word · PPT · JSON/OpenAPI · .eml · texte (≤ 10 Mo)"
                 />
                 <div className="mt-3 flex flex-wrap items-center gap-3 text-[12px] text-zinc-500">
                   <FormatChip icon={<FileXls size={14} weight="duotone" />} label="Excel" />
                   <FormatChip icon={<FilePdf size={14} weight="duotone" />} label="PDF" />
                   <FormatChip icon={<FileDoc size={14} weight="duotone" />} label="Word" />
                   <FormatChip icon={<FilePpt size={14} weight="duotone" />} label="PowerPoint" />
+                  <FormatChip icon={<FileCode size={14} weight="duotone" />} label="JSON / OpenAPI" />
                   <FormatChip icon={<TextAlignLeft size={14} weight="duotone" />} label="Texte / .eml" />
                 </div>
               </motion.div>

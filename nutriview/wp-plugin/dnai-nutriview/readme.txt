@@ -4,7 +4,7 @@ Tags: dgssi, classification, securite, data, ocp, nutricrops
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 0.7.2
+Stable tag: 0.7.3
 License: GPL-2.0-or-later
 
 Assistant DGSSI de classification des données pour OCP Nutricrops (équipe D²nAI). Sert l'application React mono-fichier en plein écran (`/nutriview`) ou via shortcode `[nutriview]`. v0.4 : workflow signature SHA-256 + inbox propriétaire + notifications email.
@@ -31,6 +31,15 @@ NutriView accompagne le chargé de projet sur le parcours complet de classificat
 6. (Optionnel — audit) Outils → NutriView Validations : journal des envois et signatures.
 
 == Changelog ==
+
+= 0.7.3 =
+Ingestion d'un contrat de données (la voie fiable pour « scanner une app ») :
+* Nouveau parseur extractFromJson : OpenAPI / Swagger (components.schemas / definitions → un objet-donnée par champ « Schéma.champ » + description), JSON Schema racine (properties), et JSON générique (clés d'un échantillon d'API). Plutôt que scraper un écran, on lit le modèle de données exposé.
+* Le scan d'URL et le collage de texte détectent et parsent le JSON en priorité (extractCatalogSmart). Pointer l'URL de l'OpenAPI/Swagger de l'app extrait directement tous ses champs.
+* Le proxy de scan accepte désormais application/json et le renvoie brut (passthrough), en plus du HTML.
+* Import de fichier .json reconnu ; formats annoncés : Excel · PDF · Word · PPT · JSON/OpenAPI · texte.
+Tests : extractFromJson (OpenAPI / JSON Schema / générique), E2E scan d'un endpoint openapi.json → 6 champs extraits. Suite 109 verts.
+Note : un endpoint OpenAPI/API protégé par SSO nécessite l'accès authentifié (voir crawler souverain, à venir).
 
 = 0.7.2 =
 Fix : le scan d'URL (et l'import de texte/PDF/Word) renvoyait 0 donnée sur du contenu réel.
