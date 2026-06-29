@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.24.1
+Stable tag: 0.25.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,35 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.25.0 — Review SAI 2e passe (retours Halima) : carte de détail, wizard projet+trial, gouvernance 4 sous-pages =
+Reprise fidèle à la maquette SAI V15 des 3 demandes, après retours de Halima.
+
+* #1 — La carte de DÉTAIL d'un trial (celle qui s'ouvre au clic) est refaite
+  à l'identique de la maquette SAI : stepper 5 étapes (SAI Review / Steering /
+  CEO Approval / Execution / Monitoring Comm.) avec décision/statut par étape,
+  puis 4 blocs Project Identification / Trial Description / Business Use Case /
+  Execution Progress + Reference Protocol. « Open in NutriTrials » conservé.
+  (Le 1er essai avait porté sur la tuile kanban, pas la bonne carte.)
+* #2 — Le wizard « + New Use Case » devient un flux PROJET + trial fidèle à la
+  maquette : Étape 1 Project Identification (projet existant ou nouveau, tous
+  les champs projet), Étape 2 Business Use Case niveau projet (marché P₂O₅,
+  competition, targeted products, demand creation, market share, impact éco
+  agriculteurs), Étape 3 Trial Description (classe, type, partenaire+type, site,
+  produits OCP/collaborateurs/concurrents, protocole…). La soumission crée ou
+  met à jour un PROJET puis crée le trial rattaché ; les métriques alimentent la
+  carte de détail.
+* #3 — La Gouvernance est réorganisée en 4 sous-pages distinctes (sous-nav avec
+  compteur) : SAI Review, Steering Committee, CEO Approval, Monitoring Committee.
+  Chaque sous-page = son instance seule (vue projet → trials, décision +
+  commentaire par membre, répartition des décisions en %). CEO Approval est une
+  vraie sous-page (portfolio par entité × région). RACI en référence.
+* Master / référence : Types de partenaire désormais administrables (Admin >
+  Référentiel), en plus des régions/pays et du vocabulaire de décision déjà
+  éditables. Aucune donnée inventée : les champs non saisis s'affichent « — ».
+* i18n FR/EN/PT pour tous les nouveaux libellés (carte détail, wizard, gouv).
+  Tests : 5 smokes Playwright (carte détail, wizard projet+trial, gouvernance
+  4 onglets, admin référentiels, portfolio) verts + non-régression.
 
 = 0.24.1 — Code review Review SAI + données master/référence administrables =
 Passe de revue end-to-end sur la v0.24.0 + mise en administrable de toutes les
