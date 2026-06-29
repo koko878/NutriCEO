@@ -394,6 +394,37 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .gov-dist-lg b{color:var(--green-800)}
 
 /* v0.22 — Enriched trial card (Project Desc / Business Case / Trial Desc / Status) */
+/* Review SAI #1 — carte de détail façon maquette SAI (stepper + record-cols) */
+.proc-track{display:flex;align-items:flex-start;gap:0;margin:18px 0 22px;padding:0 4px}
+.proc-step{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;padding:0 4px}
+.proc-step:not(:last-child)::after{content:"";position:absolute;top:15px;left:calc(50% + 18px);right:calc(-50% + 18px);height:2px;background:#e7eee9;z-index:0}
+.proc-step.done:not(:last-child)::after{background:var(--green-300)}
+.proc-node{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font:800 13px 'Inter';position:relative;z-index:1;background:#fff;border:2px solid #d9e3dc;color:#bcc8c0}
+.proc-step.done .proc-node{background:var(--green-600);border-color:var(--green-600);color:#fff}
+.proc-step.curr .proc-node{background:#fff;border-color:#c8961f;color:#c8961f;box-shadow:0 0 0 4px #fdf3df}
+.proc-label{margin-top:7px;font:700 11.5px 'Inter';color:#bcc8c0;line-height:1.25}
+.proc-step.done .proc-label{color:var(--green-800)}
+.proc-step.curr .proc-label{color:#c8961f}
+.proc-sub{margin-top:2px;font:600 10.5px 'Inter';color:#c2cdc6}
+.proc-step.done .proc-sub{color:var(--green-600)}
+.proc-step.curr .proc-sub{color:#c8961f}
+.record-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.record-col{display:flex;flex-direction:column;gap:16px}
+.record-section{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.record-section>h4{margin:0 0 12px;font:800 12px 'Inter';letter-spacing:.05em;text-transform:uppercase;color:var(--green-800);padding-bottom:9px;border-bottom:1px solid var(--line)}
+.dl-list{display:flex;flex-direction:column}
+.dl-item{display:grid;grid-template-columns:42% 1fr;gap:10px;padding:5px 0;border-bottom:1px dotted #eef3f0;align-items:baseline}
+.dl-item:last-child{border-bottom:none}
+.dl-item.full{grid-template-columns:1fr}
+.dl-label{font:600 11.5px 'Inter';color:var(--muted);text-transform:none}
+.dl-value{font:600 12.5px 'Inter';color:var(--ink);word-break:break-word}
+.dl-item.full .dl-value{font-weight:500;line-height:1.5;margin-top:3px}
+.protocol-dl{display:flex;align-items:center;gap:10px;background:var(--green-25,#f6faf7);border:1px solid var(--line);border-radius:9px;padding:9px 12px}
+.protocol-dl .proto-ico{font-size:18px}
+.protocol-dl .proto-info{flex:1;min-width:0}
+.protocol-dl .proto-name{font:700 12px 'Inter';color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.protocol-dl .proto-sub{font:500 11px 'Inter';color:var(--muted)}
+@media (max-width:780px){.record-cols{grid-template-columns:1fr}.proc-label{font-size:10px}.proc-sub{display:none}}
 .uc-blocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:18px}
 .uc-block{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
 .uc-block-h{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:9px;border-bottom:1px solid var(--line)}
@@ -2959,6 +2990,13 @@ fr:{
  'gov.dist.aligned':'Aligné','gov.dist.notaligned':'Non aligné','gov.dist.review':'À revoir','gov.dist.pending':'En attente',
  'gov.dist.reviewed':'Revu','gov.dist.rework':'À retravailler','gov.dist.go':'Go','gov.dist.hold':'Hold','gov.dist.kill':'Kill',
  'track.sai':'SAI','track.steering':'Steering','track.ceo':'CEO','track.exec':'Exéc.','track.monitor':'Suivi',
+ 'det.pending':'En attente','det.reviewed':'Revu','det.approved':'Approuvé','det.completed':'Terminé','det.inprogress':'En cours','det.done':'Clôturé','det.ceo':'CEO Approval','det.moncom':'Monitoring Comm.','det.yrs':'ans',
+ 'det.projId':'Project Identification','det.buc':'Business Use Case','det.trial':'Trial Description','det.exec':'Execution Progress',
+ 'det.f.projid':'ID projet','det.f.projtitle':'Titre du projet','det.f.entity':'Entité','det.f.regcountry':'Région / Pays','det.f.crop':'Culture','det.f.partner':'Partenaire / Fournisseur','det.f.contract':'Statut contrat','det.f.strat':'Ligne stratégique','det.f.plead':'Chef de projet','det.f.powner':'Propriétaire projet','det.f.pstart':'Début projet','det.f.pend':'Fin projet','det.f.dur':'Durée','det.f.budget':'Budget','det.f.obj':'Objectif','det.f.pdesc':'Description projet',
+ 'det.f.area':'Surface culture (ha)','det.f.curp':'P₂O₅ actuel (kg/ha)','det.f.potp':'P₂O₅ potentiel (kg/ha)','det.f.reach':'Cible déploiement (ha)','det.f.ty':'Rendement cible','det.f.ry':'Rendement référence','det.f.impr':'% gain rendement','det.f.vcr':'VCR (ROI agriculteur)','det.f.conf':'Confiance','det.f.src':'Source information','det.f.cmt':'Commentaire',
+ 'det.f.tclass':'Classe de trial','det.f.ttype':'Type de trial','det.f.tlead':'Responsable trial','det.f.site':'Site','det.f.sy':'Année début','det.f.ey':'Année fin','det.f.tstatus':'Statut trial','det.f.turg':'Urgence','det.f.tested':'Déjà testé ?','det.f.prior':'ID essai antérieur','det.f.opobj':'Objectifs opérationnels','det.f.hyp':'Hypothèse','det.f.ocp':'Produits OCP','det.f.collab':'Produits collaborateurs','det.f.compet':'Produits concurrents','det.f.proto':'Protocole de référence',
+ 'det.f.installed':'Installé / Planté','det.f.datacol':'Collecte de données','det.f.ph':'Données post-récolte','det.f.analysis':'Analyse',
+ 'det.proto.link':'Lien protocole','det.proto.sub':'Protocole déposé par le trial owner','det.proto.open':'Ouvrir ↗','det.proto.dl':'Télécharger','det.proto.none':'Pas de protocole déposé',
  'adm.gov.dec.h':'Vocabulaire de décision','adm.gov.dec.sub':'— libellés & couleurs par instance','adm.gov.dec.help':"Renomme et recolore les options de décision vues par les comités (ex. « Aligné » plutôt que « Go »). Les clés techniques restent fixes car elles pilotent le flux de statut.",
  'adm.gov.dec.sai':'Revue SAI','adm.gov.dec.steering':'Steering','adm.gov.dec.monitoring':'Monitoring','adm.gov.dec.label':'Libellé','adm.gov.dec.color':'Couleur',
  'adm.r.regions':'Régions / pays (par BU)',
@@ -3367,6 +3405,13 @@ en:{
  'gov.dist.aligned':'Aligned','gov.dist.notaligned':'Not Aligned','gov.dist.review':'Need Review','gov.dist.pending':'Pending',
  'gov.dist.reviewed':'Reviewed','gov.dist.rework':'Rework','gov.dist.go':'Go','gov.dist.hold':'Hold','gov.dist.kill':'Kill',
  'track.sai':'SAI','track.steering':'Steering','track.ceo':'CEO','track.exec':'Exec','track.monitor':'Monitor',
+ 'det.pending':'Pending','det.reviewed':'Reviewed','det.approved':'Approved','det.completed':'Completed','det.inprogress':'In progress','det.done':'Closed','det.ceo':'CEO Approval','det.moncom':'Monitoring Comm.','det.yrs':'yrs',
+ 'det.projId':'Project Identification','det.buc':'Business Use Case','det.trial':'Trial Description','det.exec':'Execution Progress',
+ 'det.f.projid':'Project ID','det.f.projtitle':'Project Title','det.f.entity':'Entity','det.f.regcountry':'Region / Country','det.f.crop':'Crop','det.f.partner':'Partner / Vendor','det.f.contract':'Contract Status','det.f.strat':'Strategic Line','det.f.plead':'Project Lead','det.f.powner':'Project Owner','det.f.pstart':'Project Start','det.f.pend':'Project End','det.f.dur':'Duration','det.f.budget':'Budget','det.f.obj':'Objective','det.f.pdesc':'Project Description',
+ 'det.f.area':'Crop Area (ha)','det.f.curp':'Current P₂O₅ (kg/ha)','det.f.potp':'Potential P₂O₅ (kg/ha)','det.f.reach':'Target Reach (ha)','det.f.ty':'Target Yield','det.f.ry':'Reference Yield','det.f.impr':'% Yield Improvement','det.f.vcr':'VCR (Farmer ROI)','det.f.conf':'Confidence','det.f.src':'Information Source','det.f.cmt':'Comment',
+ 'det.f.tclass':'Trial Class','det.f.ttype':'Trial Type','det.f.tlead':'Trial Lead','det.f.site':'Site','det.f.sy':'Start Year','det.f.ey':'End Year','det.f.tstatus':'Trial Status','det.f.turg':'Trial Urgency','det.f.tested':'Was Tested Before?','det.f.prior':'Prior Trial ID','det.f.opobj':'Operational Objectives','det.f.hyp':'Hypothesis','det.f.ocp':'OCP Products to Use','det.f.collab':"Collaborators' Products",'det.f.compet':"Competitors' Products",'det.f.proto':'Reference Protocol',
+ 'det.f.installed':'Installed / Planted','det.f.datacol':'Data Collection','det.f.ph':'Post-Harvest Data','det.f.analysis':'Analysis',
+ 'det.proto.link':'Protocol link','det.proto.sub':'Protocol uploaded by trial owner','det.proto.open':'Open ↗','det.proto.dl':'Download','det.proto.none':'No protocol uploaded yet',
  'adm.gov.dec.h':'Decision vocabulary','adm.gov.dec.sub':'— labels & colors per body','adm.gov.dec.help':'Rename and recolor the decision options committees see (e.g. "Aligned" instead of "Go"). Technical keys stay fixed because they drive the status flow.',
  'adm.gov.dec.sai':'SAI Review','adm.gov.dec.steering':'Steering','adm.gov.dec.monitoring':'Monitoring','adm.gov.dec.label':'Label','adm.gov.dec.color':'Color',
  'adm.r.regions':'Regions / countries (by BU)',
@@ -3772,6 +3817,13 @@ pt:{
  'gov.dist.aligned':'Alinhado','gov.dist.notaligned':'Não alinhado','gov.dist.review':'A revisar','gov.dist.pending':'Pendente',
  'gov.dist.reviewed':'Revisado','gov.dist.rework':'Retrabalho','gov.dist.go':'Go','gov.dist.hold':'Hold','gov.dist.kill':'Kill',
  'track.sai':'SAI','track.steering':'Steering','track.ceo':'CEO','track.exec':'Exec.','track.monitor':'Acomp.',
+ 'det.pending':'Pendente','det.reviewed':'Revisado','det.approved':'Aprovado','det.completed':'Concluído','det.inprogress':'Em curso','det.done':'Encerrado','det.ceo':'Aprovação CEO','det.moncom':'Comitê de Acomp.','det.yrs':'anos',
+ 'det.projId':'Identificação do Projeto','det.buc':'Business Use Case','det.trial':'Descrição do Trial','det.exec':'Progresso de Execução',
+ 'det.f.projid':'ID do projeto','det.f.projtitle':'Título do projeto','det.f.entity':'Entidade','det.f.regcountry':'Região / País','det.f.crop':'Cultura','det.f.partner':'Parceiro / Fornecedor','det.f.contract':'Status do contrato','det.f.strat':'Linha estratégica','det.f.plead':'Líder do projeto','det.f.powner':'Proprietário do projeto','det.f.pstart':'Início do projeto','det.f.pend':'Fim do projeto','det.f.dur':'Duração','det.f.budget':'Orçamento','det.f.obj':'Objetivo','det.f.pdesc':'Descrição do projeto',
+ 'det.f.area':'Área de cultura (ha)','det.f.curp':'P₂O₅ atual (kg/ha)','det.f.potp':'P₂O₅ potencial (kg/ha)','det.f.reach':'Meta de alcance (ha)','det.f.ty':'Rendimento alvo','det.f.ry':'Rendimento referência','det.f.impr':'% ganho rendimento','det.f.vcr':'VCR (ROI agricultor)','det.f.conf':'Confiança','det.f.src':'Fonte de informação','det.f.cmt':'Comentário',
+ 'det.f.tclass':'Classe do trial','det.f.ttype':'Tipo de trial','det.f.tlead':'Responsável do trial','det.f.site':'Local','det.f.sy':'Ano início','det.f.ey':'Ano fim','det.f.tstatus':'Status do trial','det.f.turg':'Urgência','det.f.tested':'Já testado?','det.f.prior':'ID ensaio anterior','det.f.opobj':'Objetivos operacionais','det.f.hyp':'Hipótese','det.f.ocp':'Produtos OCP','det.f.collab':'Produtos colaboradores','det.f.compet':'Produtos concorrentes','det.f.proto':'Protocolo de referência',
+ 'det.f.installed':'Instalado / Plantado','det.f.datacol':'Coleta de dados','det.f.ph':'Dados pós-colheita','det.f.analysis':'Análise',
+ 'det.proto.link':'Link do protocolo','det.proto.sub':'Protocolo enviado pelo trial owner','det.proto.open':'Abrir ↗','det.proto.dl':'Baixar','det.proto.none':'Nenhum protocolo enviado',
  'adm.gov.dec.h':'Vocabulário de decisão','adm.gov.dec.sub':'— rótulos & cores por instância','adm.gov.dec.help':'Renomeie e recolora as opções de decisão vistas pelos comitês (ex. "Alinhado" em vez de "Go"). As chaves técnicas permanecem fixas pois pilotam o fluxo de status.',
  'adm.gov.dec.sai':'Revisão SAI','adm.gov.dec.steering':'Steering','adm.gov.dec.monitoring':'Monitoring','adm.gov.dec.label':'Rótulo','adm.gov.dec.color':'Cor',
  'adm.r.regions':'Regiões / países (por BU)',
@@ -6934,6 +6986,38 @@ function renderTable(list){
 /* -----------------------------------------------------------------
  * 7. USE CASE DETAIL MODAL
  * --------------------------------------------------------------- */
+// Review SAI #1 — carte de détail façon maquette SAI : ligne de description
+// (label / valeur) avec repli « — » si la donnée n'est pas encore saisie.
+function ucDl(label, value, full){
+  const v = (value!==undefined && value!==null && value!=='') ? value : '—';
+  return `<div class="dl-item${full?' full':''}"><span class="dl-label">${label}</span><span class="dl-value">${v}</span></div>`;
+}
+function _yr(d){ if(!d) return ''; const m=String(d).match(/\d{4}/); return m?m[0]:''; }
+// Stepper 5 étapes du parcours gouvernance d'un trial (SAI → Steering → CEO →
+// Exécution → Monitoring), états done/current/todo + sous-libellé par étape.
+function ucDetailStepper(u){
+  const phase = (typeof npGatePhase==='function') ? npGatePhase(u.status) : 1;
+  const chk = '<svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2.6" width="14" height="14"><path d="M4 10l4 4 8-8"/></svg>';
+  const pend = tr('det.pending','En attente');
+  const decLbl = (body, dec, fallbackDone) => dec ? (typeof govDecLabel==='function'?govDecLabel(body,dec):dec) : fallbackDone;
+  const subs = [
+    decLbl('sai', u._saiDecision&&u._saiDecision.decision, phase>1?tr('det.reviewed','Revu'):pend),
+    decLbl('steering', u._steeringDecision&&u._steeringDecision.decision, phase>2?tr('det.approved','Approuvé'):pend),
+    (u._ceoDecision||phase>3) ? tr('det.approved','Approuvé') : pend,
+    phase>4 ? tr('det.completed','Terminé') : (phase===4 ? tr('det.inprogress','En cours') : '—'),
+    decLbl('monitoring', u._monitoringDecision&&u._monitoringDecision.decision, phase>5?tr('det.done','Clôturé'):pend),
+  ];
+  const labels = [tr('track.sai','SAI Review'), tr('track.steering','Steering Committee'), tr('det.ceo','CEO Approval'), tr('track.exec','Execution'), tr('det.moncom','Monitoring Comm.')];
+  return `<div class="proc-track">${labels.map((lab,i)=>{
+    const n=i+1, done=n<phase, curr=n===phase;
+    const nodeCls = done?'done':(curr?'curr':'todo');
+    return `<div class="proc-step ${nodeCls}">
+      <div class="proc-node">${done?chk:n}</div>
+      <div class="proc-label">${lab}</div>
+      <div class="proc-sub">${n<=phase?subs[i]:(n===phase?subs[i]:'—')}</div>
+    </div>`;
+  }).join('')}</div>`;
+}
 function openUc(id){
   const u = ucById(id); if(!u) return;
   if (typeof COACH !== 'undefined') COACH.flag('uc-opened');
@@ -6958,123 +7042,86 @@ function openUc(id){
       </div>
       <button class="x" onclick="closeUc()" title="${tr('uc.close')}" aria-label="${tr('uc.close')}">✕</button>
     </div>
-    <!-- v0.22 — Trial card enrichie : Project Desc · Business Case · Trial Desc · Status (retour Halima #2) -->
-    <div class="uc-blocks">
-      ${(()=>{ const pd = ucProjectDescription(u); return `
-        <div class="uc-block">
-          <div class="uc-block-h">
-            <span class="uc-block-ico">📁</span>
-            <span class="uc-block-t">${tr('uc.bk.project')||'Project description'}</span>
-          </div>
-          <div class="uc-block-body">
-            ${pd.parent_project ? `<div class="kv"><b>${tr('uc.bk.parent')||'Parent'}</b><span><b>${escapeHtml(pd.parent_project.id)}</b> — ${escapeHtml(pd.parent_project.title)}</span></div>` : `<div class="muted" style="font-size:12px;font-style:italic">${tr('uc.bk.noProject')||'Trial sans projet parent'}</div>`}
-            <div class="kv" style="margin-top:6px">
-              <b>BU</b><span>${escapeHtml(buOf(pd.bu).nm)}</span>
-              <b>${tr('uc.bk.region')||'Région'}</b><span>${escapeHtml(pd.region||'—')}</span>
-            </div>
-            ${pd.rationale ? `<p style="margin:10px 0 0;font-size:12.5px;line-height:1.55">${escapeHtml(pd.rationale)}</p>` : ''}
-          </div>
-        </div>`; })()}
-      ${(()=>{ const bc = ucBusinessCase(u); return `
-        <div class="uc-block">
-          <div class="uc-block-h">
-            <span class="uc-block-ico">📊</span>
-            <span class="uc-block-t">${tr('uc.bk.bcase')||'Business case'}</span>
-          </div>
-          <div class="uc-block-body">
-            <div class="kv">
-              <b>${tr('uc.bk.market')||'Marché'}</b><span>${escapeHtml(bc.p_market?.country || u.region || '—')} · ${escapeHtml(bc.p_market?.crop || u.crop || '—')}</span>
-              <b>${tr('uc.bk.budget')||'Budget'}</b><span>${fmtMoney(u.budget)}</span>
-              <b>${tr('uc.bk.partner')||'Partenaire'}</b><span>${escapeHtml(u.partner||'—')}</span>
-              ${bc.design?.expectedYield ? `<b>${tr('uc.bk.expectedY')||'Uplift visé'}</b><span>${escapeHtml(bc.design.expectedYield)}</span>` : ''}
-              ${bc.eco?.co2Reduction ? `<b>${tr('uc.bk.co2')||'CO₂ évité'}</b><span>${escapeHtml(bc.eco.co2Reduction)}</span>` : ''}
-            </div>
-            ${(bc.p_market?.competitors||[]).length ? `<p style="margin:10px 0 0;font-size:11.5px;color:var(--muted)">${(bc.p_market.competitors||[]).length} ${tr('uc.bk.competitors')||'concurrents mappés'}</p>` : ''}
-          </div>
-        </div>`; })()}
-      ${(()=>{ const td = ucTrialDescription(u); return `
-        <div class="uc-block">
-          <div class="uc-block-h">
-            <span class="uc-block-ico">🔬</span>
-            <span class="uc-block-t">${tr('uc.bk.trial')||'Trial description'}</span>
-          </div>
-          <div class="uc-block-body">
-            <div class="kv">
-              <b>${tr('uc.bk.plan')||'Plan'}</b><span>${td.treatments||0}T × ${td.replications||0}R</span>
-              <b>${tr('uc.bk.window')||'Fenêtre'}</b><span>${fmtDate(td.start_date)} → ${fmtDate(td.end_date)}</span>
-              <b>${tr('uc.bk.mds')||'MDS'}</b><span>${(td.mds_covered||[]).length}/${MDS_ITEMS.length}</span>
-            </div>
-            ${td.objective_primary ? `<p style="margin:10px 0 6px;font-size:12.5px;line-height:1.5">${escapeHtml(td.objective_primary)}</p>` : ''}
-            ${td.protocol ? `<a class="uc-block-dl" onclick="event.stopPropagation();toast(tr('uc.bk.dlPending')||'Téléchargement à venir (protocole stocké côté serveur)','ok')">⬇ ${tr('uc.bk.dlProto')||'Protocole'} (${escapeHtml(td.protocol)})</a>` : `<span class="muted" style="font-size:11.5px;font-style:italic">${tr('uc.bk.noProto')||'Pas de protocole attaché'}</span>`}
-          </div>
-        </div>`; })()}
-      <div class="uc-block">
-        <div class="uc-block-h">
-          <span class="uc-block-ico">🎯</span>
-          <span class="uc-block-t">${tr('uc.bk.status')||'Statut'}</span>
-        </div>
-        <div class="uc-block-body">
-          <div style="margin-bottom:8px"><span class="pill ${st.pill}" style="font-size:13px;padding:4px 10px">${stLbl(st)}</span></div>
-          <div class="kv">
-            <b>${tr('uc.bk.type')||'Type'}</b><span>${tyLbl(ty)}</span>
-            <b>${tr('uc.bk.prio')||'Priorité'}</b><span>${prLbl(pr)}</span>
-            <b>${tr('uc.bk.ft')||'Fast track'}</b><span>${u.fast_track?'<b style="color:#a01f1f">'+tr('badge.ft')+'</b>':tr('uc.bk.std')||'Standard'}</span>
-            <b>${tr('uc.bk.gates')||'Gates'}</b><span>${(u.gates||[]).filter(g=>g.status==='done').length}/${(u.gates||[]).length} ${tr('uc.bk.done')||'terminés'}</span>
+    <!-- Review SAI #1 — Trial Card = maquette SAI : stepper 5 étapes + 4 blocs -->
+    ${ucDetailStepper(u)}
+    <div class="record-cols">
+      <div class="record-col">
+        ${(()=>{ const p = ((typeof projById==='function' && projById(u.project_id)) || {}); const td = u.trial_description||{}; return `
+        <div class="record-section">
+          <h4>${tr('det.projId','Project Identification')}</h4>
+          <div class="dl-list">
+            ${ucDl(tr('det.f.projid','Project ID'), escapeHtml(u.project_id||''))}
+            ${ucDl(tr('det.f.projtitle','Project Title'), escapeHtml(p.title||''))}
+            ${ucDl(tr('det.f.entity','Entity'), escapeHtml(buOf(u.bu).nm))}
+            ${ucDl(tr('det.f.regcountry','Region / Country'), escapeHtml(u.region||'') + (td.country?(' — '+escapeHtml(td.country)):''))}
+            ${ucDl(tr('det.f.crop','Crop'), escapeHtml(u.crop||''))}
+            ${ucDl(tr('det.f.partner','Partner / Vendor'), escapeHtml(u.partner||''))}
+            ${ucDl(tr('det.f.contract','Contract Status'), escapeHtml(p.contract_status||''))}
+            ${ucDl(tr('det.f.strat','Strategic Line'), escapeHtml(p.strategic_line||''))}
+            ${ucDl(tr('det.f.plead','Project Lead'), escapeHtml(p.lead||''))}
+            ${ucDl(tr('det.f.powner','Project Owner'), escapeHtml(p.owner||''))}
+            ${ucDl(tr('det.f.pstart','Project Start'), p.start_date?fmtDate(p.start_date):'')}
+            ${ucDl(tr('det.f.pend','Project End'), p.end_date?fmtDate(p.end_date):'')}
+            ${ucDl(tr('det.f.dur','Duration'), p.duration_years?(p.duration_years+' '+tr('det.yrs','ans')):'')}
+            ${ucDl(tr('det.f.budget','Budget'), p.budget?fmtMoney(p.budget):'')}
+            ${ucDl(tr('det.f.obj','Objective'), escapeHtml(p.objective||''), true)}
+            ${ucDl(tr('det.f.pdesc','Project Description'), escapeHtml(p.description||''), true)}
           </div>
         </div>
+        <div class="record-section">
+          <h4>${tr('det.buc','Business Use Case')}</h4>
+          <div class="dl-list">
+            ${ucDl(tr('det.f.area','Crop Area (ha)'), (u.business_case&&u.business_case.buc&&u.business_case.buc.cropArea))}
+            ${ucDl(tr('det.f.curp','Current P₂O₅ (kg/ha)'), (u.business_case&&u.business_case.buc&&u.business_case.buc.currentP2O5))}
+            ${ucDl(tr('det.f.potp','Potential P₂O₅ (kg/ha)'), (u.business_case&&u.business_case.buc&&u.business_case.buc.potentialP2O5))}
+            ${ucDl(tr('det.f.reach','Target Reach (ha)'), (u.business_case&&u.business_case.buc&&u.business_case.buc.targetReach))}
+            ${ucDl(tr('det.f.ty','Target Yield'), (u.business_case&&u.business_case.buc&&u.business_case.buc.targetYield))}
+            ${ucDl(tr('det.f.ry','Reference Yield'), (u.business_case&&u.business_case.buc&&u.business_case.buc.refYield))}
+            ${ucDl(tr('det.f.impr','% Yield Improvement'), (u.business_case&&u.business_case.buc&&u.business_case.buc.improvement))}
+            ${ucDl(tr('det.f.vcr','VCR (Farmer ROI)'), (u.business_case&&u.business_case.buc&&u.business_case.buc.vcr))}
+            ${ucDl(tr('det.f.conf','Confidence'), (u.business_case&&u.business_case.buc&&u.business_case.buc.confidence))}
+            ${ucDl(tr('det.f.src','Information Source'), escapeHtml((u.business_case&&u.business_case.buc&&u.business_case.buc.infoSource)||''), true)}
+            ${ucDl(tr('det.f.cmt','Comment'), escapeHtml((u.business_case&&u.business_case.buc&&u.business_case.buc.comment)||''), true)}
+          </div>
+        </div>`; })()}
       </div>
-    </div>
-    <div class="modal-body">
-      <div>
-        <div class="uc-grid">
-          <div class="uc-cell"><div class="lbl">${tr('uc.start')}</div><div class="val">${fmtDate(u.start_date)}</div></div>
-          <div class="uc-cell"><div class="lbl">${tr('uc.end')}</div><div class="val">${fmtDate(u.end_date)}</div></div>
-          <div class="uc-cell"><div class="lbl">${tr('uc.budget')}</div><div class="val">${fmtMoney(u.budget)}</div></div>
-          <div class="uc-cell"><div class="lbl">${tr('uc.partner')}</div><div class="val">${escapeHtml(u.partner||'—')}</div></div>
-          <div class="uc-cell"><div class="lbl">${tr('uc.sai')}</div><div class="val">${escapeHtml(u.sai_lead||'—')}</div></div>
-          <div class="uc-cell"><div class="lbl">${tr('uc.plan')}</div><div class="val">${trf('uc.plan.fmt',{t:u.treatments, r:u.replications})}</div></div>
-          <div class="uc-cell"><div class="lbl">${tr('uc.class')}</div><div class="val">${tr(classOf(u.trial_class).lblK)} <span class="muted" style="font-weight:500">— ${tr(trialTypeOf(u.trial_class,u.trial_type).lblK)} (${classOf(u.trial_class).trl})</span></div></div>
-          <div class="uc-cell"><div class="lbl">${tr('uc.partnerSetup')}</div><div class="val">${tr(psOf(u.partner_setup).lblK)}</div></div>
-          <div class="uc-cell" style="grid-column:1/-1"><div class="lbl">${tr('uc.strategicObj')}</div><div class="val" style="display:flex;flex-wrap:wrap;gap:6px;font-weight:500">${(u.strategic_objectives||[]).map(soId=>{const so=soOf(soId);return `<span class="pill" style="background:var(--green-50);color:var(--green-800)">${so.ico} ${tr(so.lblK)}</span>`;}).join('')}</div></div>
-          ${(u.ic_issues||[]).length?`<div class="uc-cell" style="grid-column:1/-1"><div class="lbl">${tr('uc.icIssues')}</div><div class="val" style="display:flex;flex-wrap:wrap;gap:6px;font-weight:500">${u.ic_issues.map(ic=>`<span class="pill" style="background:var(--bad-bg);color:var(--bad)">⚠ ${ic}</span>`).join('')}</div></div>`:''}
+      <div class="record-col">
+        ${(()=>{ const td = u.trial_description||{}; const bc = u.business_case||{}; const proto = td.reference_url||td.protocol; const isLink = proto && /^https?:/i.test(proto); return `
+        <div class="record-section">
+          <h4>${tr('det.trial','Trial Description')}</h4>
+          <div class="dl-list">
+            ${ucDl(tr('det.f.tclass','Trial Class'), tr(classOf(u.trial_class).lblK))}
+            ${ucDl(tr('det.f.ttype','Trial Type'), tyLbl(typeOf(u.type)))}
+            ${ucDl(tr('det.f.tlead','Trial Lead'), escapeHtml(td.lead||u.sai_lead||''))}
+            ${ucDl(tr('det.f.site','Site'), escapeHtml(td.site||''))}
+            ${ucDl(tr('det.f.sy','Start Year'), _yr(u.start_date))}
+            ${ucDl(tr('det.f.ey','End Year'), _yr(u.end_date))}
+            ${ucDl(tr('det.f.tstatus','Trial Status'), stLbl(statusOf(u.status)))}
+            ${ucDl(tr('det.f.turg','Trial Urgency'), prLbl(prioOf(u.priority)))}
+            ${ucDl(tr('det.f.tested','Was Tested Before?'), td.tested_before===true?tr('in.opt.yes','Oui'):(td.tested_before===false?tr('in.opt.no','Non'):''))}
+            ${td.tested_before===true ? ucDl(tr('det.f.prior','Prior Trial ID'), escapeHtml(td.prior_trial_id||'')) : ''}
+            ${ucDl(tr('det.f.opobj','Operational Objectives'), escapeHtml(u.objective_primary||''), true)}
+            ${ucDl(tr('det.f.hyp','Hypothesis'), escapeHtml((bc.design&&bc.design.hypothesis)||''), true)}
+            ${ucDl(tr('det.f.ocp','OCP Products to Use'), escapeHtml(td.ocp_products||u.product||''), true)}
+            ${ucDl(tr('det.f.collab',"Collaborators' Products"), escapeHtml(td.collaborators_products||''), true)}
+            ${ucDl(tr('det.f.compet',"Competitors' Products"), escapeHtml(td.competitors_products||''), true)}
+          </div>
+          <div style="margin-top:12px">
+            <span class="dl-label" style="display:block;margin-bottom:5px">${tr('det.f.proto','Reference Protocol')}</span>
+            ${proto
+              ? `<div class="protocol-dl"><span class="proto-ico">${isLink?'🔗':'📎'}</span><div class="proto-info"><div class="proto-name">${escapeHtml(isLink?tr('det.proto.link','Lien protocole'):proto)}</div><div class="proto-sub">${isLink?escapeHtml(proto):tr('det.proto.sub','Protocole déposé par le trial owner')}</div></div>${isLink?`<a class="btn sm ghost" href="${escapeHtml(proto)}" target="_blank" rel="noopener">${tr('det.proto.open','Ouvrir ↗')}</a>`:`<a class="btn sm ghost" href="#" onclick="event.preventDefault();toast(tr('uc.bk.dlPending','Téléchargement à venir (protocole côté serveur)'),'ok')">⬇ ${tr('det.proto.dl','Télécharger')}</a>`}</div>`
+              : `<span class="muted" style="font-size:12px;font-style:italic">${tr('det.proto.none','Pas de protocole déposé')}</span>`}
+          </div>
         </div>
-
-        <div class="uc-sect">
-          <h4>${tr('uc.objP')}</h4>
-          <p>${escapeHtml(u.objective_primary)}</p>
-        </div>
-        <div class="uc-sect">
-          <h4>${tr('uc.objS')}</h4>
-          <ul style="margin:4px 0 0 16px;padding:0">${(u.objectives_secondary||[]).map(o=>`<li style="font-size:13.5px;color:var(--ink-2);margin-bottom:4px">${escapeHtml(o)}</li>`).join('')}</ul>
-        </div>
-        <div class="uc-sect">
-          <h4>${tr('uc.kpiP')}</h4>
-          <div class="uc-kpi">${(u.kpis_primary||[]).map(k=>`<div class="it"><div class="k">${escapeHtml(k.k)}</div><div class="v">${escapeHtml(k.target||'—')}</div></div>`).join('')}</div>
-        </div>
-        <div class="uc-sect">
-          <h4>${tr('uc.kpiS')}</h4>
-          <div class="uc-kpi">${(u.kpis_secondary||[]).map(k=>`<div class="it"><div class="k">${escapeHtml(k.k)}</div><div class="v muted">—</div></div>`).join('')}</div>
-        </div>
-        <div class="uc-sect">
-          <h4>${tr('uc.risks')}</h4>
-          <ul style="margin:4px 0 0 16px;padding:0">${(u.risks||[]).map(r=>`<li style="font-size:13.5px;color:var(--ink-2);margin-bottom:4px">${escapeHtml(r)}</li>`).join('')}</ul>
-        </div>
-      </div>
-      <div>
-        <div class="uc-sect" style="margin-top:0">
-          <h4>${tr('uc.gates')}</h4>
-          <div class="gate-list">${(u.gates||[]).map(g=>{
-            const cls = g.status==='done'?'done':(g.status==='current'?'cur':'');
-            const decCls = g.decision==='go'?'go':(g.decision==='hold'?'hold':(g.decision==='kill'?'kill':''));
-            const decLbl = g.decision==='go'?tr('uc.go'):(g.decision==='hold'?tr('uc.hold'):(g.decision==='kill'?tr('uc.kill'):''));
-            const icoTxt = g.status==='done'?'✓':(g.status==='current'?'•':' ');
-            return `<div class="gate-it ${cls}"><div class="ico">${icoTxt}</div><div class="b"><b>${escapeHtml(g.nm)}</b><span>${escapeHtml(g.kind)} · ${escapeHtml(g.when)}</span>${decLbl?`<div class="dec ${decCls}">${decLbl}</div>`:''}</div></div>`;
-          }).join('')}</div>
-        </div>
-        <div class="uc-sect">
-          <h4>${trf('uc.mds',{n:(u.mds_covered||[]).length})}</h4>
-          ${mdsList}
-        </div>
+        <div class="record-section">
+          <h4>${tr('det.exec','Execution Progress')}</h4>
+          <div class="dl-list">
+            ${ucDl(tr('det.f.installed','Installed / Planted'), (u.execution&&u.execution.installed===true)?tr('in.opt.yes','Oui'):((u.execution&&u.execution.installed===false)?tr('in.opt.no','Non'):''))}
+            ${ucDl(tr('det.f.datacol','Data Collection'), (u.execution&&u.execution.dataCollection))}
+            ${ucDl(tr('det.f.ph','Post-Harvest Data'), (u.execution&&u.execution.postHarvest))}
+            ${ucDl(tr('det.f.analysis','Analysis'), (u.execution&&u.execution.analysis))}
+          </div>
+        </div>`; })()}
       </div>
     </div>
     <div class="modal-foot">
