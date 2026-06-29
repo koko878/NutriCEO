@@ -382,6 +382,16 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .pauc-action{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
 .pauc-action select{width:100%;padding:5px 8px;border:1px solid var(--line);border-radius:6px;font:600 11.5px Inter;background:#fff}
 .pauc-action .btn{font-size:11px;padding:4px 10px}
+.gov-acc-comment{width:100%;margin-top:6px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;font:500 11.5px Inter;background:#fff;resize:vertical;color:var(--ink)}
+.gov-acc-comment::placeholder{color:#7a8a80}
+/* Review SAI #3 — répartition des décisions par projet (en %) */
+.gov-dist{margin:0 18px 4px;padding:12px 14px 10px;background:#fff;border:1px solid var(--line);border-radius:8px}
+.gov-dist-bar{display:flex;height:10px;border-radius:6px;overflow:hidden;background:#eef3f0}
+.gov-dist-bar>span{display:block;height:100%}
+.gov-dist-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px}
+.gov-dist-lg{display:inline-flex;align-items:center;gap:5px;font:600 11px Inter;color:var(--ink)}
+.gov-dist-lg i{width:9px;height:9px;border-radius:2px;display:inline-block}
+.gov-dist-lg b{color:var(--green-800)}
 
 /* v0.22 — Enriched trial card (Project Desc / Business Case / Trial Desc / Status) */
 .uc-blocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:18px}
@@ -2933,6 +2943,11 @@ fr:{
  'gov.dec.choose':'Décision','gov.mondec.choose':'Verdict','gov.dec.applied':'{id} : décision {d} enregistrée','gov.mondec.applied':'{id} : verdict {d}',
  'gov.steerAcc.h':'Portefeuille Steering — groupé par project','gov.steerAcc.sub':'(vue consolidée projet → trials pour décision en comité)',
  'gov.monAcc.h':'Portefeuille Monitoring — groupé par project','gov.monAcc.sub':'(suivi Go/Hold/Kill post-exécution)',
+ 'gov.saiAcc.h':'Revue SAI — groupé par project','gov.saiAcc.sub':'(vue projet → trials : revue de complétude avant Steering)',
+ 'gov.sai.choose':'Avis SAI','gov.sai.reviewed':'Revu — vers Steering','gov.sai.rework':'À retravailler',
+ 'gov.comment.ph':'Commentaire du comité…','gov.ceo.portfolio':"Ouvrir l'Approbation CEO — portfolio par entité",
+ 'gov.dist.aligned':'Aligné','gov.dist.notaligned':'Non aligné','gov.dist.review':'À revoir','gov.dist.pending':'En attente',
+ 'gov.dist.reviewed':'Revu','gov.dist.rework':'À retravailler','gov.dist.go':'Go','gov.dist.hold':'Hold','gov.dist.kill':'Kill',
  'adm.t.ref':'Référentiels','adm.t.frame':'Cadre v1.0','adm.t.gov':'Gouvernance','adm.t.access':'Accès & rôles','adm.t.integr':'Intégrations',
  'adm.gov.lead':'Paramètres de gouvernance : matrice RACI, seuils déclenchant la décision CEO, éligibilité Fast Track, SLA par étape. Toute modification est propagée immédiatement.',
  'adm.gov.raci.h':'Matrice RACI éditable','adm.gov.raci.sub':'(11 étapes × 5 rôles)','adm.gov.raci.help':'Pour chaque étape, choisis qui Réalise (R), est Accountable (A), est Consulté (C) ou Informé (I).',
@@ -3332,6 +3347,11 @@ en:{
  'gov.dec.choose':'Decision','gov.mondec.choose':'Verdict','gov.dec.applied':'{id}: decision {d} recorded','gov.mondec.applied':'{id}: verdict {d}',
  'gov.steerAcc.h':'Steering Portfolio — grouped by project','gov.steerAcc.sub':'(consolidated project → trials view for committee decision)',
  'gov.monAcc.h':'Monitoring Portfolio — grouped by project','gov.monAcc.sub':'(post-execution Go/Hold/Kill tracking)',
+ 'gov.saiAcc.h':'SAI Review — grouped by project','gov.saiAcc.sub':'(project → trials view: completeness review before Steering)',
+ 'gov.sai.choose':'SAI verdict','gov.sai.reviewed':'Reviewed — to Steering','gov.sai.rework':'Needs rework',
+ 'gov.comment.ph':'Committee comment…','gov.ceo.portfolio':'Open CEO Approval — portfolio by entity',
+ 'gov.dist.aligned':'Aligned','gov.dist.notaligned':'Not Aligned','gov.dist.review':'Need Review','gov.dist.pending':'Pending',
+ 'gov.dist.reviewed':'Reviewed','gov.dist.rework':'Rework','gov.dist.go':'Go','gov.dist.hold':'Hold','gov.dist.kill':'Kill',
  'adm.t.ref':'Reference data','adm.t.frame':'Framework v1.0','adm.t.gov':'Governance','adm.t.access':'Access & roles','adm.t.integr':'Integrations',
  'adm.gov.lead':'Governance settings: RACI matrix, CEO decision thresholds, Fast Track eligibility, per-step SLAs. Changes propagate immediately.',
  'adm.gov.raci.h':'Editable RACI matrix','adm.gov.raci.sub':'(11 steps × 5 roles)','adm.gov.raci.help':'For each step, choose who is Responsible (R), Accountable (A), Consulted (C) or Informed (I).',
@@ -3728,6 +3748,11 @@ pt:{
  'gov.dec.choose':'Decisão','gov.mondec.choose':'Veredicto','gov.dec.applied':'{id}: decisão {d} registrada','gov.mondec.applied':'{id}: veredicto {d}',
  'gov.steerAcc.h':'Portfolio Steering — agrupado por projeto','gov.steerAcc.sub':'(visão consolidada projeto → trials para decisão em comitê)',
  'gov.monAcc.h':'Portfolio Monitoring — agrupado por projeto','gov.monAcc.sub':'(acompanhamento Go/Hold/Kill pós-execução)',
+ 'gov.saiAcc.h':'Revisão SAI — agrupado por projeto','gov.saiAcc.sub':'(visão projeto → trials: revisão de completude antes do Steering)',
+ 'gov.sai.choose':'Parecer SAI','gov.sai.reviewed':'Revisado — para Steering','gov.sai.rework':'A retrabalhar',
+ 'gov.comment.ph':'Comentário do comitê…','gov.ceo.portfolio':'Abrir Aprovação CEO — portfolio por entidade',
+ 'gov.dist.aligned':'Alinhado','gov.dist.notaligned':'Não alinhado','gov.dist.review':'A revisar','gov.dist.pending':'Pendente',
+ 'gov.dist.reviewed':'Revisado','gov.dist.rework':'Retrabalho','gov.dist.go':'Go','gov.dist.hold':'Hold','gov.dist.kill':'Kill',
  'adm.t.ref':'Catálogos','adm.t.frame':'Framework v1.0','adm.t.gov':'Governança','adm.t.access':'Acessos & papéis','adm.t.integr':'Integrações',
  'adm.gov.lead':'Configurações de governança: matriz RACI, limites de decisão CEO, elegibilidade Fast Track, SLAs por etapa. Alterações são propagadas imediatamente.',
  'adm.gov.raci.h':'Matriz RACI editável','adm.gov.raci.sub':'(11 etapas × 5 papéis)','adm.gov.raci.help':'Para cada etapa, escolha quem é Responsável (R), Accountable (A), Consultado (C) ou Informado (I).',
@@ -5551,6 +5576,7 @@ function govProjectAccordion(items, actionFn, opts){
           </div>
         </div>
         <div class="proj-acc-body ${opened?'open':''}" data-pid="${escapeHtml(pid)}">
+          ${opts.distFn ? opts.distFn(list) : ''}
           <div class="proj-acc-grid">${list.map(u => {
             const st = statusOf(u.status), ty = typeOf(u.type), bu = buOf(u.bu);
             return `<div class="proj-acc-card-uc" onclick="if(!event.target.closest('.no-bubble'))openUc('${u.id}')">
@@ -5583,6 +5609,67 @@ function govProjectAccordion(items, actionFn, opts){
     });
   }, 20);
   return html;
+}
+// Review SAI #3 — répartition des décisions d'un comité par projet (en %).
+// segs = [{key,label,color}] ; getDec(u) renvoie la clé de décision (ou 'pending').
+function govDistBar(list, getDec, segs){
+  const total = list.length || 1;
+  const counts = {}; segs.forEach(s=>counts[s.key]=0);
+  list.forEach(u=>{ const d = getDec(u) || 'pending'; counts[d] = (counts[d]||0) + 1; });
+  const bar = segs.filter(s=>counts[s.key]>0).map(s=>
+    `<span style="width:${Math.round(counts[s.key]/total*100)}%;background:${s.color}" title="${s.label}: ${counts[s.key]}/${total}"></span>`
+  ).join('') || '<span style="width:100%;background:#e7eee9"></span>';
+  const legend = segs.map(s=>{
+    const pct = Math.round((counts[s.key]||0)/total*100);
+    return `<span class="gov-dist-lg"><i style="background:${s.color}"></i>${s.label} <b>${pct}%</b></span>`;
+  }).join('');
+  return `<div class="gov-dist"><div class="gov-dist-bar">${bar}</div><div class="gov-dist-legend">${legend}</div></div>`;
+}
+// Répartition steering : Go=Aligned · Hold=À revoir · Kill=Not Aligned · —=En attente.
+function govSteerDistFn(list){
+  return govDistBar(list, u=>(u._steeringDecision&&u._steeringDecision.decision)||'pending', [
+    {key:'go',label:tr('gov.dist.aligned','Aligned'),color:'#15803D'},
+    {key:'hold',label:tr('gov.dist.review','À revoir'),color:'#c8961f'},
+    {key:'kill',label:tr('gov.dist.notaligned','Not Aligned'),color:'#c2503e'},
+    {key:'pending',label:tr('gov.dist.pending','En attente'),color:'#c2cdc6'},
+  ]);
+}
+function govSaiDistFn(list){
+  return govDistBar(list, u=>(u._gov&&u._gov.sai&&u._gov.sai.decision)||'pending', [
+    {key:'reviewed',label:tr('gov.dist.reviewed','Revu'),color:'#15803D'},
+    {key:'rework',label:tr('gov.dist.rework','À retravailler'),color:'#c8961f'},
+    {key:'pending',label:tr('gov.dist.pending','En attente'),color:'#c2cdc6'},
+  ]);
+}
+function govMonDistFn(list){
+  return govDistBar(list, u=>{ const d=(u._monitoringDecision&&u._monitoringDecision.decision)||''; return d.replace('closed-','')||'pending'; }, [
+    {key:'go',label:tr('gov.dist.go','Go'),color:'#15803D'},
+    {key:'hold',label:tr('gov.dist.hold','Hold'),color:'#c8961f'},
+    {key:'kill',label:tr('gov.dist.kill','Kill'),color:'#c2503e'},
+    {key:'pending',label:tr('gov.dist.pending','En attente'),color:'#c2cdc6'},
+  ]);
+}
+// Commentaire de comité par body (sai/steering/monitoring), persisté sur le UC.
+function govSetComment(ucId, body, text){
+  const u = ucById(ucId); if(!u) return;
+  u._gov = u._gov || {}; u._gov[body] = u._gov[body] || {};
+  u._gov[body].comment = text;
+  if(typeof saveData==='function') saveData();
+}
+// Champ commentaire de comité (membre enregistre son commentaire sur le trial).
+function govCommentInput(u, body){
+  const val = (u._gov && u._gov[body] && u._gov[body].comment) || '';
+  return `<textarea class="gov-acc-comment" rows="2" placeholder="${tr('gov.comment.ph','Commentaire du comité…')}" onchange="govSetComment('${u.id}','${body}',this.value)">${escapeHtml(val)}</textarea>`;
+}
+// Décision SAI Review (revu / à retravailler) + commentaire.
+function govSetSaiDecision(ucId, val){
+  if(typeof _rbacGuard==='function' && !_rbacGuard('do-sai-review')) return;
+  const u = ucById(ucId); if(!u || !val) return;
+  u._gov = u._gov || {}; u._gov.sai = u._gov.sai || {};
+  u._gov.sai.decision = val; u._gov.sai.at = new Date().toISOString();
+  if(val==='reviewed') u.status = 'steering'; // SAI Review OK → passe au Steering
+  if(typeof saveData==='function') saveData();
+  toast(u.id+' : SAI '+val, 'ok');
 }
 function toast(m, kind){
   const t=document.getElementById('toast');
@@ -7806,6 +7893,7 @@ function renderCalendar(){
  * 11. GOVERNANCE — committees, RACI matrix
  * --------------------------------------------------------------- */
 function renderGovernance(){
+  const inSai = DATA.filter(u=>u.status==='submitted');
   const inSteering = DATA.filter(u=>u.status==='steering');
   const ceoPending = DATA.filter(u=>u.status==='ceo');
   const monitoring = DATA.filter(u=>u.status==='monitoring');
@@ -7849,8 +7937,22 @@ function renderGovernance(){
         <h3>${tr('gov.ceo.h')} <span class="sub">${tr('gov.ceo.sub')}</span></h3>
         <p class="muted" style="margin:0 0 12px">${trf('gov.ceo.when',{date:tr('gov.ceo.date')})}</p>
         ${ceoPending.slice(0,5).map(u=>`<div class="alert warn"><span class="ico">⏳</span><div class="b"><b>${escapeHtml(u.name)}</b><span>${u.id} · ${fmtMoney(u.budget)}</span></div><button class="act" onclick="openUc('${u.id}')">${tr('gov.act.open')}</button></div>`).join('') || `<div class="muted">${tr('gov.ceo.empty')}</div>`}
+        <button class="btn sm ghost" style="margin-top:12px" onclick="goView('ceo')">${tr('gov.ceo.portfolio','Ouvrir l\'Approbation CEO — portfolio par entité')} →</button>
       </div>
     </div>
+
+    <!-- Review SAI #3 — Body 1/4 : SAI Review (vue projet → trials, décision + commentaire par membre) -->
+    ${inSai.length ? `<div class="card">
+      <h3>${tr('gov.saiAcc.h','Revue SAI — groupé par project')} <span class="sub">${tr('gov.saiAcc.sub','(vue projet → trials : revue de complétude avant Steering)')}</span></h3>
+      ${govProjectAccordion(inSai, (uc)=>`
+        <select class="gov-acc-dec rbac-sai-review-only" data-id="${uc.id}" onchange="govSetSaiDecision('${uc.id}', this.value)">
+          <option value="">— ${tr('gov.sai.choose','Avis SAI')} —</option>
+          <option value="reviewed" ${(uc._gov&&uc._gov.sai&&uc._gov.sai.decision)==='reviewed'?'selected':''}>✓ ${tr('gov.sai.reviewed','Revu — vers Steering')}</option>
+          <option value="rework" ${(uc._gov&&uc._gov.sai&&uc._gov.sai.decision)==='rework'?'selected':''}>↻ ${tr('gov.sai.rework','À retravailler')}</option>
+        </select>
+        ${govCommentInput(uc,'sai')}
+      `, {openFirst:true, distFn:govSaiDistFn})}
+    </div>` : ''}
 
     <!-- v0.22 — Vue accordéon Steering : trials groupés sous leur project (retour Halima #5) -->
     <div class="card">
@@ -7858,11 +7960,12 @@ function renderGovernance(){
       ${govProjectAccordion(inSteering, (uc)=>`
         <select class="gov-acc-dec rbac-steering-decide-only" data-id="${uc.id}" onchange="govSetDecision('${uc.id}', this.value)">
           <option value="">— ${tr('gov.dec.choose')||'Décision'} —</option>
-          <option value="go" ${uc._dec==='go'?'selected':''}>✓ Go</option>
-          <option value="hold" ${uc._dec==='hold'?'selected':''}>⏸ Hold</option>
-          <option value="kill" ${uc._dec==='kill'?'selected':''}>✕ Kill</option>
+          <option value="go" ${(uc._steeringDecision&&uc._steeringDecision.decision)==='go'?'selected':''}>✓ Go</option>
+          <option value="hold" ${(uc._steeringDecision&&uc._steeringDecision.decision)==='hold'?'selected':''}>⏸ Hold</option>
+          <option value="kill" ${(uc._steeringDecision&&uc._steeringDecision.decision)==='kill'?'selected':''}>✕ Kill</option>
         </select>
-      `, {openFirst:true})}
+        ${govCommentInput(uc,'steering')}
+      `, {openFirst:true, distFn:govSteerDistFn})}
     </div>
 
     <!-- v0.22 — Vue accordéon Monitoring : idem (retour Halima #5) -->
@@ -7871,11 +7974,12 @@ function renderGovernance(){
       ${govProjectAccordion(monitoring, (uc)=>`
         <select class="gov-acc-mondec rbac-monitoring-decide-only" data-id="${uc.id}" onchange="govSetMonDecision('${uc.id}', this.value)">
           <option value="">— ${tr('gov.mondec.choose')||'Verdict'} —</option>
-          <option value="closed-go">✓ Go (déploiement)</option>
-          <option value="closed-hold">⏸ Hold (à itérer)</option>
-          <option value="closed-kill">✕ Kill (ne pas répliquer)</option>
+          <option value="closed-go" ${(uc._monitoringDecision&&uc._monitoringDecision.decision)==='closed-go'?'selected':''}>✓ Go (déploiement)</option>
+          <option value="closed-hold" ${(uc._monitoringDecision&&uc._monitoringDecision.decision)==='closed-hold'?'selected':''}>⏸ Hold (à itérer)</option>
+          <option value="closed-kill" ${(uc._monitoringDecision&&uc._monitoringDecision.decision)==='closed-kill'?'selected':''}>✕ Kill (ne pas répliquer)</option>
         </select>
-      `)}
+        ${govCommentInput(uc,'monitoring')}
+      `, {distFn:govMonDistFn})}
     </div>` : ''}
 
     <div class="card">
