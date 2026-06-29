@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.23.2
+Stable tag: 0.24.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,40 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.24.0 — Review SAI : Trial Card, New Use Case & 4 Governance bodies =
+Mise en oeuvre du retour SAI (doc Nutri_plan_Review_2 + maquette
+Trial_Management_Platform_V15) en 3 points.
+
+* #1 — Trial Card du Portfolio refondue d'après la maquette SAI : en-tête
+  ID + type, badge statut (ou Fast Track), titre, méta région/culture/
+  partenaire/budget, mini-tracker 5 étapes (SAI → Steering → CEO →
+  Exécution → Monitoring) avec état done/courant/à venir. Le bouton
+  « Open in NutriTrials » est conservé.
+* #2 — « + New Use Case » : mêmes informations par étape que la maquette
+  SAI. Étape 3 enrichie d'un bloc Trial Description (pays, site, lead,
+  déjà testé + ID essai antérieur, produits OCP/collaborateurs/
+  concurrents, URL de référence). Persistance inter-étapes du wizard
+  fiabilisée (snapshot/restore WIZ) — corrige une perte de saisie quand
+  on navigue entre les étapes.
+* #3 — Gouvernance à 4 instances :
+  - SAI Review, Steering, Monitoring : vue par projet avec drill-down
+    vers les trials associés. Chaque membre de comité enregistre sa
+    décision ET son commentaire (persistés sur le trial). Répartition
+    des décisions par projet visualisée en pourcentage (barre + légende),
+    p.ex. Steering : 20% Aligné / 80% Non aligné.
+  - SAI Review (nouveau) : revue de complétude des Use Cases soumis
+    (Revu → Steering / À retravailler), capability do-sai-review.
+  - CEO Approval : approbation au niveau portfolio, chaque entité
+    présente son portefeuille par région au CEO avec drill-down vers le
+    détail projet (bouton d'accès direct depuis Gouvernance).
+  - Fix : les sélecteurs de décision Steering/Monitoring relisent
+    désormais la décision réellement enregistrée (_steeringDecision /
+    _monitoringDecision) au lieu d'un champ jamais défini.
+* i18n FR/EN/PT pour tous les nouveaux libellés. Tests : smoke E2E
+  Playwright pour les 3 points (Trial Card, wizard, gouvernance) — rendu
+  des 4 instances + persistance décision/commentaire + répartition % —
+  tous verts contre le serveur PHP.
 
 = 0.23.2 — Backend notifications append-only (fix CRITICAL bug #1) =
 * Table dédiée wp_dnai_nplan_notifications (DB_VER 1→2, dbDelta auto à
