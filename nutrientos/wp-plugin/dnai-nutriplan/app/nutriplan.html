@@ -5706,7 +5706,7 @@ function govProjectAccordion(items, actionFn, opts){
             <div class="proj-acc-tags">
               ${proj.region && proj.region!=='—' ? `<span class="badge bg-soft">${escapeHtml(proj.region)}</span>` : ''}
               ${proj.entity && proj.entity!=='—' ? `<span class="badge bg-soft">${escapeHtml(String(proj.entity).replace('BU-',''))}</span>` : ''}
-              ${proj.status && proj.status!=='—' ? `<span class="badge bg-info">${escapeHtml(proj.status)}</span>` : ''}
+              ${(proj.status||proj.project_status) && (proj.status||proj.project_status)!=='—' ? `<span class="badge bg-info">${escapeHtml(proj.status||proj.project_status)}</span>` : ''}
             </div>
           </div>
           <div class="proj-acc-cnt">
@@ -7013,8 +7013,11 @@ function renderTable(list){
 // Review SAI #1 — carte de détail façon maquette SAI : ligne de description
 // (label / valeur) avec repli « — » si la donnée n'est pas encore saisie.
 function ucDl(label, value, full){
-  const v = (value!==undefined && value!==null && value!=='') ? value : '—';
-  return `<div class="dl-item${full?' full':''}"><span class="dl-label">${label}</span><span class="dl-value">${v}</span></div>`;
+  // Sécurité (code review/security) : la valeur est TOUJOURS échappée ici, donc
+  // les appelants passent la donnée brute (ne pas pré-échapper → double-échappement).
+  const has = (value!==undefined && value!==null && value!=='');
+  const v = has ? escapeHtml(String(value)) : '—';
+  return `<div class="dl-item${full?' full':''}"><span class="dl-label">${escapeHtml(String(label))}</span><span class="dl-value">${v}</span></div>`;
 }
 function _yr(d){ if(!d) return ''; const m=String(d).match(/\d{4}/); return m?m[0]:''; }
 // Stepper 5 étapes du parcours gouvernance d'un trial (SAI → Steering → CEO →
@@ -7024,10 +7027,12 @@ function ucDetailStepper(u){
   const chk = '<svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2.6" width="14" height="14"><path d="M4 10l4 4 8-8"/></svg>';
   const pend = tr('det.pending','En attente');
   const decLbl = (body, dec, fallbackDone) => dec ? (typeof govDecLabel==='function'?govDecLabel(body,dec):dec) : fallbackDone;
+  // Décision CEO : stockée dans window._ceoDecisions par entité|région (pas sur le UC).
+  const ceoDec = (window._ceoDecisions && window._ceoDecisions[u.bu+'|||'+u.region] && window._ceoDecisions[u.bu+'|||'+u.region].decision) || '';
   const subs = [
     decLbl('sai', u._saiDecision&&u._saiDecision.decision, phase>1?tr('det.reviewed','Revu'):pend),
     decLbl('steering', u._steeringDecision&&u._steeringDecision.decision, phase>2?tr('det.approved','Approuvé'):pend),
-    (u._ceoDecision||phase>3) ? tr('det.approved','Approuvé') : pend,
+    ceoDec ? ceoDec : (phase>3 ? tr('det.approved','Approuvé') : pend),
     phase>4 ? tr('det.completed','Terminé') : (phase===4 ? tr('det.inprogress','En cours') : '—'),
     decLbl('monitoring', u._monitoringDecision&&u._monitoringDecision.decision, phase>5?tr('det.done','Clôturé'):pend),
   ];
@@ -7074,22 +7079,22 @@ function openUc(id){
         <div class="record-section">
           <h4>${tr('det.projId','Project Identification')}</h4>
           <div class="dl-list">
-            ${ucDl(tr('det.f.projid','Project ID'), escapeHtml(u.project_id||''))}
-            ${ucDl(tr('det.f.projtitle','Project Title'), escapeHtml(p.title||''))}
-            ${ucDl(tr('det.f.entity','Entity'), escapeHtml(buOf(u.bu).nm))}
-            ${ucDl(tr('det.f.regcountry','Region / Country'), escapeHtml(u.region||'') + (td.country?(' — '+escapeHtml(td.country)):''))}
-            ${ucDl(tr('det.f.crop','Crop'), escapeHtml(u.crop||''))}
-            ${ucDl(tr('det.f.partner','Partner / Vendor'), escapeHtml(u.partner||''))}
-            ${ucDl(tr('det.f.contract','Contract Status'), escapeHtml(p.contract_status||''))}
-            ${ucDl(tr('det.f.strat','Strategic Line'), escapeHtml(p.strategic_line||''))}
-            ${ucDl(tr('det.f.plead','Project Lead'), escapeHtml(p.lead||''))}
-            ${ucDl(tr('det.f.powner','Project Owner'), escapeHtml(p.owner||''))}
+            ${ucDl(tr('det.f.projid','Project ID'), u.project_id||'')}
+            ${ucDl(tr('det.f.projtitle','Project Title'), p.title||'')}
+            ${ucDl(tr('det.f.entity','Entity'), buOf(u.bu).nm)}
+            ${ucDl(tr('det.f.regcountry','Region / Country'), (u.region||'') + (td.country?(' — '+td.country):''))}
+            ${ucDl(tr('det.f.crop','Crop'), u.crop||'')}
+            ${ucDl(tr('det.f.partner','Partner / Vendor'), u.partner||'')}
+            ${ucDl(tr('det.f.contract','Contract Status'), p.contract_status||'')}
+            ${ucDl(tr('det.f.strat','Strategic Line'), p.strategic_line||'')}
+            ${ucDl(tr('det.f.plead','Project Lead'), p.lead||'')}
+            ${ucDl(tr('det.f.powner','Project Owner'), p.owner||'')}
             ${ucDl(tr('det.f.pstart','Project Start'), p.start_date?fmtDate(p.start_date):'')}
             ${ucDl(tr('det.f.pend','Project End'), p.end_date?fmtDate(p.end_date):'')}
             ${ucDl(tr('det.f.dur','Duration'), p.duration_years?(p.duration_years+' '+tr('det.yrs','ans')):'')}
             ${ucDl(tr('det.f.budget','Budget'), p.budget?fmtMoney(p.budget):'')}
-            ${ucDl(tr('det.f.obj','Objective'), escapeHtml(p.objective||''), true)}
-            ${ucDl(tr('det.f.pdesc','Project Description'), escapeHtml(p.description||''), true)}
+            ${ucDl(tr('det.f.obj','Objective'), p.objective||'', true)}
+            ${ucDl(tr('det.f.pdesc','Project Description'), p.description||'', true)}
           </div>
         </div>
         <div class="record-section">
@@ -7104,8 +7109,8 @@ function openUc(id){
             ${ucDl(tr('det.f.impr','% Yield Improvement'), (u.business_case&&u.business_case.buc&&u.business_case.buc.improvement))}
             ${ucDl(tr('det.f.vcr','VCR (Farmer ROI)'), (u.business_case&&u.business_case.buc&&u.business_case.buc.vcr))}
             ${ucDl(tr('det.f.conf','Confidence'), (u.business_case&&u.business_case.buc&&u.business_case.buc.confidence))}
-            ${ucDl(tr('det.f.src','Information Source'), escapeHtml((u.business_case&&u.business_case.buc&&u.business_case.buc.infoSource)||''), true)}
-            ${ucDl(tr('det.f.cmt','Comment'), escapeHtml((u.business_case&&u.business_case.buc&&u.business_case.buc.comment)||''), true)}
+            ${ucDl(tr('det.f.src','Information Source'), (u.business_case&&u.business_case.buc&&u.business_case.buc.infoSource)||'', true)}
+            ${ucDl(tr('det.f.cmt','Comment'), (u.business_case&&u.business_case.buc&&u.business_case.buc.comment)||'', true)}
           </div>
         </div>`; })()}
       </div>
@@ -7116,19 +7121,19 @@ function openUc(id){
           <div class="dl-list">
             ${ucDl(tr('det.f.tclass','Trial Class'), tr(classOf(u.trial_class).lblK))}
             ${ucDl(tr('det.f.ttype','Trial Type'), tyLbl(typeOf(u.type)))}
-            ${ucDl(tr('det.f.tlead','Trial Lead'), escapeHtml(td.lead||u.sai_lead||''))}
-            ${ucDl(tr('det.f.site','Site'), escapeHtml(td.site||''))}
+            ${ucDl(tr('det.f.tlead','Trial Lead'), td.lead||u.sai_lead||'')}
+            ${ucDl(tr('det.f.site','Site'), td.site||'')}
             ${ucDl(tr('det.f.sy','Start Year'), _yr(u.start_date))}
             ${ucDl(tr('det.f.ey','End Year'), _yr(u.end_date))}
             ${ucDl(tr('det.f.tstatus','Trial Status'), stLbl(statusOf(u.status)))}
             ${ucDl(tr('det.f.turg','Trial Urgency'), prLbl(prioOf(u.priority)))}
             ${ucDl(tr('det.f.tested','Was Tested Before?'), td.tested_before===true?tr('in.opt.yes','Oui'):(td.tested_before===false?tr('in.opt.no','Non'):''))}
-            ${td.tested_before===true ? ucDl(tr('det.f.prior','Prior Trial ID'), escapeHtml(td.prior_trial_id||'')) : ''}
-            ${ucDl(tr('det.f.opobj','Operational Objectives'), escapeHtml(u.objective_primary||''), true)}
-            ${ucDl(tr('det.f.hyp','Hypothesis'), escapeHtml((bc.design&&bc.design.hypothesis)||''), true)}
-            ${ucDl(tr('det.f.ocp','OCP Products to Use'), escapeHtml(td.ocp_products||u.product||''), true)}
-            ${ucDl(tr('det.f.collab',"Collaborators' Products"), escapeHtml(td.collaborators_products||''), true)}
-            ${ucDl(tr('det.f.compet',"Competitors' Products"), escapeHtml(td.competitors_products||''), true)}
+            ${td.tested_before===true ? ucDl(tr('det.f.prior','Prior Trial ID'), td.prior_trial_id||'') : ''}
+            ${ucDl(tr('det.f.opobj','Operational Objectives'), u.objective_primary||'', true)}
+            ${ucDl(tr('det.f.hyp','Hypothesis'), (bc.design&&bc.design.hypothesis)||'', true)}
+            ${ucDl(tr('det.f.ocp','OCP Products to Use'), td.ocp_products||u.product||'', true)}
+            ${ucDl(tr('det.f.collab',"Collaborators' Products"), td.collaborators_products||'', true)}
+            ${ucDl(tr('det.f.compet',"Competitors' Products"), td.competitors_products||'', true)}
           </div>
           <div style="margin-top:12px">
             <span class="dl-label" style="display:block;margin-bottom:5px">${tr('det.f.proto','Reference Protocol')}</span>
@@ -7912,7 +7917,7 @@ function submitUc(isDraft){
   ).filter(c => c.product || c.company);
   const buc = {
     cropArea: ifVal('if_buc_area'), currentP2O5: ifVal('if_buc_currp2o5'), potentialP2O5: ifVal('if_buc_marketp2o5'),
-    targetReach: ifVal('if_buc_demandvol'), targetYield: ifVal('if_buc_targyield'), refYield: ifVal('if_buc_refyield'),
+    targetReach: '', targetYield: ifVal('if_buc_targyield'), refYield: ifVal('if_buc_refyield'),
     improvement: ifVal('if_buc_yieldinc'), vcr: ifVal('if_buc_roi'), confidence: '',
     infoSource: '', comment: ifVal('if_buc_justif'),
   };
@@ -7929,21 +7934,26 @@ function submitUc(isDraft){
 
   // ── Étape 1 : projet existant OU nouveau ──
   const mode = ifVal('if_projmode') || 'existing';
-  let project_id;
+  let project_id, projBu = '';
   if(mode==='new'){
-    const pnum = (PROJECTS.length+1).toString().padStart(3,'0');
-    project_id = 'PRJ-2026-'+pnum;
+    // ID robuste : max des numéros PRJ existants + 1 (évite collision si non-contigu).
+    const yr = (ifVal('if_proj_start').match(/\d{4}/)||[])[0] || String((new Date()).getFullYear());
+    const maxN = PROJECTS.reduce((m,p)=>{ const mm=String(p.id||'').match(/PRJ-\d{4}-(\d+)/); return mm?Math.max(m,+mm[1]):m; }, 0);
+    project_id = 'PRJ-'+yr+'-'+String(maxN+1).padStart(3,'0');
     const capex = Number(ifVal('if_proj_capex'))||0, opex = Number(ifVal('if_proj_opex'))||0;
+    const pStart = ifVal('if_proj_start')||'', pEnd = ifVal('if_proj_end')||'';
+    projBu = ifVal('if_bu')||'SAI';
     const newProj = {
       id: project_id,
       title: ifVal('if_proj_title') || name,
-      entity: ifVal('if_bu')||'SAI', bu: ifVal('if_bu')||'SAI',
+      entity: projBu, bu: projBu,
       region: ifVal('if_proj_region')||'—', country: ifVal('if_buc_country')||'', crop: ifVal('if_buc_crop')||'',
       partner: ifVal('if_proj_partner')||'—', partner_type: ifVal('if_proj_ptype')||'',
-      project_status: 'New Project', contract_status: ifVal('if_proj_contract')||'',
+      status: 'New Project', project_status: 'New Project', contract_status: ifVal('if_proj_contract')||'',
       strategic_line: ifVal('if_proj_strat')||'', project_response: '',
       lead: ifVal('if_proj_lead')||'', owner: ifVal('if_proj_owner')||'',
-      start_date: ifVal('if_proj_start')||'', end_date: ifVal('if_proj_end')||'',
+      start_date: pStart, end_date: pEnd,
+      start_year: (pStart.match(/\d{4}/)||[])[0] || '', end_year: (pEnd.match(/\d{4}/)||[])[0] || '',
       duration_years: Number(ifVal('if_proj_duration'))||0,
       nb_trials: Number(ifVal('if_proj_nbtrials'))||0,
       budget_capex: capex, budget_opex: opex, budget: capex+opex,
@@ -7955,7 +7965,7 @@ function submitUc(isDraft){
   } else {
     project_id = ifVal('if_project') || (PROJECTS[0] && PROJECTS[0].id) || null;
     const p = projById(project_id);
-    if(p){ p.business_use_case = businessUseCase; if(typeof saveProjects==='function') saveProjects(); }
+    if(p){ projBu = p.bu || p.entity || ''; p.business_use_case = businessUseCase; if(typeof saveProjects==='function') saveProjects(); }
   }
 
   // ── Étape 3 : le trial ──
@@ -7978,7 +7988,7 @@ function submitUc(isDraft){
   const uc = {
     id:'UC-2026-'+num, name,
     project_id: project_id,
-    bu: ifVal('if_bu')||'SAI',
+    bu: projBu || ifVal('if_bu') || 'SAI',
     region: ifVal('if_region')||ifVal('if_proj_region')||'—',
     crop: ifVal('if_crop')||ifVal('if_buc_crop')||'—',
     product: ifVal('if_prod')||'—',
@@ -8008,7 +8018,7 @@ function submitUc(isDraft){
     gates: _gatesFor(isDraft?'draft':'submitted'),
     created_at: new Date().toISOString(),
     submitted_at: isDraft ? null : new Date().toISOString(),
-    owner_bu: ifVal('if_bu')||'SAI',
+    owner_bu: projBu || ifVal('if_bu') || 'SAI',
     business_case: businessCase,
     project_description: { rationale: ifVal('if_proj_desc')||'' },
     // Trial Description (maquette SAI)
@@ -8651,7 +8661,7 @@ function renderAdmin(){
 }
 
 /* ---- Admin · Référentiels (CRUD persisté en BDD) ---- */
-function refUsageField(key){ return {bus:'bu',crops:'crop',products:'product',partners:'partner',regions:'region'}[key]; }
+function refUsageField(key){ return {bus:'bu',crops:'crop',products:'product',partners:'partner',regions:'region',partner_types:'partner_type'}[key]; }
 function refUsageCount(key, value){
   // v0.21 : extension à MDS (champ array dans chaque UC).
   if(key==='mds'){
@@ -8689,7 +8699,7 @@ function renderAdminRef(){
     const list = r.get();
     const count = (r.kind==='grouped') ? Object.values(list||{}).reduce((s,a)=>s+(a?a.length:0),0) : list.length;
     const head = `<div class="ref-head"><h3>${tr(r.lblK)} <span class="ref-count">${count}</span></h3>
-      <span class="ref-prov">${(['bus','regions','crops','products','partners','mds'].includes(r.key))?tr('adm.prov.core'):tr('adm.prov.excel')}</span></div>`;
+      <span class="ref-prov">${(['bus','regions','crops','products','partners','partner_types','mds'].includes(r.key))?tr('adm.prov.core'):tr('adm.prov.excel')}</span></div>`;
     let bodyHtml;
     if(r.kind==='grouped'){
       // Review SAI #3 — référentiel groupé (ex. régions/pays par BU), administrable.
