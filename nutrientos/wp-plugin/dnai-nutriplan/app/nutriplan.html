@@ -842,6 +842,9 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .ref-head h3{margin:0;display:flex;align-items:center;gap:8px}
 .ref-count{font:700 11px 'Inter';color:var(--green-800);background:var(--green-50);border:1px solid var(--green-100);border-radius:999px;padding:1px 9px}
 .ref-prov{font:700 9.5px 'Inter';letter-spacing:.05em;text-transform:uppercase;color:var(--muted-2);background:#f4f6f3;border:1px solid var(--line);border-radius:6px;padding:2px 7px}
+.ref-grouped{display:flex;flex-direction:column;gap:12px}
+.ref-group{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:#fbfdfb}
+.ref-group-h{font:700 11px 'Inter';letter-spacing:.04em;text-transform:uppercase;color:var(--green-800);margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .ref-chips{display:flex;flex-wrap:wrap;gap:6px;min-height:8px}
 .ref-chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;background:#fff;border:1px solid var(--line-2);border-radius:999px;padding:6px 8px 6px 14px;font-size:12.5px;cursor:pointer;transition:.15s}
 .ref-chip:hover{border-color:var(--green-400);background:#fafffa}
@@ -1962,6 +1965,13 @@ body::after{
 .gov-cfg-fld{display:flex;flex-direction:column;gap:6px}
 .gov-cfg-fld > label{font:600 12px/1.2 'Inter';color:var(--ink);}
 .gov-cfg-fld .hint{font:500 11.5px/1.4 'Inter';color:var(--muted)}
+.gov-dec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:880px){.gov-dec-grid{grid-template-columns:1fr}}
+.gov-dec-grp-h{font:700 11px 'Inter';letter-spacing:.04em;text-transform:uppercase;color:var(--green-800);margin-bottom:8px}
+.gov-dec-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.gov-dec-key{font:600 10.5px 'Inter';color:var(--muted-2);background:#f4f6f3;border:1px solid var(--line);border-radius:5px;padding:2px 6px;min-width:74px;text-align:center}
+.gov-dec-lbl{flex:1;min-width:0;padding:5px 8px;border:1px solid var(--line);border-radius:6px;font:500 12px 'Inter';color:var(--ink)}
+.gov-dec-col{width:34px;height:30px;padding:1px;border:1px solid var(--line);border-radius:6px;background:#fff;cursor:pointer}
 .gov-raci-sel{
   width:60px;padding:5px 6px;border:1px solid var(--line-2);border-radius:6px;
   font:700 11.5px/1 'Inter';text-align:center;cursor:pointer;
@@ -2561,7 +2571,7 @@ let BUS = [
   { id:'APAC',nm:'Asia-Pacific BU',  color:'alt-6' },
   { id:'SAI', nm:'SA&I Corporate',   color:'' }
 ];
-const REGIONS = {
+let REGIONS = {
   AFR: ['Morocco','Egypt','Ethiopia','Kenya','Ivory Coast','Senegal','Tanzania','Nigeria'],
   BRA: ['Mato Grosso','Goiás','Paraná','Bahia','Minas Gerais'],
   IND: ['Punjab','Maharashtra','Karnataka','Andhra Pradesh','Uttar Pradesh'],
@@ -2948,6 +2958,10 @@ fr:{
  'gov.comment.ph':'Commentaire du comité…','gov.ceo.portfolio':"Ouvrir l'Approbation CEO — portfolio par entité",
  'gov.dist.aligned':'Aligné','gov.dist.notaligned':'Non aligné','gov.dist.review':'À revoir','gov.dist.pending':'En attente',
  'gov.dist.reviewed':'Revu','gov.dist.rework':'À retravailler','gov.dist.go':'Go','gov.dist.hold':'Hold','gov.dist.kill':'Kill',
+ 'track.sai':'SAI','track.steering':'Steering','track.ceo':'CEO','track.exec':'Exéc.','track.monitor':'Suivi',
+ 'adm.gov.dec.h':'Vocabulaire de décision','adm.gov.dec.sub':'— libellés & couleurs par instance','adm.gov.dec.help':"Renomme et recolore les options de décision vues par les comités (ex. « Aligné » plutôt que « Go »). Les clés techniques restent fixes car elles pilotent le flux de statut.",
+ 'adm.gov.dec.sai':'Revue SAI','adm.gov.dec.steering':'Steering','adm.gov.dec.monitoring':'Monitoring','adm.gov.dec.label':'Libellé','adm.gov.dec.color':'Couleur',
+ 'adm.r.regions':'Régions / pays (par BU)',
  'adm.t.ref':'Référentiels','adm.t.frame':'Cadre v1.0','adm.t.gov':'Gouvernance','adm.t.access':'Accès & rôles','adm.t.integr':'Intégrations',
  'adm.gov.lead':'Paramètres de gouvernance : matrice RACI, seuils déclenchant la décision CEO, éligibilité Fast Track, SLA par étape. Toute modification est propagée immédiatement.',
  'adm.gov.raci.h':'Matrice RACI éditable','adm.gov.raci.sub':'(11 étapes × 5 rôles)','adm.gov.raci.help':'Pour chaque étape, choisis qui Réalise (R), est Accountable (A), est Consulté (C) ou Informé (I).',
@@ -3352,6 +3366,10 @@ en:{
  'gov.comment.ph':'Committee comment…','gov.ceo.portfolio':'Open CEO Approval — portfolio by entity',
  'gov.dist.aligned':'Aligned','gov.dist.notaligned':'Not Aligned','gov.dist.review':'Need Review','gov.dist.pending':'Pending',
  'gov.dist.reviewed':'Reviewed','gov.dist.rework':'Rework','gov.dist.go':'Go','gov.dist.hold':'Hold','gov.dist.kill':'Kill',
+ 'track.sai':'SAI','track.steering':'Steering','track.ceo':'CEO','track.exec':'Exec','track.monitor':'Monitor',
+ 'adm.gov.dec.h':'Decision vocabulary','adm.gov.dec.sub':'— labels & colors per body','adm.gov.dec.help':'Rename and recolor the decision options committees see (e.g. "Aligned" instead of "Go"). Technical keys stay fixed because they drive the status flow.',
+ 'adm.gov.dec.sai':'SAI Review','adm.gov.dec.steering':'Steering','adm.gov.dec.monitoring':'Monitoring','adm.gov.dec.label':'Label','adm.gov.dec.color':'Color',
+ 'adm.r.regions':'Regions / countries (by BU)',
  'adm.t.ref':'Reference data','adm.t.frame':'Framework v1.0','adm.t.gov':'Governance','adm.t.access':'Access & roles','adm.t.integr':'Integrations',
  'adm.gov.lead':'Governance settings: RACI matrix, CEO decision thresholds, Fast Track eligibility, per-step SLAs. Changes propagate immediately.',
  'adm.gov.raci.h':'Editable RACI matrix','adm.gov.raci.sub':'(11 steps × 5 roles)','adm.gov.raci.help':'For each step, choose who is Responsible (R), Accountable (A), Consulted (C) or Informed (I).',
@@ -3753,6 +3771,10 @@ pt:{
  'gov.comment.ph':'Comentário do comitê…','gov.ceo.portfolio':'Abrir Aprovação CEO — portfolio por entidade',
  'gov.dist.aligned':'Alinhado','gov.dist.notaligned':'Não alinhado','gov.dist.review':'A revisar','gov.dist.pending':'Pendente',
  'gov.dist.reviewed':'Revisado','gov.dist.rework':'Retrabalho','gov.dist.go':'Go','gov.dist.hold':'Hold','gov.dist.kill':'Kill',
+ 'track.sai':'SAI','track.steering':'Steering','track.ceo':'CEO','track.exec':'Exec.','track.monitor':'Acomp.',
+ 'adm.gov.dec.h':'Vocabulário de decisão','adm.gov.dec.sub':'— rótulos & cores por instância','adm.gov.dec.help':'Renomeie e recolora as opções de decisão vistas pelos comitês (ex. "Alinhado" em vez de "Go"). As chaves técnicas permanecem fixas pois pilotam o fluxo de status.',
+ 'adm.gov.dec.sai':'Revisão SAI','adm.gov.dec.steering':'Steering','adm.gov.dec.monitoring':'Monitoring','adm.gov.dec.label':'Rótulo','adm.gov.dec.color':'Cor',
+ 'adm.r.regions':'Regiões / países (por BU)',
  'adm.t.ref':'Catálogos','adm.t.frame':'Framework v1.0','adm.t.gov':'Governança','adm.t.access':'Acessos & papéis','adm.t.integr':'Integrações',
  'adm.gov.lead':'Configurações de governança: matriz RACI, limites de decisão CEO, elegibilidade Fast Track, SLAs por etapa. Alterações são propagadas imediatamente.',
  'adm.gov.raci.h':'Matriz RACI editável','adm.gov.raci.sub':'(11 etapas × 5 papéis)','adm.gov.raci.help':'Para cada etapa, escolha quem é Responsável (R), Accountable (A), Consultado (C) ou Informado (I).',
@@ -3971,6 +3993,7 @@ let PROJECT_RESPONSE = [
  * --------------------------------------------------------------- */
 const REF_REGISTRY = [
   { key:'bus',            lblK:'adm.r.bus',      kind:'objects', cols:[['id','Code'],['nm','Nom']], get:()=>BUS,            set:v=>{BUS=v;} },
+  { key:'regions',        lblK:'adm.r.regions',  kind:'grouped', get:()=>REGIONS,          set:v=>{REGIONS=v;} },
   { key:'crops',          lblK:'adm.r.crops',    kind:'strings', get:()=>CROPS,            set:v=>{CROPS=v;} },
   { key:'products',       lblK:'adm.r.products', kind:'strings', get:()=>PRODUCTS,         set:v=>{PRODUCTS=v;} },
   { key:'partners',       lblK:'adm.r.partners', kind:'objects', cols:[['nm','Nom'],['typ','Type']], get:()=>PARTNERS,    set:v=>{PARTNERS=v;} },
@@ -3987,7 +4010,11 @@ function snapshotRef(){ const o={}; REF_REGISTRY.forEach(r=>{ o[r.key]=r.get(); 
 function applyRefFromServer(data){
   if(!data || typeof data!=='object') return;
   let changed=false;
-  REF_REGISTRY.forEach(r=>{ if(Array.isArray(data[r.key])){ r.set(data[r.key]); changed=true; } });
+  REF_REGISTRY.forEach(r=>{
+    if(r.kind==='grouped'){
+      if(data[r.key] && typeof data[r.key]==='object' && !Array.isArray(data[r.key])){ r.set(data[r.key]); changed=true; }
+    } else if(Array.isArray(data[r.key])){ r.set(data[r.key]); changed=true; }
+  });
   if(changed && PREFS.view==='admin' && typeof renderAdmin==='function') renderAdmin();
 }
 function persistRef(){
@@ -4028,6 +4055,28 @@ const GOV_DEFAULTS = {
     ceo: 7,
     fast_track: 5,
     monitoring: 30
+  },
+  // Review SAI #3 — Vocabulaire de décision par instance de gouvernance.
+  // Les CLÉS (key) sont structurelles : elles pilotent le flux de statut
+  // (go→ceo, kill→closed-kill, reviewed→steering…) et ne sont PAS éditables.
+  // Les libellés (label) et couleurs (color) SONT administrables via
+  // Admin > Gouvernance (chaque membre voit le vocabulaire configuré par l'org,
+  // ex. Aligned/Not Aligned plutôt que Go/Kill).
+  decisions: {
+    sai: [
+      { key:'reviewed', label:'Revu — vers Steering', color:'#15803D' },
+      { key:'rework',   label:'À retravailler',       color:'#c8961f' }
+    ],
+    steering: [
+      { key:'go',   label:'Aligné',     color:'#15803D' },
+      { key:'hold', label:'À revoir',   color:'#c8961f' },
+      { key:'kill', label:'Non aligné', color:'#c2503e' }
+    ],
+    monitoring: [
+      { key:'closed-go',   label:'Go (déploiement)',     color:'#15803D' },
+      { key:'closed-hold', label:'Hold (à itérer)',      color:'#c8961f' },
+      { key:'closed-kill', label:'Kill (ne pas répliquer)', color:'#c2503e' }
+    ]
   }
 };
 let GOV = JSON.parse(JSON.stringify(GOV_DEFAULTS));
@@ -4036,6 +4085,7 @@ function applyGovFromServer(data){
   if(data.raci) Object.assign(GOV.raci, data.raci);
   if(data.thresholds) Object.assign(GOV.thresholds, data.thresholds);
   if(data.sla) Object.assign(GOV.sla, data.sla);
+  if(data.decisions) GOV.decisions = data.decisions;
   if(PREFS && PREFS.view==='governance' && typeof renderGovernance==='function') renderGovernance();
   if(PREFS && PREFS.view==='admin' && typeof renderAdmin==='function') renderAdmin();
 }
@@ -4263,6 +4313,7 @@ const LS_PREFS = 'nplan_prefs_v1';
 const LS_PROJECTS = 'nplan_projects_v1';
 let DATA = loadData();
 let PROJECTS = loadProjects();
+relinkTrialsToProjects(); // (re)rattache les trials sans project_id à leur projet BU
 let PREFS = loadPrefs();
 let CHAT_BACKEND = null; // { chat, nonce, ai } populated from window.DNAI_NPLAN
 let CHAT_HIST = [];
@@ -4304,6 +4355,18 @@ function seedProjects(){
     ucs.forEach(u=>{ u.project_id = pid; });
   });
   return projs;
+}
+// Fix : seedProjects() n'assigne project_id qu'au 1er boot (avant cache). Après
+// un reload, DATA vient du localStorage sans project_id et PROJECTS est en cache
+// → tous les trials deviennent orphelins (gouvernance groupée cassée). On
+// re-rattache à chaque boot, de façon idempotente, par BU.
+function relinkTrialsToProjects(){
+  if(!Array.isArray(DATA) || !Array.isArray(PROJECTS)) return false;
+  const byBu = {};
+  PROJECTS.forEach(p=>{ if(p.bu && !(p.bu in byBu)) byBu[p.bu] = p.id; });
+  let changed = false;
+  DATA.forEach(u=>{ if(!u.project_id && byBu[u.bu]){ u.project_id = byBu[u.bu]; changed = true; } });
+  return changed;
 }
 function loadProjects(){
   try{ const v=JSON.parse(localStorage.getItem(LS_PROJECTS)); if(Array.isArray(v)&&v.length) return v; }catch(e){}
@@ -5610,66 +5673,90 @@ function govProjectAccordion(items, actionFn, opts){
   }, 20);
   return html;
 }
-// Review SAI #3 — répartition des décisions d'un comité par projet (en %).
-// segs = [{key,label,color}] ; getDec(u) renvoie la clé de décision (ou 'pending').
-function govDistBar(list, getDec, segs){
-  const total = list.length || 1;
+// Review SAI #3 — vocabulaire de décision configurable (Admin > Gouvernance).
+// govDecSegs(body) renvoie [{key,label,color}] depuis GOV.decisions (libellés
+// admin) — clés structurelles fixes. La décision d'un trial est lue par body.
+function govDecSegs(body){
+  const cfg = (GOV && GOV.decisions && GOV.decisions[body]) || [];
+  return cfg.map(s=>({ key:s.key, label:s.label||s.key, color:s.color||'#c2cdc6' }));
+}
+function govDecLabel(body, key){
+  const s = govDecSegs(body).find(x=>x.key===key);
+  return s ? s.label : key;
+}
+// Décision enregistrée pour ce trial par cette instance (clé ou null).
+function govDecOf(u, body){
+  if(body==='sai')        return (u._saiDecision && u._saiDecision.decision) || null;
+  if(body==='steering')   return (u._steeringDecision && u._steeringDecision.decision) || null;
+  if(body==='monitoring') return (u._monitoringDecision && u._monitoringDecision.decision) || null;
+  return null;
+}
+// Population de référence pour la répartition : TOUS les trials du projet
+// (pas seulement ceux encore dans le gate) — sinon les décisions « go/kill »
+// quittent la file et la répartition afficherait toujours ~0 %.
+function govDistPopulation(list){
+  const pid = list && list[0] && list[0].project_id;
+  if(pid && typeof trialsOfProject==='function'){
+    const all = trialsOfProject(pid);
+    if(all && all.length) return all;
+  }
+  return list || [];
+}
+// Répartition des décisions d'une instance par projet (en %).
+function govDistFor(body, list){
+  const pop = govDistPopulation(list);
+  const segs = govDecSegs(body).concat([{ key:'pending', label:tr('gov.dist.pending','En attente'), color:'#c2cdc6' }]);
+  const total = pop.length || 1;
   const counts = {}; segs.forEach(s=>counts[s.key]=0);
-  list.forEach(u=>{ const d = getDec(u) || 'pending'; counts[d] = (counts[d]||0) + 1; });
+  pop.forEach(u=>{ const d = govDecOf(u, body) || 'pending'; counts[d] = (counts[d]||0) + 1; });
   const bar = segs.filter(s=>counts[s.key]>0).map(s=>
-    `<span style="width:${Math.round(counts[s.key]/total*100)}%;background:${s.color}" title="${s.label}: ${counts[s.key]}/${total}"></span>`
+    `<span style="width:${Math.round(counts[s.key]/total*100)}%;background:${s.color}" title="${escapeHtml(s.label)}: ${counts[s.key]}/${total}"></span>`
   ).join('') || '<span style="width:100%;background:#e7eee9"></span>';
   const legend = segs.map(s=>{
     const pct = Math.round((counts[s.key]||0)/total*100);
-    return `<span class="gov-dist-lg"><i style="background:${s.color}"></i>${s.label} <b>${pct}%</b></span>`;
+    return `<span class="gov-dist-lg"><i style="background:${s.color}"></i>${escapeHtml(s.label)} <b>${pct}%</b></span>`;
   }).join('');
   return `<div class="gov-dist"><div class="gov-dist-bar">${bar}</div><div class="gov-dist-legend">${legend}</div></div>`;
 }
-// Répartition steering : Go=Aligned · Hold=À revoir · Kill=Not Aligned · —=En attente.
-function govSteerDistFn(list){
-  return govDistBar(list, u=>(u._steeringDecision&&u._steeringDecision.decision)||'pending', [
-    {key:'go',label:tr('gov.dist.aligned','Aligned'),color:'#15803D'},
-    {key:'hold',label:tr('gov.dist.review','À revoir'),color:'#c8961f'},
-    {key:'kill',label:tr('gov.dist.notaligned','Not Aligned'),color:'#c2503e'},
-    {key:'pending',label:tr('gov.dist.pending','En attente'),color:'#c2cdc6'},
-  ]);
-}
-function govSaiDistFn(list){
-  return govDistBar(list, u=>(u._gov&&u._gov.sai&&u._gov.sai.decision)||'pending', [
-    {key:'reviewed',label:tr('gov.dist.reviewed','Revu'),color:'#15803D'},
-    {key:'rework',label:tr('gov.dist.rework','À retravailler'),color:'#c8961f'},
-    {key:'pending',label:tr('gov.dist.pending','En attente'),color:'#c2cdc6'},
-  ]);
-}
-function govMonDistFn(list){
-  return govDistBar(list, u=>{ const d=(u._monitoringDecision&&u._monitoringDecision.decision)||''; return d.replace('closed-','')||'pending'; }, [
-    {key:'go',label:tr('gov.dist.go','Go'),color:'#15803D'},
-    {key:'hold',label:tr('gov.dist.hold','Hold'),color:'#c8961f'},
-    {key:'kill',label:tr('gov.dist.kill','Kill'),color:'#c2503e'},
-    {key:'pending',label:tr('gov.dist.pending','En attente'),color:'#c2cdc6'},
-  ]);
+function govSteerDistFn(list){ return govDistFor('steering', list); }
+function govSaiDistFn(list){   return govDistFor('sai', list); }
+function govMonDistFn(list){   return govDistFor('monitoring', list); }
+// Sélecteur de décision dérivé de GOV.decisions (libellés admin) — un seul
+// rendu pour les 3 instances. rbacCls/onchangeFn pilotent permission & action.
+function govDecSelect(body, uc, onchangeFn, rbacCls, chooseLbl){
+  const cur = govDecOf(uc, body);
+  const opts = govDecSegs(body).map(s=>
+    `<option value="${s.key}" ${cur===s.key?'selected':''}>${escapeHtml(s.label)}</option>`
+  ).join('');
+  return `<select class="gov-acc-dec ${rbacCls}" data-id="${uc.id}" onchange="${onchangeFn}('${uc.id}', this.value)">
+    <option value="">— ${chooseLbl} —</option>${opts}
+  </select>`;
 }
 // Commentaire de comité par body (sai/steering/monitoring), persisté sur le UC.
+// Persistance « silencieuse » : on évite saveData()→dataChanged()→renderGovernance()
+// qui réinitialiserait l'accordéon et la saisie en cours pendant la frappe.
 function govSetComment(ucId, body, text){
   const u = ucById(ucId); if(!u) return;
   u._gov = u._gov || {}; u._gov[body] = u._gov[body] || {};
   u._gov[body].comment = text;
-  if(typeof saveData==='function') saveData();
+  try{ localStorage.setItem(LS_DATA, JSON.stringify(DATA)); }catch(e){}
+  if(typeof apiPush==='function') apiPush('usecases', DATA);
 }
 // Champ commentaire de comité (membre enregistre son commentaire sur le trial).
 function govCommentInput(u, body){
   const val = (u._gov && u._gov[body] && u._gov[body].comment) || '';
   return `<textarea class="gov-acc-comment" rows="2" placeholder="${tr('gov.comment.ph','Commentaire du comité…')}" onchange="govSetComment('${u.id}','${body}',this.value)">${escapeHtml(val)}</textarea>`;
 }
-// Décision SAI Review (revu / à retravailler) + commentaire.
+// Décision SAI Review (revu / à retravailler). Stockée en _saiDecision (cohérent
+// avec _steeringDecision/_monitoringDecision) + notification comme ses pairs.
 function govSetSaiDecision(ucId, val){
   if(typeof _rbacGuard==='function' && !_rbacGuard('do-sai-review')) return;
   const u = ucById(ucId); if(!u || !val) return;
-  u._gov = u._gov || {}; u._gov.sai = u._gov.sai || {};
-  u._gov.sai.decision = val; u._gov.sai.at = new Date().toISOString();
+  u._saiDecision = { decision: val, at: new Date().toISOString() };
   if(val==='reviewed') u.status = 'steering'; // SAI Review OK → passe au Steering
   if(typeof saveData==='function') saveData();
-  toast(u.id+' : SAI '+val, 'ok');
+  toast(u.id+' : SAI '+govDecLabel('sai', val), 'ok');
+  if(val==='reviewed' && typeof notify==='function') notify('sai.reviewed', {uc:u, decision:val});
 }
 function toast(m, kind){
   const t=document.getElementById('toast');
@@ -6768,7 +6855,7 @@ function npGatePhase(status){
 }
 function npMiniTracker(u){
   const phase = npGatePhase(u.status);
-  const steps = [[1,'SAI'],[2,'Steering'],[3,'CEO'],[4,'Exec'],[5,'Monitor']];
+  const steps = [[1,tr('track.sai','SAI')],[2,tr('track.steering','Steering')],[3,tr('track.ceo','CEO')],[4,tr('track.exec','Exec')],[5,tr('track.monitor','Monitor')]];
   const chk = '<svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.6" width="9" height="9"><path d="M3 8l3 3 7-6"/></svg>';
   return `<div class="sai-track" aria-hidden="true">${steps.map((s,idx)=>{
     const done = s[0] < phase, curr = s[0] === phase;
@@ -7709,6 +7796,10 @@ function ifVal(id){
 }
 function submitUc(isDraft){
   wizSnapshot(); // capture l'étape courante avant de lire toutes les étapes
+  // Fix #7 : les champs dates sont à l'étape 2 ; au submit (étape 3) ils ne sont
+  // plus dans le DOM, donc ifDateCheck() court-circuiterait. On valide via WIZ.
+  const _dStart = ifVal('if_start'), _dEnd = ifVal('if_end');
+  if(_dStart && _dEnd && _dEnd < _dStart){ toast(tr('in.f.dateErr')); return; }
   if(!ifDateCheck()){ toast(tr('in.f.dateErr')); return; }
   const name = ifVal('if_name');
   if(!name){ toast(tr('in.err.name')); const el=document.getElementById('if_name'); if(el) el.focus(); else { PREFS.intakeStep=1; savePrefs(); renderIntake(); } return; }
@@ -7945,11 +8036,7 @@ function renderGovernance(){
     ${inSai.length ? `<div class="card">
       <h3>${tr('gov.saiAcc.h','Revue SAI — groupé par project')} <span class="sub">${tr('gov.saiAcc.sub','(vue projet → trials : revue de complétude avant Steering)')}</span></h3>
       ${govProjectAccordion(inSai, (uc)=>`
-        <select class="gov-acc-dec rbac-sai-review-only" data-id="${uc.id}" onchange="govSetSaiDecision('${uc.id}', this.value)">
-          <option value="">— ${tr('gov.sai.choose','Avis SAI')} —</option>
-          <option value="reviewed" ${(uc._gov&&uc._gov.sai&&uc._gov.sai.decision)==='reviewed'?'selected':''}>✓ ${tr('gov.sai.reviewed','Revu — vers Steering')}</option>
-          <option value="rework" ${(uc._gov&&uc._gov.sai&&uc._gov.sai.decision)==='rework'?'selected':''}>↻ ${tr('gov.sai.rework','À retravailler')}</option>
-        </select>
+        ${govDecSelect('sai', uc, 'govSetSaiDecision', 'rbac-sai-review-only', tr('gov.sai.choose','Avis SAI'))}
         ${govCommentInput(uc,'sai')}
       `, {openFirst:true, distFn:govSaiDistFn})}
     </div>` : ''}
@@ -7958,12 +8045,7 @@ function renderGovernance(){
     <div class="card">
       <h3>${tr('gov.steerAcc.h')||'Portefeuille Steering — groupé par project'} <span class="sub">${tr('gov.steerAcc.sub')||'(vue consolidée projet → trials pour décision en comité)'}</span></h3>
       ${govProjectAccordion(inSteering, (uc)=>`
-        <select class="gov-acc-dec rbac-steering-decide-only" data-id="${uc.id}" onchange="govSetDecision('${uc.id}', this.value)">
-          <option value="">— ${tr('gov.dec.choose')||'Décision'} —</option>
-          <option value="go" ${(uc._steeringDecision&&uc._steeringDecision.decision)==='go'?'selected':''}>✓ Go</option>
-          <option value="hold" ${(uc._steeringDecision&&uc._steeringDecision.decision)==='hold'?'selected':''}>⏸ Hold</option>
-          <option value="kill" ${(uc._steeringDecision&&uc._steeringDecision.decision)==='kill'?'selected':''}>✕ Kill</option>
-        </select>
+        ${govDecSelect('steering', uc, 'govSetDecision', 'rbac-steering-decide-only', tr('gov.dec.choose','Décision'))}
         ${govCommentInput(uc,'steering')}
       `, {openFirst:true, distFn:govSteerDistFn})}
     </div>
@@ -7972,12 +8054,7 @@ function renderGovernance(){
     ${monitoring.length ? `<div class="card">
       <h3>${tr('gov.monAcc.h')||'Portefeuille Monitoring — groupé par project'} <span class="sub">${tr('gov.monAcc.sub')||'(suivi Go/Hold/Kill post-exécution)'}</span></h3>
       ${govProjectAccordion(monitoring, (uc)=>`
-        <select class="gov-acc-mondec rbac-monitoring-decide-only" data-id="${uc.id}" onchange="govSetMonDecision('${uc.id}', this.value)">
-          <option value="">— ${tr('gov.mondec.choose')||'Verdict'} —</option>
-          <option value="closed-go" ${(uc._monitoringDecision&&uc._monitoringDecision.decision)==='closed-go'?'selected':''}>✓ Go (déploiement)</option>
-          <option value="closed-hold" ${(uc._monitoringDecision&&uc._monitoringDecision.decision)==='closed-hold'?'selected':''}>⏸ Hold (à itérer)</option>
-          <option value="closed-kill" ${(uc._monitoringDecision&&uc._monitoringDecision.decision)==='closed-kill'?'selected':''}>✕ Kill (ne pas répliquer)</option>
-        </select>
+        ${govDecSelect('monitoring', uc, 'govSetMonDecision', 'rbac-monitoring-decide-only', tr('gov.mondec.choose','Verdict'))}
         ${govCommentInput(uc,'monitoring')}
       `, {distFn:govMonDistFn})}
     </div>` : ''}
@@ -8019,7 +8096,7 @@ function govSetDecision(ucId, val){
   else if(val==='kill') u.status = 'closed-kill';
   // hold = reste en steering
   saveData();
-  toast(trf('gov.dec.applied',{id:u.id,d:val})||u.id+' : décision '+val+' enregistrée','ok');
+  toast(trf('gov.dec.applied',{id:u.id,d:govDecLabel('steering',val)})||u.id+' : décision '+val+' enregistrée','ok');
   // v0.23 — Notifs Halima : 'steering.decided' → tous les rôles entity_* + sai_reviewer
   if(typeof notify==='function') notify('steering.decided', {uc:u, decision:val});
 }
@@ -8030,7 +8107,7 @@ function govSetMonDecision(ucId, val){
   u.status = val;  // closed-go | closed-hold | closed-kill
   u._monitoringDecision = { decision: val, at: new Date().toISOString() };
   saveData();
-  toast(trf('gov.mondec.applied',{id:u.id,d:val})||u.id+' : verdict '+val,'ok');
+  toast(trf('gov.mondec.applied',{id:u.id,d:govDecLabel('monitoring',val)})||u.id+' : verdict '+val,'ok');
   // v0.23 — Notif Halima : 'monitoring.decided' → entity_*
   if(typeof notify==='function') notify('monitoring.decided', {uc:u, verdict:val});
 }
@@ -8424,7 +8501,7 @@ function renderAdmin(){
 }
 
 /* ---- Admin · Référentiels (CRUD persisté en BDD) ---- */
-function refUsageField(key){ return {bus:'bu',crops:'crop',products:'product',partners:'partner'}[key]; }
+function refUsageField(key){ return {bus:'bu',crops:'crop',products:'product',partners:'partner',regions:'region'}[key]; }
 function refUsageCount(key, value){
   // v0.21 : extension à MDS (champ array dans chaque UC).
   if(key==='mds'){
@@ -8460,10 +8537,29 @@ function refRenameStr(key, i, newVal){
 function renderAdminRef(){
   const cards = REF_REGISTRY.map(r=>{
     const list = r.get();
-    const head = `<div class="ref-head"><h3>${tr(r.lblK)} <span class="ref-count">${list.length}</span></h3>
-      <span class="ref-prov">${(['bus','crops','products','partners','mds'].includes(r.key))?tr('adm.prov.core'):tr('adm.prov.excel')}</span></div>`;
+    const count = (r.kind==='grouped') ? Object.values(list||{}).reduce((s,a)=>s+(a?a.length:0),0) : list.length;
+    const head = `<div class="ref-head"><h3>${tr(r.lblK)} <span class="ref-count">${count}</span></h3>
+      <span class="ref-prov">${(['bus','regions','crops','products','partners','mds'].includes(r.key))?tr('adm.prov.core'):tr('adm.prov.excel')}</span></div>`;
     let bodyHtml;
-    if(r.kind==='strings'){
+    if(r.kind==='grouped'){
+      // Review SAI #3 — référentiel groupé (ex. régions/pays par BU), administrable.
+      const groups = list||{};
+      bodyHtml = `<div class="ref-grouped">${Object.keys(groups).map(g=>{
+        const arr = groups[g]||[];
+        return `<div class="ref-group">
+          <div class="ref-group-h">${escapeHtml(g)} <span class="ref-count">${arr.length}</span></div>
+          <div class="ref-chips">${arr.map((v,i)=>{
+            const used = refUsageCount(r.key, v);
+            const usedBadge = used>0 ? `<span class="ref-used" title="${trf('adm.usedByN',{n:used})}">${used}</span>` : '';
+            const safe = escapeHtml(v);
+            return `<span class="ref-chip"><span class="ref-chip-lbl">${safe}</span>${usedBadge}
+              <button class="ref-chip-x rbac-crud-ref-only" title="${tr('adm.del')}" onclick="refGroupedDel('${r.key}','${escapeHtml(g)}',${i})">×</button>
+            </span>`;
+          }).join('')||`<span class="muted">${tr('adm.empty')}</span>`}</div>
+          <div class="ref-add rbac-crud-ref-only"><input type="text" id="refadd_${r.key}_${escapeHtml(g)}" placeholder="${tr('adm.addPh')}" onkeydown="if(event.key==='Enter')refGroupedAdd('${r.key}','${escapeHtml(g)}')"><button class="btn ghost sm" onclick="refGroupedAdd('${r.key}','${escapeHtml(g)}')">+ ${tr('adm.add')}</button></div>
+        </div>`;
+      }).join('')}</div>`;
+    } else if(r.kind==='strings'){
       // v0.22.4 — RBAC defense in depth : × et + Add gatés par .rbac-crud-ref-only
       bodyHtml = `<div class="ref-chips">${list.map((v,i)=>{
         const used = refUsageCount(r.key, v);
@@ -8521,6 +8617,27 @@ function refAddStr(key){
   const r=refByKey(key); const list=r.get().slice();
   if(list.some(x=>String(x).toLowerCase()===v.toLowerCase())){ toast(tr('adm.dup')); return; }
   list.push(v); r.set(list); refAfterChange();
+}
+// Review SAI #3 — CRUD d'un référentiel groupé (ajout/suppression d'une valeur
+// dans un groupe, ex. ajouter un pays à une BU).
+function refGroupedAdd(key, group){
+  if(!_rbacGuard('do-crud-ref')) return;
+  const inp=document.getElementById('refadd_'+key+'_'+group); const v=((inp&&inp.value)||'').trim(); if(!v) return;
+  const r=refByKey(key); const obj=JSON.parse(JSON.stringify(r.get()||{}));
+  obj[group]=obj[group]||[];
+  if(obj[group].some(x=>String(x).toLowerCase()===v.toLowerCase())){ toast(tr('adm.dup')); return; }
+  obj[group].push(v); r.set(obj); refAfterChange();
+}
+async function refGroupedDel(key, group, i){
+  if(!_rbacGuard('do-crud-ref')) return;
+  const r=refByKey(key); const obj=JSON.parse(JSON.stringify(r.get()||{}));
+  if(!obj[group] || !obj[group].length) return;
+  const val=obj[group][i];
+  const used=refUsageCount(key, val);
+  if(used>0){ toast(trf('adm.usedBy',{n:used}), 'err'); return; }
+  const ok = await UI.confirm({ eyebrow: tr('adm.del'), title: trf('adm.confirmDel',{v:val}), body: tr('adm.confirmDel.body')||'', danger:true, ok: tr('adm.del'), cancel: tr('adm.cancel')||'Annuler' });
+  if(!ok) return;
+  obj[group].splice(i,1); r.set(obj); refAfterChange();
 }
 function refAddObj(key){
   if(!_rbacGuard('do-crud-ref')) return;
@@ -8701,15 +8818,40 @@ function renderAdminGov(){
       </div>
     </div>`;
 
+  // Review SAI #3 — vocabulaire de décision éditable (libellés + couleurs).
+  const decBody = (body)=>`<div class="gov-dec-grp">
+    <div class="gov-dec-grp-h">${tr('adm.gov.dec.'+body)}</div>
+    ${((GOV.decisions&&GOV.decisions[body])||[]).map((s,i)=>`<div class="gov-dec-row">
+      <code class="gov-dec-key">${escapeHtml(s.key)}</code>
+      <input class="gov-dec-lbl" type="text" value="${escapeHtml(s.label||'')}" placeholder="${tr('adm.gov.dec.label')}" onchange="govDecSet('${body}',${i},'label',this.value)">
+      <input class="gov-dec-col" type="color" value="${/^#[0-9a-fA-F]{6}$/.test(s.color||'')?s.color:'#15803D'}" title="${tr('adm.gov.dec.color')}" onchange="govDecSet('${body}',${i},'color',this.value)">
+    </div>`).join('')}
+  </div>`;
+  const decisions = `
+    <div class="card">
+      <h3>${tr('adm.gov.dec.h')} <span class="sub">${tr('adm.gov.dec.sub')}</span></h3>
+      <p class="muted" style="margin:-4px 0 14px;font-size:12.5px">${tr('adm.gov.dec.help')}</p>
+      <div class="gov-dec-grid">${decBody('sai')}${decBody('steering')}${decBody('monitoring')}</div>
+    </div>`;
+
   return `<p class="muted" style="margin:-4px 0 14px">${tr('adm.gov.lead')}</p>
     ${raci}
     ${thresholds}
     ${sla}
+    ${decisions}
     <div class="tool-bar" style="margin-top:8px">
       <button class="btn ghost sm" onclick="govResetDefaults()">↺ ${tr('adm.gov.reset')}</button>
       <span class="sp"></span>
       <span class="muted" style="font-size:11.5px">${tr('adm.gov.persisted')}</span>
     </div>`;
+}
+// Review SAI #3 — mutation d'un libellé/couleur de décision (clé fixe).
+function govDecSet(body, i, field, val){
+  if(typeof _rbacGuard==='function' && !_rbacGuard('do-configure-gov')) return;
+  if(!GOV.decisions || !GOV.decisions[body] || !GOV.decisions[body][i]) return;
+  GOV.decisions[body][i][field] = val;
+  persistGov();
+  if(PREFS.view==='admin' && typeof renderAdmin==='function') renderAdmin();
 }
 
 /* ============================================================

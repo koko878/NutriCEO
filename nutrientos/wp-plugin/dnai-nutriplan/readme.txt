@@ -1,6 +1,6 @@
 === D²nAI NutriPlan — Trial Management Cockpit ===
 Contributors: D²nAI · OCP Nutricrops
-Stable tag: 0.24.0
+Stable tag: 0.24.1
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
@@ -36,6 +36,36 @@ Tout est stocké en localStorage (par navigateur) — idéal pour récolter
 le feedback des parties prenantes pendant une démo, sans backend.
 
 == Changelog ==
+
+= 0.24.1 — Code review Review SAI + données master/référence administrables =
+Passe de revue end-to-end sur la v0.24.0 + mise en administrable de toutes les
+données de type master/référence.
+
+* CORRECTIF (majeur) — La répartition % des décisions par projet était
+  structurellement faussée : calculée sur la file du gate courant, une décision
+  « go/kill » faisait sortir le trial de la file → les segments « décidés »
+  affichaient ~toujours 0 %. Désormais calculée sur TOUS les trials du projet,
+  donc « 20% Aligné / 80% Non aligné » s'affiche réellement.
+* CORRECTIF — project_id n'était assigné qu'au 1er chargement (avant cache).
+  Après un reload, tous les trials redevenaient orphelins et la gouvernance
+  groupée par projet était cassée. Re-rattachement idempotent à chaque boot.
+* CORRECTIF — Saisir un commentaire de comité re-render­ait toute la vue
+  Gouvernance (accordéons repliés, saisie perdue). Persistance silencieuse.
+* CORRECTIF — SAI Review : décision stockée en _saiDecision (cohérent avec
+  Steering/Monitoring) + notification 'sai.reviewed' déclenchée (les membres
+  Steering sont prévenus). Avant : événement défini mais jamais émis.
+* CORRECTIF — Validation date fin < début ignorée à la soumission (les champs
+  sont à l'étape 2, le submit est à l'étape 3) : on valide via WIZ.
+* MASTER DATA — Régions / pays désormais administrables (Admin > Référentiel,
+  éditeur groupé par BU). Avant : constante figée dans le code.
+* MASTER DATA — Vocabulaire de décision des comités (libellés + couleurs)
+  administrable (Admin > Gouvernance). Ex. afficher « Aligné » plutôt que
+  « Go ». Les clés techniques restent fixes (elles pilotent le flux de statut).
+  Source unique : un seul rendu de sélecteur et de répartition pour les 3
+  instances, plus de tables dupliquées.
+* i18n — Libellés du mini-tracker de la carte (SAI/Steering/CEO/Exéc./Suivi)
+  passés en tr() (FR/EN/PT). Tests : 5 smokes Playwright (Trial Card, wizard,
+  gouvernance + répartition persistante, admin régions + vocabulaire) verts.
 
 = 0.24.0 — Review SAI : Trial Card, New Use Case & 4 Governance bodies =
 Mise en oeuvre du retour SAI (doc Nutri_plan_Review_2 + maquette
