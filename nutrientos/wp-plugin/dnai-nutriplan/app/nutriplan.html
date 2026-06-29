@@ -336,6 +336,19 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 /* ==========================================================================
  * v0.22 — Project accordion (Portfolio + Steering + Monitoring vues groupées)
  * ========================================================================== */
+/* Review SAI #1 — Trial Card style maquette SAI V15 (carte portfolio enrichie) */
+.kn-card.sai{padding:14px}
+.kn-card.sai .sai-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:2px}
+.kn-card.sai .sai-id{font:700 10.5px 'Inter';letter-spacing:.04em;color:var(--muted);text-transform:uppercase}
+.kn-card.sai h4{margin:3px 0 8px;font:700 14px 'Inter';color:var(--green-800);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.kn-card.sai .sai-meta{font:500 11.5px 'Inter';color:var(--muted);display:flex;flex-wrap:wrap;gap:3px 12px;margin-bottom:5px}
+.kn-card.sai .sai-meta span{display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.kn-card.sai .sai-actions{display:flex;gap:6px;margin-top:10px}
+.sai-track{display:flex;align-items:flex-start;padding:8px 4px 5px;background:var(--green-25);border-radius:8px;margin-top:9px}
+.sai-track .seg{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.sai-track .node{width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font:800 8px 'Inter'}
+.sai-track .lbl{font:600 8.5px 'Inter';text-align:center;line-height:1.1;max-width:42px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sai-track .conn{flex:1;height:2px;margin:9px 1px 0;align-self:flex-start;border-radius:2px}
 .proj-acc{display:flex;flex-direction:column;gap:10px}
 .proj-acc-card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:box-shadow .18s var(--ease-out-quart)}
 .proj-acc-card:hover{box-shadow:0 4px 20px -8px rgba(8,30,16,.12)}
@@ -6653,17 +6666,52 @@ function renderKanban(list){
     </div>`;
   }).join('')}</div>`;
 }
+// Review SAI #1 — phase de gate (1 SAI · 2 Steering · 3 CEO · 4 Exécution ·
+// 5 Monitoring) déduite du statut NutriPlan, pour le mini-tracker de la carte.
+function npGatePhase(status){
+  switch(status){
+    case 'draft': case 'submitted': return 1;
+    case 'steering': return 2;
+    case 'ceo': return 3;
+    case 'approved': case 'execution': return 4;
+    case 'monitoring': return 5;
+    case 'closed-go': case 'closed-hold': case 'closed-kill': return 6;
+    default: return 1;
+  }
+}
+function npMiniTracker(u){
+  const phase = npGatePhase(u.status);
+  const steps = [[1,'SAI'],[2,'Steering'],[3,'CEO'],[4,'Exec'],[5,'Monitor']];
+  const chk = '<svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.6" width="9" height="9"><path d="M3 8l3 3 7-6"/></svg>';
+  return `<div class="sai-track" aria-hidden="true">${steps.map((s,idx)=>{
+    const done = s[0] < phase, curr = s[0] === phase;
+    const nodeStyle = done
+      ? 'background:var(--green-600);border:2px solid var(--green-600)'
+      : curr
+        ? 'background:#fff;border:2px solid #c8961f;color:#c8961f'
+        : 'background:#fff;border:2px solid #d9e3dc;color:#bcc8c0';
+    const node = `<div class="node" style="${nodeStyle}">${done?chk:s[0]}</div>`;
+    const lbl  = `<span class="lbl" style="color:${done?'var(--green-700)':curr?'#c8961f':'#bcc8c0'}">${s[1]}</span>`;
+    const conn = idx<4 ? `<div class="conn" style="background:${done?'var(--green-300)':'#e7eee9'}"></div>` : '';
+    return `<div class="seg">${node}${lbl}</div>${conn}`;
+  }).join('')}</div>`;
+}
 function kanbanCard(u){
-  const st = statusOf(u.status), ty = typeOf(u.type), pr = prioOf(u.priority), bu = buOf(u.bu);
-  return `<div class="kn-card" onclick="openUc('${u.id}')">
-    <div class="ttl">${escapeHtml(u.name)}</div>
-    <div class="meta"><b>${u.id}</b> · ${escapeHtml(bu.nm)} · ${escapeHtml(u.region)}</div>
-    <div class="pills">
-      <span class="pill ${ty.pill}">${tyLbl(ty)}</span>
-      <span class="pill ${pr.pill}">${prLbl(pr)}</span>
-      ${u.fast_track?`<span class="pill" style="background:#fde7e7;color:#a01f1f">${tr('badge.ft')}</span>`:''}
+  const st = statusOf(u.status), ty = typeOf(u.type);
+  return `<div class="kn-card sai" onclick="openUc('${u.id}')">
+    <div class="sai-top">
+      <span class="sai-id">${u.id} · ${tyLbl(ty)}</span>
+      ${u.fast_track
+        ? `<span class="pill" style="background:#fde7e7;color:#a01f1f">${tr('badge.ft')}</span>`
+        : `<span class="pill ${st.pill}">${stLbl(st)}</span>`}
     </div>
-    <div class="foot"><span class="crop">🌾 ${escapeHtml(u.crop)} · ${escapeHtml(u.product)}</span><span class="bdg">${fmtMoney(u.budget)}</span></div>
+    <h4>${escapeHtml(u.name)}</h4>
+    <div class="sai-meta"><span>📍 ${escapeHtml(u.region)}</span><span>🌾 ${escapeHtml(u.crop)}</span></div>
+    <div class="sai-meta"><span>🤝 ${escapeHtml(u.partner||'—')}</span><span>💰 ${fmtMoney(u.budget)}</span></div>
+    ${npMiniTracker(u)}
+    <div class="sai-actions" onclick="event.stopPropagation()">
+      <a class="btn sm ghost" href="https://nutritrials.ma" target="_blank" rel="noopener" style="flex:1;justify-content:center">${tr('uc.openNT')}</a>
+    </div>
   </div>`;
 }
 function colSel(key, options, cur){
