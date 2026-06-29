@@ -2628,6 +2628,8 @@ let PARTNERS = [
   { nm:'Kenya AgTech Forum', typ:'Cluster' },
   { nm:'Yara Pilot Farm', typ:'Industrial partner' }
 ];
+// Review SAI #2 — types de partenaire (ref data administrable, dropdown wizard maquette)
+let PARTNER_TYPES = ['Research institute','National research','CGIAR center','University','Distributor','Cooperative','NGO','Cluster','Industrial partner','Government'];
 const STATUSES = [
   { id:'draft',       lblK:'st.draft',       pill:'pill-st-draft',      color:'#5c6b62' },
   { id:'submitted',   lblK:'st.submitted',   pill:'pill-st-submitted',  color:'#1f6c9c' },
@@ -3002,9 +3004,13 @@ fr:{
  'det.f.tclass':'Classe de trial','det.f.ttype':'Type de trial','det.f.tlead':'Responsable trial','det.f.site':'Site','det.f.sy':'Année début','det.f.ey':'Année fin','det.f.tstatus':'Statut trial','det.f.turg':'Urgence','det.f.tested':'Déjà testé ?','det.f.prior':'ID essai antérieur','det.f.opobj':'Objectifs opérationnels','det.f.hyp':'Hypothèse','det.f.ocp':'Produits OCP','det.f.collab':'Produits collaborateurs','det.f.compet':'Produits concurrents','det.f.proto':'Protocole de référence',
  'det.f.installed':'Installé / Planté','det.f.datacol':'Collecte de données','det.f.ph':'Données post-récolte','det.f.analysis':'Analyse',
  'det.proto.link':'Lien protocole','det.proto.sub':'Protocole déposé par le trial owner','det.proto.open':'Ouvrir ↗','det.proto.dl':'Télécharger','det.proto.none':'Pas de protocole déposé',
+ 'wz.s1.h':'Étape 1 — Identification du projet','wz.f.projmode':'Projet','wz.opt.existing':'Projet existant','wz.opt.new':'Nouveau projet','wz.f.ptitle':'Titre du projet','wz.f.ptitle.ph':'ex. Programme Maize Phosphate Use Efficiency','wz.f.entity':'Entité','wz.f.partner':'Partenaire / Fournisseur','wz.f.legal':'Raison sociale','wz.f.ptype':'Type de partenaire','wz.f.contract':'Statut du contrat','wz.f.strat':'Ligne d\'alignement stratégique','wz.f.pstart':'Date de début','wz.f.pend':'Date de fin','wz.f.duration':'Durée (années)','wz.f.nbtrials':'Nombre de trials par projet','wz.f.capex':'Budget CAPEX (USD)','wz.f.opex':'Budget OPEX (USD)','wz.f.plead':'Chef de projet','wz.f.leadname':'Nom du responsable','wz.f.powner':'Propriétaire du projet','wz.f.ownername':'Nom du propriétaire','wz.f.objective':'Objectif','wz.f.objective.ph':'Objectif principal du projet','wz.f.pdesc':'Description du projet','wz.f.pdesc.ph':'Rationale, résultats attendus, contexte stratégique…',
+ 'wz.s2.h':'Étape 2 — Business Use Case','wz.s2.crop':'Culture & marché','wz.f.country':'Pays','wz.s2.market':'Description du marché phosphaté','wz.f.area':'Surface culture (ha)','wz.f.currp':'Consommation P₂O₅ actuelle (t)','wz.f.marketp':'Potentiel marché P₂O₅ (t)','wz.s2.comp':'Mapping concurrents','wz.s2.comp.sub':'Liste les produits concurrents présents sur ce marché.','wz.s2.agro':'Objectif agronomique','wz.f.nbt':'Nombre total de trials','wz.f.nbd':'Nombre total de démos','wz.f.objectives':'Objectifs','wz.f.objectives.ph':'Décris les objectifs agronomiques du projet…','wz.f.hyp':'Hypothèse','wz.s2.targeted':'Produits ciblés','wz.f.targeted':'Produits OCP ciblés','wz.s2.demand':'Hypothèses de création de demande','wz.f.demandyear':'Année cible','wz.f.demandvol':'Volume visé (t)','wz.s2.share':'Part de marché','wz.f.msproduct':'Produit','wz.f.msshare':'Part de marché visée (%)','wz.s2.eco':'Impact économique — Agriculteurs','wz.f.refyield':'Rendement commercialisable de référence (kg/ha)','wz.f.targyield':'Rendement commercialisable visé (kg/ha)','wz.f.yieldinc':'Gain de rendement attendu (%)','wz.f.roi':'ROI agriculteur attendu','wz.f.justif':'Justification','wz.f.justif.ph':'Explique la base des hypothèses de rendement et de ROI…',
+ 'wz.s3.h':'Étape 3 — Description du trial','wz.s3.sub':'Décris le trial / démo. Ces champs alimentent la carte de détail et la gouvernance.','wz.f.ttitle':'Titre du trial / démo','wz.s3.products':'Produits','wz.s3.proto':'Protocole de référence','wz.f.protourl':'URL SharePoint / OneDrive','wz.f.opobj.ph':'Principaux objectifs opérationnels de ce trial/démo',
  'adm.gov.dec.h':'Vocabulaire de décision','adm.gov.dec.sub':'— libellés & couleurs par instance','adm.gov.dec.help':"Renomme et recolore les options de décision vues par les comités (ex. « Aligné » plutôt que « Go »). Les clés techniques restent fixes car elles pilotent le flux de statut.",
  'adm.gov.dec.sai':'Revue SAI','adm.gov.dec.steering':'Steering','adm.gov.dec.monitoring':'Monitoring','adm.gov.dec.label':'Libellé','adm.gov.dec.color':'Couleur',
  'adm.r.regions':'Régions / pays (par BU)',
+ 'adm.r.ptypes':'Types de partenaire',
  'adm.t.ref':'Référentiels','adm.t.frame':'Cadre v1.0','adm.t.gov':'Gouvernance','adm.t.access':'Accès & rôles','adm.t.integr':'Intégrations',
  'adm.gov.lead':'Paramètres de gouvernance : matrice RACI, seuils déclenchant la décision CEO, éligibilité Fast Track, SLA par étape. Toute modification est propagée immédiatement.',
  'adm.gov.raci.h':'Matrice RACI éditable','adm.gov.raci.sub':'(11 étapes × 5 rôles)','adm.gov.raci.help':'Pour chaque étape, choisis qui Réalise (R), est Accountable (A), est Consulté (C) ou Informé (I).',
@@ -3419,9 +3425,13 @@ en:{
  'det.f.tclass':'Trial Class','det.f.ttype':'Trial Type','det.f.tlead':'Trial Lead','det.f.site':'Site','det.f.sy':'Start Year','det.f.ey':'End Year','det.f.tstatus':'Trial Status','det.f.turg':'Trial Urgency','det.f.tested':'Was Tested Before?','det.f.prior':'Prior Trial ID','det.f.opobj':'Operational Objectives','det.f.hyp':'Hypothesis','det.f.ocp':'OCP Products to Use','det.f.collab':"Collaborators' Products",'det.f.compet':"Competitors' Products",'det.f.proto':'Reference Protocol',
  'det.f.installed':'Installed / Planted','det.f.datacol':'Data Collection','det.f.ph':'Post-Harvest Data','det.f.analysis':'Analysis',
  'det.proto.link':'Protocol link','det.proto.sub':'Protocol uploaded by trial owner','det.proto.open':'Open ↗','det.proto.dl':'Download','det.proto.none':'No protocol uploaded yet',
+ 'wz.s1.h':'Step 1 — Project Identification','wz.f.projmode':'Project','wz.opt.existing':'Existing project','wz.opt.new':'New project','wz.f.ptitle':'Project Title','wz.f.ptitle.ph':'e.g. Maize Phosphate Use Efficiency Programme','wz.f.entity':'Entity','wz.f.partner':'Partner / Vendor','wz.f.legal':'Legal entity name','wz.f.ptype':'Partner Type','wz.f.contract':'Contract Status','wz.f.strat':'Strategic Alignment Line','wz.f.pstart':'Start Date','wz.f.pend':'End Date','wz.f.duration':'Duration (years)','wz.f.nbtrials':'Number of Trials per Project','wz.f.capex':'Budget CAPEX (USD)','wz.f.opex':'Budget OPEX (USD)','wz.f.plead':'Project Lead','wz.f.leadname':'Lead name','wz.f.powner':'Project Owner','wz.f.ownername':'Owner name','wz.f.objective':'Objective','wz.f.objective.ph':'Main project objective','wz.f.pdesc':'Project Description','wz.f.pdesc.ph':'Rationale, expected outcomes and strategic context…',
+ 'wz.s2.h':'Step 2 — Business Use Case','wz.s2.crop':'Crop & Market Identification','wz.f.country':'Country','wz.s2.market':'Phosphorous Market Description','wz.f.area':'Crop Area (ha)','wz.f.currp':'Current P₂O₅ Consumption (t)','wz.f.marketp':'Market P₂O₅ Potential (t)','wz.s2.comp':'Competition Mapping','wz.s2.comp.sub':'List the competitor products present on this market.','wz.s2.agro':'Agronomic Objective','wz.f.nbt':'Total No. of Trials','wz.f.nbd':'Total No. of Demos','wz.f.objectives':'Objectives','wz.f.objectives.ph':'Describe the agronomic objectives of this project…','wz.f.hyp':'Hypothesis','wz.s2.targeted':'Targeted Products','wz.f.targeted':'Targeted OCP products','wz.s2.demand':'Demand Creation Assumptions','wz.f.demandyear':'Target year','wz.f.demandvol':'Target volume (t)','wz.s2.share':'Market Share','wz.f.msproduct':'Product','wz.f.msshare':'Target market share (%)','wz.s2.eco':'Economic Impact — Farmers','wz.f.refyield':'Reference Marketable Yield (kg/ha)','wz.f.targyield':'Targeted Marketable Yield (kg/ha)','wz.f.yieldinc':'Expected Yield Increase (%)','wz.f.roi':'Expected ROI Farmer','wz.f.justif':'Justification','wz.f.justif.ph':'Explain the basis for yield improvement and ROI assumptions…',
+ 'wz.s3.h':'Step 3 — Trial Description','wz.s3.sub':'Describe the trial / demo. These fields feed the detail card and governance.','wz.f.ttitle':'Trial / Demo Title','wz.s3.products':'Products','wz.s3.proto':'Reference Protocol','wz.f.protourl':'SharePoint / OneDrive URL','wz.f.opobj.ph':'Main operational objectives of this trial/demo',
  'adm.gov.dec.h':'Decision vocabulary','adm.gov.dec.sub':'— labels & colors per body','adm.gov.dec.help':'Rename and recolor the decision options committees see (e.g. "Aligned" instead of "Go"). Technical keys stay fixed because they drive the status flow.',
  'adm.gov.dec.sai':'SAI Review','adm.gov.dec.steering':'Steering','adm.gov.dec.monitoring':'Monitoring','adm.gov.dec.label':'Label','adm.gov.dec.color':'Color',
  'adm.r.regions':'Regions / countries (by BU)',
+ 'adm.r.ptypes':'Partner types',
  'adm.t.ref':'Reference data','adm.t.frame':'Framework v1.0','adm.t.gov':'Governance','adm.t.access':'Access & roles','adm.t.integr':'Integrations',
  'adm.gov.lead':'Governance settings: RACI matrix, CEO decision thresholds, Fast Track eligibility, per-step SLAs. Changes propagate immediately.',
  'adm.gov.raci.h':'Editable RACI matrix','adm.gov.raci.sub':'(11 steps × 5 roles)','adm.gov.raci.help':'For each step, choose who is Responsible (R), Accountable (A), Consulted (C) or Informed (I).',
@@ -3833,9 +3843,13 @@ pt:{
  'det.f.tclass':'Classe do trial','det.f.ttype':'Tipo de trial','det.f.tlead':'Responsável do trial','det.f.site':'Local','det.f.sy':'Ano início','det.f.ey':'Ano fim','det.f.tstatus':'Status do trial','det.f.turg':'Urgência','det.f.tested':'Já testado?','det.f.prior':'ID ensaio anterior','det.f.opobj':'Objetivos operacionais','det.f.hyp':'Hipótese','det.f.ocp':'Produtos OCP','det.f.collab':'Produtos colaboradores','det.f.compet':'Produtos concorrentes','det.f.proto':'Protocolo de referência',
  'det.f.installed':'Instalado / Plantado','det.f.datacol':'Coleta de dados','det.f.ph':'Dados pós-colheita','det.f.analysis':'Análise',
  'det.proto.link':'Link do protocolo','det.proto.sub':'Protocolo enviado pelo trial owner','det.proto.open':'Abrir ↗','det.proto.dl':'Baixar','det.proto.none':'Nenhum protocolo enviado',
+ 'wz.s1.h':'Etapa 1 — Identificação do Projeto','wz.f.projmode':'Projeto','wz.opt.existing':'Projeto existente','wz.opt.new':'Novo projeto','wz.f.ptitle':'Título do projeto','wz.f.ptitle.ph':'ex. Programa Maize Phosphate Use Efficiency','wz.f.entity':'Entidade','wz.f.partner':'Parceiro / Fornecedor','wz.f.legal':'Razão social','wz.f.ptype':'Tipo de parceiro','wz.f.contract':'Status do contrato','wz.f.strat':'Linha de alinhamento estratégico','wz.f.pstart':'Data de início','wz.f.pend':'Data de fim','wz.f.duration':'Duração (anos)','wz.f.nbtrials':'Número de trials por projeto','wz.f.capex':'Orçamento CAPEX (USD)','wz.f.opex':'Orçamento OPEX (USD)','wz.f.plead':'Líder do projeto','wz.f.leadname':'Nome do líder','wz.f.powner':'Proprietário do projeto','wz.f.ownername':'Nome do proprietário','wz.f.objective':'Objetivo','wz.f.objective.ph':'Objetivo principal do projeto','wz.f.pdesc':'Descrição do projeto','wz.f.pdesc.ph':'Rationale, resultados esperados e contexto estratégico…',
+ 'wz.s2.h':'Etapa 2 — Business Use Case','wz.s2.crop':'Cultura & mercado','wz.f.country':'País','wz.s2.market':'Descrição do mercado de fósforo','wz.f.area':'Área de cultura (ha)','wz.f.currp':'Consumo atual de P₂O₅ (t)','wz.f.marketp':'Potencial de mercado P₂O₅ (t)','wz.s2.comp':'Mapeamento de concorrentes','wz.s2.comp.sub':'Liste os produtos concorrentes presentes neste mercado.','wz.s2.agro':'Objetivo agronômico','wz.f.nbt':'Total de trials','wz.f.nbd':'Total de demos','wz.f.objectives':'Objetivos','wz.f.objectives.ph':'Descreva os objetivos agronômicos do projeto…','wz.f.hyp':'Hipótese','wz.s2.targeted':'Produtos-alvo','wz.f.targeted':'Produtos OCP alvo','wz.s2.demand':'Premissas de criação de demanda','wz.f.demandyear':'Ano alvo','wz.f.demandvol':'Volume alvo (t)','wz.s2.share':'Participação de mercado','wz.f.msproduct':'Produto','wz.f.msshare':'Participação de mercado alvo (%)','wz.s2.eco':'Impacto econômico — Agricultores','wz.f.refyield':'Rendimento comercializável de referência (kg/ha)','wz.f.targyield':'Rendimento comercializável alvo (kg/ha)','wz.f.yieldinc':'Aumento de rendimento esperado (%)','wz.f.roi':'ROI agricultor esperado','wz.f.justif':'Justificativa','wz.f.justif.ph':'Explique a base das hipóteses de rendimento e ROI…',
+ 'wz.s3.h':'Etapa 3 — Descrição do Trial','wz.s3.sub':'Descreva o trial / demo. Estes campos alimentam o cartão de detalhe e a governança.','wz.f.ttitle':'Título do trial / demo','wz.s3.products':'Produtos','wz.s3.proto':'Protocolo de referência','wz.f.protourl':'URL SharePoint / OneDrive','wz.f.opobj.ph':'Principais objetivos operacionais deste trial/demo',
  'adm.gov.dec.h':'Vocabulário de decisão','adm.gov.dec.sub':'— rótulos & cores por instância','adm.gov.dec.help':'Renomeie e recolora as opções de decisão vistas pelos comitês (ex. "Alinhado" em vez de "Go"). As chaves técnicas permanecem fixas pois pilotam o fluxo de status.',
  'adm.gov.dec.sai':'Revisão SAI','adm.gov.dec.steering':'Steering','adm.gov.dec.monitoring':'Monitoring','adm.gov.dec.label':'Rótulo','adm.gov.dec.color':'Cor',
  'adm.r.regions':'Regiões / países (por BU)',
+ 'adm.r.ptypes':'Tipos de parceiro',
  'adm.t.ref':'Catálogos','adm.t.frame':'Framework v1.0','adm.t.gov':'Governança','adm.t.access':'Acessos & papéis','adm.t.integr':'Integrações',
  'adm.gov.lead':'Configurações de governança: matriz RACI, limites de decisão CEO, elegibilidade Fast Track, SLAs por etapa. Alterações são propagadas imediatamente.',
  'adm.gov.raci.h':'Matriz RACI editável','adm.gov.raci.sub':'(11 etapas × 5 papéis)','adm.gov.raci.help':'Para cada etapa, escolha quem é Responsável (R), Accountable (A), Consultado (C) ou Informado (I).',
@@ -4058,6 +4072,7 @@ const REF_REGISTRY = [
   { key:'crops',          lblK:'adm.r.crops',    kind:'strings', get:()=>CROPS,            set:v=>{CROPS=v;} },
   { key:'products',       lblK:'adm.r.products', kind:'strings', get:()=>PRODUCTS,         set:v=>{PRODUCTS=v;} },
   { key:'partners',       lblK:'adm.r.partners', kind:'objects', cols:[['nm','Nom'],['typ','Type']], get:()=>PARTNERS,    set:v=>{PARTNERS=v;} },
+  { key:'partner_types',  lblK:'adm.r.ptypes',   kind:'strings', get:()=>PARTNER_TYPES,    set:v=>{PARTNER_TYPES=v;} },
   { key:'mds',            lblK:'adm.r.mds',      kind:'strings', get:()=>MDS_ITEMS,        set:v=>{MDS_ITEMS=v;} },
   { key:'project_status', lblK:'adm.r.pstatus',  kind:'strings', get:()=>PROJECT_STATUS,   set:v=>{PROJECT_STATUS=v;} },
   { key:'contract_status',lblK:'adm.r.cstatus',  kind:'strings', get:()=>CONTRACT_STATUS,  set:v=>{CONTRACT_STATUS=v;} },
@@ -7519,112 +7534,130 @@ function renderIntakeWizard(){
       `}
     </div>
   `;
-  // Wire BC tabs si on est à l'étape 2
-  if(step===2){
-    document.querySelectorAll('.bc-tab').forEach(b=>{
-      b.onclick = ()=>{
-        const id = b.dataset.tab;
-        document.querySelectorAll('.bc-tab').forEach(x=>x.classList.toggle('on', x===b));
-        document.querySelectorAll('.bc-pane').forEach(p=>p.style.display = (p.dataset.tab===id ? '' : 'none'));
-      };
-    });
-  }
   // Review SAI #2 — restaure les valeurs saisies aux étapes précédentes.
   wizRestore();
+  // Step 1 : affiche le bon panneau (projet existant / nouveau) après restauration.
+  if(step===1 && typeof wizProjModeToggle==='function') wizProjModeToggle();
+}
+// Review SAI #2 (retour Halima) — wizard projet+trial fidèle à la maquette SAI.
+// Step 1 : Project Identification (projet existant OU nouveau). Step 2 : Business
+// Use Case (niveau projet). Step 3 : Trial Description. Tous les champs maquette.
+function wizProjModeToggle(){
+  const mode = (document.getElementById('if_projmode')||{}).value || 'existing';
+  const ex = document.getElementById('wizProjExisting'), nw = document.getElementById('wizProjNew');
+  if(ex) ex.style.display = mode==='existing' ? '' : 'none';
+  if(nw) nw.style.display = mode==='new' ? '' : 'none';
 }
 function renderWizStep1Html(){
+  const opts = (arr)=>arr.map(x=>`<option>${escapeHtml(x)}</option>`).join('');
   return `
-    <div class="form-section">
-      <h3>${tr('in.s1.h')}</h3>
-      <p class="sub">${tr('in.s1.sub')}</p>
+    <div class="form-section" style="margin-top:0">
+      <h3>${tr('wz.s1.h','Step 1 — Project Identification')}</h3>
+      <p class="sub">${tr('wz.s1.sub','Ce trial/démo fait-il partie d\'un projet existant, ou crées-tu un nouveau projet ?')}</p>
       <div class="form-grid">
-        <div class="fld full"><label for="if_project">${tr('in.f.project')} <span class="req">*</span></label>
-          <select id="if_project">${PROJECTS.map(p=>`<option value="${p.id}"${PREFS._prefillProject===p.id?' selected':''}>${escapeHtml(p.id+' · '+p.title)}</option>`).join('')}</select>
-          <span class="muted" style="display:block;font-size:11.5px;margin-top:4px">${tr('in.f.project.help')}</span></div>
-        <div class="fld full"><label for="if_name">${tr('in.f.name')} <span class="req">*</span></label><input id="if_name" type="text" placeholder="${tr('in.f.name.ph')}"></div>
-        <div class="fld"><label for="if_bu">${tr('in.f.bu')} <span class="req">*</span></label>
-          <select id="if_bu">${BUS.map(b=>`<option value="${b.id}">${b.nm}</option>`).join('')}</select></div>
-        <div class="fld"><label for="if_type">${tr('in.f.type')} <span class="req">*</span></label>
-          <select id="if_type">${TYPES.map(t=>`<option value="${t.id}">${tyLbl(t)} — TRL ${t.id==='scientific'?'2-4':(t.id==='applied'?'5-8':'7-9')}</option>`).join('')}</select></div>
-        <div class="fld full"><label for="if_objp">${tr('in.f.objPrim')} <span class="req">*</span></label><textarea id="if_objp" placeholder="${tr('in.f.objPrim.ph')}"></textarea></div>
-        <div class="fld full"><label for="if_objs">${tr('in.f.objSec')} <span class="opt">${tr('in.f.objSec.opt')}</span></label><textarea id="if_objs" placeholder="1. …\n2. …\n3. …"></textarea></div>
-        <div class="fld full"><label for="if_rat">${tr('in.f.rat')} <span class="req">*</span></label><textarea id="if_rat" placeholder="${tr('in.f.rat.ph')}"></textarea></div>
+        <div class="fld full"><label for="if_projmode">${tr('wz.f.projmode','Projet')} <span class="req">*</span></label>
+          <select id="if_projmode" onchange="wizProjModeToggle()">
+            <option value="existing">${tr('wz.opt.existing','Projet existant')}</option>
+            <option value="new">${tr('wz.opt.new','Nouveau projet')}</option>
+          </select></div>
       </div>
-    </div>
-    <div class="form-section">
-      <h3>${tr('in.s2.h')}</h3>
-      <p class="sub">${tr('in.s2.sub')}</p>
-      <div class="form-grid">
-        <div class="fld"><label for="if_region">${tr('in.f.region')} <span class="req">*</span></label>
-          <select id="if_region">${Object.values(REGIONS).flat().map(r=>`<option>${r}</option>`).join('')}</select></div>
-        <div class="fld"><label for="if_crop">${tr('in.f.crop')} <span class="req">*</span></label>
-          <select id="if_crop">${CROPS.map(c=>`<option>${c}</option>`).join('')}</select></div>
-        <div class="fld"><label for="if_prod">${tr('in.f.prod')} <span class="req">*</span></label>
-          <select id="if_prod">${PRODUCTS.map(p=>`<option>${p}</option>`).join('')}</select></div>
-        <div class="fld"><label for="if_ref">${tr('in.f.ref')}</label>
-          <select id="if_ref">${PRODUCTS.map(p=>`<option>${p}</option>`).join('')}</select></div>
+      <div id="wizProjExisting">
+        <div class="form-grid">
+          <div class="fld full"><label for="if_project">${tr('in.f.project')} <span class="req">*</span></label>
+            <select id="if_project">${PROJECTS.map(p=>`<option value="${p.id}"${PREFS._prefillProject===p.id?' selected':''}>${escapeHtml(p.id+' · '+p.title)}</option>`).join('')}</select>
+            <span class="muted" style="display:block;font-size:11.5px;margin-top:4px">${tr('in.f.project.help')}</span></div>
+        </div>
+      </div>
+      <div id="wizProjNew" style="display:none">
+        <div class="form-grid">
+          <div class="fld full"><label for="if_proj_title">${tr('wz.f.ptitle','Project Title')} <span class="req">*</span></label><input id="if_proj_title" type="text" placeholder="${tr('wz.f.ptitle.ph','e.g. Maize Phosphate Use Efficiency Programme')}"></div>
+          <div class="fld"><label for="if_bu">${tr('wz.f.entity','Entity')} <span class="req">*</span></label>
+            <select id="if_bu">${BUS.map(b=>`<option value="${b.id}">${escapeHtml(b.nm)}</option>`).join('')}</select></div>
+          <div class="fld"><label for="if_proj_region">${tr('in.f.region')}</label>
+            <select id="if_proj_region">${opts(Object.values(REGIONS).flat())}</select></div>
+          <div class="fld"><label for="if_proj_partner">${tr('wz.f.partner','Partner / Vendor')}</label><input id="if_proj_partner" type="text" placeholder="${tr('wz.f.legal','Legal entity name')}"></div>
+          <div class="fld"><label for="if_proj_ptype">${tr('wz.f.ptype','Partner Type')}</label>
+            <select id="if_proj_ptype">${opts(PARTNER_TYPES)}</select></div>
+          <div class="fld"><label for="if_proj_contract">${tr('wz.f.contract','Contract Status')}</label>
+            <select id="if_proj_contract">${opts(CONTRACT_STATUS)}</select></div>
+          <div class="fld"><label for="if_proj_strat">${tr('wz.f.strat','Strategic Alignment Line')}</label>
+            <select id="if_proj_strat">${STRATEGIC_LINES.map(s=>`<option>${escapeHtml(s)}</option>`).join('')}</select></div>
+          <div class="fld"><label for="if_proj_start">${tr('wz.f.pstart','Start Date')}</label><input id="if_proj_start" type="month" placeholder="YYYY-MM"></div>
+          <div class="fld"><label for="if_proj_end">${tr('wz.f.pend','End Date')}</label><input id="if_proj_end" type="month" placeholder="YYYY-MM"></div>
+          <div class="fld"><label for="if_proj_duration">${tr('wz.f.duration','Duration (years)')}</label><input id="if_proj_duration" type="number" min="1" placeholder="3"></div>
+          <div class="fld"><label for="if_proj_nbtrials">${tr('wz.f.nbtrials','Number of Trials per Project')}</label><input id="if_proj_nbtrials" type="number" min="0" placeholder="5"></div>
+          <div class="fld"><label for="if_proj_capex">${tr('wz.f.capex','Budget CAPEX (USD)')}</label><input id="if_proj_capex" type="number" min="0" placeholder="0"></div>
+          <div class="fld"><label for="if_proj_opex">${tr('wz.f.opex','Budget OPEX (USD)')}</label><input id="if_proj_opex" type="number" min="0" placeholder="0"></div>
+          <div class="fld"><label for="if_proj_lead">${tr('wz.f.plead','Project Lead')}</label><input id="if_proj_lead" type="text" placeholder="${tr('wz.f.leadname','Lead name')}"></div>
+          <div class="fld"><label for="if_proj_owner">${tr('wz.f.powner','Project Owner')}</label><input id="if_proj_owner" type="text" placeholder="${tr('wz.f.ownername','Owner name')}"></div>
+          <div class="fld full"><label for="if_proj_objective">${tr('wz.f.objective','Objective')}</label><input id="if_proj_objective" type="text" placeholder="${tr('wz.f.objective.ph','Main project objective')}"></div>
+          <div class="fld full"><label for="if_proj_desc">${tr('wz.f.pdesc','Project Description')}</label><textarea id="if_proj_desc" placeholder="${tr('wz.f.pdesc.ph','Rationale, expected outcomes and strategic context...')}"></textarea></div>
+        </div>
       </div>
     </div>
   `;
 }
 function renderWizStep2Html(){
-  // Business Case en 3 tabs (P Market / Design & Hypothesis / Eco Impact)
   return `
     <div class="bc-ctx">
-      <b>${tr('intake.bc.ctx')||'Business Case'}</b> — ${tr('intake.bc.intro')||'Quantifie le marché, l\'hypothèse agronomique et l\'impact écologique. Toutes les sections sont sauvegardées même en brouillon.'}
+      <b>${tr('wz.s2.h','Step 2 — Business Use Case')}</b> — ${tr('wz.s2.sub','Quantifie le marché phosphaté, l\'objectif agronomique et l\'impact économique au niveau du projet.')}
     </div>
-    <div class="bc-tabs">
-      <button class="bc-tab on" data-tab="pmarket">${tr('intake.bc.t1')||'1 · P Market'}</button>
-      <button class="bc-tab" data-tab="design">${tr('intake.bc.t2')||'2 · Design & Hypothesis'}</button>
-      <button class="bc-tab" data-tab="eco">${tr('intake.bc.t3')||'3 · Eco Impact'}</button>
+    <div class="form-section" style="margin-top:0">
+      <h3>${tr('wz.s2.crop','Crop & Market Identification')}</h3>
+      <div class="form-grid">
+        <div class="fld"><label for="if_buc_crop">${tr('in.f.crop')} <span class="req">*</span></label>
+          <select id="if_buc_crop">${CROPS.map(c=>`<option>${escapeHtml(c)}</option>`).join('')}</select></div>
+        <div class="fld"><label for="if_buc_country">${tr('wz.f.country','Country')} <span class="req">*</span></label><input id="if_buc_country" type="text" placeholder="e.g. Morocco"></div>
+      </div>
+      <h3 style="margin-top:18px">${tr('wz.s2.market','Phosphorous Market Description')}</h3>
+      <div class="form-grid">
+        <div class="fld"><label for="if_buc_area">${tr('wz.f.area','Crop Area (ha)')}</label><input id="if_buc_area" type="number" placeholder="80000"></div>
+        <div class="fld"><label for="if_buc_currp2o5">${tr('wz.f.currp','Current P₂O₅ Consumption (t)')}</label><input id="if_buc_currp2o5" type="number" placeholder="1200"></div>
+        <div class="fld"><label for="if_buc_marketp2o5">${tr('wz.f.marketp','Market P₂O₅ Potential (t)')}</label><input id="if_buc_marketp2o5" type="number" placeholder="2500"></div>
+      </div>
+      <h3 style="margin-top:18px">${tr('wz.s2.comp','Competition Mapping')}</h3>
+      <p class="muted" style="font-size:12px;margin:-6px 0 10px">${tr('wz.s2.comp.sub','Liste les produits concurrents présents sur ce marché.')}</p>
+      <table class="bc-tbl">
+        <thead><tr><th>${tr('intake.bc.comp.prod','Produit')}</th><th>${tr('intake.bc.comp.co','Société')}</th><th>${tr('intake.bc.comp.vol','Vol. (t)')}</th><th>${tr('intake.bc.comp.eqp','Eq. P₂O₅')}</th><th></th></tr></thead>
+        <tbody id="bcCompTbody">
+          <tr><td><input type="text" placeholder="e.g. MAP 11-52-0"></td><td><input type="text" placeholder="Company"></td><td><input type="text" placeholder="0"></td><td><input type="text" placeholder="0"></td><td><button class="bc-tbl-x" onclick="this.closest('tr').remove()">✕</button></td></tr>
+        </tbody>
+      </table>
+      <button class="bc-tbl-add" onclick="document.getElementById('bcCompTbody').insertAdjacentHTML('beforeend','<tr><td><input type=\\'text\\'></td><td><input type=\\'text\\'></td><td><input type=\\'text\\'></td><td><input type=\\'text\\'></td><td><button class=\\'bc-tbl-x\\' onclick=&quot;this.closest(\\'tr\\').remove()&quot;>✕</button></td></tr>')">+ ${tr('intake.bc.comp.add','Ajouter un concurrent')}</button>
     </div>
-
-    <div class="bc-pane" data-tab="pmarket">
-      <div class="form-section" style="margin-top:0">
-        <h3>${tr('intake.bc.pmarket.h')||'Description du marché phosphaté'}</h3>
-        <div class="form-grid">
-          <div class="fld"><label for="bc_area">${tr('intake.bc.area')||'Surface culture (ha)'}</label><input id="bc_area" type="text" placeholder="80000"></div>
-          <div class="fld"><label for="bc_currp">${tr('intake.bc.currp')||'Consommation P₂O₅ actuelle (t)'}</label><input id="bc_currp" type="text" placeholder="1200"></div>
-          <div class="fld full"><label for="bc_potp">${tr('intake.bc.potp')||'Potentiel marché P₂O₅ (t)'}</label><input id="bc_potp" type="text" placeholder="2500"></div>
-        </div>
-        <h3 style="margin-top:18px">${tr('intake.bc.comp.h')||'Mapping concurrents'}</h3>
-        <p class="muted" style="font-size:12px;margin:-6px 0 10px">${tr('intake.bc.comp.sub')||'Liste les produits concurrents présents sur ce marché.'}</p>
-        <table class="bc-tbl">
-          <thead><tr><th>${tr('intake.bc.comp.prod')||'Produit'}</th><th>${tr('intake.bc.comp.co')||'Société'}</th><th>${tr('intake.bc.comp.vol')||'Vol. (t)'}</th><th>${tr('intake.bc.comp.eqp')||'Eq. P₂O₅'}</th><th></th></tr></thead>
-          <tbody id="bcCompTbody">
-            <tr><td><input type="text" placeholder="ex: MAP 11-52-0"></td><td><input type="text" placeholder="Société"></td><td><input type="text" placeholder="0"></td><td><input type="text" placeholder="0"></td><td><button class="bc-tbl-x" onclick="this.closest('tr').remove()">✕</button></td></tr>
-          </tbody>
-        </table>
-        <button class="bc-tbl-add" onclick="document.getElementById('bcCompTbody').insertAdjacentHTML('beforeend','<tr><td><input type=\\'text\\' placeholder=\\'ex: MAP 11-52-0\\'></td><td><input type=\\'text\\' placeholder=\\'Société\\'></td><td><input type=\\'text\\' placeholder=\\'0\\'></td><td><input type=\\'text\\' placeholder=\\'0\\'></td><td><button class=\\'bc-tbl-x\\' onclick=&quot;this.closest(\\'tr\\').remove()&quot;>✕</button></td></tr>')">+ ${tr('intake.bc.comp.add')||'Ajouter un concurrent'}</button>
+    <div class="form-section">
+      <h3>${tr('wz.s2.agro','Agronomic Objective')}</h3>
+      <div class="form-grid">
+        <div class="fld"><label for="if_buc_nbtrials">${tr('wz.f.nbt','Total No. of Trials')}</label><input id="if_buc_nbtrials" type="number" min="0" placeholder="5"></div>
+        <div class="fld"><label for="if_buc_nbdemos">${tr('wz.f.nbd','Total No. of Demos')}</label><input id="if_buc_nbdemos" type="number" min="0" placeholder="3"></div>
+        <div class="fld full"><label for="if_buc_objectives">${tr('wz.f.objectives','Objectives')}</label><textarea id="if_buc_objectives" placeholder="${tr('wz.f.objectives.ph','Décris les objectifs agronomiques du projet...')}"></textarea></div>
+        <div class="fld full"><label for="if_buc_hyp">${tr('wz.f.hyp','Hypothesis')}</label><textarea id="if_buc_hyp" placeholder="Under [crop/condition], applying [treatment] will improve yield by at least [X]% vs. farmer practice."></textarea></div>
       </div>
     </div>
-
-    <div class="bc-pane" data-tab="design" style="display:none">
-      <div class="form-section" style="margin-top:0">
-        <h3>${tr('intake.bc.design.h')||'Hypothèse agronomique & design'}</h3>
-        <div class="form-grid">
-          <div class="fld"><label for="if_treat">${tr('in.f.treat')} <span class="req">*</span></label><input id="if_treat" type="number" placeholder="4" min="1"></div>
-          <div class="fld"><label for="if_rep">${tr('in.f.rep')} <span class="req">*</span></label><input id="if_rep" type="number" placeholder="3" min="3"></div>
-          <div class="fld"><label for="if_start">${tr('in.f.start')}</label><input id="if_start" type="date" oninput="ifDateCheck()"></div>
-          <div class="fld"><label for="if_end">${tr('in.f.end')}</label><input id="if_end" type="date" oninput="ifDateCheck()">
-            <span id="if_dateErr" class="fld-err" style="display:none;color:var(--bad);font-size:11.5px;margin-top:4px">${tr('in.f.dateErr')}</span></div>
-          <div class="fld full"><label for="bc_hyp">${tr('intake.bc.hyp')||'Hypothèse principale (uplift attendu, mécanisme)'}</label><textarea id="bc_hyp" placeholder="ex: +12 % rendement vs MAP grâce à libération progressive…"></textarea></div>
-          <div class="fld"><label for="bc_yield">${tr('intake.bc.yield')||'Uplift rendement visé'}</label><input id="bc_yield" type="text" placeholder="+12% vs ref"></div>
-          <div class="fld"><label for="bc_revenue">${tr('intake.bc.revenue')||'Revenue additionnel modélisé'}</label><input id="bc_revenue" type="text" placeholder="$240/ha"></div>
-        </div>
+    <div class="form-section">
+      <h3>${tr('wz.s2.targeted','Targeted Products')}</h3>
+      <div class="form-grid">
+        <div class="fld full"><label for="if_buc_targeted">${tr('wz.f.targeted','Produits OCP ciblés')}</label><input id="if_buc_targeted" type="text" placeholder="e.g. NPK 15-15-15, MAP 11-52-0"></div>
+      </div>
+      <h3 style="margin-top:18px">${tr('wz.s2.demand','Demand Creation Assumptions')}</h3>
+      <div class="form-grid">
+        <div class="fld"><label for="if_buc_demandyear">${tr('wz.f.demandyear','Année cible')}</label><input id="if_buc_demandyear" type="number" placeholder="2026"></div>
+        <div class="fld"><label for="if_buc_demandvol">${tr('wz.f.demandvol','Volume visé (t)')}</label><input id="if_buc_demandvol" type="number" placeholder="0"></div>
+      </div>
+      <h3 style="margin-top:18px">${tr('wz.s2.share','Market Share')}</h3>
+      <div class="form-grid">
+        <div class="fld"><label for="if_buc_msproduct">${tr('wz.f.msproduct','Produit')}</label><input id="if_buc_msproduct" type="text" placeholder="Product name"></div>
+        <div class="fld"><label for="if_buc_msshare">${tr('wz.f.msshare','Part de marché visée (%)')}</label><input id="if_buc_msshare" type="number" placeholder="5"></div>
       </div>
     </div>
-
-    <div class="bc-pane" data-tab="eco" style="display:none">
-      <div class="form-section" style="margin-top:0">
-        <h3>${tr('intake.bc.eco.h')||'Impact écologique & adoption'}</h3>
-        <div class="form-grid">
-          <div class="fld"><label for="bc_co2">${tr('intake.bc.co2')||'CO₂ évité (kg CO₂eq/ha)'}</label><input id="bc_co2" type="text" placeholder="120"></div>
-          <div class="fld"><label for="bc_water">${tr('intake.bc.water')||'Empreinte eau réduite (%)'}</label><input id="bc_water" type="text" placeholder="-8%"></div>
-          <div class="fld"><label for="bc_adopt">${tr('intake.bc.adopt')||'Adoption visée 3 ans (ha)'}</label><input id="bc_adopt" type="text" placeholder="40000"></div>
-          <div class="fld"><label for="bc_share">${tr('intake.bc.share')||'Part de marché visée'}</label><input id="bc_share" type="text" placeholder="5%"></div>
-          <div class="fld full"><label for="bc_eco_notes">${tr('intake.bc.notes')||'Notes complémentaires'}</label><textarea id="bc_eco_notes" placeholder="Sources, hypothèses, références…"></textarea></div>
-        </div>
+    <div class="form-section">
+      <h3>${tr('wz.s2.eco','Economic Impact — Farmers')}</h3>
+      <div class="form-grid">
+        <div class="fld"><label for="if_buc_refyield">${tr('wz.f.refyield','Reference Marketable Yield (kg/ha)')}</label><input id="if_buc_refyield" type="number" placeholder="5200"></div>
+        <div class="fld"><label for="if_buc_targyield">${tr('wz.f.targyield','Targeted Marketable Yield (kg/ha)')}</label><input id="if_buc_targyield" type="number" placeholder="6500"></div>
+        <div class="fld"><label for="if_buc_yieldinc">${tr('wz.f.yieldinc','Expected Yield Increase (%)')}</label><input id="if_buc_yieldinc" type="number" placeholder="25"></div>
+        <div class="fld"><label for="if_buc_roi">${tr('wz.f.roi','Expected ROI Farmer')}</label><input id="if_buc_roi" type="text" placeholder="e.g. 3.2x"></div>
+        <div class="fld full"><label for="if_buc_justif">${tr('wz.f.justif','Justification')}</label><textarea id="if_buc_justif" placeholder="${tr('wz.f.justif.ph','Explique la base des hypothèses de rendement et de ROI...')}"></textarea></div>
       </div>
     </div>
   `;
@@ -7632,49 +7665,59 @@ function renderWizStep2Html(){
 function renderWizStep3Html(){
   return `
     <div class="form-section" style="margin-top:0">
-      <h3>${tr('in.s3.h')}</h3>
-      <p class="sub">${tr('in.s3.sub')}</p>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px">${MDS_ITEMS.map(m=>`<label class="mds-row mds-check" style="cursor:pointer"><input type="checkbox" class="if_mds" data-mds="${escapeHtml(m)}" style="accent-color:var(--green-700);margin-right:8px"><span class="nm">${escapeHtml(m)}</span></label>`).join('')}</div>
-      <p class="help" style="margin-top:10px;color:var(--muted)">${tr('in.s3.help')}</p>
-    </div>
-
-    <div class="form-section">
-      <h3>${tr('in.s4.h')}</h3>
+      <h3>${tr('wz.s3.h','Step 3 — Trial Description')}</h3>
+      <p class="sub">${tr('wz.s3.sub','Décris le trial / démo. Ces champs alimentent la carte de détail et la gouvernance.')}</p>
       <div class="form-grid">
+        <div class="fld full"><label for="if_name">${tr('wz.f.ttitle','Trial / Demo Title')} <span class="req">*</span></label><input id="if_name" type="text" placeholder="e.g. Maize P-Rate Response Trial — Meknes"></div>
+        <div class="fld"><label for="if_trial_class">${tr('det.f.tclass','Trial Class')}</label>
+          <select id="if_trial_class">${CLASSES.map(c=>`<option value="${c.id}">${tr(c.lblK)}</option>`).join('')}</select></div>
+        <div class="fld"><label for="if_type">${tr('det.f.ttype','Trial Type')}</label>
+          <select id="if_type">${TYPES.map(t=>`<option value="${t.id}">${tyLbl(t)}</option>`).join('')}</select></div>
+        <div class="fld"><label for="if_partner">${tr('in.f.partner')} <span class="req">*</span></label>
+          <select id="if_partner" onchange="ifPartnerOther()">${PARTNERS.map(p=>`<option value="${escapeHtml(p.nm)}">${escapeHtml(p.nm)} — ${escapeHtml(p.typ)}</option>`).join('')}<option value="__other__">${tr('in.f.partnerOther')}</option></select></div>
+        <div class="fld" id="if_partnerOtherWrap" style="display:none"><label for="if_partnerOther">${tr('in.f.partnerOtherName')}</label><input id="if_partnerOther" type="text" placeholder="${tr('in.f.partnerOtherName.ph')}"></div>
+        <div class="fld"><label for="if_partner_type">${tr('wz.f.ptype','Partner Type')}</label>
+          <select id="if_partner_type">${PARTNER_TYPES.map(x=>`<option>${escapeHtml(x)}</option>`).join('')}</select></div>
+        <div class="fld"><label for="if_country">${tr('in.f.country')}</label><input id="if_country" type="text" placeholder="e.g. Morocco"></div>
+        <div class="fld"><label for="if_region">${tr('in.f.region')}</label>
+          <select id="if_region">${Object.values(REGIONS).flat().map(r=>`<option>${escapeHtml(r)}</option>`).join('')}</select></div>
+        <div class="fld"><label for="if_crop">${tr('in.f.crop')}</label>
+          <select id="if_crop">${CROPS.map(c=>`<option>${escapeHtml(c)}</option>`).join('')}</select></div>
+        <div class="fld"><label for="if_site">${tr('in.f.site')}</label><input id="if_site" type="text" placeholder="e.g. Morocco — Site 1"></div>
+        <div class="fld"><label for="if_start">${tr('in.f.start')}</label><input id="if_start" type="date" oninput="ifDateCheck()"></div>
+        <div class="fld"><label for="if_end">${tr('in.f.end')}</label><input id="if_end" type="date" oninput="ifDateCheck()">
+          <span id="if_dateErr" class="fld-err" style="display:none;color:var(--bad);font-size:11.5px;margin-top:4px">${tr('in.f.dateErr')}</span></div>
         <div class="fld"><label for="if_budget">${tr('in.f.budget')} <span class="req">*</span></label>
-          <div class="fld-money"><span class="cur" aria-hidden="true">$</span><input id="if_budget" type="number" placeholder="${tr('in.f.budget.ph')}" min="0" step="1000" inputmode="numeric" oninput="ifBudgetFormat()"><span class="cur-suf">USD</span></div>
+          <div class="fld-money"><span class="cur" aria-hidden="true">$</span><input id="if_budget" type="number" placeholder="35000" min="0" step="1000" inputmode="numeric" oninput="ifBudgetFormat()"><span class="cur-suf">USD</span></div>
           <span id="if_budgetHint" class="muted" style="display:block;font-size:11.5px;margin-top:4px">${tr('in.f.budget.help')}</span></div>
+        <div class="fld"><label for="if_lead">${tr('in.f.lead')}</label><input id="if_lead" type="text" placeholder="${tr('wz.f.leadname','Lead name')}"></div>
         <div class="fld"><label for="if_prio">${tr('in.f.prio')}</label>
           <select id="if_prio">${PRIORITIES.map(p=>`<option value="${p.id}">${prLbl(p)}</option>`).join('')}</select></div>
-        <div class="fld full"><label for="if_partner">${tr('in.f.partner')} <span class="req">*</span></label>
-          <select id="if_partner" onchange="ifPartnerOther()">${PARTNERS.map(p=>`<option value="${escapeHtml(p.nm)}">${p.nm} — ${p.typ}</option>`).join('')}<option value="__other__">${tr('in.f.partnerOther')}</option></select></div>
-        <div class="fld full" id="if_partnerOtherWrap" style="display:none"><label for="if_partnerOther">${tr('in.f.partnerOtherName')} <span class="req">*</span></label><input id="if_partnerOther" type="text" placeholder="${tr('in.f.partnerOtherName.ph')}"></div>
         <div class="fld"><label for="if_ft">${tr('in.f.ft')}</label>
           <select id="if_ft"><option value="0"${PREFS.intakeFT?'':' selected'}>${tr('in.f.std')}</option><option value="1"${PREFS.intakeFT?' selected':''}>${tr('in.f.urgent')}</option></select></div>
-        <div class="fld"><label for="if_sai">${tr('in.f.sai')}</label><input id="if_sai" type="text" placeholder="${tr('in.f.sai.ph')}"></div>
-        <div class="fld full"><label for="if_attach">${tr('in.f.attach')} <span class="opt">${tr('in.f.objSec.opt')}</span></label>
-          <input id="if_attach" type="file" multiple onchange="ifAttachList()" style="font-size:12.5px">
-          <span id="if_attachList" class="muted" style="display:block;font-size:11.5px;margin-top:4px"></span></div>
-        <div class="fld full"><label for="if_protocol">${tr('in.f.protocol')} <span class="req">*</span></label>
-          <input id="if_protocol" type="file" accept=".doc,.docx" onchange="ifProtoName()" style="font-size:12.5px">
-          <span id="if_protocolName" class="muted" style="display:block;font-size:11.5px;margin-top:4px">${tr('in.f.protocol.help')}</span></div>
-      </div>
-    </div>
-
-    <!-- Review SAI #2 — Trial Description : champs alignés maquette SAI V15 -->
-    <div class="form-section">
-      <h3>${tr('in.td.h')}</h3>
-      <p class="sub">${tr('in.td.sub')}</p>
-      <div class="form-grid">
-        <div class="fld"><label for="if_country">${tr('in.f.country')}</label><input id="if_country" type="text" placeholder="ex: Morocco"></div>
-        <div class="fld"><label for="if_site">${tr('in.f.site')}</label><input id="if_site" type="text" placeholder="ex: Meknès — Site 1"></div>
-        <div class="fld"><label for="if_lead">${tr('in.f.lead')}</label><input id="if_lead" type="text" placeholder="—"></div>
         <div class="fld"><label for="if_tested">${tr('in.f.tested')}</label>
           <select id="if_tested" onchange="ifTestedToggle()"><option value="No">${tr('in.opt.no')}</option><option value="Yes">${tr('in.opt.yes')}</option></select></div>
-        <div class="fld" id="if_priorWrap" style="display:none"><label for="if_priorId">${tr('in.f.priorId')}</label><input id="if_priorId" type="text" placeholder="ex: UC-2025-014"></div>
-        <div class="fld full"><label for="if_collab">${tr('in.f.collab')}</label><input id="if_collab" type="text" placeholder="ex: Urea 46%, compost organique"></div>
-        <div class="fld full"><label for="if_compet">${tr('in.f.compet')}</label><input id="if_compet" type="text" placeholder="ex: DAP 18-46-0 (marque locale)"></div>
-        <div class="fld full"><label for="if_refUrl">${tr('in.f.refUrl')}</label><input id="if_refUrl" type="url" placeholder="SharePoint / OneDrive URL"></div>
+        <div class="fld" id="if_priorWrap" style="display:none"><label for="if_priorId">${tr('in.f.priorId')}</label><input id="if_priorId" type="text" placeholder="e.g. TR-005"></div>
+        <div class="fld full"><label for="if_objp">${tr('det.f.opobj','Operational Objectives')} <span class="req">*</span></label><textarea id="if_objp" placeholder="${tr('wz.f.opobj.ph','Principaux objectifs opérationnels de ce trial/démo')}"></textarea></div>
+        <div class="fld full"><label for="if_hyp">${tr('det.f.hyp','Hypothesis')}</label><textarea id="if_hyp" placeholder="Under [crop/system], the proposed recommendation will improve yield by at least [X]% vs farmer practice."></textarea></div>
+      </div>
+    </div>
+    <div class="form-section">
+      <h3>${tr('wz.s3.products','Products')}</h3>
+      <div class="form-grid">
+        <div class="fld full"><label for="if_prod">${tr('det.f.ocp','OCP Product(s) to Use')} <span class="req">*</span></label>
+          <select id="if_prod">${PRODUCTS.map(p=>`<option>${escapeHtml(p)}</option>`).join('')}</select></div>
+        <div class="fld full"><label for="if_collab">${tr('in.f.collab')}</label><input id="if_collab" type="text" placeholder="e.g. Urea 46%, organic compost"></div>
+        <div class="fld full"><label for="if_compet">${tr('in.f.compet')}</label><input id="if_compet" type="text" placeholder="e.g. DAP 18-46-0 (local brand)"></div>
+      </div>
+    </div>
+    <div class="form-section">
+      <h3>${tr('wz.s3.proto','Reference Protocol')}</h3>
+      <div class="form-grid">
+        <div class="fld full"><label for="if_refUrl">${tr('wz.f.protourl','URL SharePoint / OneDrive')}</label><input id="if_refUrl" type="url" placeholder="SharePoint / OneDrive URL"></div>
+        <div class="fld full"><label for="if_protocol">${tr('in.f.protocol')} <span class="opt">${tr('in.f.objSec.opt')}</span></label>
+          <input id="if_protocol" type="file" accept=".doc,.docx,.pdf" onchange="ifProtoName()" style="font-size:12.5px">
+          <span id="if_protocolName" class="muted" style="display:block;font-size:11.5px;margin-top:4px">${tr('in.f.protocol.help')}</span></div>
       </div>
     </div>
   `;
@@ -7852,17 +7895,14 @@ function ifVal(id){
 }
 function submitUc(isDraft){
   wizSnapshot(); // capture l'étape courante avant de lire toutes les étapes
-  // Fix #7 : les champs dates sont à l'étape 2 ; au submit (étape 3) ils ne sont
-  // plus dans le DOM, donc ifDateCheck() court-circuiterait. On valide via WIZ.
+  // Validation date fin < début (champs à l'étape 3, lus via WIZ si besoin)
   const _dStart = ifVal('if_start'), _dEnd = ifVal('if_end');
   if(_dStart && _dEnd && _dEnd < _dStart){ toast(tr('in.f.dateErr')); return; }
   if(!ifDateCheck()){ toast(tr('in.f.dateErr')); return; }
   const name = ifVal('if_name');
-  if(!name){ toast(tr('in.err.name')); const el=document.getElementById('if_name'); if(el) el.focus(); else { PREFS.intakeStep=1; savePrefs(); renderIntake(); } return; }
-  let partner = ifVal('if_partner');
-  if(partner==='__other__'){ partner = ifVal('if_partnerOther') || 'Autre partenaire'; }
-  const type = ifVal('if_type') || 'applied';
-  // v0.22 : Business case capturé depuis le wizard step 2 (tabs P Market / Design / Eco)
+  if(!name){ toast(tr('in.err.name')); PREFS.intakeStep=3; savePrefs(); renderIntake(); return; }
+
+  // ── Étape 2 : Business Use Case (niveau projet) ──
   const _bcCompetitors = (document.querySelector('#bcCompTbody')
     ? Array.from(document.querySelectorAll('#bcCompTbody tr')).map(tr => {
         const inputs = tr.querySelectorAll('input');
@@ -7870,65 +7910,108 @@ function submitUc(isDraft){
       })
     : (WIZ._competitors || [])
   ).filter(c => c.product || c.company);
-  const businessCase = {
-    p_market: { crop: ifVal('if_crop'), country: ifVal('if_region'),
-      area: ifVal('bc_area'), currentP2O5: ifVal('bc_currp'), potentialP2O5: ifVal('bc_potp'),
-      competitors: _bcCompetitors },
-    design: { hypothesis: ifVal('bc_hyp'), expectedYield: ifVal('bc_yield'),
-      revenue: ifVal('bc_revenue'),
-      nbTrials: Number(ifVal('if_treat'))||0, replications: Number(ifVal('if_rep'))||0 },
-    eco: { co2Reduction: ifVal('bc_co2'), waterReduction: ifVal('bc_water'),
-      adoption: ifVal('bc_adopt'), share: ifVal('bc_share'), notes: ifVal('bc_eco_notes') },
+  const buc = {
+    cropArea: ifVal('if_buc_area'), currentP2O5: ifVal('if_buc_currp2o5'), potentialP2O5: ifVal('if_buc_marketp2o5'),
+    targetReach: ifVal('if_buc_demandvol'), targetYield: ifVal('if_buc_targyield'), refYield: ifVal('if_buc_refyield'),
+    improvement: ifVal('if_buc_yieldinc'), vcr: ifVal('if_buc_roi'), confidence: '',
+    infoSource: '', comment: ifVal('if_buc_justif'),
   };
-  const cls = type==='scientific' ? 'fundamental' : type==='applied' ? 'validation' : 'demo';
+  const businessUseCase = {
+    crop: ifVal('if_buc_crop'), country: ifVal('if_buc_country'),
+    market: { cropArea: ifVal('if_buc_area'), currentP2O5: ifVal('if_buc_currp2o5'), marketP2O5: ifVal('if_buc_marketp2o5') },
+    competitors: _bcCompetitors,
+    agronomic: { nbTrials: Number(ifVal('if_buc_nbtrials'))||0, nbDemos: Number(ifVal('if_buc_nbdemos'))||0, objectives: ifVal('if_buc_objectives'), hypothesis: ifVal('if_buc_hyp') },
+    targetedProducts: ifVal('if_buc_targeted'),
+    demandCreation: { year: ifVal('if_buc_demandyear'), volume: ifVal('if_buc_demandvol') },
+    marketShare: { product: ifVal('if_buc_msproduct'), share: ifVal('if_buc_msshare') },
+    economicImpact: { refYield: ifVal('if_buc_refyield'), targetYield: ifVal('if_buc_targyield'), yieldIncrease: ifVal('if_buc_yieldinc'), roi: ifVal('if_buc_roi'), justification: ifVal('if_buc_justif') },
+  };
+
+  // ── Étape 1 : projet existant OU nouveau ──
+  const mode = ifVal('if_projmode') || 'existing';
+  let project_id;
+  if(mode==='new'){
+    const pnum = (PROJECTS.length+1).toString().padStart(3,'0');
+    project_id = 'PRJ-2026-'+pnum;
+    const capex = Number(ifVal('if_proj_capex'))||0, opex = Number(ifVal('if_proj_opex'))||0;
+    const newProj = {
+      id: project_id,
+      title: ifVal('if_proj_title') || name,
+      entity: ifVal('if_bu')||'SAI', bu: ifVal('if_bu')||'SAI',
+      region: ifVal('if_proj_region')||'—', country: ifVal('if_buc_country')||'', crop: ifVal('if_buc_crop')||'',
+      partner: ifVal('if_proj_partner')||'—', partner_type: ifVal('if_proj_ptype')||'',
+      project_status: 'New Project', contract_status: ifVal('if_proj_contract')||'',
+      strategic_line: ifVal('if_proj_strat')||'', project_response: '',
+      lead: ifVal('if_proj_lead')||'', owner: ifVal('if_proj_owner')||'',
+      start_date: ifVal('if_proj_start')||'', end_date: ifVal('if_proj_end')||'',
+      duration_years: Number(ifVal('if_proj_duration'))||0,
+      nb_trials: Number(ifVal('if_proj_nbtrials'))||0,
+      budget_capex: capex, budget_opex: opex, budget: capex+opex,
+      objective: ifVal('if_proj_objective')||'', description: ifVal('if_proj_desc')||'',
+      business_use_case: businessUseCase,
+    };
+    PROJECTS.push(newProj);
+    if(typeof saveProjects==='function') saveProjects();
+  } else {
+    project_id = ifVal('if_project') || (PROJECTS[0] && PROJECTS[0].id) || null;
+    const p = projById(project_id);
+    if(p){ p.business_use_case = businessUseCase; if(typeof saveProjects==='function') saveProjects(); }
+  }
+
+  // ── Étape 3 : le trial ──
+  let partner = ifVal('if_partner');
+  if(partner==='__other__'){ partner = ifVal('if_partnerOther') || 'Autre partenaire'; }
+  const type = ifVal('if_type') || 'applied';
+  const cls = ifVal('if_trial_class') || (type==='scientific' ? 'fundamental' : type==='applied' ? 'validation' : 'demo');
   const clsObj = (window.REF?REF.classes:CLASSES).find(c=>c.id===cls) || CLASSES[0];
-  const mds = document.querySelector('.if_mds')
-    ? Array.from(document.querySelectorAll('.if_mds:checked')).map(c=>c.dataset.mds)
-    : (WIZ._mds || []);
-  const attachments = Array.from((document.getElementById('if_attach')||{files:[]}).files).map(f=>f.name);
+  const businessCase = {
+    p_market: { crop: ifVal('if_crop')||ifVal('if_buc_crop'), country: ifVal('if_country')||ifVal('if_buc_country'),
+      area: ifVal('if_buc_area'), currentP2O5: ifVal('if_buc_currp2o5'), potentialP2O5: ifVal('if_buc_marketp2o5'),
+      competitors: _bcCompetitors },
+    design: { hypothesis: ifVal('if_hyp'), expectedYield: ifVal('if_buc_yieldinc'), revenue: '',
+      nbTrials: Number(ifVal('if_buc_nbtrials'))||0, replications: 0 },
+    eco: {},
+    buc: buc,
+  };
   const proto = (document.getElementById('if_protocol')||{files:[]}).files[0];
-  // Protocol mandatory on submit (not on draft) — Q5
-  if(!isDraft && !proto){ toast(tr('in.err.proto')); return; }
   const num = (DATA.length+1).toString().padStart(3,'0');
   const uc = {
     id:'UC-2026-'+num, name,
-    project_id: ifVal('if_project')||null,
+    project_id: project_id,
     bu: ifVal('if_bu')||'SAI',
-    region: ifVal('if_region')||'—',
-    crop: ifVal('if_crop')||'—',
+    region: ifVal('if_region')||ifVal('if_proj_region')||'—',
+    crop: ifVal('if_crop')||ifVal('if_buc_crop')||'—',
     product: ifVal('if_prod')||'—',
-    reference: ifVal('if_ref')||'',
+    reference: '',
     type, priority: ifVal('if_prio')||'med',
     status: isDraft ? 'draft' : 'submitted',
     budget: Number(ifVal('if_budget'))||0,
-    partner,
+    partner, partner_type: ifVal('if_partner_type')||'',
     start_date: ifVal('if_start')||null,
     end_date: ifVal('if_end')||null,
     fast_track: ifVal('if_ft')==='1',
     trial_class: cls,
-    trial_type: clsObj.types[0].id,
+    trial_type: (clsObj.types && clsObj.types[0] && clsObj.types[0].id) || type,
     strategic_objectives: [ (window.REF?REF.strategicObjectives:STRATEGIC_OBJECTIVES)[0].id ],
     partner_setup: 'provider',
     ic_issues: [],
     objective_primary: ifVal('if_objp'),
-    objectives_secondary: ifVal('if_objs') ? ifVal('if_objs').split('\n').filter(Boolean) : [],
+    objectives_secondary: [],
     kpis_primary: [], kpis_secondary: [],
-    treatments: Number(ifVal('if_treat'))||4,
-    replications: Number(ifVal('if_rep'))||3,
-    mds_covered: mds,
-    rationale: ifVal('if_rat'),
-    attachments,
+    treatments: 0, replications: 0,
+    mds_covered: (WIZ._mds || []),
+    rationale: ifVal('if_proj_desc')||'',
+    attachments: [],
     protocol: proto ? proto.name : null,
-    sai_ref: ifVal('if_sai'),
+    sai_lead: ifVal('if_lead'),
     risks: [],
     gates: _gatesFor(isDraft?'draft':'submitted'),
     created_at: new Date().toISOString(),
     submitted_at: isDraft ? null : new Date().toISOString(),
     owner_bu: ifVal('if_bu')||'SAI',
-    // v0.22 : 3-block structure pour Halima retour #3
     business_case: businessCase,
-    project_description: { rationale: ifVal('if_rat') },
-    // Review SAI #2 : bloc Trial Description aligné maquette SAI V15
+    project_description: { rationale: ifVal('if_proj_desc')||'' },
+    // Trial Description (maquette SAI)
     trial_description: {
       country: ifVal('if_country'),
       site: ifVal('if_site'),
@@ -7939,33 +8022,30 @@ function submitUc(isDraft){
       collaborators_products: ifVal('if_collab'),
       competitors_products: ifVal('if_compet'),
       reference_url: ifVal('if_refUrl'),
+      operational_objectives: ifVal('if_objp'),
+      hypothesis: ifVal('if_hyp'),
     },
+    // Execution Progress (vide à la création)
+    execution: { installed:false, dataCollection:'', postHarvest:'', analysis:'' },
   };
-  // v0.21 : éligibilité Fast Track (seuils paramétrables via Admin > Gouvernance)
   if (uc.fast_track && typeof govFtEligible === 'function' && !govFtEligible(uc)) {
     toast(trf('in.err.ftIneligible', {b: GOV.thresholds.ftMaxBudget.toLocaleString('en-US'), d: GOV.thresholds.ftMaxDurationDays}), 'err');
     uc.fast_track = false;
   }
-  // v0.21 : flag CEO requis automatiquement si seuils dépassés
-  if (typeof govCeoRequired === 'function' && govCeoRequired(uc)) {
-    uc.ceo_required = true;
-  }
+  if (typeof govCeoRequired === 'function' && govCeoRequired(uc)) { uc.ceo_required = true; }
   DATA.unshift(uc);
   try{ localStorage.setItem(LS_DATA, JSON.stringify(DATA)); }catch(e){}
-  apiUpsert('usecases', uc);  // upsert granulaire serveur (anti-clobber multi-user)
+  if(typeof apiUpsert==='function') apiUpsert('usecases', uc);
   if (typeof COACH !== 'undefined') { COACH.flag('uc-created'); COACH.flag('uc:'+uc.id+':mine'); }
-  // v0.23 — Notifications : déclencher uc.submitted (+ FT spécifique si applicable)
   if(!isDraft && typeof notify === 'function'){
     if(uc.fast_track) notify('uc.submitted.ft', {uc, author: (window.DNAI_NPLAN && window.DNAI_NPLAN.user)||'Vous'});
     else notify('uc.submitted', {uc, author: (window.DNAI_NPLAN && window.DNAI_NPLAN.user)||'Vous'});
   }
-  // v0.21 B9 : propagation centrale (sidebar badges + écran courant si concerné)
   if (typeof dataChanged === 'function') dataChanged();
   toast(isDraft ? tr('in.toast.draft') : tr('in.toast.submit'));
   PREFS.filters = {};
-  // v0.22 : reset wizard state pour la prochaine soumission
   delete PREFS.intakeMode; delete PREFS.intakeStep; delete PREFS.intakeFT;
-  WIZ = {}; // Review SAI #2 : purge le snapshot wizard
+  WIZ = {};
   savePrefs();
   goView('portfolio');
 }
