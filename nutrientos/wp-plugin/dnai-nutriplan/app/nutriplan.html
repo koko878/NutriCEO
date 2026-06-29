@@ -219,6 +219,9 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .subnav button{font:700 12.5px 'Inter';color:var(--muted);padding:7px 14px;border-radius:8px;transition:background .15s,color .15s}
 .subnav button:hover{color:var(--ink)}
 .subnav button.on{background:var(--green-700);color:#fff}
+.gov-subnav{display:flex;flex-wrap:wrap;margin:4px 0 16px}
+.gov-tab-badge{display:inline-block;min-width:17px;padding:0 5px;margin-left:6px;border-radius:999px;background:var(--green-50);color:var(--green-800);font:700 10.5px 'Inter';line-height:16px;text-align:center;vertical-align:middle}
+.gov-subnav button.on .gov-tab-badge{background:rgba(255,255,255,.25);color:#fff}
 
 .tool-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
 .tool-bar .sp{flex:1}
@@ -2985,6 +2988,8 @@ fr:{
  'gov.steerAcc.h':'Portefeuille Steering — groupé par project','gov.steerAcc.sub':'(vue consolidée projet → trials pour décision en comité)',
  'gov.monAcc.h':'Portefeuille Monitoring — groupé par project','gov.monAcc.sub':'(suivi Go/Hold/Kill post-exécution)',
  'gov.saiAcc.h':'Revue SAI — groupé par project','gov.saiAcc.sub':'(vue projet → trials : revue de complétude avant Steering)',
+ 'gov.tab.sai':'Revue SAI','gov.tab.steering':'Comité Steering','gov.tab.ceo':'Approbation CEO','gov.tab.monitoring':'Comité de suivi',
+ 'gov.sai.empty':'Aucun Use Case en attente de revue SAI.','gov.steer.empty':'Aucun trial en attente de décision Steering.','gov.mon.empty':'Aucun trial en suivi post-exécution.',
  'gov.sai.choose':'Avis SAI','gov.sai.reviewed':'Revu — vers Steering','gov.sai.rework':'À retravailler',
  'gov.comment.ph':'Commentaire du comité…','gov.ceo.portfolio':"Ouvrir l'Approbation CEO — portfolio par entité",
  'gov.dist.aligned':'Aligné','gov.dist.notaligned':'Non aligné','gov.dist.review':'À revoir','gov.dist.pending':'En attente',
@@ -3400,6 +3405,8 @@ en:{
  'gov.steerAcc.h':'Steering Portfolio — grouped by project','gov.steerAcc.sub':'(consolidated project → trials view for committee decision)',
  'gov.monAcc.h':'Monitoring Portfolio — grouped by project','gov.monAcc.sub':'(post-execution Go/Hold/Kill tracking)',
  'gov.saiAcc.h':'SAI Review — grouped by project','gov.saiAcc.sub':'(project → trials view: completeness review before Steering)',
+ 'gov.tab.sai':'SAI Review','gov.tab.steering':'Steering Committee','gov.tab.ceo':'CEO Approval','gov.tab.monitoring':'Monitoring Committee',
+ 'gov.sai.empty':'No Use Case awaiting SAI review.','gov.steer.empty':'No trial awaiting a Steering decision.','gov.mon.empty':'No trial in post-execution monitoring.',
  'gov.sai.choose':'SAI verdict','gov.sai.reviewed':'Reviewed — to Steering','gov.sai.rework':'Needs rework',
  'gov.comment.ph':'Committee comment…','gov.ceo.portfolio':'Open CEO Approval — portfolio by entity',
  'gov.dist.aligned':'Aligned','gov.dist.notaligned':'Not Aligned','gov.dist.review':'Need Review','gov.dist.pending':'Pending',
@@ -3812,6 +3819,8 @@ pt:{
  'gov.steerAcc.h':'Portfolio Steering — agrupado por projeto','gov.steerAcc.sub':'(visão consolidada projeto → trials para decisão em comitê)',
  'gov.monAcc.h':'Portfolio Monitoring — agrupado por projeto','gov.monAcc.sub':'(acompanhamento Go/Hold/Kill pós-execução)',
  'gov.saiAcc.h':'Revisão SAI — agrupado por projeto','gov.saiAcc.sub':'(visão projeto → trials: revisão de completude antes do Steering)',
+ 'gov.tab.sai':'Revisão SAI','gov.tab.steering':'Comitê Steering','gov.tab.ceo':'Aprovação CEO','gov.tab.monitoring':'Comitê de Acompanhamento',
+ 'gov.sai.empty':'Nenhum Use Case aguardando revisão SAI.','gov.steer.empty':'Nenhum trial aguardando decisão do Steering.','gov.mon.empty':'Nenhum trial em acompanhamento pós-execução.',
  'gov.sai.choose':'Parecer SAI','gov.sai.reviewed':'Revisado — para Steering','gov.sai.rework':'A retrabalhar',
  'gov.comment.ph':'Comentário do comitê…','gov.ceo.portfolio':'Abrir Aprovação CEO — portfolio por entidade',
  'gov.dist.aligned':'Alinhado','gov.dist.notaligned':'Não alinhado','gov.dist.review':'A revisar','gov.dist.pending':'Pendente',
@@ -4561,10 +4570,10 @@ const CXTAB_GROUPS = {
   dashboards: [['cockpit','Cockpit'],     ['dashboards','Vue analytique']],
   portfolio:  [['portfolio','Trials'],    ['projects','Projets']],
   projects:   [['portfolio','Trials'],    ['projects','Projets']],
-  governance: [['governance','Comités'],  ['ceo','Approbation CEO'], ['calendar','Calendrier'], ['controls','Contrôles internes']],
-  ceo:        [['governance','Comités'],  ['ceo','Approbation CEO'], ['calendar','Calendrier'], ['controls','Contrôles internes']],
-  calendar:   [['governance','Comités'],  ['ceo','Approbation CEO'], ['calendar','Calendrier'], ['controls','Contrôles internes']],
-  controls:   [['governance','Comités'],  ['ceo','Approbation CEO'], ['calendar','Calendrier'], ['controls','Contrôles internes']],
+  governance: [['governance','Gouvernance'], ['calendar','Calendrier'], ['controls','Contrôles internes']],
+  ceo:        [['governance','Gouvernance'], ['calendar','Calendrier'], ['controls','Contrôles internes']],
+  calendar:   [['governance','Gouvernance'], ['calendar','Calendrier'], ['controls','Contrôles internes']],
+  controls:   [['governance','Gouvernance'], ['calendar','Calendrier'], ['controls','Contrôles internes']],
   intake:     [['intake','Standard'],     ['fasttrack','Fast Track']],
   fasttrack:  [['intake','Standard'],     ['fasttrack','Fast Track']],
 };
@@ -8044,12 +8053,64 @@ function renderGovernance(){
     ['gov.month.may','gov.bu.may','gov.dec.may',4],
     ['gov.month.jun','gov.bu.jun','gov.dec.jun',3]
   ];
-  // v0.21 : RACI lue depuis GOV.raci (configurable via Admin > Gouvernance)
   const raciRows = Object.keys(GOV.raci).map(k => {
     const r = GOV.raci[k] || {};
     return [k, r.sai||'', r.bu||'', r.sf||'', r.gv||'', r.ceo||''];
   });
   const slaBadge = (k, lblK) => `<span class="gov-sla-pill">${tr(lblK)}: <b>${GOV.sla[k]||'—'} ${tr('gov.sla.days')}</b></span>`;
+
+  // Review SAI #3 (retour Halima) — 4 instances de gouvernance en sous-pages distinctes.
+  const tab = (PREFS && PREFS.govTab) || 'sai';
+  const TABS = [
+    ['sai',        tr('gov.tab.sai','SAI Review'),          inSai.length],
+    ['steering',   tr('gov.tab.steering','Steering Committee'), inSteering.length],
+    ['ceo',        tr('gov.tab.ceo','CEO Approval'),        ceoPending.length],
+    ['monitoring', tr('gov.tab.monitoring','Monitoring Committee'), monitoring.length],
+  ];
+  const subnav = `<div class="subnav gov-subnav">${TABS.map(([id,lbl,n])=>
+    `<button class="${id===tab?'on':''}" onclick="govSetTab('${id}')">${lbl}${n?` <span class="gov-tab-badge">${n}</span>`:''}</button>`
+  ).join('')}</div>`;
+
+  let body = '';
+  if(tab==='sai'){
+    body = `<div class="card">
+      <h3>${tr('gov.saiAcc.h','Revue SAI — groupé par project')} <span class="sub">${tr('gov.saiAcc.sub','(vue projet → trials : revue de complétude avant Steering)')}</span></h3>
+      ${inSai.length ? govProjectAccordion(inSai, (uc)=>`
+        ${govDecSelect('sai', uc, 'govSetSaiDecision', 'rbac-sai-review-only', tr('gov.sai.choose','Avis SAI'))}
+        ${govCommentInput(uc,'sai')}
+      `, {openFirst:true, distFn:govSaiDistFn}) : `<div class="empty" style="padding:40px 20px"><div class="big">✅</div>${tr('gov.sai.empty','Aucun Use Case en attente de revue SAI.')}</div>`}
+    </div>`;
+  } else if(tab==='steering'){
+    body = `<div class="card">
+      <h3>${tr('gov.steerAcc.h')||'Portefeuille Steering — groupé par project'} <span class="sub">${tr('gov.steerAcc.sub')||'(vue consolidée projet → trials pour décision en comité)'}</span></h3>
+      <p class="muted" style="margin:0 0 12px">${trf('gov.steering.when',{date:tr('gov.steering.date')})}</p>
+      ${inSteering.length ? govProjectAccordion(inSteering, (uc)=>`
+        ${govDecSelect('steering', uc, 'govSetDecision', 'rbac-steering-decide-only', tr('gov.dec.choose','Décision'))}
+        ${govCommentInput(uc,'steering')}
+      `, {openFirst:true, distFn:govSteerDistFn}) : `<div class="empty" style="padding:40px 20px"><div class="big">✅</div>${tr('gov.steer.empty','Aucun trial en attente de décision Steering.')}</div>`}
+    </div>`;
+  } else if(tab==='ceo'){
+    body = ceoBodyHtml();
+  } else if(tab==='monitoring'){
+    body = `<div class="card">
+      <h3>${tr('gov.monAcc.h')||'Portefeuille Monitoring — groupé par project'} <span class="sub">${tr('gov.monAcc.sub')||'(suivi Go/Hold/Kill post-exécution)'}</span></h3>
+      ${monitoring.length ? govProjectAccordion(monitoring, (uc)=>`
+        ${govDecSelect('monitoring', uc, 'govSetMonDecision', 'rbac-monitoring-decide-only', tr('gov.mondec.choose','Verdict'))}
+        ${govCommentInput(uc,'monitoring')}
+      `, {distFn:govMonDistFn}) : `<div class="empty" style="padding:40px 20px"><div class="big">📭</div>${tr('gov.mon.empty','Aucun trial en suivi post-exécution.')}</div>`}
+    </div>
+    <div class="card">
+      <h3>${tr('gov.monitor.h')} <span class="sub">${tr('gov.monitor.sub')}</span></h3>
+      <p class="muted" style="margin:0 0 12px">${trf('gov.monitor.cnt',{n:monitoring.length})}</p>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>${tr('gov.tbl.month')}</th><th>${tr('gov.tbl.bu')}</th><th>${tr('gov.tbl.ucs')}</th><th>${tr('gov.tbl.decisions')}</th></tr></thead>
+        <tbody>
+          ${months6.map(r=>`<tr><td><b>${trf(r[0],{y:Y})}</b></td><td>${tr(r[1])}</td><td class="t-num">${r[3]}</td><td class="muted">${tr(r[2])}</td></tr>`).join('')}
+        </tbody>
+      </table></div>
+    </div>`;
+  }
+
   document.getElementById('sc-governance').innerHTML = `
     <h2 class="h-pg">${tr('gov.h')}</h2>
     <p class="lead">${tr('gov.lead')}</p>
@@ -8064,58 +8125,9 @@ function renderGovernance(){
       <span class="gov-sla-cfg rbac-configure-gov-only" onclick="PREFS.adminTab='gov-cfg';savePrefs();goView('admin')" title="${tr('gov.sla.cfg.tt')}">⚙ ${tr('gov.sla.cfg')}</span>
     </div>
 
-    <div class="row-2c">
-      <div class="card">
-        <h3>${tr('gov.steering.h')} <span class="sub">${tr('gov.steering.sub')}</span></h3>
-        <p class="muted" style="margin:0 0 12px">${trf('gov.steering.when',{date:tr('gov.steering.date')})}</p>
-        <h4 style="font:700 12px 'Inter';color:var(--green-800);text-transform:uppercase;letter-spacing:.06em;margin:0 0 8px">${trf('gov.steering.cnt',{n:inSteering.length})}</h4>
-        ${inSteering.slice(0,5).map(u=>`<div class="alert ok"><span class="ico">📄</span><div class="b"><b>${escapeHtml(u.name)}</b><span>${u.id} · ${buOf(u.bu).nm} · ${escapeHtml(u.partner||'—')}</span></div><button class="act" onclick="openUc('${u.id}')">${tr('gov.act.open')}</button></div>`).join('')}
-      </div>
-      <div class="card">
-        <h3>${tr('gov.ceo.h')} <span class="sub">${tr('gov.ceo.sub')}</span></h3>
-        <p class="muted" style="margin:0 0 12px">${trf('gov.ceo.when',{date:tr('gov.ceo.date')})}</p>
-        ${ceoPending.slice(0,5).map(u=>`<div class="alert warn"><span class="ico">⏳</span><div class="b"><b>${escapeHtml(u.name)}</b><span>${u.id} · ${fmtMoney(u.budget)}</span></div><button class="act" onclick="openUc('${u.id}')">${tr('gov.act.open')}</button></div>`).join('') || `<div class="muted">${tr('gov.ceo.empty')}</div>`}
-        <button class="btn sm ghost" style="margin-top:12px" onclick="goView('ceo')">${tr('gov.ceo.portfolio','Ouvrir l\'Approbation CEO — portfolio par entité')} →</button>
-      </div>
-    </div>
+    ${subnav}
 
-    <!-- Review SAI #3 — Body 1/4 : SAI Review (vue projet → trials, décision + commentaire par membre) -->
-    ${inSai.length ? `<div class="card">
-      <h3>${tr('gov.saiAcc.h','Revue SAI — groupé par project')} <span class="sub">${tr('gov.saiAcc.sub','(vue projet → trials : revue de complétude avant Steering)')}</span></h3>
-      ${govProjectAccordion(inSai, (uc)=>`
-        ${govDecSelect('sai', uc, 'govSetSaiDecision', 'rbac-sai-review-only', tr('gov.sai.choose','Avis SAI'))}
-        ${govCommentInput(uc,'sai')}
-      `, {openFirst:true, distFn:govSaiDistFn})}
-    </div>` : ''}
-
-    <!-- v0.22 — Vue accordéon Steering : trials groupés sous leur project (retour Halima #5) -->
-    <div class="card">
-      <h3>${tr('gov.steerAcc.h')||'Portefeuille Steering — groupé par project'} <span class="sub">${tr('gov.steerAcc.sub')||'(vue consolidée projet → trials pour décision en comité)'}</span></h3>
-      ${govProjectAccordion(inSteering, (uc)=>`
-        ${govDecSelect('steering', uc, 'govSetDecision', 'rbac-steering-decide-only', tr('gov.dec.choose','Décision'))}
-        ${govCommentInput(uc,'steering')}
-      `, {openFirst:true, distFn:govSteerDistFn})}
-    </div>
-
-    <!-- v0.22 — Vue accordéon Monitoring : idem (retour Halima #5) -->
-    ${monitoring.length ? `<div class="card">
-      <h3>${tr('gov.monAcc.h')||'Portefeuille Monitoring — groupé par project'} <span class="sub">${tr('gov.monAcc.sub')||'(suivi Go/Hold/Kill post-exécution)'}</span></h3>
-      ${govProjectAccordion(monitoring, (uc)=>`
-        ${govDecSelect('monitoring', uc, 'govSetMonDecision', 'rbac-monitoring-decide-only', tr('gov.mondec.choose','Verdict'))}
-        ${govCommentInput(uc,'monitoring')}
-      `, {distFn:govMonDistFn})}
-    </div>` : ''}
-
-    <div class="card">
-      <h3>${tr('gov.monitor.h')} <span class="sub">${tr('gov.monitor.sub')}</span></h3>
-      <p class="muted" style="margin:0 0 12px">${trf('gov.monitor.cnt',{n:monitoring.length})}</p>
-      <div class="tbl-wrap"><table class="tbl">
-        <thead><tr><th>${tr('gov.tbl.month')}</th><th>${tr('gov.tbl.bu')}</th><th>${tr('gov.tbl.ucs')}</th><th>${tr('gov.tbl.decisions')}</th></tr></thead>
-        <tbody>
-          ${months6.map(r=>`<tr><td><b>${trf(r[0],{y:Y})}</b></td><td>${tr(r[1])}</td><td class="t-num">${r[3]}</td><td class="muted">${tr(r[2])}</td></tr>`).join('')}
-        </tbody>
-      </table></div>
-    </div>
+    ${body}
 
     <div class="card">
       <h3>${tr('gov.raci.h')} <span class="sub">${tr('gov.raci.sub')}</span></h3>
@@ -8128,6 +8140,12 @@ function renderGovernance(){
       <p class="muted" style="margin-top:10px;font-size:11.5px"><span class="raci-cell r">R</span> ${tr('gov.raci.r')} &nbsp; <span class="raci-cell a">A</span> ${tr('gov.raci.a')} &nbsp; <span class="raci-cell c">C</span> ${tr('gov.raci.c')} &nbsp; <span class="raci-cell i">I</span> ${tr('gov.raci.i')}</p>
     </div>
   `;
+}
+function govSetTab(t){
+  if(!PREFS) return;
+  PREFS.govTab = t;
+  if(typeof savePrefs==='function') savePrefs();
+  renderGovernance();
 }
 
 // v0.22 — Décision steering & monitoring inline (depuis l'accordion)
@@ -8169,7 +8187,7 @@ function govSetMonDecision(ucId, val){
  *  - Section 2 : Portfolio Overview by Entity (1 card par entité avec
  *    table interne par région + CEO Decision dropdown + commentaires)
  * --------------------------------------------------------------- */
-function renderCEO(){
+function ceoBodyHtml(){
   const Y = 2026;
   // Persistance des décisions CEO par entité×région (localStorage + serveur)
   if(!window._ceoDecisions){
@@ -8294,7 +8312,7 @@ function renderCEO(){
     </div>`;
   }).filter(Boolean).join('');
 
-  document.getElementById('sc-ceo').innerHTML = `
+  return `
     <h2 class="h-pg">${tr('ceo.h')||'Approbation CEO'}</h2>
     <p class="lead">${tr('ceo.lead')||'Validation du portfolio annuel au niveau entité. Le CEO valide l\'enveloppe globale par BU × région ; les détails trial par trial restent sous la responsabilité des Steering & Monitoring Committees.'}</p>
 
@@ -8326,6 +8344,7 @@ function renderCEO(){
     <p class="muted" style="font-size:11.5px;margin-top:18px">${tr('ceo.persist')||'Les décisions CEO sont persistées en temps réel (localStorage + serveur). Le drill-down "View Projects" filtre le portefeuille sur l\'entité.'}</p>
   `;
 }
+function renderCEO(){ document.getElementById('sc-ceo').innerHTML = ceoBodyHtml(); }
 function ceoSetDecision(buId, region, field, value){
   if(typeof _rbacGuard==='function' && !_rbacGuard('do-ceo-decide')) return;
   if(!window._ceoDecisions) window._ceoDecisions = {};
@@ -8344,7 +8363,11 @@ function ceoSetDecision(buId, region, field, value){
     notify('ceo.decided', {bu: bu?bu.nm:buId, region, decision: value, comment: window._ceoDecisions[key].comment});
   }
   // Re-render léger pour refléter le changement de couleur du select
-  if(field === 'decision') renderCEO();
+  // (CEO Approval est une sous-page de Gouvernance ET une vue à part)
+  if(field === 'decision'){
+    if(PREFS && PREFS.view==='governance' && typeof renderGovernance==='function') renderGovernance();
+    else renderCEO();
+  }
 }
 function ceoDrillDown(buId){
   PREFS.filters = { bu: buId };
